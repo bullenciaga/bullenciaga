@@ -7,6 +7,13 @@ assert.equal(baseUrl.search, '', 'smoke target must not include a query');
 assert.equal(baseUrl.hash, '', 'smoke target must not include a fragment');
 
 const includeApi = process.env.SMOKE_INCLUDE_API !== '0';
+const maxAttempts = Number(process.env.SMOKE_MAX_ATTEMPTS ?? 8);
+const initialRetryDelayMs = Number(process.env.SMOKE_RETRY_DELAY_MS ?? 2_000);
+assert(Number.isInteger(maxAttempts) && maxAttempts >= 1 && maxAttempts <= 20, 'SMOKE_MAX_ATTEMPTS must be an integer from 1 to 20');
+assert(Number.isFinite(initialRetryDelayMs) && initialRetryDelayMs >= 0 && initialRetryDelayMs <= 30_000, 'SMOKE_RETRY_DELAY_MS must be from 0 to 30000');
+
+const retryableStatuses = new Set([404, 408, 425, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524]);
+const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const pageChecks = [
   ['/', /<title>BULLENCIAGA — A token with horns\./i],
   ['/stats', /<title>BULLENCIAGA — Live Dashboard/i],
@@ -28,14 +35,32 @@ const apiChecks = [
 
 async function fetchChecked(path) {
   const url = new URL(path, baseUrl);
-  url.searchParams.set('smoke', `${Date.now()}-${Math.random().toString(16).slice(2)}`);
-  const response = await fetch(url, {
-    redirect: 'manual',
-    headers: { 'user-agent': 'bullenciaga-release-smoke/1' },
-    signal: AbortSignal.timeout(45_000),
-  });
-  assert(response.status >= 200 && response.status < 300, `${url} returned HTTP ${response.status}`);
-  return { response, url };
+  let lastError;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    url.searchParams.set('smoke', `${Date.now()}-${Math.random().toString(16).slice(2)}`);
+    let shouldRetry = true;
+    try {
+      const response = await fetch(url, {
+        redirect: 'manual',
+        headers: { 'user-agent': 'bullenciaga-release-smoke/1' },
+        signal: AbortSignal.timeout(45_000),
+      });
+      if (response.status >= 200 && response.status < 300) return { response, url };
+
+      lastError = new Error(`${url} returned HTTP ${response.status}`);
+      shouldRetry = retryableStatuses.has(response.status);
+    } catch (error) {
+      lastError = error;
+    }
+
+    if (!shouldRetry || attempt === maxAttempts) throw lastError;
+    const delayMs = Math.min(initialRetryDelayMs * (2 ** (attempt - 1)), 10_000);
+    console.warn(`smoke attempt ${attempt}/${maxAttempts} failed for ${url.pathname}: ${lastError.message}; retrying in ${delayMs}ms`);
+    await sleep(delayMs);
+  }
+
+  throw lastError;
 }
 
 for (const [path, marker] of pageChecks) {
