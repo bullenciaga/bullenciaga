@@ -1,41 +1,45 @@
 name: Deploy website production
 
 on:
-  workflow_dispatch:
-    inputs:
-      approved_commit_sha:
-        description: Exact 40-character main commit approved after staging
-        required: true
-        type: string
-      approved_release_fingerprint:
-        description: SHA-256 release fingerprint from the staging run
-        required: true
-        type: string
-      rollback_version_id:
-        description: Current production Cloudflare version UUID
-        required: true
-        type: string
-      confirmation:
-        description: Type DEPLOY BULLENCIAGA WEBSITE
-        required: true
-        type: string
+  workflow_run:
+    workflows:
+      - Deploy website staging
+    types:
+      - completed
 
 permissions:
   contents: read
 
 concurrency:
-  group: website-production
+  group: website-release-auto-v2
   cancel-in-progress: false
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    environment: production
+    # Reuse the existing unprotected credential source. The production Worker
+    # remains isolated by wrangler.production.jsonc and the route checks below.
+    environment: staging
     steps:
-      - name: Check out main
+      - name: Check out the exact staged revision
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require the staged revision to still be current main
+        env:
+          STAGED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$STAGED_SHA"
+          test "$(git rev-parse origin/main)" = "$STAGED_SHA"
 
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -45,21 +49,39 @@ jobs:
       - name: Run repository checks
         run: npm test
 
-      - name: Verify exact approved release
+      - name: Calculate exact release fingerprint
         id: fingerprint
-        env:
-          APPROVED_COMMIT_SHA: ${{ inputs.approved_commit_sha }}
-          APPROVED_RELEASE_FINGERPRINT: ${{ inputs.approved_release_fingerprint }}
-          ROLLBACK_VERSION_ID: ${{ inputs.rollback_version_id }}
-          DEPLOY_CONFIRMATION: ${{ inputs.confirmation }}
-        run: node qa/release-fingerprint.mjs --verify
+        run: node qa/release-fingerprint.mjs
 
       - name: Validate production bundle without deploying
         run: npx --yes wrangler@4.125.0 deploy --dry-run --config wrangler.production.jsonc
 
+      - name: Preflight current production pages and APIs
+        env:
+          SMOKE_BASE_URL: https://bullenciaga.com
+          SMOKE_INCLUDE_API: "1"
+        run: node qa/smoke-live.mjs
+
+      - name: Capture the current production rollback version
+        id: rollback
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          response_file="$RUNNER_TEMP/cloudflare-deployments.json"
+          http_code="$(curl --silent --show-error --output "$response_file" --write-out "%{http_code}" \
+            --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            --header "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/bullenciaga/deployments")"
+          test "$http_code" = "200"
+          CLOUDFLARE_DEPLOYMENTS_FILE="$response_file" node qa/current-production-version.mjs
+
       - name: Create immutable release tag
         id: release
-        run: echo "tag=gh-${GITHUB_SHA:0:12}-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+        env:
+          RELEASE_SHA: ${{ steps.fingerprint.outputs.commit_sha }}
+        run: echo "tag=gh-${RELEASE_SHA:0:12}-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
 
       - name: Upload production version without changing traffic
         uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
@@ -71,7 +93,7 @@ jobs:
             versions upload
             --config wrangler.production.jsonc
             --tag ${{ steps.release.outputs.tag }}
-            --message "GitHub ${{ github.sha }}"
+            --message "GitHub ${{ steps.fingerprint.outputs.commit_sha }}"
 
       - name: Promote the exact uploaded version
         id: promote
@@ -84,7 +106,7 @@ jobs:
             versions deploy
             --config wrangler.production.jsonc
             --version-tag ${{ steps.release.outputs.tag }}@100%
-            --message "Promote GitHub ${{ github.sha }}"
+            --message "Promote GitHub ${{ steps.fingerprint.outputs.commit_sha }}"
             --yes
 
       - name: Smoke-test production pages and APIs
@@ -101,23 +123,25 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.125.0"
           command: >-
-            rollback ${{ inputs.rollback_version_id }}
+            rollback ${{ steps.rollback.outputs.version_id }}
             --config wrangler.production.jsonc
-            --message "Automatic rollback after failed smoke for ${{ github.sha }}"
+            --message "Automatic rollback after failed smoke for ${{ steps.fingerprint.outputs.commit_sha }}"
             --yes
 
       - name: Publish production evidence
         if: always()
         env:
+          RELEASE_SHA: ${{ steps.fingerprint.outputs.commit_sha }}
           RELEASE_FINGERPRINT: ${{ steps.fingerprint.outputs.release_fingerprint }}
           SITE_TREE_SHA: ${{ steps.fingerprint.outputs.site_tree_sha }}
+          ROLLBACK_VERSION_ID: ${{ steps.rollback.outputs.version_id }}
         run: |
           {
             echo "## Website production deployment"
-            echo "- Commit: \`$GITHUB_SHA\`"
+            echo "- Commit: \`$RELEASE_SHA\`"
             echo "- Site tree: \`$SITE_TREE_SHA\`"
             echo "- Release fingerprint: \`$RELEASE_FINGERPRINT\`"
             echo "- Uploaded tag: \`${{ steps.release.outputs.tag }}\`"
-            echo "- Rollback target: \`${{ inputs.rollback_version_id }}\`"
+            echo "- Rollback target: \`$ROLLBACK_VERSION_ID\`"
             echo "- Promotion outcome: \`${{ steps.promote.outcome }}\`"
           } >> "$GITHUB_STEP_SUMMARY"

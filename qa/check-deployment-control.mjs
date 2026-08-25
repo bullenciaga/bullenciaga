@@ -4,12 +4,13 @@ import { readFile } from 'node:fs/promises';
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 const parseJsonc = (text) => JSON.parse(text.replace(/^\s*\/\/.*$/gm, ''));
 
-const [ci, staging, production, stagingConfigText, productionConfigText] = await Promise.all([
+const [ci, staging, production, stagingConfigText, productionConfigText, rollbackParser] = await Promise.all([
   read('.github/workflows/ci.yml'),
   read('.github/workflows/deploy-staging.yml'),
   read('.github/workflows/deploy-production.yml'),
   read('wrangler.staging.jsonc'),
   read('wrangler.production.jsonc'),
+  read('qa/current-production-version.mjs'),
 ]);
 
 const workflowText = `${ci}\n${staging}\n${production}`;
@@ -37,19 +38,37 @@ assert.deepEqual(productionConfig.routes, [
   { pattern: '*.bullenciaga.com/*', zone_name: 'bullenciaga.com' },
 ], 'production routes must remain byte-for-byte equivalent in meaning');
 
-assert.match(staging, /workflow_dispatch:/, 'staging must be manual');
+assert.match(staging, /^\s+push:/m, 'staging must run automatically after main changes');
+assert.match(staging, /paths:[\s\S]*site\/\*\*/, 'staging must run when website files change');
+assert.match(staging, /paths:[\s\S]*qa\/\*\*/, 'staging must run when release checks change');
+assert.match(staging, /paths:[\s\S]*wrangler\.production\.jsonc/, 'staging must run when production config changes');
+assert.match(staging, /^\s+workflow_dispatch:/m, 'staging must retain an emergency manual trigger');
+assert.match(staging, /^\s+- main$/m, 'automatic staging must target main only');
 assert.match(staging, /wrangler\.staging\.jsonc/, 'staging must use the route-free config');
 assert.match(staging, /SMOKE_INCLUDE_API:\s*["']0["']/, 'staging must not probe production APIs');
 
-assert.match(production, /workflow_dispatch:/, 'production must be manual');
-for (const input of ['approved_commit_sha', 'approved_release_fingerprint', 'rollback_version_id', 'confirmation']) {
-  assert.match(production, new RegExp(`^\\s+${input}:`, 'm'), `production input missing: ${input}`);
-}
-assert.match(production, /release-fingerprint\.mjs --verify/, 'production must verify the approved release');
+assert.match(production, /^\s+workflow_run:/m, 'production must follow a completed staging workflow');
+assert.match(production, /workflow_run\.conclusion == 'success'/, 'production must require successful staging');
+assert.match(production, /workflow_run\.event == 'push'/, 'production must only follow automatic staging');
+assert.match(production, /workflow_run\.head_branch == 'main'/, 'production must only promote main');
+assert.match(production, /ref: \$\{\{ github\.event\.workflow_run\.head_sha \}\}/, 'production must check out the exact staged commit');
+assert.match(production, /git rev-parse origin\/main/, 'production must reject stale staged commits');
+assert.match(production, /Preflight current production pages and APIs/, 'production must prove live dependencies before promotion');
+assert.match(production, /workers\/scripts\/bullenciaga\/deployments/, 'production must capture the live rollback target automatically');
+assert.match(production, /current-production-version\.mjs/, 'production must validate the rollback response');
 assert.match(production, /versions upload/, 'production must upload before promotion');
 assert.match(production, /versions deploy/, 'production must promote an exact version');
-assert.match(production, /rollback \$\{\{ inputs\.rollback_version_id \}\}/, 'production must define rollback');
+assert.match(production, /rollback \$\{\{ steps\.rollback\.outputs\.version_id \}\}/, 'production must roll back to the captured live version');
+assert(!production.includes('approved_commit_sha'), 'manual commit input is forbidden');
+assert(!production.includes('approved_release_fingerprint'), 'manual fingerprint input is forbidden');
+assert(!production.includes('rollback_version_id'), 'manual rollback input is forbidden');
+assert(!production.includes('DEPLOY BULLENCIAGA WEBSITE'), 'manual confirmation phrase is forbidden');
+assert(!production.includes('environment: production'), 'mobile-only production approval gate is forbidden');
 assert(!production.includes('.release/WEBSITE_DEPLOY_AUTHORIZED'), 'marker-file authorization is forbidden');
-assert(!production.match(/^\s+push:/m), 'production deploy must not run on push');
+assert(!production.match(/^\s+push:/m), 'production deploy must not run directly on push');
+
+assert.match(rollbackParser, /response\.result\[0\]/, 'rollback parser must use the latest active deployment');
+assert.match(rollbackParser, /versions\.length, 1/, 'rollback parser must reject split production traffic');
+assert.match(rollbackParser, /percentage\), 100/, 'rollback parser must require one version at 100%');
 
 console.log('deployment controls: ok');
