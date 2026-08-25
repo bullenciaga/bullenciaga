@@ -31,6 +31,23 @@ function walk(directory) {
 }
 
 walk(root);
+
+// The referral admin page may accept the secret for a single HTTPS request,
+// but it must never persist that credential in browser storage. Reading a
+// previously persisted value would re-expose it, while removeItem is required
+// once to clean up the legacy key shipped by the initial canonical import.
+const referralsPath = path.join(root, 'site', 'referrals.html');
+const referrals = fs.readFileSync(referralsPath, 'utf8');
+if (/(?:localStorage|sessionStorage)\s*\.\s*(?:getItem|setItem)\s*\(/.test(referrals)) {
+  failures.push('site/referrals.html must not read or write browser storage');
+}
+if (!/localStorage\s*\.\s*removeItem\s*\(\s*["']bullen-referral-secret["']\s*\)/.test(referrals)) {
+  failures.push('site/referrals.html must remove the legacy persisted admin secret');
+}
+if (!/window\s*\.\s*addEventListener\s*\(\s*["']pagehide["']\s*,\s*forgetAdminSecret\s*\)/.test(referrals)) {
+  failures.push('site/referrals.html must clear the admin secret when leaving the page');
+}
+
 if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
