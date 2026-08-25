@@ -1,11 +1,15 @@
 {
   "project": "BULLENCIAGA",
-  "capturedAt": "2026-08-25T00:00:00Z",
+  "capturedAt": "2026-08-25T21:39:56Z",
   "cloudflareWorker": "bullenciaga",
-  "cloudflareVersionNumber": 388,
-  "cloudflareVersionId": "947c1e3b-67f0-4b8c-b190-596375dda66d",
-  "cloudflareDeploymentId": "8a40bcfa-7517-4210-a140-18f6e554ded4",
+  "cloudflareVersionNumber": null,
+  "cloudflareVersionId": "b43b0c49-e1ed-48c3-828d-fe785e4b29a2",
+  "cloudflareDeploymentId": null,
   "indexSha256": "416e5720e1711c2e3cdafc0caa81dbf7b3ffbb4a9974fda6a78dfce9c636f08a",
-  "deploymentAuthority": "cloudflare-live-plus-byte-identical-site-source",
-  "productionWorkflowEnabled": false
+  "deploymentAuthority": "github-protected-main-to-cloudflare-immutable-version",
+  "productionWorkflowEnabled": true,
+  "releaseCommitSha": "de032e6621e6e3e4737829eebb32da4fa3b97dd7",
+  "releaseTag": "gh-de032e6621e6-32902130776",
+  "githubProductionRunId": 32902130776,
+  "rollbackVersionId": "947c1e3b-67f0-4b8c-b190-596375dda66d"
 }
