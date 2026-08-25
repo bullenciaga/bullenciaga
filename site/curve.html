@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BULLENCIAGA — the curve</title>
+<meta name="description" content="every token that has left the supply since launch, recorded every fifteen minutes.">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:title" content="BULLENCIAGA — the curve">
+<meta property="og:description" content="the only chart here that goes one direction.">
+<style>
+  :root{
+    --gold:#c7a869;
+    --gold-light:#e8d9ae;
+    --bg:#0a0a0a;
+    --panel:#101010;
+    --line:rgba(255,255,255,.10);
+    --text:#ece9e2;
+    --dim:#8d8a83;
+    --dimmer:#5c5a55;
+    --tier:#b4483f;
+    --mint:#c7a869;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);color:var(--text);
+    font:400 16px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;padding:0 0 64px;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px}
+  a{color:var(--gold);text-decoration:none}
+  a:hover{color:var(--gold-light)}
+
+  header{padding:44px 0 24px;border-bottom:1px solid var(--line)}
+  h1{font-size:clamp(21px,5.2vw,29px);font-weight:400;letter-spacing:.16em;text-transform:uppercase}
+  .sub{color:var(--dim);font-size:14.5px;margin-top:14px;max-width:72ch;text-wrap:pretty}
+  .sub strong{color:var(--text);font-weight:400}
+  br.wide{display:none}
+  @media (min-width:660px){ br.wide{display:inline} }
+
+  .figs{display:flex;flex-wrap:wrap;gap:1px;background:var(--line);border:1px solid var(--line);margin:24px 0 0}
+  .fig{background:var(--bg);flex:1 1 150px;padding:16px 18px}
+  .fig b{display:block;font-size:clamp(17px,3.4vw,22px);font-weight:500;letter-spacing:.01em}
+  .fig span{display:block;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-top:5px}
+  .fig.burn b{color:var(--tier)}
+
+  .chartbox{margin:26px 0 0;border:1px solid var(--line);background:var(--panel);position:relative}
+  svg{display:block;width:100%;height:auto}
+  .axis{fill:var(--dimmer);font-size:9px;letter-spacing:.06em}
+  .gridline{stroke:rgba(255,255,255,.055);stroke-width:1}
+  .curve{fill:none;stroke:var(--gold);stroke-width:2;stroke-linejoin:miter;stroke-linecap:butt}
+  .under{fill:url(#fade)}
+  .evt{stroke:var(--tier);stroke-width:1;stroke-dasharray:2 3}
+  .evtdot{fill:var(--tier)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:18px;padding:14px 18px;border-top:1px solid var(--line);font-size:12px;color:var(--dim)}
+  .legend i{display:inline-block;width:9px;height:2px;vertical-align:middle;margin-right:7px}
+
+  .events{margin-top:34px;border-top:1px solid var(--line);list-style:none}
+  /* FOUR COLUMNS. The date had no column of its own and rendered welded to
+     the label -- "burn 2,50023 Aug 2026". Kind, label, date and amount each
+     get their own track, and the two numeric columns are right-aligned with
+     tabular figures so the digits line up down the page. */
+  .events li{
+    border-bottom:1px solid var(--line);
+    padding:14px 0;
+    display:grid;
+    grid-template-columns:104px minmax(0,1fr) auto auto;
+    gap:8px 20px;
+    align-items:baseline;
+    font-size:14.5px;
+  }
+  .events .k{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
+  .events .k.tier{color:var(--tier)}
+  .events .lbl{color:var(--text);min-width:0;overflow-wrap:anywhere}
+  .events .when{color:var(--dimmer);font-size:12.5px;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+  .events .amt{color:var(--dim);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;min-width:9ch}
+  .events li.tierrow .amt{color:var(--tier)}
+
+  .recon{
+    display:flex;flex-direction:column;gap:7px;
+    padding:18px 0 0;color:var(--dimmer);font-size:13px;
+  }
+  .recon b{color:var(--dim);font-weight:500;font-variant-numeric:tabular-nums}
+  .events a.lbl{color:var(--text);border-bottom:1px solid rgba(255,255,255,.14)}
+  .events a.lbl:hover{color:var(--gold);border-bottom-color:rgba(199,168,105,.5)}
+  .state{padding:40px 0;color:var(--dim)}
+  .foot{padding:30px 0 0;color:var(--dimmer);font-size:13px;line-height:1.8}
+  .foot a{border-bottom:1px solid rgba(199,168,105,.3)}
+  .build{margin-top:24px;color:#3d3b37;font-size:11px;letter-spacing:.08em}
+
+  /* On a phone four columns cannot fit. Kind and amount share the top line,
+     label and date the one below, so nothing wraps mid-number. */
+  @media (max-width:620px){
+    .events li{grid-template-columns:1fr auto;gap:3px 14px}
+    .events .k{grid-column:1;grid-row:1}
+    .events .amt{grid-column:2;grid-row:1}
+    .events .lbl{grid-column:1;grid-row:2}
+    .events .when{grid-column:2;grid-row:2}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <h1>The curve</h1>
+    <p class="sub">
+      Total supply, sampled from Solana mainnet every fifteen minutes since launch.<br class="wide">
+      It has never gone up and it cannot: mint authority was revoked before trading opened.<br class="wide">
+      <strong>This is the only chart here that goes one direction.</strong>
+    </p>
+  </header>
+
+  <div class="figs" id="figs"></div>
+
+  <div class="chartbox" id="chartbox" hidden>
+    <div id="chart"></div>
+    <div class="legend">
+      <span><i style="background:var(--gold)"></i>total supply</span>
+      <span><i style="background:var(--tier)"></i>tier burn</span>
+      <span id="span"></span>
+    </div>
+  </div>
+
+  <ul class="events" id="events"></ul>
+  <div class="recon" id="recon" hidden></div>
+  <div class="state" id="state">reading the chain record…</div>
+
+  <div class="foot">
+    <p>
+      Supply falls two ways. Minting a piece from The Herd sends 250,000 BULLEN to a public
+      escrow, which is burned on a schedule. Separately, a locked allocation is released and
+      burned in five tiers as cumulative trading volume passes fixed thresholds set before
+      launch. Both are visible above as steps down.
+    </p>
+    <p style="margin-top:12px">
+      Live figures: <a href="/supply">/supply</a> &nbsp;·&nbsp;
+      Per-transaction ledger: <a href="/supply/proof">/supply/proof</a> &nbsp;·&nbsp;
+      Raw samples: <a href="/supply/history">/supply/history</a>
+    </p>
+    <div class="build">build 2026-08-23.3 — ledger read from the proof endpoint</div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var STATE = document.getElementById('state');
+  var FIGS  = document.getElementById('figs');
+  var BOX   = document.getElementById('chartbox');
+  var EVTS  = document.getElementById('events');
+
+  var RECON = document.getElementById('recon');
+  var KINDS = {
+    escrowburn: 'escrow burn, from tokens spent minting',
+    tier: 'scheduled tier burn',
+    burn: 'burn',
+  };
+
+  var W = 900, H = 380, PAD_L = 62, PAD_R = 14, PAD_T = 18, PAD_B = 30;
+
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function nfmt(n){return Math.round(n).toLocaleString('en-GB');}
+  function compact(n){
+    if (n >= 1e9) return (n/1e9).toFixed(2).replace(/\.?0+$/,'') + 'B';
+    if (n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,'') + 'M';
+    if (n >= 1e3) return Math.round(n/1e3) + 'K';
+    return String(Math.round(n));
+  }
+  function when(ms){
+    var d = new Date(ms);
+    return isNaN(d) ? '' : d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  }
+  function dayLabel(ms){
+    var d = new Date(ms);
+    return isNaN(d) ? '' : d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  }
+
+  // TWO SOURCES, EACH FOR THE THING IT IS RIGHT ABOUT.
+  //
+  // The LINE comes from /supply/history: direct readings of the mint every
+  // fifteen minutes, which is what total supply actually was at each moment.
+  //
+  // The LEDGER comes from /supply/proof, and the first version of this page
+  // wrongly took it from the history payload's derived events. Those double
+  // counted -- a mint claim and the escrow burn of the same 250,000 appeared
+  // as two separate reductions. The proof endpoint is per transaction,every row
+  // carries a signature, and it reconciles itself against the mint, so it is
+  // the only honest source for a list of what was destroyed.
+  Promise.all([
+    fetch('/supply/history', {cache:'no-store'}).then(function(r){
+      if(!r.ok) throw new Error('history HTTP '+r.status); return r.json();
+    }),
+    // Failing to read the ledger must not take the chart down with it.
+    fetch('/supply/proof', {cache:'no-store'}).then(function(r){
+      return r.ok ? r.json() : null;
+    }).catch(function(){ return null; }),
+  ])
+    .then(function(both){
+      var d = both[0], proof = both[1];
+      var s = (d && d.samples) || [];
+      if (s.length < 2) { STATE.textContent = 'not enough samples recorded yet.'; return; }
+
+      // The y-axis deliberately does NOT start at zero. Supply has fallen a
+      // fraction of its starting value, and a zero-based axis would render the
+      // whole record as a flat line -- technically honest, visually useless,
+      // and it would hide the tier burn entirely. The axis labels carry real
+      // numbers so nothing is being implied that the figures do not say.
+      var first = s[0], last = s[s.length-1];
+      var lo = Infinity, hi = -Infinity;
+      for (var i=0;i<s.length;i++){ var v=s[i][1]; if(v<lo)lo=v; if(v>hi)hi=v; }
+      var padY = (hi-lo) * 0.12 || hi * 0.002;
+      lo -= padY; hi += padY;
+
+      var t0 = first[0], t1 = last[0];
+      var X = function(t){ return PAD_L + (t-t0)/((t1-t0)||1) * (W-PAD_L-PAD_R); };
+      var Y = function(v){ return PAD_T + (hi-v)/((hi-lo)||1) * (H-PAD_T-PAD_B); };
+
+      // STEPPED, NOT SMOOTHED. Supply does not glide between two values; it
+      // sits still and then drops. A curve fitted through the samples would
+      // draw a decline that never happened.
+      var dPath = '', aPath = '';
+      for (var j=0;j<s.length;j++){
+        var x=X(s[j][0]), y=Y(s[j][1]);
+        if (j===0){ dPath='M'+x+' '+y; aPath='M'+x+' '+y; }
+        else { var py=Y(s[j-1][1]); dPath+='L'+x+' '+py+'L'+x+' '+y; aPath+='L'+x+' '+py+'L'+x+' '+y; }
+      }
+      aPath += 'L'+X(t1)+' '+(H-PAD_B)+'L'+X(t0)+' '+(H-PAD_B)+'Z';
+
+      // horizontal gridlines with real values on them
+      var grid='', ticks=4;
+      for (var g=0; g<=ticks; g++){
+        var val = lo + (hi-lo)*(g/ticks), gy = Y(val);
+        grid += '<line class="gridline" x1="'+PAD_L+'" y1="'+gy+'" x2="'+(W-PAD_R)+'" y2="'+gy+'"/>'
+              + '<text class="axis" x="'+(PAD_L-8)+'" y="'+(gy+3)+'" text-anchor="end">'+compact(val)+'</text>';
+      }
+      // date ticks
+      var dates='';
+      for (var k=0;k<=3;k++){
+        var tt = t0 + (t1-t0)*(k/3), tx = X(tt);
+        dates += '<text class="axis" x="'+tx+'" y="'+(H-8)+'" text-anchor="'+(k===0?'start':k===3?'end':'middle')+'">'+dayLabel(tt)+'</text>';
+      }
+
+      var ledger = (proof && Array.isArray(proof.burns)) ? proof.burns.slice() : [];
+      ledger.sort(function(a,b){ return a.ts - b.ts; });
+      var marks='';
+      ledger.forEach(function(e){
+        if (e.kind !== 'tier') return;          // only the big ones get a line
+        var ex = X(e.ts);
+        if (ex < PAD_L || ex > W-PAD_R) return;
+        marks += '<line class="evt" x1="'+ex+'" y1="'+PAD_T+'" x2="'+ex+'" y2="'+(H-PAD_B)+'"/>'
+               + '<circle class="evtdot" cx="'+ex+'" cy="'+PAD_T+'" r="2.5"/>';
+      });
+
+      document.getElementById('chart').innerHTML =
+        '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="total supply over time, falling in steps">'
+        + '<defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">'
+        + '<stop offset="0%" stop-color="rgba(199,168,105,.16)"/>'
+        + '<stop offset="100%" stop-color="rgba(199,168,105,0)"/></linearGradient></defs>'
+        + grid + dates + marks
+        + '<path class="under" d="'+aPath+'"/>'
+        + '<path class="curve" d="'+dPath+'"/>'
+        + '</svg>';
+      BOX.hidden = false;
+
+      var burned = first[1] - last[1];
+      FIGS.innerHTML =
+          fig(nfmt(last[1]),  'total supply now')
+        + fig(nfmt(burned),   'burned while recording', 'burn')
+        + fig(nfmt(first[1]), 'when recording began')
+        + fig(s.length.toLocaleString('en-GB'), 'samples');
+
+      document.getElementById('span').textContent =
+        when(t0) + ' to ' + when(t1) + ' · sampled every ' + (d.sampleMinutes || 15) + ' min';
+
+      // newest first. Every row is one transaction and links to it.
+      var rows = ledger.slice().reverse().filter(function(e){ return e.amount > 0; });
+      if (rows.length) {
+        EVTS.innerHTML = rows.map(function(e){
+          var isTier = e.kind === 'tier';
+          var label = e.note || KINDS[e.kind] || e.kind || 'burn';
+          var cell = e.sig
+            ? '<a class="lbl" href="https://solscan.io/tx/'+esc(e.sig)+'" target="_blank" rel="noopener">'+esc(label)+'</a>'
+            : '<span class="lbl">'+esc(label)+'</span>';
+          return '<li'+(isTier?' class="tierrow"':'')+'>'
+            + '<span class="k'+(isTier?' tier':'')+'">'+esc(e.kind||'burn')+'</span>'
+            + cell
+            + '<span class="when">'+when(e.ts)+'</span>'
+            + '<span class="amt">-'+nfmt(e.amount)+'</span>'
+            + '</li>';
+        }).join('');
+
+        // The reconciliation, said out loud. The ledger can only evidence what
+        // carries a signature; the mint knows the real total. Publishing the
+        // difference is the point of the proof endpoint and it belongs here
+        // rather than being quietly omitted.
+        if (proof && isFinite(proof.burnedActual)) {
+          RECON.innerHTML =
+              '<span>ledger evidences <b>'+nfmt(proof.burnedInLedger||0)+'</b> across '+(proof.count||rows.length)+' transactions</span>'
+            + '<span>chain destroyed <b>'+nfmt(proof.burnedActual)+'</b></span>'
+            + (proof.unaccounted > 0
+                ? '<span>unaccounted <b>'+nfmt(proof.unaccounted)+'</b>, burned before signatures were captured</span>'
+                : '');
+          RECON.hidden = false;
+        }
+      }
+
+      STATE.style.display = 'none';
+    })
+    .catch(function(e){
+      STATE.innerHTML = 'the record could not be read right now. raw samples are at <a href="/supply/history">/supply/history</a>.';
+      if (window.console) console.log('curve:', e);
+    });
+
+  function fig(v, label, cls){
+    return '<div class="fig'+(cls?' '+cls:'')+'"><b>'+esc(v)+'</b><span>'+esc(label)+'</span></div>';
+  }
+})();
+</script>
+
+</body>
+</html>

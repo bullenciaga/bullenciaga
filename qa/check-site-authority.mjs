@@ -1,0 +1,35 @@
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root = path.resolve(import.meta.dirname, '..');
+const site = path.join(root, 'site');
+const expectedIndexHash = '416e5720e1711c2e3cdafc0caa81dbf7b3ffbb4a9974fda6a78dfce9c636f08a';
+const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs'];
+const required = ['index.html', '_redirects', 'stats.html', 'chart.html', 'curve.html', 'proof.html', 'transparency.html', 'whitepaper.pdf'];
+const failures = [];
+
+const hash = crypto.createHash('sha256').update(fs.readFileSync(path.join(site, 'index.html'))).digest('hex');
+if (hash !== expectedIndexHash) failures.push(`index.html hash ${hash} does not match production authority`);
+for (const name of required) if (!fs.existsSync(path.join(site, name))) failures.push(`missing site/${name}`);
+for (const name of prohibited) if (fs.existsSync(path.join(site, name))) failures.push(`prohibited internal file site/${name}`);
+
+const htmlFiles = fs.readdirSync(site).filter(name => name.endsWith('.html'));
+const localAsset = /(?:src|href)=["'](?!https?:|data:|#|\/\/|mailto:|javascript:)([^"'?#]+)(?:[?#][^"']*)?["']/gi;
+for (const name of htmlFiles) {
+  const text = fs.readFileSync(path.join(site, name), 'utf8');
+  for (const match of text.matchAll(localAsset)) {
+    const ref = match[1].replace(/^\.\//, '').replace(/^\//, '');
+    // Dynamic template expressions are resolved by the page at runtime and are
+    // not static asset paths that can be verified on disk.
+    if (ref.includes('${')) continue;
+    if (!ref || ref.endsWith('/') || !path.extname(ref)) continue;
+    if (!fs.existsSync(path.join(site, ref))) failures.push(`${name} references missing ${ref}`);
+  }
+}
+
+if (failures.length) {
+  console.error(failures.join('\n'));
+  process.exit(1);
+}
+console.log(`site authority: ok (${htmlFiles.length} HTML files)`);

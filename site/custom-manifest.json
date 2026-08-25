@@ -1,0 +1,742 @@
+[
+  {
+    "name": "GHOST",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Spooky"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Ghost"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "White"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Ghost Coat"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Inherited"
+      },
+      {
+        "trait_type": "Glasses And Headgear",
+        "value": "Ghost Glasses"
+      },
+      {
+        "trait_type": "Jewelry",
+        "value": "Ghost"
+      },
+      {
+        "trait_type": "Tags",
+        "value": "Ghost Companion"
+      }
+    ]
+  },
+  {
+    "name": "BAMF",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Northern Lights"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Dark Stone-Giant"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Dark Stone-Giant"
+      },
+      {
+        "trait_type": "Innerwear",
+        "value": "Custom Tanktop"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Blacked Out"
+      },
+      {
+        "trait_type": "Hats",
+        "value": "Grey Custom Beanie"
+      }
+    ]
+  },
+  {
+    "name": "PPF",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Brown Charcoal"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Pink"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "White"
+      },
+      {
+        "trait_type": "Innerwear",
+        "value": "White Tshirt"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "PPF Jacket"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Blank"
+      }
+    ]
+  },
+  {
+    "name": "COWTIPPER",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Barn"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Silver"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Gold"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Plaid Sherpa Jacket"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Basic"
+      },
+      {
+        "trait_type": "Glasses And Headgear",
+        "value": "Custom Aviators"
+      },
+      {
+        "trait_type": "Hats",
+        "value": "Cowboy Hat"
+      }
+    ]
+  },
+  {
+    "name": "WEEMZ",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Plum"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Silver Surfer"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Silver"
+      },
+      {
+        "trait_type": "Innerwear",
+        "value": "Black Tshirt"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Inherited"
+      },
+      {
+        "trait_type": "Glasses And Headgear",
+        "value": "Weemz Glasses"
+      },
+      {
+        "trait_type": "Jewelry",
+        "value": "Left Ear Double Silver Earring"
+      },
+      {
+        "trait_type": "Hats",
+        "value": "Camo Hat"
+      }
+    ]
+  },
+  {
+    "name": "LUKE",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Disco"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Rainbow"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Gold"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Custom Leather Jacket"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Inherited"
+      },
+      {
+        "trait_type": "Glasses And Headgear",
+        "value": "Gold DJ Helmet"
+      }
+    ]
+  },
+  {
+    "name": "ERIC",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Gym"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Black"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Red"
+      },
+      {
+        "trait_type": "Innerwear",
+        "value": "Powerlifter"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Belt"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Basic"
+      }
+    ]
+  },
+  {
+    "name": "SUIT",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Bullenciaga Mansion"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Precious Cyan"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Precious Cyan"
+      },
+      {
+        "trait_type": "Midwear",
+        "value": "Fitted Black Shirt & Tie"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Custom Checkered Suit Jacket"
+      },
+      {
+        "trait_type": "Jewelry",
+        "value": "JC Chains & Silver Earrings"
+      },
+      {
+        "trait_type": "Tags",
+        "value": "Right Ear Black Tag"
+      },
+      {
+        "trait_type": "Branding",
+        "value": "Golden Cross"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Inherited"
+      }
+    ]
+  },
+  {
+    "name": "KONG",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Graffiti Wall #1"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Black"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Black Gold Chains"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Pompous Coat"
+      },
+      {
+        "trait_type": "Jewelry",
+        "value": "Right Ear Golden Earring"
+      },
+      {
+        "trait_type": "Glasses And Headgear",
+        "value": "Prof Bullen"
+      },
+      {
+        "trait_type": "Branding",
+        "value": "White Cross"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Blacked Out"
+      }
+    ]
+  },
+  {
+    "name": "BULLENCIAGA",
+    "tier": "Dev",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Black"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Black"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Black"
+      },
+      {
+        "trait_type": "Innerwear",
+        "value": "Black Tanktop"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Bullet Time Coat"
+      },
+      {
+        "trait_type": "Jewelry",
+        "value": "Right Ear Silver Earring"
+      },
+      {
+        "trait_type": "Tags",
+        "value": "Left Ear Black Tag"
+      },
+      {
+        "trait_type": "Glasses And Headgear",
+        "value": "Prof Bullen"
+      },
+      {
+        "trait_type": "Branding",
+        "value": "White Cross"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Blacked Out"
+      }
+    ]
+  },
+  {
+    "name": "BULLEN",
+    "tier": "Dev",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Hot Pink"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Black"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Black Gold Chains"
+      },
+      {
+        "trait_type": "Innerwear",
+        "value": "Black Tanktop"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Pompous Coat"
+      },
+      {
+        "trait_type": "Jewelry",
+        "value": "Right Ear Golden Earring"
+      },
+      {
+        "trait_type": "Glasses And Headgear",
+        "value": "Prof Bullen"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Blacked Out"
+      }
+    ]
+  },
+  {
+    "name": "OZMAN",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Italian Pine Shore"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Battle Hardened"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Battle Hardened"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Torn Hoodie"
+      },
+      {
+        "trait_type": "Tags",
+        "value": "OZMAN"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Inherited"
+      }
+    ]
+  },
+  {
+    "name": "HUFF",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Nordic"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Nordic Warrior"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Rune Etched"
+      },
+      {
+        "trait_type": "Jewelry",
+        "value": "Golden Big Nosering"
+      },
+      {
+        "trait_type": "Tags",
+        "value": "HUFF"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Blank Glowing"
+      }
+    ]
+  },
+  {
+    "name": "ST33L",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Misty Pitch"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Black / Gold Hue"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Gold"
+      },
+      {
+        "trait_type": "Midwear",
+        "value": "Custom Jersey"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Inherited"
+      },
+      {
+        "trait_type": "Glasses And Headgear",
+        "value": "Football Helmet"
+      }
+    ]
+  },
+  {
+    "name": "PADJO",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Soft Sage"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Cool Sage"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Black"
+      },
+      {
+        "trait_type": "Innerwear",
+        "value": "Black Tanktop"
+      },
+      {
+        "trait_type": "Midwear",
+        "value": "Irish Vest"
+      },
+      {
+        "trait_type": "Jewelry",
+        "value": "Right Ear Silver Earring"
+      },
+      {
+        "trait_type": "Tags",
+        "value": "Lucky Charm"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Inherited"
+      },
+      {
+        "trait_type": "Hats",
+        "value": "Irish Cap"
+      }
+    ]
+  },
+  {
+    "name": "ZOOT",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Fire"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Gangster"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Golden Black"
+      },
+      {
+        "trait_type": "Innerwear",
+        "value": "Black Shirt & Tie"
+      },
+      {
+        "trait_type": "Midwear",
+        "value": "Black Vest"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Black Zoot Suit"
+      },
+      {
+        "trait_type": "Jewelry",
+        "value": "Zoot Set"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Inherited"
+      },
+      {
+        "trait_type": "Hats",
+        "value": "Black / Red Fedora"
+      }
+    ]
+  },
+  {
+    "name": "PHANTOM",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Umbra Mist"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "Spectral"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Spectral"
+      },
+      {
+        "trait_type": "Midwear",
+        "value": "Shade Shirt"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Tattered Jacket"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Glowing Eclipse"
+      }
+    ]
+  },
+  {
+    "name": "CREDIBULL",
+    "tier": "Gift",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Dark Sparks"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "CREDIBULL"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "Electric Blue"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "CREDIBULL"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Electric Blue"
+      }
+    ]
+  },
+  {
+    "name": "RICO",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "City Of The Future"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "RICO"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "RICO"
+      },
+      {
+        "trait_type": "Midwear",
+        "value": "Monolithic Grid"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "RICO"
+      },
+      {
+        "trait_type": "Glasses And Headgear",
+        "value": "High Tech Glasses"
+      }
+    ]
+  },
+  {
+    "name": "BULL OF BLAVIKEN",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Toussaint"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "The White Bull"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "The White Bull"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Grandmaster Set"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "Yellow"
+      },
+      {
+        "trait_type": "Jewelry",
+        "value": "The Bull Medallion"
+      }
+    ]
+  },
+  {
+    "name": "ANDRE",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "Atze's Playground"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "ANDRE"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "ANDRE"
+      },
+      {
+        "trait_type": "Midwear",
+        "value": "Powder-Blue Shirt"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "ANDRE"
+      }
+    ]
+  },
+  {
+    "name": "$ANSEM",
+    "tier": "Custom",
+    "attributes": [
+      {
+        "trait_type": "Background",
+        "value": "$ANSEM"
+      },
+      {
+        "trait_type": "Bull",
+        "value": "$ANSEM"
+      },
+      {
+        "trait_type": "Horns",
+        "value": "$ANSEM"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "$ANSEM"
+      },
+      {
+        "trait_type": "Midwear",
+        "value": "Custom Black Shirt & Tie"
+      },
+      {
+        "trait_type": "Outerwear",
+        "value": "Custom Black Suit"
+      }
+    ]
+  }
+]

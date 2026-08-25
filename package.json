@@ -1,0 +1,14 @@
+{
+  "name": "bullenciaga",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Canonical public BULLENCIAGA website source and verification material.",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node qa/check-identity.mjs && node qa/check-secret-boundary.mjs && node qa/check-site-authority.mjs && node qa/check-route-boundary.mjs",
+    "manifest": "node qa/generate-site-manifest.mjs"
+  }
+}

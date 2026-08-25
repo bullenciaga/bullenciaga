@@ -1,0 +1,2268 @@
+<!DOCTYPE html>
+<!-- BULLENCIAGA stats.html  |  build 2026-08-16.2 — supply line removed -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Without this, mobile Safari assumes a ~980px viewport and scales the
+     result down, so the max-width:900px block below never matches and a
+     phone gets the desktop two-column layout shrunk to fit. Harmless for
+     OBS: a Browser Source is desktop-class, so width=device-width simply
+     resolves to the source width it already renders at. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>BULLENCIAGA — Live Dashboard</title>
+<meta name="description" content="Every mint, burn and supply figure for $BULLEN and The Herd, updating as it happens.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://bullenciaga.com/stats">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bullenciaga.com/stats">
+<meta property="og:title" content="BULLENCIAGA — Live Dashboard">
+<meta property="og:description" content="Every mint and burn, the moment it lands.">
+<meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BULLENCIAGA — Live Dashboard">
+<meta name="twitter:description" content="Every mint and burn, the moment it lands.">
+<meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!--
+  BULLENCIAGA — LIVE STATS DASHBOARD  (v10)
+  =========================================
+
+  Doubles as both an OBS Browser Source AND a normal page anyone can open in
+  a browser for a quick public look at where things stand -- same file,
+  same URL, no separate "public" version to keep in sync.
+
+  A dashboard designed to sit "on a screen" inside an OBS scene -- e.g.
+  composited onto a TV prop. Fully fluid: it fills whatever width/height you
+  give the Browser Source, not locked to exactly 16:9, so it still looks
+  right if the TV texture in your scene is a slightly different ratio.
+
+  SETUP IN OBS
+    Source > Browser
+    URL     https://bullenciaga.com/stats
+    Width   whatever matches your TV prop (1920x1080 is a fine default)
+    Height  ditto
+    [x] Shutdown source when not visible      <- IMPORTANT, see note below
+    [x] Refresh browser when scene becomes active
+
+  URL OPTIONS
+    ?token=<mint>     override the $BULLEN mint address (normally read
+                      automatically out of index.html -- see resolveToken())
+    ?demo=1           demo mode: real live coin data from a real, currently
+                      trading pump.fun token (so you can see genuine price/
+                      supply/volume behaviour), plus fake NFT mint alerts
+                      fired every ~12s using your real Herd pieces. Clearly
+                      flagged on-screen. No live BULLENCIAGA data is used.
+    ?transparent=1    drop the background so it composites as a pure overlay
+
+  WHY "SHUTDOWN SOURCE WHEN NOT VISIBLE" MATTERS
+    The main site pauses polling when its tab is backgrounded -- that fix is
+    what dropped the Helius usage. OBS doesn't background a Browser Source
+    the same way: it keeps running whenever OBS is open, visible or not. With
+    that box ticked, the source only polls while its scene is actually live.
+
+  DATA SOURCES (all keyless from the browser's point of view)
+    price / mcap / 24h change   DexScreener public API -- same call, same
+                                fallback (marketCap || fdv), as index.html,
+                                so the number on stream always matches the
+                                number on the site.
+    circulating supply          The site's own /supply endpoint, which reads
+                                the mint AND the locked escrow account and
+                                subtracts one from the other. Single source
+                                of truth with the /supply/* endpoints that
+                                aggregators poll. Falls back to raw
+                                getTokenSupply (labelled as total) if that
+                                is unavailable. Drops the instant any burn
+                                (dev schedule OR NFT mints) lands -- not a
+                                cached/indexed figure.
+    cumulative volume           GeckoTerminal daily candles, summed -- same
+                                approach as the site's burn-schedule tracker.
+    NFT mints / images          Helius DAS getAssetsByGroup via YOUR worker
+                                proxy (key never reaches this page), images
+                                via your existing image proxy.
+-->
+<style>
+  :root{
+    --gold:#c7a869;
+    /* Aligned with refer.html and thedrop.html. Those two were built later and
+       settled on a warmer highlight; matching it is what stops the pages
+       reading as two different sites. */
+    --gold-light:#e8d9ae;
+    --silver:#c7ccd4;
+    --pink:#ff3fa8;
+    --white:#f5f3ee;
+    --black:#050505;
+    --dim:rgba(245,243,238,0.42);
+    /* GOLD HAIRLINES, NOT WHITE.
+       A white rule against gold numerals reads cool; the whole page sat a
+       shade colder than every other one because of this single value. */
+    --line:rgba(199,168,105,0.16);
+    /* Panels were washed with white at 1.6%, which lifted every one of them
+       off the background and gave the page a grey cast nothing else has.
+       Near-black instead, same as refer and thedrop. */
+    --panel:#0a0a0a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{
+    width:100vw; height:100vh;
+    overflow:hidden;
+    font-family:'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    color:var(--white);
+    background:var(--black);
+  }
+  /* ---------------------------------------------------- transparent mode
+     ?transparent=1 drops ONLY the bottom layer -- the page canvas -- so the
+     scene behind it (the TV prop) shows through. Everything above keeps its
+     own box and its own opacity.
+
+     Both html AND body have to be cleared. The rule above sets the
+     background on both elements; when only body was cleared, <html> carried
+     on painting --black across the whole canvas and the mode did nothing at
+     all. The class is applied to documentElement as well as body -- see
+     where CFG.TRANSPARENT is read.
+
+     Panels then need a real background of their own. Their normal fill is
+     rgba(255,255,255,0.016), a 1.6% white tint that only reads because it
+     sits on solid black; over arbitrary video it is invisible and the
+     panels collapse to bare 1px outlines. */
+  html.transparent, body.transparent{ background:transparent; }
+
+  body.transparent .panel{
+    /* 0.90 rather than something lighter: at 0.72 a bright frame behind the
+       TV tinted the panels and shifted their colour scene-by-scene. This
+       keeps them reading as the same near-black boxes they are in normal
+       mode, while the gaps between them still show the scene through. */
+    background:rgba(5,5,5,0.90);
+    -webkit-backdrop-filter:blur(3px);
+    backdrop-filter:blur(3px);
+  }
+  /* Header sits outside any panel, so its text would otherwise land straight
+     on moving video. A shadow keeps it legible without boxing it in. */
+  body.transparent .top{
+    text-shadow:0 2px 14px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
+  }
+  /* ...but NOT on the wordmark. Its gold is a gradient clipped to the glyphs
+     with color:transparent, and text-shadow paints the glyph silhouette
+     BEHIND the fill -- so with a transparent fill you see the black shadow
+     straight through the letters and the gradient disappears entirely.
+     drop-shadow() is the correct tool here: it acts on the rendered result,
+     so the gold survives and still gets separation from the video. */
+  body.transparent .brand{
+    text-shadow:none;
+    filter:drop-shadow(0 2px 9px rgba(0,0,0,0.9)) drop-shadow(0 0 2px rgba(0,0,0,0.75));
+  }
+
+  /* Everything below is sized with clamp(min, vw-driven, max) rather than
+     fixed pixels. That's what makes this fill any Browser Source dimensions
+     you give it -- a slightly-off-16:9 TV texture reflows cleanly instead of
+     being letterboxed or cropped. The vw scaling factor for each rule is
+     just (design-px / 1920 * 100), same clamp technique index.html already
+     uses for its own type scale. */
+  #stage{
+    width:100vw; height:100vh;
+    padding:clamp(22px,2.3vw,50px) clamp(26px,2.7vw,52px);
+    display:flex;
+    flex-direction:column;
+    gap:clamp(16px,1.6vw,30px);
+  }
+
+  /* ---------------------------------------------------------- header */
+  .top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid var(--line);
+    padding-bottom:clamp(14px,1.3vw,24px);
+    flex:0 0 auto;
+  }
+  .brand{
+    /* An <a> rather than a <div> so the wordmark walks back to the main site.
+       Nothing visual changes: the gradient fill relies on color:transparent
+       below, which already overrides the link colour, and the two resets here
+       strip the only other things an anchor would add. Blockified
+       automatically as a flex item, so the baseline alignment of the ticker
+       beside it is unaffected. */
+    text-decoration:none;
+    cursor:pointer;
+    font-size:clamp(26px,2.4vw,48px);
+    font-weight:700;
+    letter-spacing:0.30em;
+    background:linear-gradient(100deg,var(--gold) 0%,var(--gold-light) 45%,#fff 50%,var(--gold-light) 55%,var(--gold) 100%);
+    background-size:220% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation:shine 6s linear infinite;
+    white-space:nowrap;
+  }
+  @keyframes shine{ to{ background-position:220% center; } }
+  .ticker{
+    font-size:clamp(15px,1.35vw,27px);
+    letter-spacing:0.22em;
+    color:var(--dim);
+    margin-left:clamp(12px,1.3vw,26px);
+    white-space:nowrap;
+  }
+  .live{
+    display:flex;
+    align-items:center;
+    gap:clamp(8px,0.7vw,14px);
+    font-size:clamp(13px,1.1vw,22px);
+    letter-spacing:0.2em;
+    color:var(--dim);
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+  .dot{
+    width:clamp(9px,0.78vw,15px);height:clamp(9px,0.78vw,15px);border-radius:50%;
+    background:#39d98a;
+    box-shadow:0 0 14px #39d98a;
+    animation:pulse 2s ease-in-out infinite;
+  }
+  .dot.stale{ background:#d9a339; box-shadow:0 0 14px #d9a339; }
+  .dot.down{ background:#d95757; box-shadow:0 0 14px #d95757; animation:none; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+  /* ----------------------------------------------------------- body */
+  .cols{
+    flex:1 1 auto;
+    display:grid;
+    grid-template-columns:1.42fr 1fr;
+    gap:clamp(22px,2.3vw,44px);
+    min-height:0;
+  }
+  .col{ display:flex; flex-direction:column; gap:clamp(16px,1.6vw,30px); min-height:0; }
+
+  .panel{
+    border:1px solid var(--line);
+    padding:clamp(16px,1.5vw,28px) clamp(18px,1.7vw,32px);
+    background:var(--panel);
+  }
+  .panel.grow{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
+
+  .label{
+    font-size:clamp(13px,1.0vw,19px);
+    /* 0.2em, matching chart.html. This was the widest tracking on any page
+       and it made the labels read as a different typeface. */
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--dim);
+    margin-bottom:clamp(8px,0.85vw,16px);
+  }
+
+  /* ------------------------------------------------------ stat row */
+  .stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(12px,1.2vw,22px); }
+  .stat .label{
+    margin-bottom:clamp(5px,0.5vw,10px);
+    font-size:clamp(10px,0.88vw,17px);
+    line-height:1.25;
+    /* Reserves 2 lines' worth of height always, whether this particular
+       label actually wraps or not. Without this, "Market Cap" (1 line)
+       and "Circulating Supply" (wraps to 2 at some widths) end up
+       different heights, pushing the value underneath out of alignment
+       with its neighbors -- which is the actual misalignment, not the
+       wrap itself. Using em so it scales with this label's own clamp()'d
+       font-size rather than a fixed px number. */
+    min-height:2.5em;
+    display:flex;
+    align-items:flex-end;
+  }
+  .stat .val{
+    font-size:clamp(26px,2.7vw,52px);
+    font-weight:700;
+    color:var(--gold);
+    line-height:1.05;
+    letter-spacing:0.01em;
+    /* Never wrap. fmtChange() keeps every value inside 9 characters, but a
+       surprise from a live feed shouldn't be able to push the whole row
+       down -- it would rather overflow its box than break the layout. */
+    white-space:nowrap;
+  }
+  .stat .val.pos{ color:#39d98a; }
+  .stat .val.neg{ color:#d95757; }
+  .stat .sub{ font-size:clamp(10px,0.85vw,16px); color:var(--dim); margin-top:clamp(4px,0.42vw,8px); }
+  /* Subscript zero-count in sub-penny prices. Browser default <sub> is too
+     large here and drops the baseline enough to unbalance the tile. */
+  .price-sub{ font-size:0.5em; vertical-align:-0.12em; letter-spacing:0; opacity:0.75; }
+
+  /* -------------------------------------------------- burn schedule */
+  .bignum{
+    font-size:clamp(40px,4.6vw,88px);
+    font-weight:700;
+    color:var(--white);
+    line-height:1;
+    letter-spacing:0.01em;
+  }
+  .bignum .cur{ color:var(--gold); }
+
+  .track{
+    position:relative;
+    height:clamp(12px,1.35vw,26px);
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--line);
+    margin:clamp(14px,1.35vw,26px) 0 0;
+    /* Without this, a short viewport squeezes this toward 0 before it
+       touches any text sibling (label/bignum/tier rows) -- they have a
+       real minimum height from their own line-height, an empty div with
+       just a set `height` doesn't, so flexbox shrinks it first and it can
+       disappear entirely. This pins it to its actual height regardless. */
+    flex-shrink:0;
+  }
+  .fill{
+    position:absolute; left:0; top:0; bottom:0;
+    background:linear-gradient(90deg,var(--gold) 0%,var(--gold-light) 100%);
+    width:0%;
+    transition:width 1.2s cubic-bezier(.22,.61,.36,1);
+    box-shadow:0 0 22px rgba(199,168,105,0.55);
+  }
+
+  /* Tier breakdown table -- replaces a plain 5-tick row with the actual
+     per-tier numbers (threshold, tokens, status), so this panel has real
+     content to show rather than empty space once it's stretched to match
+     the height of the Recent Mints column next to it. */
+  .tiertable{ margin-top:clamp(14px,1.3vw,24px); display:flex; flex-direction:column; gap:clamp(6px,0.6vw,10px); }
+  .trow{
+    display:grid;
+    grid-template-columns:1fr 1.3fr 1.7fr 1.3fr;
+    align-items:center;
+    gap:clamp(6px,0.7vw,14px);
+    padding:clamp(6px,0.65vw,12px) clamp(8px,0.8vw,14px);
+    border:1px solid var(--line);
+    font-size:clamp(11px,0.95vw,18px);
+    letter-spacing:0.06em;
+  }
+  .trow .th{ color:var(--dim); text-transform:uppercase; letter-spacing:0.16em; font-size:clamp(10px,0.8vw,15px); }
+  .trow .tk{ color:var(--dim); }
+  .trow .status{ text-align:right; letter-spacing:0.1em; text-transform:uppercase; }
+  .trow.done{ border-color:rgba(199,168,105,0.4); }
+  .trow.done .tk{ color:var(--gold); }
+  .trow.done .status{ color:var(--gold); }
+  .trow.active{ border-color:var(--gold); background:rgba(199,168,105,0.06); }
+  .trow.active .status{ color:var(--white); }
+  .trow.upcoming .status{ color:var(--dim); }
+
+  .burnline{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-top:clamp(12px,1.25vw,24px); padding-top:clamp(11px,1.15vw,22px); border-top:1px solid var(--line);
+    font-size:clamp(13px,1.15vw,22px); letter-spacing:0.08em;
+    flex-shrink:0; /* this is the "most important" info per this fix -- never squeeze it */
+  }
+  .burnline .k{ color:var(--dim); text-transform:uppercase; font-size:clamp(10px,0.94vw,18px); letter-spacing:0.2em; }
+  .burnline .v{ color:var(--gold); font-weight:700; font-size:clamp(16px,1.56vw,30px); text-transform:uppercase; }
+
+  /* Only shown once the full 5-tier schedule has actually completed
+     (volume >= $50M) -- a short, informative note that the whitepaper's
+     fixed schedule isn't necessarily the last word on burns. */
+  .completenote{
+    margin-top:clamp(10px,1.0vw,18px);
+    padding-top:clamp(10px,1.0vw,18px);
+    border-top:1px solid var(--line);
+    font-size:clamp(10px,0.88vw,17px);
+    line-height:1.5;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    color:var(--dim);
+    display:none;
+  }
+  .completenote.show{ display:block; }
+
+  /* ---------------------------------------------------- mint panel */
+  .mintcount{ display:flex; align-items:baseline; gap:clamp(8px,0.83vw,16px); }
+  .mintcount .n{ font-size:clamp(38px,4.27vw,82px); font-weight:700; color:var(--gold); line-height:1; }
+  .mintcount .of{ font-size:clamp(16px,1.77vw,34px); color:var(--dim); }
+
+  /* -------------------------------------------------- recent mints */
+  .recent{ flex:1 1 auto; overflow:hidden; display:flex; flex-direction:column; gap:clamp(8px,0.73vw,14px); margin-top:clamp(3px,0.3vw,6px); min-height:0; }
+  .rrow{
+    display:flex; align-items:center; gap:clamp(10px,0.94vw,18px);
+    border:1px solid var(--line);
+    padding:clamp(6px,0.52vw,10px) clamp(8px,0.73vw,14px);
+    flex:0 0 auto;
+    animation:rowPushIn .75s cubic-bezier(.22,.61,.36,1) both;
+    transition:transform .5s cubic-bezier(.22,.61,.36,1);
+  }
+  /* New row enters from directly above, sliding down into its slot -- the
+     "push in from the top" the whole list is meant to read as. Slower and
+     with a settling ease-out curve rather than the previous quick, linear
+     "ease", which is what was reading as a bit jittery/abrupt. */
+  @keyframes rowPushIn{ from{ opacity:0; transform:translateY(-32px);} to{ opacity:1; transform:translateY(0);} }
+  .rrow img{ width:clamp(40px,3.2vw,62px); height:clamp(40px,3.2vw,62px); object-fit:cover; background:#111; flex:0 0 auto; }
+  .rrow .nm{ font-size:clamp(15px,1.35vw,26px); font-weight:700; letter-spacing:0.06em; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .rrow .tg{ font-size:clamp(10px,0.78vw,15px); letter-spacing:0.18em; text-transform:uppercase; padding:clamp(3px,0.26vw,5px) clamp(7px,0.57vw,11px); border:1px solid var(--line); color:var(--dim); flex:0 0 auto; }
+  .rrow.gold{ border-color:var(--gold); } .rrow.gold .tg{ border-color:var(--gold); color:var(--gold); }
+  .rrow.silver{ border-color:var(--silver); } .rrow.silver .tg{ border-color:var(--silver); color:var(--silver); }
+  .rrow.pink{ border-color:var(--pink); } .rrow.pink .tg{ border-color:var(--pink); color:var(--pink); }
+  .empty{ font-size:clamp(12px,1.04vw,20px); color:var(--dim); letter-spacing:0.1em; padding:clamp(8px,0.73vw,14px) 2px; }
+
+  /* -------------------------------------------------------- alert */
+  #alert{
+    position:fixed;
+    left:50%; bottom:6.8vh;
+    transform:translateX(-50%) translateY(46px);
+    z-index:5;
+    display:flex; align-items:center; gap:clamp(18px,1.77vw,34px);
+    padding:clamp(16px,1.56vw,30px) clamp(24px,2.4vw,46px) clamp(16px,1.56vw,30px) clamp(16px,1.56vw,30px);
+    border:2px solid var(--gold);
+    background:rgba(5,5,5,0.94);
+    box-shadow:0 0 70px rgba(0,0,0,0.85);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .5s ease, transform .5s cubic-bezier(.22,.61,.36,1);
+    max-width:62vw;
+  }
+  #alert.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  #alert img{ width:clamp(96px,9.9vw,190px); height:clamp(96px,9.9vw,190px); object-fit:cover; background:#111; flex:0 0 auto; }
+  #alert .txt{ display:flex; flex-direction:column; gap:clamp(6px,0.62vw,12px); min-width:0; }
+  #alert .kicker{ font-size:clamp(13px,1.15vw,22px); letter-spacing:0.34em; text-transform:uppercase; color:var(--gold); }
+  #alert .name{ font-size:clamp(34px,3.85vw,74px); font-weight:700; line-height:1; letter-spacing:0.03em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #alert .tier{ font-size:clamp(13px,1.25vw,24px); letter-spacing:0.24em; text-transform:uppercase; color:var(--dim); }
+  #alert.gold{ border-color:var(--gold); } #alert.gold .kicker,#alert.gold .tier{ color:var(--gold); }
+  #alert.silver{ border-color:var(--silver); } #alert.silver .kicker,#alert.silver .tier{ color:var(--silver); }
+  #alert.pink{ border-color:var(--pink); } #alert.pink .kicker,#alert.pink .tier{ color:var(--pink); }
+
+  /* Outline-emanating particles -- the same technique as the main site's
+     lightbox (spawn along the card's real measured perimeter, drift
+     outward, fade), sized down for a popup instead of a full modal. Sits
+     BEHIND the alert card (z-index 4 vs the card's 5), positioned to
+     exactly match its live-measured rect since clamp()-based sizing means
+     that rect isn't a fixed number here. Colored per tier; ordinary pieces
+     (no special tier) get plain white rather than no effect at all. */
+  #alertParticles{
+    position:fixed;
+    z-index:4;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .5s ease;
+  }
+  #alertParticles.show{ opacity:1; }
+  .alert-particle{
+    position:absolute;
+    border-radius:50%;
+    opacity:0;
+    animation-name:alertParticleOutward;
+    animation-timing-function:ease-out;
+    animation-iteration-count:infinite;
+  }
+  @keyframes alertParticleOutward{
+    0%{ opacity:0; transform:translate(-50%,-50%) scale(0.6); }
+    15%{ opacity:1; }
+    70%{ opacity:0.85; }
+    100%{ opacity:0; transform:translate(calc(-50% + var(--tx,0px)), calc(-50% + var(--ty,0px))) scale(1); }
+  }
+  .alert-particle.c-gold{ background:radial-gradient(circle,var(--gold-light) 0%,var(--gold) 55%,transparent 100%); box-shadow:0 0 9px 1px rgba(199,168,105,0.65); }
+  .alert-particle.c-silver{ background:radial-gradient(circle,#eceef2 0%,var(--silver) 55%,transparent 100%); box-shadow:0 0 9px 1px rgba(199,204,212,0.65); }
+  .alert-particle.c-pink{ background:radial-gradient(circle,#ff8fd0 0%,var(--pink) 55%,transparent 100%); box-shadow:0 0 9px 1px rgba(255,63,168,0.65); }
+  .alert-particle.c-white{ background:radial-gradient(circle,#ffffff 0%,var(--white) 55%,transparent 100%); box-shadow:0 0 8px 1px rgba(245,243,238,0.5); }
+
+  /* ------------------------------------------------- milestone popup
+     Fires when a burn tier completes, a market-cap threshold is crossed,
+     or a whole-percent band of total supply is burned. Deliberately large
+     and dead centre: on a stream these are the most consequential things
+     this page can report, and they should interrupt rather than sit
+     politely in a table row.
+
+     Sits above the mint card (z-index 7 vs 5) AND force-hides it, so a
+     milestone is always the only thing on screen. Its own particle layer
+     sits at 6 -- above the page, behind the panel -- so the sparks read as
+     escaping from the popup's edges rather than floating over its face. */
+  #milestonePopup{
+    position:fixed;
+    left:50%; top:50%;
+    transform:translate(-50%,-50%) scale(0.93);
+    z-index:7;
+    width:min(84vw,1400px);
+    padding:clamp(38px,4.1vw,80px) clamp(38px,4.2vw,84px);
+    border:3px solid var(--gold);
+    background:rgba(5,5,5,0.97);
+    box-shadow:0 0 150px rgba(0,0,0,0.94), inset 0 0 110px rgba(199,168,105,0.10);
+    text-align:center;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .55s ease, transform .55s cubic-bezier(.22,.61,.36,1);
+  }
+  #milestonePopup.show{ opacity:1; transform:translate(-50%,-50%) scale(1); }
+  #milestonePopup .tp-kicker{
+    font-size:clamp(15px,1.3vw,25px); letter-spacing:0.38em;
+    text-transform:uppercase; color:var(--dim);
+  }
+  #milestonePopup .tp-title{
+    margin-top:clamp(12px,1.25vw,25px);
+    font-size:clamp(48px,5.6vw,110px); font-weight:700; line-height:1;
+    letter-spacing:0.04em; text-transform:uppercase; color:var(--gold);
+  }
+  #milestonePopup .tp-rule{
+    width:clamp(88px,8.75vw,162px); height:2px; background:var(--gold);
+    opacity:0.5; margin:clamp(25px,2.5vw,47px) auto;
+  }
+  #milestonePopup .tp-amount{
+    font-size:clamp(38px,4.4vw,85px); font-weight:700; line-height:1.05;
+    color:var(--white); letter-spacing:0.02em;
+  }
+  /* Market-cap milestones carry their number in the title, so the amount
+     row is emptied rather than left showing a stale value from the last
+     popup -- hidden entirely so the rule/sub spacing stays even. */
+  #milestonePopup .tp-amount.empty{ display:none; }
+  #milestonePopup .tp-amount .tp-unit{ color:var(--gold); }
+  #milestonePopup .tp-sub{
+    margin-top:clamp(18px,1.9vw,35px);
+    font-size:clamp(16px,1.5vw,29px); line-height:1.55;
+    color:var(--dim); letter-spacing:0.05em;
+  }
+  #milestonePopup .tp-sub b{ color:var(--white); font-weight:400; }
+
+  #milestoneParticles{
+    position:fixed;
+    z-index:6;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .5s ease;
+  }
+  #milestoneParticles.show{ opacity:1; }
+
+  .demoflag{
+    position:fixed; top:1.3vh; left:50%; transform:translateX(-50%);
+    font-size:clamp(11px,1.0vw,16px); letter-spacing:0.3em; text-transform:uppercase;
+    color:#d9a339; border:1px solid #d9a339; padding:clamp(4px,0.4vw,5px) clamp(10px,1.1vw,16px);
+    z-index:9;
+  }
+
+  /* ==================================================================
+     MOBILE / PORTRAIT
+     ------------------------------------------------------------------
+     Everything above is built for a fixed 100vh frame at roughly 16:9 --
+     that is what makes it work as an OBS Browser Source, and none of it
+     changes here. This block only applies below 900px, which no stream
+     canvas ever is, so the desktop and demo layouts are untouched.
+
+     Four things break on a phone and are fixed below:
+       1. the page cannot scroll, so anything past one screen is lost
+       2. four stat columns squeeze the labels into their own values
+       3. .panel.grow stretches to fill 100vh, leaving dead space under
+          short panels
+       4. the demo flag is centred over the header and covers the brand
+     ================================================================== */
+  @media (max-width: 900px){
+
+    /* 1. Let it scroll. The desktop build deliberately locks to one
+          screen; a phone genuinely cannot fit this without scrolling,
+          and a clipped dashboard is worse than a scrolled one. */
+    html, body{ height:auto; min-height:100%; overflow:visible; }
+    body{ width:100%; }
+    #stage{
+      width:100%;
+      height:auto;
+      min-height:100vh;
+      padding:16px 14px 44px;
+      gap:14px;
+    }
+
+    /* Header: wrap rather than collide. */
+    .top{ flex-wrap:wrap; gap:6px 12px; padding-bottom:12px; }
+    .brand{ font-size:22px; letter-spacing:0.2em; }
+    .ticker{ font-size:13px; margin-left:9px; letter-spacing:0.16em; }
+    .live{ font-size:11px; letter-spacing:0.16em; }
+
+    /* 2. Stack the two columns, and let panels be as tall as they need
+          instead of stretching into 100vh. */
+    .cols{ grid-template-columns:1fr; gap:14px; }
+    .col{ gap:14px; }
+    .panel{ padding:14px 15px; }
+    .panel.grow{ flex:0 0 auto; }
+
+    /* 3. Two-up stat grid. Four across a 390px screen is what was pushing
+          the labels into the numbers. */
+    .stats{ grid-template-columns:repeat(2,1fr); gap:14px 12px; }
+    .stat .label{
+      min-height:0;          /* the 2-line reservation is pointless here */
+      font-size:10px;
+      letter-spacing:0.16em;
+      margin-bottom:3px;
+      display:block;
+    }
+    .stat .val{ font-size:clamp(21px,6.6vw,30px); }
+    .stat .sub{ display:none; }
+    /* One exception: the locked-supply note. Hiding it would leave
+       circulating looking like total, with 250M unexplained. */
+    .stat .sub.keep{ display:block; font-size:10px; margin-top:3px; }
+
+    /* Burn schedule */
+    .bignum{ font-size:clamp(32px,10vw,46px); }
+    .label{ font-size:11px; letter-spacing:0.18em; margin-bottom:7px; }
+    .tiertable{ margin-top:12px; gap:5px; }
+    .trow{ padding:7px 9px; font-size:10px; gap:6px; }
+    .burnline{ margin-top:12px; }
+
+    /* The Herd */
+    .mintcount{ font-size:clamp(32px,10vw,46px); }
+
+    /* 4. Recent mints: show the list in full rather than clipping it to a
+          height that no longer exists. fitRecentRows() measures
+          clientHeight, which is now the content height, so it keeps every
+          row instead of trimming. */
+    .recent{ flex:0 0 auto; overflow:visible; min-height:0; gap:8px; }
+    .rrow img{ width:44px; height:44px; }
+    .rrow .nm{ font-size:12px; }
+
+    /* 5. Demo flag off the header. Fixed to the bottom so it stays visible
+          while scrolling without ever covering the brand. */
+    .demoflag{
+      top:auto; bottom:8px;
+      font-size:9px; letter-spacing:0.14em; line-height:1.4;
+      padding:5px 10px; max-width:92vw; text-align:center;
+    }
+
+    /* Desktop-only wording in the completion note -- see paintVolume(). */
+    .desk-only{ display:none; }
+
+    /* Milestone popup: the desktop clamp minimums (48px title) are wider
+       than a phone, so the headline would wrap out of its own box. */
+    #milestonePopup{ width:90vw; padding:22px 18px; border-width:2px; }
+    #milestonePopup .tp-kicker{ font-size:9px; letter-spacing:0.28em; }
+    #milestonePopup .tp-title{ font-size:clamp(21px,6.8vw,32px); margin-top:9px; }
+    #milestonePopup .tp-rule{ width:58px; margin:14px auto; }
+    #milestonePopup .tp-amount{ font-size:clamp(17px,5.2vw,25px); }
+    #milestonePopup .tp-sub{ font-size:clamp(11px,3.1vw,14px); margin-top:11px; letter-spacing:0.03em; }
+
+    /* Mint card: same problem -- a 96px image plus text does not fit 62vw. */
+    #alert{
+      max-width:92vw; bottom:14px;
+      gap:12px; padding:11px 16px 11px 11px;
+    }
+    #alert img{ width:60px; height:60px; }
+    #alert .kicker{ font-size:9px; letter-spacing:0.24em; }
+    #alert .name{ font-size:22px; }
+    #alert .tier{ font-size:10px; letter-spacing:0.16em; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <div class="top">
+    <div style="display:flex;align-items:baseline;min-width:0;">
+      <a class="brand" href="index.html">BULLENCIAGA</a>
+      <div class="ticker" id="tickerLabel">$██████</div>
+    </div>
+    <div class="live"><span class="dot" id="statusDot"></span><span id="statusText">live</span></div>
+  </div>
+
+  <div class="cols">
+
+    <!-- ---------------------------------------------------- LEFT -->
+    <div class="col">
+
+      <div class="panel">
+        <div class="stats">
+          <div class="stat">
+            <div class="label">Price</div>
+            <div class="val" id="sPrice">--</div>
+            <div class="sub keep" id="sMcapSub">&nbsp;</div>
+          </div>
+          <div class="stat">
+            <div class="label">Circulating</div>
+            <div class="val" id="sSupply">--</div>
+            <div class="sub keep" id="sSupplySub">&nbsp;</div>
+          </div>
+          <div class="stat">
+            <div class="label">% Burned</div>
+            <div class="val" id="sBurnedPct">--</div>
+            <div class="sub">&nbsp;</div>
+          </div>
+          <div class="stat">
+            <div class="label">24h Change</div>
+            <div class="val" id="sChange">--</div>
+            <div class="sub">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel grow">
+        <div class="label">Cumulative Volume — Burn Schedule</div>
+        <div class="bignum" id="cumVol">--</div>
+
+        <div class="track"><div class="fill" id="burnFill"></div></div>
+
+        <div class="tiertable" id="tierTable"></div>
+
+        <div class="burnline">
+          <div>
+            <div class="k" id="burnedLabel">Scheduled burns</div>
+            <div class="v" id="burnedSoFar">0</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="k">Next burn at</div>
+            <div class="v" id="nextBurn">$250K</div>
+          </div>
+        </div>
+        <div class="completenote" id="completeNote"></div>
+      </div>
+
+    </div>
+
+    <!-- --------------------------------------------------- RIGHT -->
+    <div class="col">
+
+      <div class="panel">
+        <div class="label">The Herd — Minted</div>
+        <div class="mintcount">
+          <span class="n" id="mintN">0</span>
+          <span class="of">/ 1000</span>
+        </div>
+        <div class="track"><div class="fill" id="mintFill"></div></div>
+        <div class="burnline">
+          <div>
+            <div class="k">Burned via mints</div>
+            <div class="v" id="mintBurned">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel grow">
+        <div class="label">Recent Mints</div>
+        <div class="recent" id="recentList">
+          <div class="empty">waiting for the first mint…</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="alertParticles"></div>
+<div id="alert">
+  <img id="alertImg" alt="">
+  <div class="txt">
+    <div class="kicker" id="alertKicker">Just Minted</div>
+    <div class="name" id="alertName">—</div>
+    <div class="tier" id="alertTier">—</div>
+  </div>
+</div>
+
+<div id="milestoneParticles"></div>
+<div id="milestonePopup" aria-hidden="true">
+  <div class="tp-kicker" id="tpKicker">Burn Schedule</div>
+  <div class="tp-title" id="tpTitle">Tier 1 Complete</div>
+  <div class="tp-rule"></div>
+  <div class="tp-amount" id="tpAmountRow"><span id="tpAmount">12,500,000</span> <span class="tp-unit" id="tpUnit">$██████</span></div>
+  <div class="tp-sub" id="tpSub">will be burned as soon as the <b>48-hour</b> lock window ends</div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // ------------------------------------------------------------- config
+  const qs = new URLSearchParams(location.search);
+
+  // Filled in on launch day if you want it baked in. Leaving it empty is
+  // fine -- see resolveToken() below, which reads it out of index.html.
+  const TOKEN_BAKED = '';
+
+  // A real, currently-trading pump.fun token, used ONLY in ?demo=1 mode so
+  // price/mcap/supply/volume behaviour can be watched live before $BULLEN
+  // exists. Swap for any other live mint if this one goes quiet.
+  const DEMO_COIN_TOKEN = '9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump';
+
+  const CFG = {
+    TOKEN: '',                               // resolved at boot, see resolveToken()
+    COLLECTION: '5GXF7Uug7mZy2pj5XDk4LP9yH7oA5oMQEbCT49ggQnVC',
+    RPC_URL: 'https://solana-rpc.publicnode.com',       // same public RPC index.html uses for getTokenSupply
+    RPC_PROXY: 'https://rpc-proxy.bullenciaga-e5c.workers.dev', // Helius DAS calls only (NFT side)
+    IMG_PROXY: 'https://bullenciaga-img-proxy.bullenciaga-e5c.workers.dev',
+    MANIFEST: 'gallery-manifest.json',
+    SITE: 'index.html',
+    DEMO: qs.get('demo') === '1',
+    // Mint detection wants to feel live; volume genuinely crawls, so it gets
+    // a far slower cadence. Keeps the API cost sane over a long stream.
+    POLL_MINTS_MS: 15000,
+    POLL_STATS_MS: 30000,
+    POLL_VOLUME_MS: 30000,
+    ALERT_MS: 7000,          // how long a popup stays up
+    ALERT_GAP_MS: 900,       // breather between queued popups
+    RECENT_MAX_CAP: 12,      // hard ceiling on how much history is kept in memory
+    RECENT_MOBILE_MAX: 6,    // how many are actually shown on a phone
+  };
+
+  if (qs.get('transparent') === '1'){
+    // documentElement as well as body: the base rule backgrounds both, and
+    // <html> is what actually paints the page canvas.
+    document.documentElement.classList.add('transparent');
+    document.body.classList.add('transparent');
+  }
+
+  // Where the $BULLEN mint address comes from, in priority order:
+  //   1. ?token=<mint> on the OBS source URL   -- explicit override
+  //   2. TOKEN_BAKED above                     -- if you'd rather hardcode it
+  //   3. read straight out of index.html       -- the default
+  //
+  // Option 3 is why this file must be deployed alongside the site: it pulls
+  // CONFIG.TOKEN_ADDRESS from index.html, so the site stays the single
+  // source of truth. Update index.html on launch day and this widget picks
+  // the address up on its next load -- no editing it, no OBS URL to change.
+  async function resolveToken(){
+    const fromUrl = qs.get('token');
+    if (fromUrl) return { addr: fromUrl, via: 'url param' };
+    if (TOKEN_BAKED) return { addr: TOKEN_BAKED, via: 'baked in' };
+    try{
+      const res = await fetch(CFG.SITE, { cache: 'no-store' });
+      const html = await res.text();
+      const m = html.match(/TOKEN_ADDRESS:\s*["']([1-9A-HJ-NP-Za-km-z]{32,44})["']/);
+      if (m) return { addr: m[1], via: 'index.html' };
+      return { addr: '', via: 'index.html (not set yet)' };
+    }catch(e){
+      return { addr: '', via: 'unavailable' };
+    }
+  }
+
+  const BURN_THRESHOLDS = [250000, 1000000, 5000000, 20000000, 50000000];
+  const BURN_TIER_TOKENS = [12500000, 25000000, 37500000, 62500000, 112500000];
+  const TIER_LABELS = ['$250K','$1M','$5M','$20M','$50M'];
+  const BURN_PER_MINT = 250000;
+  // Whitepaper §3 (Token Overview). Used only for the "% Supply Burned"
+  // stat, computed against actual TOTAL supply -- see fetchSupply(). Not
+  // circulating: locked tokens still exist, and counting them as burned
+  // would overstate the figure by the full locked allocation. Counts EVERY
+  // burn source together (dev schedule,
+  // NFT mint burns, and pump.fun's BOOST buyback-and-burn at graduation),
+  // without needing this widget to individually track or attribute any of
+  // them. If circulating supply drops, this reflects it, whatever caused it.
+  const TOTAL_SUPPLY = 1000000000;
+
+  const SPECIAL_NAMES = {
+    relic: ['GOLDEN RELIC', 'MARBLE RELIC'],
+    grail: ['BLACK MENACE', 'SUPER CYAN', 'OPAL KING'],
+    legendary: ['444', '555', '666', '777', '888'],
+  };
+  // Two assets lost to the OZ address-poisoning incident. Excluded
+  // everywhere on the site, so they're excluded here too.
+  const COMPROMISED = new Set([
+    'EKqhtAKQFWzgkpQm6zNRxib3anUpZbtoZmnpWvkPSXaq',
+    'EDjR8XZshTmYdDR1GsoC1ZRHF7ys8xZQ9ZHvZ9ztA7oY',
+  ]);
+  // The founder/custom pieces. Hardcoded rather than inferred purely from
+  // the manifest -- if gallery-manifest.json fails to load, the widget must
+  // not fall back to counting every visible asset (that's exactly these 15,
+  // and produces a wrong-but-plausible mint count).
+  const FOUNDER_NAMES = new Set([
+    'GHOST','BAMF','PPF','COWTIPPER','WEEMZ','LUKE','ERIC','SUIT','KONG',
+    'BULLENCIAGA','BULLEN','OZMAN','HUFF','ST33L','PADJO','ZOOT','PHANTOM',
+    'CREDIBULL','RICO','BULL OF BLAVIKEN','ANDRE',
+  ]);
+
+  // Deploy marker. This page has no visible version tag on purpose -- it
+  // runs as a stream overlay and nothing should be able to appear on a
+  // broadcast. Instead the build is logged to the console on boot, sits in
+  // an HTML comment near the top of the file, and is appended to the demo
+  // banner. Between those three there is always a way to confirm which copy
+  // is actually live without ever putting a pixel on screen.
+  const BUILD = '2026-08-16.2 supply line removed';
+
+  const $ = id => document.getElementById(id);
+
+  // The stat box fits 9 characters including the arrow -- a six-digit
+  // percentage is 10 and wraps, shoving the whole row down. Percent reads
+  // naturally while the numbers are small, so it holds until 5,000% and then
+  // switches to multiples, which stay compact however far the token runs.
+  //
+  // Negatives always stay in percent: a drawdown expressed as a multiple
+  // reads as nonsense.
+  function fmtChange(pct){
+    const a = Math.abs(pct);
+    if (pct < 0 || a < 1000) return pct.toFixed(1) + '%';           // -12.4% / 645.0%
+    if (a < 5000) return Math.round(pct).toLocaleString() + '%';    // 1,000% / 4,999%
+    // Past ~50x, a multiple is both shorter and how the move actually gets
+    // described. +100% is 2x, so the conversion is pct/100 + 1.
+    const x = pct / 100 + 1;
+    if (x < 100)     return x.toFixed(1) + 'x';                     // 51.0x / 99.9x
+    if (x < 10000)   return Math.round(x).toLocaleString() + 'x';   // 100x / 9,999x
+    if (x < 1000000) return (x/1000).toFixed(1) + 'Kx';             // 102.5Kx
+    return (x/1000000).toFixed(2) + 'Mx';                           // 1.20Mx
+  }
+
+  // ------------------------------------------------------------ helpers
+  // Subscript notation for sub-penny prices: $0.0(4)6506 means $0.00006506,
+  // the small number being the count of zeros after the decimal. Same
+  // convention the DEX aggregators use. Returns HTML -- callers must use
+  // innerHTML, not textContent.
+  const fmtPriceSub = n => {
+    if (n === null || n === undefined || !isFinite(n)) return '--';
+    if (n >= 0.001) return '$' + n.toFixed(6).replace(/0+$/,'').replace(/\.$/,'');
+    // toFixed rather than String(): small numbers stringify to exponent
+    // notation and the digits can't be read off it.
+    const frac = n.toFixed(20).split('.')[1] || '';
+    const m = frac.match(/^(0*)([1-9]\d*)/);
+    if (!m) return '--';
+    const zeros = m[1].length;
+    if (zeros < 4) return '$' + n.toFixed(8).replace(/0+$/,'').replace(/\.$/,'');
+    // Three significant digits, not four. At this scale the fourth digit
+    // changes on almost every tick and adds nothing a reader can use -- it
+    // just makes the tile wider and harder to compare against the one next
+    // to it. Rounded rather than truncated so the last digit is honest.
+    const sig = Number('0.' + m[2]);
+    let digits = String(Math.round(sig * 1000)).padStart(3, '0');
+    if (digits.length > 3) {           // rounded up past the boundary, e.g. .999 -> 1000
+      return '$.0<sub class="price-sub">' + (zeros - 1) + '</sub>1';
+    }
+    digits = digits.replace(/0+$/, '') || '0';
+    // Leading integer zero dropped -- it carries no information and this
+    // number sits next to a nine-figure supply figure that needs the width.
+    // The "0.0(n)" convention itself is kept: it's what the aggregators use,
+    // so the zero count reads the same way people already expect.
+    return '$.0<sub class="price-sub">' + zeros + '</sub>' + digits;
+  };
+
+  const fmtUsd = n => {
+    if (typeof n !== 'number' || !isFinite(n)) return '--';
+    if (n >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
+    if (n >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
+    if (n >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
+    return '$' + n.toFixed(2);
+  };
+  const fmtInt = n => (typeof n === 'number' && isFinite(n)) ? n.toLocaleString('en-US') : '--';
+  // Mirrors the site's own formatSupply() exactly, so the number here never
+  // reads differently to the number on bullenciaga.com.
+  const fmtSupply = n => {
+    if (n === null || n === undefined || isNaN(n)) return '--';
+    if (n >= 1e9) return (n/1e9).toFixed(3) + 'B';
+    if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+    return n.toLocaleString();
+  };
+  const proxied = url => url ? `${CFG.IMG_PROXY}/?url=${encodeURIComponent(url)}` : '';
+
+  // Loads an image with bounded retries. Previously each <img> got a single
+  // onerror that swapped the proxy URL for the direct one -- so ONE transient
+  // Irys/proxy failure left that tile permanently broken until the page was
+  // reloaded, which on an OBS overlay running for hours means it never
+  // recovers. Alternates proxy/direct on a short backoff instead.
+  // DAS INDEXES THE ASSET BEFORE IT FETCHES THE METADATA.
+  //
+  // For a minute or two after a mint, Helius has the on-chain record -- which
+  // is why the NAME is right -- but not the off-chain JSON, so links.image and
+  // files are both empty and the newest rows rendered with no src at all. The
+  // older rows were fine, which is what made this look like a proxy problem.
+  //
+  // json_uri is on-chain and available immediately, so read the image out of
+  // the metadata directly. Cached by uri: the same piece is re-rendered on
+  // every poll and this must not refetch each time.
+  const jsonImageCache = new Map();
+  async function resolveImage(piece){
+    if (!piece) return '';
+    if (piece.image) return piece.image;
+    const uri = piece.json_uri;
+    if (!uri) return '';
+    if (jsonImageCache.has(uri)) return jsonImageCache.get(uri);
+    const attempt = async (u) => {
+      const r = await fetch(u, { cache: 'no-store' });
+      if (!r.ok) throw new Error(String(r.status));
+      const j = await r.json();
+      return (j && (j.image
+        || (j.properties && j.properties.files && j.properties.files[0] && j.properties.files[0].uri))) || '';
+    };
+    let found = '';
+    try { found = await attempt(proxied(uri)); }
+    catch (e) { try { found = await attempt(uri); } catch (e2) { found = ''; } }
+    // Cached even when empty, so a piece whose metadata is genuinely missing
+    // does not get retried on every single poll.
+    jsonImageCache.set(uri, found);
+    return found;
+  }
+
+  // Sets the picture, resolving it from json_uri first when DAS has not caught
+  // up yet. Fire and forget: the row is already in the DOM.
+  function setPieceImage(img, piece){
+    if (!img) return;
+    if (piece && piece.image) { loadImageWithRetry(img, piece.image); return; }
+    resolveImage(piece).then(url => { if (url) loadImageWithRetry(img, url); });
+  }
+
+  function loadImageWithRetry(img, url, maxAttempts = 4){
+    if (!img) return;
+    if (!url) { img.removeAttribute('src'); return; }
+    let attempt = 0;
+    const tryNext = () => {
+      attempt++;
+      if (attempt > maxAttempts) return;         // give up quietly
+      // Even attempts go direct, odd through the proxy, so a failure of
+      // either path alone still resolves.
+      img.src = (attempt % 2 === 1) ? proxied(url) : url;
+    };
+    img.onerror = () => { setTimeout(tryNext, 400 * attempt); };
+    img.onload = () => { img.onerror = null; };
+    tryNext();
+  }
+
+  function matchesSpecial(name, tier){
+    const n = String(name || '').toUpperCase();
+    return SPECIAL_NAMES[tier].some(s => n.includes(s));
+  }
+  function isPublicPiece(name){
+    if (FOUNDER_NAMES.has(name)) return false;
+    if (manifestNames.size) return manifestNames.has(name);
+    return true;
+  }
+  // Same colour logic the site's lightbox uses: gold for Relic/Grail,
+  // silver for Legendary, pink for anything outside the manifest. Ordinary
+  // public pieces get key '' -- still shown (white particles), just no
+  // special border colour.
+  function tierOf(name){
+    if (matchesSpecial(name,'relic')) return { key:'gold', label:'Relic' };
+    if (matchesSpecial(name,'grail')) return { key:'gold', label:'Grail' };
+    if (matchesSpecial(name,'legendary')) return { key:'silver', label:'Legendary' };
+    if (!isPublicPiece(name)) return { key:'pink', label:'Founder Piece' };
+    return { key:'', label:'The Herd' };
+  }
+
+  let manifestNames = new Set();
+  let lastOkMints = 0;
+
+  function setStatus(){
+    const dot = $('statusDot'), txt = $('statusText');
+    if (CFG.DEMO) { dot.className = 'dot stale'; txt.textContent = 'demo'; return; }
+    const now = Date.now();
+    const mintAge = lastOkMints ? now - lastOkMints : Infinity;
+    if (mintAge < CFG.POLL_MINTS_MS * 3) { dot.className = 'dot'; txt.textContent = 'live'; }
+    else if (mintAge < CFG.POLL_MINTS_MS * 10) { dot.className = 'dot stale'; txt.textContent = 'reconnecting'; }
+    else { dot.className = 'dot down'; txt.textContent = 'offline'; }
+  }
+
+  // -------------------------------------------------- burn schedule UI
+  function schedulePct(volume){
+    if (typeof volume !== 'number' || volume <= 0) return 0;
+    let prev = 0;
+    for (let i=0;i<BURN_THRESHOLDS.length;i++){
+      const t = BURN_THRESHOLDS[i];
+      if (volume < t) return ((i + (volume-prev)/(t-prev)) / BURN_THRESHOLDS.length) * 100;
+      prev = t;
+    }
+    return 100;
+  }
+  function burnedTokens(volume){
+    let sum = 0;
+    for (let i=0;i<BURN_THRESHOLDS.length;i++) if (volume >= BURN_THRESHOLDS[i]) sum += BURN_TIER_TOKENS[i];
+    return sum;
+  }
+  function nextThreshold(volume){
+    for (let i=0;i<BURN_THRESHOLDS.length;i++) if (volume < BURN_THRESHOLDS[i]) return TIER_LABELS[i];
+    return 'complete';
+  }
+
+  // Real per-tier breakdown -- exact token amounts from the whitepaper's
+  // burn schedule, plus a live status per row. Gives this panel genuine
+  // content instead of a handful of small ticks.
+  // Returns true only when the rendered content actually changed.
+  //
+  // This used to rebuild innerHTML on every call. paintVolume() calls it on
+  // every repaint and the demo repaints ten times a second -- roughly 2,200
+  // full rebuilds per run, each throwing away and recreating five rows. That
+  // churn is heavy enough on a phone to get the tab reclaimed and reloaded by
+  // iOS. Live polling is far slower so it never showed there, but the waste
+  // was identical.
+  let lastTierSig = null;
+  function renderTierTable(volume){
+    const wrap = $('tierTable');
+    let prev = 0;
+    const rows = BURN_THRESHOLDS.map((t,i)=>{
+      const done = volume >= t;
+      const active = !done && volume >= prev;
+      let status;
+      if (done) status = '\u2713 done';
+      else if (active) status = Math.floor(((volume-prev)/(t-prev))*100) + '% there';
+      else status = 'upcoming';
+      const rowClass = done ? 'done' : (active ? 'active' : 'upcoming');
+      prev = t;
+      return { i, rowClass, status };
+    });
+
+    const sig = rows.map(r => r.rowClass + '\u0001' + r.status).join('|');
+    if (sig === lastTierSig) return false;
+    lastTierSig = sig;
+
+    wrap.innerHTML = rows.map(r => `<div class="trow ${r.rowClass}">
+        <div class="th">Tier ${r.i+1}</div>
+        <div class="tk">${TIER_LABELS[r.i]}</div>
+        <div class="tk">${BURN_TIER_TOKENS[r.i].toLocaleString()}</div>
+        <div class="status">${r.status}</div>
+      </div>`).join('');
+    return true;
+  }
+
+
+  // A short viewport can leave less room than all 5 tier rows + the burn
+  // line beneath them need -- previously that meant the rows just spilled
+  // out past the panel's own box. This is a public link, so rather than let
+  // that happen, collapse down to the single row that actually matters when
+  // space runs out: whichever tier is currently in progress (or the last
+  // tier, if the whole schedule has already completed), keeping "burned so
+  // far" / "next burn at" underneath always visible regardless.
+  //
+  // Always re-expands to all 5 first before measuring -- otherwise, once
+  // collapsed, a later resize back to a taller window would have nothing to
+  // compare against and could never un-collapse.
+  function fitTierTable(){
+    const wrap = $('tierTable');
+    const rows = Array.from(wrap.querySelectorAll('.trow'));
+    if (!rows.length) return;
+    rows.forEach(r => { r.style.display = ''; });
+
+    const panel = wrap.closest('.panel.grow');
+    if (!panel) return;
+
+    if (panel.scrollHeight <= panel.clientHeight + 1) return; // fits -- stay expanded
+
+    const keepRow = rows.find(r => r.classList.contains('active')) || rows[rows.length - 1];
+    rows.forEach(r => { r.style.display = (r === keepRow) ? '' : 'none'; });
+  }
+
+  let lastCompleteState = null;
+  function paintVolume(volume){
+    $('cumVol').innerHTML = `<span class="cur">${fmtUsd(volume)}</span>`;
+    $('burnFill').style.width = schedulePct(volume).toFixed(2) + '%';
+    // fitTierTable() reads scrollHeight/clientHeight, which forces a layout.
+    // Only worth paying for when the table's height could actually have
+    // changed -- otherwise the demo triggers two reflows per tick, twenty a
+    // second, for a table that looks identical.
+    const tableChanged = renderTierTable(volume);
+    // Counted as "N of 5" until any have fired. A bare 0 sat directly beneath
+    // a "% Burned" figure in the double digits and read as a contradiction --
+    // these are different burns entirely: that one counts every mint, this one
+    // counts only the volume-triggered schedule. Showing the denominator makes
+    // the zero read as progress through a schedule rather than as nothing
+    // having been burned at all.
+    const firedTiers = BURN_THRESHOLDS.filter(t => volume >= t).length;
+    const burnedNow = burnedTokens(volume);
+    $('burnedSoFar').textContent = burnedNow > 0
+      ? fmtInt(burnedNow)
+      : `0 of ${BURN_THRESHOLDS.length}`;
+    $('nextBurn').textContent = nextThreshold(volume);
+
+    const complete = volume >= BURN_THRESHOLDS[BURN_THRESHOLDS.length - 1];
+    $('burnedLabel').textContent = complete
+      ? 'Total scheduled burns'
+      : (burnedNow > 0 ? `Scheduled burns \u00b7 ${firedTiers} of ${BURN_THRESHOLDS.length}` : 'Scheduled burns');
+    const note = $('completeNote');
+    if (complete){
+      // A fixed <br> here rather than plain text -- this panel's width
+      // scales with viewport size, so leaving the wrap point to natural
+      // reflow means it could break the sentence anywhere depending on how
+      // wide the source happens to be. Forcing it after "schedule" keeps
+      // the second line reliably starting at "may still happen" everywhere.
+      // "whitepaper" and the forced break are both desktop-only: on a phone
+      // the line wraps before them anyway, which stranded "schedule" alone on
+      // its own line. Hidden via CSS rather than branching on width in JS, so
+      // it stays correct if the device rotates.
+      note.innerHTML = 'Additional buybacks and burns beyond this ' +
+        '<span class="desk-only">whitepaper </span>schedule' +
+        '<br class="desk-only">may still happen at any point in the token\u2019s lifecycle.';
+      note.classList.add('show');
+    } else {
+      note.classList.remove('show');
+    }
+    // The note appearing/disappearing changes this panel's required height,
+    // so re-fit on that too -- but still only when something moved.
+    if (tableChanged || complete !== lastCompleteState){
+      lastCompleteState = complete;
+      fitTierTable();
+    }
+  }
+
+  // ---------------------------------------------------------- fetching
+  // Ticker label: pulls the token's REAL symbol from DexScreener rather
+  // than assuming it says BULLEN. Shows a reasonable placeholder the
+  // moment the address resolves, then corrects itself once the first
+  // stats fetch lands (normally instant).
+  async function fetchStats(){
+    const addr = CFG.DEMO ? DEMO_COIN_TOKEN : CFG.TOKEN;
+    if (!addr) return;
+    try{
+      const res = await fetch(`https://api.dexscreener.com/tokens/v1/solana/${addr}`);
+      const arr = await res.json();
+      const p = Array.isArray(arr) ? arr[0] : null;
+      if (!p) return;
+      // Kept so the supply fetch can recompute mcap when it lands after this.
+      window.__LAST_PAIR__ = p;
+
+      // In demo mode, the ticker stays sealed like the real pre-launch site
+      // -- this demo coin's real symbol is never shown, since the whole
+      // point of demo mode here is a spoofed screenshot, not "here's a
+      // random other token's name."
+      if (!CFG.DEMO && p.baseToken && p.baseToken.symbol) $('tickerLabel').textContent = '$' + p.baseToken.symbol;
+
+      // Market cap is computed HERE from our own circulating supply, not
+      // taken from the feed.
+      //
+      // Every data source divides by a different supply: some still use the
+      // 1,000,000,000 launch figure, some use total supply. Both count the
+      // 250,000,000 locked allocation as tradeable. Showing their mcap next
+      // to our circulating figure put two irreconcilable numbers in the same
+      // panel -- the exact confusion this dashboard exists to remove.
+      //
+      // FDV goes in the sub line rather than being hidden: it is the larger
+      // number most people are anchored to, and concealing it would look
+      // like the number was chosen rather than calculated. Both are shown,
+      // both are labelled, the arithmetic is visible.
+      // PRICE LEADS. It is the only figure every source agrees on -- market
+      // cap depends entirely on which supply number a site divides by, and
+      // five sites gave five different answers on the same second. Cap and
+      // FDV are still shown, just demoted to the line underneath where they
+      // read as context rather than as the headline.
+      const price = Number(p.priceUsd);
+      if (isFinite(price) && price > 0) {
+        $('sPrice').innerHTML = fmtPriceSub(price);
+      }
+
+      let mcapVal = null;
+      const sub = $('sMcapSub');
+      if (isFinite(price) && price > 0 && window.__CIRCULATING__ > 0) {
+        mcapVal = price * window.__CIRCULATING__;
+        const fdv = (window.__TOTAL_SUPPLY__ > 0) ? price * window.__TOTAL_SUPPLY__ : null;
+        if (sub) {
+          sub.textContent = fdv
+            ? ('mcap ' + fmtUsd(mcapVal) + '  \u00b7  FDV ' + fmtUsd(fdv))
+            : ('mcap ' + fmtUsd(mcapVal));
+        }
+      } else {
+        // Supply not read yet (fetchSupply resolves independently). Fall back
+        // to the feed so the line is never blank, and say where it came from.
+        mcapVal = p.marketCap || p.fdv;
+        if (sub) sub.textContent = 'mcap ' + fmtUsd(mcapVal) + ' (market data)';
+      }
+      checkMcapMilestone(mcapVal);
+
+      const ch = p.priceChange && p.priceChange.h24;
+      const el = $('sChange');
+      if (CFG.DEMO){
+        // Spoofed for the promo screenshot only -- never runs in live mode.
+        el.textContent = '▲ 645.0%';
+        el.classList.remove('neg');
+        el.classList.add('pos');
+      } else if (typeof ch === 'number'){
+        el.textContent = (ch>=0?'▲ ':'▼ ') + fmtChange(Math.abs(ch));
+        el.classList.remove('pos','neg');
+        el.classList.add(ch>=0 ? 'pos' : 'neg');
+      } else {
+        el.textContent = '--';
+      }
+    }catch(e){ /* transient -- next tick retries */ }
+  }
+
+  // Circulating supply: the EXACT same call index.html makes (raw Solana
+  // getTokenSupply against the public RPC), not a third-party indexer. This
+  // reads the mint account directly, so it reflects a burn the moment it
+  // lands on-chain, from either the dev burn schedule or NFT mint burns.
+  // Recomputes the market cap tile from the cached price and our own
+  // circulating supply. Called when supply lands after price.
+  function refreshMcapFromLastPair(){
+    const p = window.__LAST_PAIR__;
+    if (!p) return;
+    const price = Number(p.priceUsd);
+    if (!isFinite(price) || price <= 0 || !(window.__CIRCULATING__ > 0)) return;
+    const mcapVal = price * window.__CIRCULATING__;
+    $('sPrice').innerHTML = fmtPriceSub(price);
+    const fdv = (window.__TOTAL_SUPPLY__ > 0) ? price * window.__TOTAL_SUPPLY__ : null;
+    const sub = $('sMcapSub');
+    if (sub) {
+      sub.textContent = fdv
+        ? ('mcap ' + fmtUsd(mcapVal) + '  \u00b7  FDV ' + fmtUsd(fdv))
+        : ('mcap ' + fmtUsd(mcapVal));
+    }
+    checkMcapMilestone(mcapVal);
+  }
+
+  async function fetchSupply(){
+    const addr = CFG.DEMO ? DEMO_COIN_TOKEN : CFG.TOKEN;
+    if (!addr) return;
+
+    if (CFG.DEMO){
+      // Spoofed for a promo screenshot only -- shows what Circulating
+      // Supply and % Supply Burned WOULD read if the entire dev burn
+      // schedule (250M) AND all 1,000 NFT mints (250M more) had already
+      // happened, regardless of this demo token's real on-chain supply.
+      // Derived from the same constants the real math uses elsewhere, not
+      // a separate hardcoded number, so it can't quietly drift out of sync.
+      const hypotheticalRemaining = TOTAL_SUPPLY - BURN_TIER_TOKENS.reduce((a,b)=>a+b,0) - (1000 * BURN_PER_MINT);
+      $('sSupply').textContent = fmtSupply(hypotheticalRemaining);
+      const pctBurned = ((TOTAL_SUPPLY - hypotheticalRemaining) / TOTAL_SUPPLY) * 100;
+      $('sBurnedPct').textContent = pctBurned.toFixed(2) + '%';
+      return;
+    }
+
+    try{
+      // PRIMARY: the site's own /supply endpoint. It reads the mint AND the
+      // locked escrow token account and does the subtraction server-side,
+      // so this tile, the /supply/* endpoints aggregators poll, and the
+      // figures submitted to CoinMarketCap can never disagree. Previously
+      // this tile showed raw getTokenSupply under a "Circulating" label,
+      // which overstated it by the full 250,000,000 locked allocation.
+      //
+      // % Burned is deliberately still computed from TOTAL supply, not
+      // circulating -- burned means destroyed, and locked tokens are not
+      // destroyed. Mixing the two would inflate the burn figure by 25%.
+      const supRes = await fetch(window.location.origin + '/supply', { cache:'no-store' });
+      if (supRes.ok){
+        const sup = await supRes.json();
+        const circ  = Number(sup.circulatingSupply);
+        const total = Number(sup.totalSupply);
+        const locked = Number(sup.nonCirculating);
+        if (isFinite(circ) && isFinite(total)){
+          // Published for the market cap calculation. The supply fetch and
+          // the price fetch race, so whichever lands second triggers the
+          // recompute via refreshMcapFromLastPair().
+          window.__CIRCULATING__ = circ;
+          window.__TOTAL_SUPPLY__ = total;
+          refreshMcapFromLastPair();
+          $('sSupply').textContent = fmtSupply(circ);
+          const subEl = $('sSupplySub');
+          if (subEl) {
+            subEl.textContent = (locked > 0)
+              ? fmtSupply(locked) + ' locked, excluded'
+              : '\u00a0';
+          }
+          const pctBurned = Math.max(0, Math.min(100, ((TOTAL_SUPPLY - total) / TOTAL_SUPPLY) * 100));
+          checkBurnMilestone(pctBurned);
+          $('sBurnedPct').textContent = pctBurned.toFixed(2) + '%';
+          return;
+        }
+      }
+      // FALLBACK: /supply returns 503 rather than a guess when it cannot read
+      // the chain, and the locked account address changes on every relock. If
+      // it is unavailable, show raw total rather than nothing -- but say so,
+      // so the number is never silently mislabelled as circulating.
+      const res = await fetch(CFG.RPC_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ jsonrpc:'2.0', id:1, method:'getTokenSupply', params:[addr] })
+      });
+      const json = await res.json();
+      if (json.error) throw new Error(json.error.message);
+      const supply = json.result.value.uiAmount;
+      $('sSupply').textContent = fmtSupply(supply);
+      const subFallback = $('sSupplySub');
+      if (subFallback) subFallback.textContent = 'total supply \u2014 lock data unavailable';
+
+      if (typeof supply === 'number' && isFinite(supply)){
+        const pctBurned = Math.max(0, Math.min(100, ((TOTAL_SUPPLY - supply) / TOTAL_SUPPLY) * 100));
+        checkBurnMilestone(pctBurned);
+        $('sBurnedPct').textContent = pctBurned.toFixed(2) + '%';
+      }
+    }catch(e){ /* transient */ }
+  }
+
+  // Cumulative volume: sum the volume column of every candle since launch.
+  //
+  // WHY THIS GOES THROUGH THE WORKER RATHER THAN api.geckoterminal.com.
+  // Calling GeckoTerminal from the browser worked until it didn't: the two
+  // requests still succeed from curl, but from a page on bullenciaga.com the
+  // response arrives without permissive CORS headers, so fetch() throws. The
+  // old catch swallowed it and the panel sat at $0.00 with nothing logged --
+  // a successful-looking zero rather than a visible failure.
+  //
+  // /ohlcv?tf=all is same-origin, already served from KV, and already refreshed
+  // by cron, so this costs no upstream call at all. Its preset is 4-hour
+  // candles x 500, which is ~83 days -- comfortably the whole history.
+  //
+  // The old pool-discovery step is gone too. It asked for every pool holding
+  // $BULLEN and summed whichever had the highest 24h volume, so a newer pool
+  // overtaking PumpSwap for a day would have silently swapped the entire
+  // cumulative figure onto a pool with no history. The pool address is a
+  // constant; treating it as one removes a whole class of failure.
+  function sumCandleVolume(candles){
+    return (candles || []).reduce((s, c) => s + (Number(c[5]) || 0), 0);
+  }
+
+  async function fetchVolume(){
+    // Path 1: the worker's dedicated volume endpoint, refreshed every 60s.
+    try{
+      const r = await fetch(window.location.origin + '/volume', { cache: 'no-store' });
+      if (r.ok){
+        const j = await r.json();
+        if (j && j.ok && isFinite(j.total) && j.total > 0){
+          paintVolume(j.total);
+          checkTierCompletion(j.total);
+          return;
+        }
+      }
+    }catch(e){ /* fall through */ }
+
+    // Path 2: the chart series, for the window between a worker deploy and
+    // its first cron tick.
+    try{
+      const r = await fetch(window.location.origin + '/ohlcv?tf=all', { cache: 'no-store' });
+      if (r.ok){
+        const j = await r.json();
+        if (j && j.ok && Array.isArray(j.candles) && j.candles.length){
+          const total = sumCandleVolume(j.candles);
+          paintVolume(total);
+          checkTierCompletion(total);
+          return;
+        }
+      }
+    }catch(e){ /* fall through */ }
+
+    // Path 3: straight to GeckoTerminal, using the known pool. Kept because a
+    // worker outage should degrade rather than blank the panel -- and it will
+    // work anywhere CORS is not being withheld.
+    const paddr = '9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ';
+    try{
+      const cr = await fetch(`https://api.geckoterminal.com/api/v2/networks/solana/pools/${paddr}/ohlcv/day?aggregate=1&limit=1000&currency=usd`);
+      if (!cr.ok) return;
+      const cj = await cr.json();
+      const candles = (cj && cj.data && cj.data.attributes && cj.data.attributes.ohlcv_list) || [];
+      if (!candles.length) return;   // never paint a zero we did not measure
+      const total = sumCandleVolume(candles);
+      paintVolume(total);
+      checkTierCompletion(total);
+    }catch(e){ console.warn('cumulative volume unavailable:', e); }
+  }
+
+  // Wrapped SOL on DexScreener -- same API the rest of this file already
+  // uses, so no extra dependency. Only the demo needs it, to price the
+  // bonding curve's launch market cap in USD.
+  async function fetchSolPrice(){
+    try{
+      const r = await fetch('https://api.dexscreener.com/tokens/v1/solana/So11111111111111111111111111111111111111112');
+      const arr = await r.json();
+      const pair = Array.isArray(arr) ? arr[0] : null;
+      const px = pair && parseFloat(pair.priceUsd);
+      return (px && isFinite(px)) ? px : null;
+    }catch(e){ return null; }
+  }
+
+  async function fetchAssets(){
+    const out = [];
+    let page = 1;
+    while (page <= 5){
+      const res = await fetch(CFG.RPC_PROXY, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          jsonrpc:'2.0', id:'obs-assets', method:'getAssetsByGroup',
+          params:{ groupKey:'collection', groupValue:CFG.COLLECTION, page, limit:1000 }
+        })
+      });
+      const data = await res.json();
+      const items = (data && data.result && data.result.items) || [];
+      items.forEach(it=>{
+        if (it.burnt) return;
+        if (it.id && COMPROMISED.has(it.id)) return;
+        const name = it.content && it.content.metadata && it.content.metadata.name;
+        if (!name) return;
+        const image = (it.content && it.content.links && it.content.links.image)
+                   || (it.content && it.content.files && it.content.files[0] && it.content.files[0].uri);
+        // json_uri is on-chain and present the instant a piece mints; the
+        // resolved links above are not. Carried so a fresh mint can still
+        // find its picture -- see resolveImage().
+        const json_uri = it.content && it.content.json_uri;
+        out.push({ id: it.id, name, image, json_uri });
+      });
+      if (items.length < 1000) break;
+      page++;
+    }
+    return out;
+  }
+
+  // ------------------------------------------------- outline particles
+  // Same technique as the main site's lightbox: measure the alert card's
+  // REAL rendered rect (it's fluid-sized now, not a fixed number), spawn
+  // small particles along its perimeter, and drift each one outward, away
+  // from whichever edge it started on. Colour: gold/silver/pink for a
+  // special tier, plain white for an ordinary piece -- every popup gets the
+  // effect, not just the special ones.
+  function spawnAlertParticles(colorKey){
+    const holder = $('alertParticles');
+    holder.innerHTML = '';
+    holder.classList.remove('show');
+
+    const rect = $('alert').getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    const perimeter = 2 * (w + h);
+    holder.style.left = rect.left + 'px';
+    holder.style.top = rect.top + 'px';
+    holder.style.width = w + 'px';
+    holder.style.height = h + 'px';
+
+    const cls = 'c-' + (colorKey || 'white');
+    let html = '';
+    for (let i=0;i<26;i++){
+      let d = Math.random() * perimeter;
+      let x,y,nx,ny;
+      if (d < w) { x=d; y=0; nx=0; ny=-1; }
+      else if (d < w+h) { d-=w; x=w; y=d; nx=1; ny=0; }
+      else if (d < 2*w+h) { d-=(w+h); x=w-d; y=h; nx=0; ny=1; }
+      else { d-=(2*w+h); x=0; y=h-d; nx=-1; ny=0; }
+      const travel = 28 + Math.random()*50;
+      const jitter = Math.random()*22 - 11;
+      const tx = (nx*travel + -ny*jitter).toFixed(1);
+      const ty = (ny*travel + nx*jitter).toFixed(1);
+      const delay = (Math.random()*2.2).toFixed(2);
+      const duration = (2.6 + Math.random()*2.2).toFixed(2);
+      const size = ((3 + Math.random()*4)).toFixed(1);
+      html += `<span class="alert-particle ${cls}" style="left:${x.toFixed(1)}px; top:${y.toFixed(1)}px; width:${size}px; height:${size}px; animation-delay:${delay}s; animation-duration:${duration}s; --tx:${tx}px; --ty:${ty}px;"></span>`;
+    }
+    holder.innerHTML = html;
+    void holder.offsetWidth;
+    holder.classList.add('show');
+  }
+  function clearAlertParticles(){ fadeOutParticles($('alertParticles')); }
+
+  // Hiding the layer is not enough: .alert-particle animations are infinite,
+  // so the nodes keep animating forever behind an invisible container. Over a
+  // long session that is dozens of elements burning CPU for nothing, and on a
+  // phone it contributes to iOS reclaiming the tab. Empty it once the fade
+  // has finished -- and re-check `show` first, in case a new burst started
+  // during the wait.
+  function fadeOutParticles(holder){
+    if (!holder) return;
+    holder.classList.remove('show');
+    setTimeout(()=>{
+      if (!holder.classList.contains('show')) holder.innerHTML = '';
+    }, 700);
+  }
+
+  // ----------------------------------------------------- milestones
+  // Three independent families of milestone, one shared popup. Each keeps
+  // its own baseline, and each baseline stays null until the first REAL
+  // reading lands -- that is the whole trick. Without it, every page load
+  // (and this runs as an OBS source that gets reloaded constantly) would
+  // replay every milestone the token had ever passed.
+  //
+  // Deliberately NOT driven from the paint* functions: boot() calls
+  // paintVolume(0) before any data exists, which would baseline at zero
+  // and then fire the entire back catalogue on the first real fetch.
+  // Same duration in demo and live, deliberately: the demo is only useful
+  // as a preview if a milestone looks and lasts exactly the way it will on
+  // stream. Long enough to read the number and the sub-line without
+  // rushing, short enough that it isn't sitting on top of the stats.
+  const MILESTONE_MS     = 8500;
+  const MILESTONE_GAP_MS = 700;
+
+  // Lock windows are the whitepaper's: 24h cycles for tiers 1-2, 48h for
+  // 3-5. Stated per tier so the popup can't promise a window the document
+  // doesn't.
+  const TIER_LOCK_HOURS = [24, 24, 48, 48, 48];
+
+  const MCAP_MILESTONES = [
+    [100000,'$100K'], [200000,'$200K'], [300000,'$300K'], [400000,'$400K'],
+    [500000,'$500K'], [750000,'$750K'], [1000000,'$1M'],  [2500000,'$2.5M'],
+    [5000000,'$5M'],  [10000000,'$10M'],[25000000,'$25M'],[50000000,'$50M'],
+    [100000000,'$100M'],
+  ];
+  const BURN_MILESTONES = [10, 20, 30, 40, 50];   // percent of total supply
+
+  const msQueue = [];
+  let msShowing = false;
+  let tierBase = null, mcapBase = null, burnBase = null;
+
+  function countPassed(value, list, pick){
+    let n = 0;
+    for (let i=0;i<list.length;i++) if (value >= pick(list[i])) n = i+1;
+    return n;
+  }
+
+  // Each checker fires only on an INCREASE past its previous high-water
+  // mark, so a market cap that pumps and retraces never re-announces a
+  // level it already passed.
+  function checkTierCompletion(volume){
+    const n = countPassed(volume, BURN_THRESHOLDS, x=>x);
+    if (tierBase === null){ tierBase = n; return; }
+    for (let t = tierBase + 1; t <= n; t++){
+      pushMilestone({
+        kicker: 'Burn Schedule',
+        title:  'Tier ' + t + ' Complete',
+        amount: BURN_TIER_TOKENS[t-1].toLocaleString(),
+        sub:    'will be burned as soon as the <b>' + TIER_LOCK_HOURS[t-1] + '-hour</b> lock window ends',
+      });
+    }
+    if (n > tierBase) tierBase = n;
+  }
+
+  function checkMcapMilestone(mcap){
+    if (typeof mcap !== 'number' || !isFinite(mcap)) return;
+    const n = countPassed(mcap, MCAP_MILESTONES, x=>x[0]);
+    if (mcapBase === null){ mcapBase = n; return; }
+    for (let i = mcapBase; i < n; i++){
+      const nextUp = MCAP_MILESTONES[i+1];
+      pushMilestone({
+        kicker: 'Milestone Reached',
+        title:  MCAP_MILESTONES[i][1] + ' Market Cap',
+        amount: null,                                   // number already in the title
+        sub:    nextUp ? 'next milestone \u2014 <b>' + nextUp[1] + '</b>'
+                       : 'every milestone on the board, cleared',
+      });
+    }
+    if (n > mcapBase) mcapBase = n;
+  }
+
+  function checkBurnMilestone(pctBurned){
+    if (typeof pctBurned !== 'number' || !isFinite(pctBurned)) return;
+    const n = countPassed(pctBurned, BURN_MILESTONES, x=>x);
+    if (burnBase === null){ burnBase = n; return; }
+    for (let i = burnBase; i < n; i++){
+      const pct = BURN_MILESTONES[i];
+      pushMilestone({
+        kicker: 'Supply Burned',
+        title:  pct + '% Burned Forever',
+        amount: ((TOTAL_SUPPLY * pct) / 100).toLocaleString(),
+        sub:    'permanently removed from circulation',
+      });
+    }
+    if (n > burnBase) burnBase = n;
+  }
+
+  function pushMilestone(m){
+    msQueue.push(m);
+    if (!msShowing) nextMilestone();
+  }
+
+  function nextMilestone(){
+    if (!msQueue.length){
+      msShowing = false;
+      // Mint cards were held back while this ran -- let them resume.
+      if (!showing) next();
+      return;
+    }
+    msShowing = true;
+    const m = msQueue.shift();
+
+    // A milestone is the centrepiece: clear any mint card off the screen
+    // first so the two are never up together.
+    forceHideAlert();
+
+    const box = $('milestonePopup');
+    $('tpKicker').textContent = m.kicker;
+    $('tpTitle').textContent  = m.title;
+    const amountRow = $('tpAmountRow');
+    if (m.amount){
+      amountRow.classList.remove('empty');
+      $('tpAmount').textContent = m.amount;
+      $('tpUnit').textContent   = $('tickerLabel').textContent || '$\u2588\u2588\u2588\u2588\u2588\u2588';
+    } else {
+      amountRow.classList.add('empty');
+    }
+    $('tpSub').innerHTML = m.sub;
+
+    // Particles have to be measured against the popup's FINAL rect -- it
+    // scales from 0.93 to 1 over 0.55s, so measuring immediately would
+    // spawn them along a smaller box and leave a visible gap at the edges.
+    // transitionend on transform is the real signal; the timeout is a
+    // safety net in case it doesn't fire.
+    let spawned = false;
+    const spawnOnce = () => {
+      if (spawned) return;
+      spawned = true;
+      box.removeEventListener('transitionend', onSettled);
+      spawnMilestoneParticles();
+    };
+    const onSettled = (e) => { if (e.propertyName === 'transform') spawnOnce(); };
+    box.addEventListener('transitionend', onSettled);
+    setTimeout(spawnOnce, 700);
+
+    // Forced reflow rather than requestAnimationFrame. rAF is SUSPENDED
+    // whenever the page isn't being rendered -- background tab, minimised
+    // window, or an OBS browser source that isn't the active scene --
+    // while setTimeout keeps running. That let the hide timer fire first,
+    // removing a class that hadn't been added yet, and the stale rAF then
+    // added .show once rendering resumed, with no timer left to ever
+    // remove it. The card stayed on screen forever. Reading offsetWidth
+    // flushes pending style synchronously, so the transition still plays
+    // and the show/hide order can no longer invert.
+    void box.offsetWidth;
+    box.classList.add('show');
+    setTimeout(()=>{
+      box.classList.remove('show');
+      fadeOutParticles($('milestoneParticles'));
+      setTimeout(nextMilestone, MILESTONE_GAP_MS);
+    }, MILESTONE_MS);
+  }
+
+  // Same perimeter-spawn treatment as the mint card, in gold, scaled up
+  // for the larger box.
+  function spawnMilestoneParticles(){
+    const holder = $('milestoneParticles');
+    holder.innerHTML = '';
+    holder.classList.remove('show');
+
+    const rect = $('milestonePopup').getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    const perimeter = 2 * (w + h);
+    holder.style.left   = rect.left + 'px';
+    holder.style.top    = rect.top + 'px';
+    holder.style.width  = w + 'px';
+    holder.style.height = h + 'px';
+
+    let html = '';
+    for (let i=0;i<46;i++){
+      let d = Math.random() * perimeter;
+      let x,y,nx,ny;
+      if (d < w) { x=d; y=0; nx=0; ny=-1; }
+      else if (d < w+h) { d-=w; x=w; y=d; nx=1; ny=0; }
+      else if (d < 2*w+h) { d-=(w+h); x=w-d; y=h; nx=0; ny=1; }
+      else { d-=(2*w+h); x=0; y=h-d; nx=-1; ny=0; }
+      const travel = 34 + Math.random()*62;
+      const jitter = Math.random()*26 - 13;
+      const tx = (nx*travel + -ny*jitter).toFixed(1);
+      const ty = (ny*travel + nx*jitter).toFixed(1);
+      const delay = (Math.random()*2.2).toFixed(2);
+      const duration = (2.6 + Math.random()*2.2).toFixed(2);
+      const size = ((3.5 + Math.random()*4.5)).toFixed(1);
+      html += `<span class="alert-particle c-gold" style="left:${x.toFixed(1)}px; top:${y.toFixed(1)}px; width:${size}px; height:${size}px; animation-delay:${delay}s; animation-duration:${duration}s; --tx:${tx}px; --ty:${ty}px;"></span>`;
+    }
+    holder.innerHTML = html;
+    void holder.offsetWidth;
+    holder.classList.add('show');
+  }
+
+  // ------------------------------------------------------ alert queue
+  const queue = [];
+  let showing = false;
+
+  // TWO timers, and both must be cancellable. alertTimer dismisses the card
+  // currently on screen; deferTimer is the retry that waits out a milestone.
+  // An earlier version only tracked the first, which let a second retry
+  // chain start whenever forceHideAlert() cleared `showing` while a retry
+  // was still pending -- two chains then raced, each shifting a different
+  // piece into the same card, which is exactly the flicker of names and
+  // images before it settled on one.
+  let alertTimer = null;
+  let deferTimer = null;
+
+  function clearAlertTimers(){
+    if (alertTimer){ clearTimeout(alertTimer); alertTimer = null; }
+    if (deferTimer){ clearTimeout(deferTimer); deferTimer = null; }
+  }
+
+  // Cards are worth showing while they're news. Under a genuine mint rush a
+  // single poll can return dozens at once, and without a cap the queue turns
+  // into a several-minute backlog announcing mints that happened long ago --
+  // with the counter above already showing the real total. Keep the newest
+  // few and drop the rest; the recent-mints list still lists every one.
+  const MAX_ALERT_QUEUE = 3;
+
+  function enqueue(piece){
+    queue.push(piece);
+    if (queue.length > MAX_ALERT_QUEUE) queue.splice(0, queue.length - MAX_ALERT_QUEUE);
+    // Never start a chain while a milestone owns the screen -- next() would
+    // only defer anyway, and starting one here is what allowed duplicates.
+    if (!showing && !msShowing) next();
+  }
+
+  // Pulled off screen the instant a milestone fires. Uses the card's own
+  // fade/slide transition rather than snapping it away, so it reads as a
+  // deliberate hand-off rather than a glitch.
+  function forceHideAlert(){
+    clearAlertTimers();
+    $('alert').classList.remove('show');
+    clearAlertParticles();
+    showing = false;
+  }
+
+  function next(){
+    // Any pending timer is superseded by this call. Guarantees exactly one
+    // live chain no matter how the function was reached.
+    clearAlertTimers();
+    if (!queue.length){ showing = false; return; }
+    // A milestone outranks a mint. Hold -- showing stays true so nothing
+    // else starts a parallel run -- and retry once the popup clears.
+    if (msShowing){ showing = true; deferTimer = setTimeout(next, 600); return; }
+    showing = true;
+    const piece = queue.shift();
+    const t = tierOf(piece.name);
+    const box = $('alert');
+    box.className = t.key ? t.key : '';
+    $('alertName').textContent = piece.name;
+    $('alertTier').textContent = t.label;
+    $('alertKicker').textContent = t.key ? 'Rare Piece Minted' : 'Just Minted';
+    const img = $('alertImg');
+    setPieceImage(img, piece);
+
+    // Particles need the card's REAL final position -- it slides up ~46px
+    // over the 0.5s transition below. Measuring on the next frame (as this
+    // used to) catches it near its starting point, so top-edge particles
+    // ended up landing where the card would END UP rather than above it --
+    // which is why they were barely visible there. transitionend fires when
+    // the slide genuinely finishes; the timeout is just a safety net in
+    // case the event doesn't fire for some reason.
+    let particlesSpawned = false;
+    const spawnOnce = () => {
+      if (particlesSpawned) return;
+      particlesSpawned = true;
+      box.removeEventListener('transitionend', onCardSettled);
+      spawnAlertParticles(t.key);
+    };
+    const onCardSettled = (e) => { if (e.propertyName === 'transform') spawnOnce(); };
+    box.addEventListener('transitionend', onCardSettled);
+    setTimeout(spawnOnce, 650);
+
+    // Forced reflow rather than requestAnimationFrame. rAF is SUSPENDED
+    // whenever the page isn't being rendered -- background tab, minimised
+    // window, or an OBS browser source that isn't the active scene --
+    // while setTimeout keeps running. That let the hide timer fire first,
+    // removing a class that hadn't been added yet, and the stale rAF then
+    // added .show once rendering resumed, with no timer left to ever
+    // remove it. The card stayed on screen forever. Reading offsetWidth
+    // flushes pending style synchronously, so the transition still plays
+    // and the show/hide order can no longer invert.
+    void box.offsetWidth;
+    box.classList.add('show');
+    alertTimer = setTimeout(()=>{
+      alertTimer = null;
+      box.classList.remove('show');
+      clearAlertParticles();
+      // Tracked too: a milestone firing inside this short gap would
+      // otherwise leave an uncancellable call able to race the next one.
+      deferTimer = setTimeout(next, CFG.ALERT_GAP_MS);
+    }, CFG.ALERT_MS);
+  }
+
+  // Watchdog. This page runs unattended for days in an OBS source, so a
+  // popup that somehow survives its own hide timer would sit on the stream
+  // until someone noticed. Nothing should reach this -- the show/hide
+  // inversion that used to cause it is fixed above -- but a stuck card is
+  // visible to every viewer, and the recovery costs one interval.
+  //
+  // Only fires when a card is on screen with NO hide timer pending, which
+  // is the exact signature of the stuck state and never happens in normal
+  // operation, where alertTimer or deferTimer is always set.
+  setInterval(() => {
+    const box = $('alert');
+    if (box && box.classList.contains('show') && !alertTimer && !deferTimer) {
+      box.classList.remove('show');
+      clearAlertParticles();
+      showing = false;
+      if (queue.length) deferTimer = setTimeout(next, CFG.ALERT_GAP_MS);
+    }
+    const ms = $('milestonePopup');
+    if (ms && ms.classList.contains('show') && !msShowing) {
+      ms.classList.remove('show');
+      fadeOutParticles($('milestoneParticles'));
+    }
+  }, 5000);
+
+  // -------------------------------------------------- recent mints UI
+  // The DOM itself is the source of truth for order/history now (up to
+  // RECENT_MAX_CAP rows kept, oldest trimmed off the end) -- see the note in
+  // pushRecent() on why this changed from a full re-render.
+  function buildRecentRow(piece){
+    const t = tierOf(piece.name);
+    const row = document.createElement('div');
+    row.className = 'rrow ' + (t.key || '');
+    const img = document.createElement('img');
+    setPieceImage(img, piece);
+    const nm = document.createElement('div'); nm.className='nm'; nm.textContent = piece.name;
+    const tg = document.createElement('div'); tg.className='tg'; tg.textContent = t.label;
+    row.append(img, nm, tg);
+    return row;
+  }
+
+  // Only ever creates ONE new element (the incoming piece) and inserts it at
+  // the top. Everything else already in the list is left completely alone --
+  // untouched DOM nodes don't replay a CSS animation, so existing rows just
+  // sit still while the new one slides in. The previous version rebuilt
+  // every row from scratch on every mint, which meant every visible row
+  // replayed its entrance animation at once -- the "flash" this replaced.
+  //
+  // What was still jittery after that fix: inserting a new row above
+  // existing ones is a normal DOM/layout change, so the browser instantly
+  // SNAPS every row below down by one row-height -- there's no animation on
+  // that at all unless something explicitly adds one. The FLIP trick below
+  // is that animation: immediately after insertion, every existing row is
+  // told (via an un-transitioned inline transform) "you're still at your
+  // OLD position", forced to actually render that for one frame, then let
+  // go -- so the transition on .rrow's own `transform` property animates it
+  // smoothly down to where it really belongs, in step with the new row's
+  // own entrance above it.
+  function pushRecent(piece){
+    const list = $('recentList');
+    const emptyEl = list.querySelector('.empty');
+    if (emptyEl) emptyEl.remove();
+
+    const existingRows = Array.from(list.querySelectorAll('.rrow'));
+
+    const newRow = buildRecentRow(piece);
+    list.insertBefore(newRow, list.firstChild);
+
+    if (existingRows.length){
+      const style = getComputedStyle(list);
+      const gap = parseFloat(style.rowGap || style.gap || '0') || 0;
+      const offset = newRow.getBoundingClientRect().height + gap;
+
+      existingRows.forEach(r=>{
+        r.style.transition = 'none';
+        r.style.transform = `translateY(-${offset}px)`;
+      });
+      // Force the browser to actually paint the "still at the old spot"
+      // state above before releasing it -- without this it can coalesce
+      // both style writes into one and skip the animation entirely.
+      void list.offsetHeight;
+      requestAnimationFrame(()=>{
+        existingRows.forEach(r=>{
+          r.style.transition = '';
+          r.style.transform = '';
+        });
+      });
+    }
+
+    const rows = list.querySelectorAll('.rrow');
+    if (rows.length > CFG.RECENT_MAX_CAP){
+      for (let i = CFG.RECENT_MAX_CAP; i < rows.length; i++) rows[i].remove();
+    }
+    fitRecentRows();
+  }
+
+  // Trims which rows are VISIBLE to however many whole rows the panel can
+  // show without clipping -- rows beyond that are hidden, not removed, so
+  // growing the window/source just reveals more of what's already there.
+  function fitRecentRows(){
+    const list = $('recentList');
+    const rows = Array.from(list.querySelectorAll('.rrow'));
+    if (!rows.length) return;
+    const style = getComputedStyle(list);
+    const gap = parseFloat(style.rowGap || style.gap || '0') || 0;
+    const rowH = rows[0].getBoundingClientRect().height;
+    const available = list.clientHeight;
+    let count = Math.max(1, Math.floor((available + gap) / (rowH + gap)));
+    count = Math.min(count, rows.length);
+    // On desktop this list lives in a height-constrained panel, so the fit
+    // above is the whole answer. On mobile the panel sizes to its content
+    // instead, which means "available" grows with every row added and the fit
+    // always returns all of them -- the column just keeps getting longer.
+    // Cap it there. Re-evaluated on resize, so rotating gets it right too.
+    if (window.matchMedia('(max-width: 900px)').matches){
+      count = Math.min(count, CFG.RECENT_MOBILE_MAX);
+    }
+    rows.forEach((r,i)=>{ r.style.display = i < count ? '' : 'none'; });
+  }
+
+  // ONE COUNT, FROM THE WORKER.
+  //
+  // This used to count the asset list fetched above, and index.html counted
+  // its own copy, and the bot counted a third in the worker -- three
+  // paginations that could and did disagree. The dashboard read 500 while
+  // Telegram read 501.
+  //
+  // Only the worker's copy refuses a count lower than the last one, so a
+  // short page from DAS could make this page render an undercount with
+  // nothing to catch it. /supply/minted serves that stored, guarded number
+  // and derives the burn figure from the same count, so the two can never
+  // come from different reads.
+  //
+  // The local tally stays as a fallback: if the endpoint is unreachable, a
+  // slightly stale number beats an empty panel.
+  function renderMintNumbers(count){
+    $('mintN').textContent = fmtInt(count);
+    $('mintFill').style.width = Math.min(100, count/10) + '%';
+    $('mintBurned').textContent = fmtInt(count * BURN_PER_MINT);
+  }
+
+  async function paintMintProgress(assets){
+    // THE ENDPOINT FIRST, THE LOCAL TALLY ONLY IF IT FAILS.
+    //
+    // Painting the local count first and correcting it afterwards made the
+    // number visibly jump on every load -- 500 for a moment, then 501 --
+    // because the browser's own pagination lags the worker's stored count.
+    // That reads as a bug even though both numbers were doing their job.
+    //
+    // The endpoint is the authority, so it goes first. The local tally is a
+    // fallback for when it cannot be reached, not a placeholder to be
+    // overwritten a moment later.
+    try {
+      const r = await fetch('/supply/minted', { cache: 'no-store' });
+      if (r.ok) {
+        const j = await r.json();
+        if (typeof j.minted === 'number') { renderMintNumbers(j.minted); return; }
+      }
+    } catch (e) {
+      console.warn('minted endpoint unreachable, using local count:', e);
+    }
+    renderMintNumbers(assets.filter(a => isPublicPiece(a.name)).length);
+  }
+
+  // The count was only read when the asset list was rebuilt, so a tab left
+  // open showed whatever it said on load. This keeps it current.
+  setInterval(() => {
+    fetch('/supply/minted', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : null)
+      .then(j => { if (j && typeof j.minted === 'number') renderMintNumbers(j.minted); })
+      .catch(() => {});
+  }, 60000);
+
+  // How many past mints to backfill the recent list with on a cold load.
+  const RECENT_SEED_COUNT = 12;
+
+  // Most-recently-created assets, newest first. getAssetsByGroup accepts a
+  // sortBy option, so the chain itself does the ordering -- the plain
+  // fetchAssets() pass above returns pages in DAS's default order, which is
+  // NOT creation order and can't be relied on to find "the latest mints".
+  async function fetchRecentAssets(limit){
+    const res = await fetch(CFG.RPC_PROXY, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        jsonrpc:'2.0', id:'obs-recent', method:'getAssetsByGroup',
+        params:{
+          groupKey:'collection', groupValue:CFG.COLLECTION,
+          page:1, limit,
+          sortBy:{ sortBy:'created', sortDirection:'desc' }
+        }
+      })
+    });
+    const data = await res.json();
+    const items = (data && data.result && data.result.items) || [];
+    const out = [];
+    items.forEach(it=>{
+      if (it.burnt) return;
+      if (it.id && COMPROMISED.has(it.id)) return;
+      const name = it.content && it.content.metadata && it.content.metadata.name;
+      if (!name) return;
+      const image = (it.content && it.content.links && it.content.links.image)
+                 || (it.content && it.content.files && it.content.files[0] && it.content.files[0].uri);
+      const json_uri = it.content && it.content.json_uri;
+      out.push({ id: it.id, name, image, json_uri });
+    });
+    return out;
+  }
+
+  // ------------------------------------------------------- mint watch
+  let known = null;   // null until the first successful fetch establishes a baseline
+
+  async function pollMints(){
+    if (CFG.DEMO) return;
+    try{
+      const assets = await fetchAssets();
+      lastOkMints = Date.now();
+      // Not awaited: the endpoint call inside must not hold up the rest of
+      // the render, and the local count paints synchronously first anyway.
+      paintMintProgress(assets).catch(() => {});
+
+      if (known === null){
+        // First run: seed the KNOWN set silently, so the widget doesn't fire
+        // a popup/alert for every piece that already existed the moment OBS
+        // started. But an empty "waiting for the first mint..." panel on a
+        // collection that already has hundreds of mints looks broken, so
+        // backfill the list itself with the most recent pieces -- rows only,
+        // no enqueue(), so nothing pops.
+        known = new Set(assets.map(a=>a.id));
+        try {
+          const seed = await fetchRecentAssets(RECENT_SEED_COUNT);
+          // pushRecent() inserts at the top, so walk oldest -> newest to end
+          // up with newest first, matching live arrival order.
+          seed.slice().reverse().forEach(a => pushRecent(a));
+        } catch (e) { /* leave the empty state rather than breaking the poll */ }
+        return;
+      }
+      const fresh = assets.filter(a => !known.has(a.id));
+      fresh.forEach(a=>{ known.add(a.id); enqueue(a); pushRecent(a); });
+    }catch(e){ /* transient */ }
+    finally{ setStatus(); }
+  }
+
+  // ------------------------------------------------------------- demo
+  // Runs the entire schedule end to end in about two minutes: volume
+  // climbing through all five thresholds, mints ticking 0 -> 1,000, and
+  // supply / % burned falling out of both -- so the tier popups, the burn
+  // bar, the tier table and the counters can all be watched actually
+  // working instead of waiting on real trading.
+  //
+  // Every figure is derived from the same constants the live path uses, so
+  // the arithmetic on screen is the real arithmetic. It finishes parked on
+  // the fully-complete state, which is also the frame worth screenshotting
+  // -- so this replaces the old static spoof rather than losing it.
+  // 23 milestones (5 tiers + 13 market cap + 5 burn bands) at 8.5s each is
+  // roughly 210s of popup time on its own, so the run is paced to match.
+  // Popups queue rather than overlap, so during the busy early stretch one
+  // can trail its trigger by ~20s -- the numbers keep moving underneath and
+  // the queue always catches up. That is the cost of showing every single
+  // milestone in one pass; a real launch would space these over days.
+  const DEMO_DURATION_MS = 220000;
+
+  // Volume keyframes, picked so each tier gets roughly equal screen time.
+  // A linear ramp would clear tiers 1-3 inside the first fifteen seconds
+  // and then crawl toward $50M, which is the opposite of watchable.
+  const DEMO_VOL_KEYS = [
+    [0.00,        0],
+    [0.15,   250000],   // tier 1
+    [0.32,  1000000],   // tier 2
+    [0.50,  5000000],   // tier 3
+    [0.70, 20000000],   // tier 4
+    [0.90, 50000000],   // tier 5 -- last ~12s sits on the completed state
+    [1.00, 58000000],
+  ];
+  function demoVolume(p){
+    for (let i=1;i<DEMO_VOL_KEYS.length;i++){
+      const [p1,v1] = DEMO_VOL_KEYS[i];
+      if (p <= p1){
+        const [p0,v0] = DEMO_VOL_KEYS[i-1];
+        return v0 + (v1 - v0) * ((p - p0) / (p1 - p0));
+      }
+    }
+    return DEMO_VOL_KEYS[DEMO_VOL_KEYS.length-1][1];
+  }
+
+  // Every number the demo shows is derived from these three, so nothing on
+  // screen can drift out of step with anything else.
+  //
+  // Market cap is scaled off cumulative volume purely so the run clears the
+  // whole milestone board including $100M; circulating supply is the real
+  // formula the live path uses; price falls out of the two.
+  // pump.fun opens every bonding curve with the same virtual reserves: 30
+  // SOL against 1,073,000,000 virtual tokens. Price is one divided by the
+  // other, so a 1,000,000,000-supply token's market cap the instant it
+  // exists -- before a single buy -- is 30 * (1e9 / 1.073e9) SOL, about
+  // 27.96 SOL. Priced in USD off the live SOL price rather than hardcoded,
+  // so the run starts wherever a real launch would start today.
+  const PUMP_LAUNCH_MCAP_SOL = 30 * (1000000000 / 1073000000);
+  let demoLaunchMcap = PUMP_LAUNCH_MCAP_SOL * 77;   // placeholder until SOL resolves
+
+  function demoMcap(p){ return demoLaunchMcap + demoVolume(p) * 1.9; }
+  function demoCirculating(p){
+    return TOTAL_SUPPLY
+         - burnedTokens(demoVolume(p))          // dev schedule burns
+         - Math.floor(p * 1000) * BURN_PER_MINT; // NFT mint burns
+  }
+  function demoPrice(p){ return demoMcap(p) / demoCirculating(p); }
+
+  // 24h change, measured rather than invented. The whole run is treated as
+  // happening inside a single 24-hour window, so the figure is the genuine
+  // ratio between price now and the launch price at the top of the run.
+  //
+  // That makes it cumulative rather than a rolling rate, which is the point:
+  // a rolling window falls whenever growth decelerates, even while price is
+  // still climbing, so it read as the token cooling off. Measured from the
+  // start it only ever rises -- market cap climbs and supply falls, so price
+  // is monotonic and so is this.
+  function demoChangePct(p){
+    return (demoPrice(p) / demoPrice(0) - 1) * 100;
+  }
+
+  async function runDemo(){
+    const flag = document.createElement('div');
+    flag.className = 'demoflag';
+    flag.textContent = 'demo mode \u2014 simulated run: every milestone, full burn schedule + 1,000 mints  \u00b7  build ' + BUILD;
+    document.body.appendChild(flag);
+
+    // Sealed, matching the real pre-launch site.
+    $('tickerLabel').textContent = '$\u2588\u2588\u2588\u2588\u2588\u2588';
+
+    // Anchor the run's opening market cap to what a bare pump.fun launch
+    // would actually be worth right now. Falls back to the placeholder if
+    // the price can't be reached -- the run is still valid, just anchored
+    // to a stale SOL price.
+    const solUsd = await fetchSolPrice();
+    if (solUsd){
+      demoLaunchMcap = PUMP_LAUNCH_MCAP_SOL * solUsd;
+      console.log('[obs][demo] SOL $' + solUsd.toFixed(2) +
+                  ' -> launch cap $' + demoLaunchMcap.toFixed(0) +
+                  ' (' + PUMP_LAUNCH_MCAP_SOL.toFixed(2) + ' SOL)');
+    }
+
+    let pool = [];
+    try{ pool = await fetchAssets(); }catch(e){}
+    if (!pool.length){
+      pool = ['444','555','GOLDEN RELIC','OPAL KING','BLACK MENACE','#127','#894','OZMAN']
+        .map((n,i)=>({ id:'demo'+i, name:n, image:'' }));
+    }
+
+    const t0 = Date.now();
+    const tick = () => {
+      const p = Math.min(1, (Date.now() - t0) / DEMO_DURATION_MS);
+
+      const volume      = demoVolume(p);
+      const minted      = Math.floor(p * 1000);
+      const mintBurned  = minted * BURN_PER_MINT;
+      const circulating = demoCirculating(p);
+      const mcap        = demoMcap(p);
+      const change      = demoChangePct(p);
+
+      // Demo derives price from its own mcap curve and circulating figure so
+      // the two stay consistent with each other on screen.
+      const demoPrice = (circulating > 0) ? (mcap / circulating) : 0;
+      $('sPrice').innerHTML = fmtPriceSub(demoPrice);
+      const mcapSubDemo = $('sMcapSub');
+      if (mcapSubDemo) mcapSubDemo.textContent = 'mcap ' + fmtUsd(mcap);
+      const el = $('sChange');
+      el.textContent = '\u25b2 ' + fmtChange(change);
+      el.classList.remove('neg'); el.classList.add('pos');
+
+      $('sSupply').textContent = fmtSupply(circulating);
+      $('sBurnedPct').textContent =
+        (((TOTAL_SUPPLY - circulating) / TOTAL_SUPPLY) * 100).toFixed(2) + '%';
+
+      $('mintN').textContent      = fmtInt(minted);
+      $('mintFill').style.width   = (minted / 10) + '%';
+      $('mintBurned').textContent = fmtInt(mintBurned);
+
+      paintVolume(volume);
+      // Same three checkers the live path uses -- first call of each
+      // baselines at zero, everything after that fires for real.
+      checkTierCompletion(volume);
+      checkMcapMilestone(mcap);
+      checkBurnMilestone(((TOTAL_SUPPLY - circulating) / TOTAL_SUPPLY) * 100);
+
+      if (p < 1) setTimeout(tick, 100);
+    };
+    tick();
+
+    // Recent-mints list keeps flowing throughout. enqueue() defers itself
+    // while a tier popup is up, so the card never fights the popup -- but
+    // the list underneath carries on regardless, which is the intent.
+    // Deliberately NOT one alert per simulated mint: 1,000 cards would be
+    // unwatchable, and the counter above already tells that story.
+    setTimeout(()=>{
+      const mintTick = () => {
+        const piece = pool[Math.floor(Math.random()*pool.length)];
+        pushRecent(piece);
+        enqueue(piece);
+        setTimeout(mintTick, 6000);
+      };
+      mintTick();
+    }, 2000);
+  }
+
+  // ------------------------------------------------------------- boot
+  async function boot(){
+    console.log('[obs] stats.html build ' + BUILD);
+    if (!CFG.DEMO){
+      const tok = await resolveToken();
+      CFG.TOKEN = tok.addr;
+      if (CFG.TOKEN){
+        $('tickerLabel').textContent = '$BULLEN'; // placeholder until the real symbol loads
+        console.log('[obs] token address resolved via ' + tok.via + ': ' + CFG.TOKEN);
+      } else {
+        console.log('[obs] no token address yet (' + tok.via + '). Coin stats stay blank; NFT tracking still runs.');
+      }
+    }
+
+    try{
+      const r = await fetch(CFG.MANIFEST);
+      const m = await r.json();
+      manifestNames = new Set((Array.isArray(m)?m:[]).map(e=>e.name));
+      if (!manifestNames.size) throw new Error('manifest empty');
+    }catch(e){
+      console.warn(
+        '[obs] gallery-manifest.json did not load (' + (e.message || e) + ').\n' +
+        '      Mint counts stay correct via the founder-name list, but this\n' +
+        '      file should sit in the same folder as stats.html.'
+      );
+    }
+
+    paintVolume(0);
+    window.addEventListener('resize', fitRecentRows);
+    window.addEventListener('resize', fitTierTable);
+
+    if (CFG.DEMO){ setStatus(); runDemo(); return; }
+
+    pollMints();  setInterval(pollMints,  CFG.POLL_MINTS_MS);
+    fetchStats(); setInterval(fetchStats, CFG.POLL_STATS_MS);
+    fetchSupply();setInterval(fetchSupply,CFG.POLL_STATS_MS);
+    fetchVolume();setInterval(fetchVolume,CFG.POLL_VOLUME_MS);
+    setInterval(setStatus, 5000);
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>

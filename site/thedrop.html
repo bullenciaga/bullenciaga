@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<!-- BULLENCIAGA thedrop.html | build 2026-08-15.5 — a way to buy on the page itself
+
+     NAMED thedrop.html, NOT drop.html. The worker route "drop*" claims every
+     path beneath it, so a file called drop.html would never be served by
+     Pages -- exactly how "chart*" once ate chart.html. /thedrop is free, and
+     _redirects points the shorter /unlock at it.
+
+     ONE JOB: show how close the bar is, and let anyone check it.
+
+     The bar accrues in the dev wallet, which also takes sweeps, buys and
+     burns -- so nobody can verify it by opening a balance. What makes the
+     number honest is the list at the bottom: every transaction that fed the
+     bar, linked to Solscan. That list is not an extra, it is the reason the
+     figure can be believed, and it ships with the bar rather than after it.
+
+     Reads /drop. No wallet connection, nothing to sign, nothing to register:
+     buying IS entering. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BULLENCIAGA — The Drop</title>
+<meta name="description" content="A fixed SOL prize to one buyer. The bar fills with fees from buys. No timer.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bullenciaga.com/thedrop">
+<meta property="og:title" content="BULLENCIAGA — The Drop">
+<meta property="og:description" content="Every buy fills the bar. When it fills, one buyer takes the SOL.">
+<meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-15">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BULLENCIAGA — The Drop">
+<meta name="twitter:description" content="Every buy fills the bar. When it fills, one buyer takes the SOL.">
+<meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-15">
+<style>
+  :root{
+    --black:#050505; --panel:#0a0a0a;
+    --line:rgba(199,168,105,0.16);
+    --gold:#c7a869; --gold-light:#e8d9ae;
+    --text:#f5f3ee; --dim:rgba(245,243,238,0.42);
+    --dimmer:rgba(245,243,238,0.22);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:var(--black); color:var(--text); }
+  body{
+    font-family:'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size:13px; line-height:1.65;
+    min-height:100vh; padding:44px 22px 90px;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .wrap{ width:100%; max-width:620px; }
+  .back{
+    display:inline-block; font-size:10px; letter-spacing:0.2em; text-transform:uppercase;
+    color:var(--dim); text-decoration:none; margin-bottom:30px;
+  }
+  .back:hover{ color:var(--gold); }
+  h1{
+    font-size:15px; letter-spacing:0.28em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 10px; font-weight:400;
+  }
+  .lede{ color:var(--dim); font-size:12px; margin:0 0 38px; line-height:1.85; }
+  .lede b{ color:var(--gold-light); font-weight:400; }
+
+  /* ---------------------------------------------------------------- THE BAR
+     The signature element, and the only place this page spends any boldness.
+
+     SEGMENTED, NOT SMOOTH. The bot's raid card draws its progress in discrete
+     tiles, and a holder seeing both should recognise the same object. A
+     smooth gradient bar would be the default answer and would tie to nothing.
+     Twenty-five segments so one segment reads as a real amount rather than a
+     pixel. */
+  .barwrap{ margin:0 0 10px; }
+  .bar{
+    display:grid; grid-template-columns:repeat(25, 1fr); gap:3px;
+    height:54px; margin-bottom:16px;
+  }
+  .seg{
+    background:rgba(245,243,238,0.05);
+    border:1px solid transparent;
+    transition:background .5s ease, box-shadow .5s ease;
+  }
+  .seg.on{
+    background:var(--gold);
+    box-shadow:0 0 14px rgba(199,168,105,0.35);
+  }
+  /* The leading segment breathes, so a bar that is filling reads differently
+     from one that is parked. Stops entirely at 100% and for reduced motion. */
+  .seg.edge{ background:var(--gold-light); animation:pulse 1.9s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.42; } }
+
+  .figures{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; }
+  .now{ font-size:34px; letter-spacing:-0.01em; color:var(--gold-light); line-height:1; }
+  .now .unit{ font-size:14px; color:var(--dim); letter-spacing:0.12em; margin-left:6px; }
+  .of{ font-size:12px; color:var(--dim); letter-spacing:0.06em; text-align:right; }
+  .of b{ color:var(--text); font-weight:400; }
+
+  .togo{
+    margin:22px 0 0; padding:14px 16px;
+    border:1px solid var(--line); background:var(--panel);
+    font-size:12px; letter-spacing:0.04em; color:var(--dim);
+  }
+  .togo b{ color:var(--gold-light); font-weight:400; }
+  .togo.done{ border-color:var(--gold); color:var(--gold-light); }
+
+  /* THE WAY IN.
+     The page says buying is entering and, shared on its own, gave you no way
+     to buy. Placed directly under the bar rather than at the foot: the moment
+     someone reads how far off it is, is the moment they act or don't. One
+     primary action, one secondary, and the address for anyone who would
+     rather paste it somewhere they already trust. */
+  .act{ display:flex; gap:10px; margin:22px 0 0; }
+  .btn{
+    flex:1; display:flex; align-items:center; justify-content:center;
+    padding:14px 16px; font-family:inherit; font-size:11px;
+    letter-spacing:0.18em; text-transform:uppercase; text-decoration:none;
+    border:1px solid var(--gold); color:var(--gold);
+    transition:background .18s ease, color .18s ease;
+  }
+  .btn.solid{ background:var(--gold); color:var(--black); }
+  .btn:hover{ background:var(--gold); color:var(--black); }
+  .btn.solid:hover{ background:var(--gold-light); border-color:var(--gold-light); }
+  .btn:focus-visible{ outline:2px solid var(--gold-light); outline-offset:2px; }
+
+  .ca{
+    display:flex; align-items:center; gap:10px;
+    margin:10px 0 0; padding:12px 14px;
+    border:1px solid var(--line); background:var(--panel);
+    font-size:10.5px; color:var(--dim); letter-spacing:0.02em;
+  }
+  .ca code{
+    font-family:inherit; color:var(--gold-light);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;
+  }
+  .ca button{
+    flex-shrink:0; background:none; border:1px solid var(--line);
+    color:var(--dim); font-family:inherit; font-size:9px;
+    letter-spacing:0.16em; text-transform:uppercase;
+    padding:6px 10px; cursor:pointer;
+  }
+  .ca button:hover{ border-color:var(--gold); color:var(--gold); }
+  .ca button:focus-visible{ outline:2px solid var(--gold-light); outline-offset:2px; }
+
+  .stats{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line);
+    margin:34px 0 40px;
+  }
+  .stat{ background:var(--black); padding:16px 14px; }
+  .stat .k{
+    display:block; font-size:9px; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--dim); margin-bottom:7px;
+  }
+  .stat .v{ font-size:17px; color:var(--text); }
+
+  h2{
+    font-size:10px; letter-spacing:0.2em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 16px; font-weight:400;
+  }
+  .rules{ list-style:none; margin:0 0 42px; padding:0; }
+  .rules li{
+    padding:11px 0 11px 20px; border-bottom:1px solid var(--line);
+    font-size:12px; color:var(--dim); line-height:1.7; position:relative;
+  }
+  .rules li:before{
+    content:''; position:absolute; left:0; top:19px;
+    width:7px; height:1px; background:var(--gold);
+  }
+  .rules b{ color:var(--text); font-weight:400; }
+
+  .feed{ list-style:none; margin:0; padding:0; }
+  .feed li{
+    display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+    padding:9px 0; border-bottom:1px solid var(--line); font-size:11.5px;
+  }
+  .feed a{ color:var(--dim); text-decoration:none; letter-spacing:0.02em; }
+  .feed a:hover{ color:var(--gold); }
+  .feed .amt{ color:var(--gold-light); white-space:nowrap; }
+  .feed .sol{ color:var(--dim); }
+  .empty{ color:var(--dimmer); font-size:12px; padding:14px 0; }
+
+  .foot{
+    margin-top:46px; padding-top:18px; border-top:1px solid var(--line);
+    font-size:10px; letter-spacing:0.1em; color:var(--dimmer); line-height:2;
+  }
+  .foot a{ color:var(--dim); text-decoration:none; }
+  .foot a:hover{ color:var(--gold); }
+
+  @media (max-width:520px){
+    .act{ flex-direction:column; }
+    .ca{ font-size:9.5px; }
+    .bar{ grid-template-columns:repeat(25,1fr); gap:2px; height:42px; }
+    .now{ font-size:27px; }
+    .stats{ grid-template-columns:1fr; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .seg,.seg.edge{ transition:none; animation:none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">&larr; bullenciaga</a>
+
+  <h1>The Drop</h1>
+  <p class="lede">
+    a fixed <b id="ledeprize">2.5 SOL</b> goes to one wallet that bought during this round.
+    the bar below fills with a share of the creator fees from buys, and only buys.
+    <b>there is no timer.</b> it fires when the bar fills.
+  </p>
+
+  <div class="barwrap">
+    <div class="bar" id="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+         aria-valuenow="0" aria-label="progress toward the drop"></div>
+    <div class="figures">
+      <div class="now"><span id="pot">—</span><span class="unit">SOL</span></div>
+      <div class="of">of <b id="target">—</b> SOL in fees<br><span id="pct">—</span></div>
+    </div>
+  </div>
+
+  <div class="togo" id="togo">reading the chain…</div>
+
+  <div class="act">
+    <a class="btn solid"
+       href="https://jup.ag/swap?sell=So11111111111111111111111111111111111111112&amp;buy=BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN"
+       target="_blank" rel="noopener">Buy $BULLEN</a>
+    <a class="btn" href="/chart">Chart</a>
+  </div>
+
+  <div class="ca">
+    <code id="ca">BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN</code>
+    <button type="button" id="copy">copy</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="k">round</span><span class="v" id="round">—</span></div>
+    <div class="stat"><span class="k">wallets in</span><span class="v" id="wallets">—</span></div>
+    <div class="stat"><span class="k">entries</span><span class="v" id="tickets">—</span></div>
+  </div>
+
+  <h2>How it works</h2>
+  <ul class="rules">
+    <li><b>buying is entering.</b> nothing to connect, nothing to sign, nothing to register.</li>
+    <li><b>one entry per <span id="unit">0.25</span> SOL bought.</b> no cap. entries stack.</li>
+    <li><b>only buys count.</b> a sell earns nothing and fills nothing.</li>
+    <li><b>the bar is fees, not volume.</b> how much buying it takes depends on what those buys pay, and that rate moves.</li>
+    <li><b>hold until it fires.</b> sell before the draw and this round's entries go with it.</li>
+    <li><b>the dev wallet and the pool are excluded</b>, by address.</li>
+    <li><b>the snapshot is published before the seed exists.</b> then the result. every time.</li>
+  </ul>
+
+  <h2>What filled the bar</h2>
+  <ul class="feed" id="feed">
+    <li class="empty">reading…</li>
+  </ul>
+
+  <div class="foot">
+    every figure here is a sum of the transactions listed above.<br>
+    open any of them. <a href="/">bullenciaga.com</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var $ = function(id){ return document.getElementById(id); };
+  var SEGMENTS = 25;
+
+  // Built once. Repainting only toggles classes, so a refresh mid-animation
+  // does not restart it.
+  var bar = $('bar');
+  var segs = [];
+  for (var i = 0; i < SEGMENTS; i++){
+    var d = document.createElement('div');
+    d.className = 'seg';
+    bar.appendChild(d);
+    segs.push(d);
+  }
+
+  // FOUR DECIMALS. At three, a real contribution of 0.0006 SOL displayed as
+  // 0.001 -- two thirds too high, on the page whose whole premise is that the
+  // figure is a sum of the transactions listed below it.
+  function fmt(n, dp){
+    if (!isFinite(n)) return '—';
+    return Number(n).toFixed(dp === undefined ? 4 : dp);
+  }
+
+  // AND A NON-ZERO NUMBER NEVER PRINTS AS ZERO.
+  //
+  // A 0.01 SOL buy pays a fee measured in millionths, so four decimals showed
+  // "+0.0000 from a 0.00 SOL buy" -- both figures real, both displayed as
+  // nothing. On a page whose whole claim is that the total is the sum of the
+  // rows beneath it, a row reading zero is the display contradicting the
+  // total. Small values get however many digits they need; ordinary ones stay
+  // at four so the column still lines up.
+  function amtFmt(n){
+    n = Number(n) || 0;
+    if (n === 0) return '0';
+    if (n >= 0.0001) return n.toFixed(4);
+    return n.toPrecision(2).replace(/(\.\d*?[1-9])0+$/, '$1');
+  }
+
+  // A bar holding something must never print 0%. Rounding down is right for
+  // the bar itself; printing "0%" beside a real contribution reads as "your
+  // buy did nothing".
+  function pctText(p){
+    if (p > 0 && p < 1) return '<1%';
+    return Math.floor(p) + '%';
+  }
+  function toGoText(p){
+    if (p > 0 && p < 1) return '>99%';
+    return Math.max(0, 100 - Math.floor(p)) + '%';
+  }
+
+  function short(sig){
+    return sig.length > 16 ? sig.slice(0, 8) + '…' + sig.slice(-6) : sig;
+  }
+
+  function ago(ms){
+    var s = Math.max(0, Math.floor((Date.now() - ms) / 1000));
+    if (s < 60) return s + 's ago';
+    if (s < 3600) return Math.floor(s / 60) + 'm ago';
+    if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+    return Math.floor(s / 86400) + 'd ago';
+  }
+
+  function paint(d){
+    var pct = Math.max(0, Math.min(100, Number(d.pct) || 0));
+    var lit = Math.floor((pct / 100) * SEGMENTS);
+    var done = pct >= 100;
+
+    for (var i = 0; i < SEGMENTS; i++){
+      var on = i < lit;
+      segs[i].className = 'seg'
+        + (on ? ' on' : '')
+        + (!done && on && i === lit - 1 ? ' edge' : '');
+    }
+    bar.setAttribute('aria-valuenow', Math.round(pct));
+
+    $('pot').textContent = amtFmt(d.potSol);
+    $('target').textContent = fmt(d.targetSol, 2);
+    $('pct').textContent = pctText(pct);
+    $('round').textContent = d.round;
+    $('wallets').textContent = d.wallets;
+    $('tickets').textContent = d.tickets;
+    $('unit').textContent = fmt(d.entrySol, 2);
+    $('ledeprize').textContent = fmt(d.targetSol, 2) + ' SOL';
+
+    var togo = $('togo');
+    if (done){
+      togo.className = 'togo done';
+      togo.innerHTML = '<b>the bar is full.</b> the snapshot goes up next, then the seed, then the winner.';
+    } else {
+      togo.className = 'togo';
+      // A PERCENTAGE, NOT A SOL FIGURE. The gap is measured in fees, and
+      // "1.32 SOL to go" reads as "buy 1.32 SOL and it fires" -- the buying
+      // that actually closes it is that gap divided by the share and the fee
+      // rate, which is hundreds of SOL and moves with the tier.
+      togo.innerHTML = '<b>' + toGoText(pct) + '</b> to go.';
+    }
+
+    var feed = $('feed');
+    feed.innerHTML = '';
+    var rows = (d.contributions || []).slice(0, 40);
+    if (!rows.length){
+      var li = document.createElement('li');
+      li.className = 'empty';
+      li.textContent = 'nothing yet this round. the first buy starts it.';
+      feed.appendChild(li);
+      return;
+    }
+    rows.forEach(function(t){
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = 'https://solscan.io/tx/' + t.sig;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = short(t.sig) + '  ·  ' + ago(t.at);
+      var amt = document.createElement('span');
+      amt.className = 'amt';
+      amt.innerHTML = '+' + amtFmt(t.added) + ' <span class="sol">from a '
+        + amtFmt(t.sol) + ' SOL buy</span>';
+      li.appendChild(a);
+      li.appendChild(amt);
+      feed.appendChild(li);
+    });
+  }
+
+  function fail(msg){
+    $('togo').className = 'togo';
+    $('togo').textContent = msg;
+  }
+
+  function load(){
+    fetch('/drop?nocache=' + Date.now())
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (!d || d.ok !== true) throw new Error('bad payload');
+        paint(d);
+      })
+      .catch(function(){
+        // An empty screen is an invitation to act; a broken one should say
+        // what to do. It retries on its own, so say that rather than apologise.
+        fail('the tracker could not read the chain just now. it retries every 20 seconds.');
+      });
+  }
+
+  // Copy the address. The label says what happened rather than staying
+  // silent -- a button with no visible effect gets pressed four times.
+  var copyBtn = $('copy');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function(){
+      var text = $('ca').textContent.trim();
+      var done = function(msg){
+        copyBtn.textContent = msg;
+        setTimeout(function(){ copyBtn.textContent = 'copy'; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text)
+          .then(function(){ done('copied'); })
+          .catch(function(){ done('select it'); });
+      } else {
+        // Older in-app browsers, which is most of the wallet ones.
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'absolute';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          done('copied');
+        } catch (e) { done('select it'); }
+      }
+    });
+  }
+
+  load();
+  setInterval(load, 20000);
+})();
+</script>
+</body>
+</html>

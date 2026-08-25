@@ -1,0 +1,155 @@
+{
+  "takenAt": "2026-08-04T00:48:09.203Z",
+  "slot": 437075440,
+  "rules": {
+    "minPieces": 1,
+    "minTokens": 100000,
+    "entries": "flat - one wallet, one entry",
+    "mintTrigger": 250,
+    "prizes": 4,
+    "compounding": "qualifying in this round banks one permanent entry in the final draw"
+  },
+  "totals": {
+    "piecesOutstanding": 274,
+    "herdWallets": 42,
+    "eligibleWallets": 27
+  },
+  "eligible": [
+    {
+      "wallet": "21MmopdfFxKhANhxZSFfAZZuamvjRWPYRYCqfoFsPuxC",
+      "pieces": 1,
+      "tokens": 5412537
+    },
+    {
+      "wallet": "2FJmmQowQEXMi3wnsHBLgTbq8GjcYmV8HhEenkj131MX",
+      "pieces": 1,
+      "tokens": 17289445
+    },
+    {
+      "wallet": "2iLeUfaVz6P7VZfyb5qSCJ61iGs8moEHdbnWigvDTTSP",
+      "pieces": 11,
+      "tokens": 7770551
+    },
+    {
+      "wallet": "3AgyXSNoPZrKQW2gK6oEQPubouCJsUjQ3MWQjoLbh5Er",
+      "pieces": 6,
+      "tokens": 12588760
+    },
+    {
+      "wallet": "3xw7oVwJQJymxC8Zg1iMQbypKodPAMQHPucucim4bhGh",
+      "pieces": 8,
+      "tokens": 5448210
+    },
+    {
+      "wallet": "4w6MKjj8R7gtoPviXhpFvy22xK7w2MFMQKn91mj9LCXM",
+      "pieces": 2,
+      "tokens": 2183873
+    },
+    {
+      "wallet": "4x4LbQ2t3CcnZGSgfNS9YQ4L9JFFRe7kqFaHZCcVgT1L",
+      "pieces": 1,
+      "tokens": 5444981
+    },
+    {
+      "wallet": "7898Mbzyz7S4yhJZZYxSPXMK1ZKzpZyS2qJNKu4PR7DP",
+      "pieces": 1,
+      "tokens": 5198073
+    },
+    {
+      "wallet": "7DqWHcEeRD7ysbCmLqg4B3esV9HbkfCb889ANq3KWZe7",
+      "pieces": 4,
+      "tokens": 1772639
+    },
+    {
+      "wallet": "8aYAU4rqHL9wjJPKBmKD1sPH76isLNg4dQyYRSYDMDPF",
+      "pieces": 5,
+      "tokens": 182788
+    },
+    {
+      "wallet": "8k6zP4o67P638zRKqaYZYKHXwEfzPQsX6zhVA728JkYm",
+      "pieces": 1,
+      "tokens": 5457977
+    },
+    {
+      "wallet": "8ZpPHmQkspHarSLK3m7AokB2Tp9ba2U8WVKv2Zd7Xpx4",
+      "pieces": 4,
+      "tokens": 1759358
+    },
+    {
+      "wallet": "AvtdhcJ6wSdAHgNiLtZ1BXKcDdJMCZ3tzUQboXGcHTfg",
+      "pieces": 2,
+      "tokens": 302675
+    },
+    {
+      "wallet": "AZos1MFLKjFdny7FZsY8KsFyNJRJyUAYmZuR7VMNrdPA",
+      "pieces": 4,
+      "tokens": 4959156
+    },
+    {
+      "wallet": "AZWTMdZJ8k3oE9xP5iB7dS27XRMEaWHuhBeANdhd3nea",
+      "pieces": 1,
+      "tokens": 4528881
+    },
+    {
+      "wallet": "BV4rz333vXa4n17RpQXYbF9ndwqwpYGTLvRRvVC4bWf1",
+      "pieces": 1,
+      "tokens": 5444981
+    },
+    {
+      "wallet": "BY2cjrXeqMnPkinCLZqkrTyos8njFyUZj1E3wgwXaUum",
+      "pieces": 6,
+      "tokens": 6897963
+    },
+    {
+      "wallet": "C7dm65piongzxVXdVrQ5fRg4NCBGLWXu2R3HbCchU8AE",
+      "pieces": 2,
+      "tokens": 1801436
+    },
+    {
+      "wallet": "CohRnrcs3u599MG7h2r4nRhwP7WmeRJ3shCVp1kWAXPk",
+      "pieces": 98,
+      "tokens": 12089490
+    },
+    {
+      "wallet": "CwmrU1tbYdvA6njftgRAcq2Z3DDWcrrjuyqwPxhm5a1S",
+      "pieces": 22,
+      "tokens": 194981
+    },
+    {
+      "wallet": "DCyvYRL34iv79DGFY3jdntJaQCNTywtfwDXbXQJb87fc",
+      "pieces": 17,
+      "tokens": 2076022
+    },
+    {
+      "wallet": "F1n18K7V3qx3iBRmNkpYsp2LLxm229337zUvGSzttSB5",
+      "pieces": 3,
+      "tokens": 4931986
+    },
+    {
+      "wallet": "F5k2e3CXyaVkmacAgGrRps8ikUkaabzLfgjYh3LA1khW",
+      "pieces": 10,
+      "tokens": 142980
+    },
+    {
+      "wallet": "FszUn2J7Cvbs5S2WD3jFkTMYm2nn1fRZxtkrnmwDndCq",
+      "pieces": 2,
+      "tokens": 4698073
+    },
+    {
+      "wallet": "Gd7hx6G7145ePc9Ubo9MRupxXZaVBzXPMcyB4Rc9VTbF",
+      "pieces": 1,
+      "tokens": 2589251
+    },
+    {
+      "wallet": "GYDud4FYYUBF88rs8Dg2jnbGvo7GiYVzMvwfmpauLNQn",
+      "pieces": 4,
+      "tokens": 4431986
+    },
+    {
+      "wallet": "HH4serienJHhyT3Qkzfm2FDjyX5YVa4GQjHJyFRAv4No",
+      "pieces": 5,
+      "tokens": 20775907
+    }
+  ],
+  "round": 0
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "bullenciaga",
+  "compatibility_date": "2026-08-23",
+  "routes": [
+    { "pattern": "bullenciaga.com", "custom_domain": true },
+    { "pattern": "www.bullenciaga.com", "custom_domain": true },
+    { "pattern": "*.bullenciaga.com/*", "zone_name": "bullenciaga.com" }
+  ],
+  "assets": {
+    "directory": "./site"
+  }
+}

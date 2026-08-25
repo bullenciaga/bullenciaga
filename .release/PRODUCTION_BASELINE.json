@@ -1,0 +1,11 @@
+{
+  "project": "BULLENCIAGA",
+  "capturedAt": "2026-08-25T00:00:00Z",
+  "cloudflareWorker": "bullenciaga",
+  "cloudflareVersionNumber": 388,
+  "cloudflareVersionId": "947c1e3b-67f0-4b8c-b190-596375dda66d",
+  "cloudflareDeploymentId": "8a40bcfa-7517-4210-a140-18f6e554ded4",
+  "indexSha256": "416e5720e1711c2e3cdafc0caa81dbf7b3ffbb4a9974fda6a78dfce9c636f08a",
+  "deploymentAuthority": "cloudflare-live-plus-byte-identical-site-source",
+  "productionWorkflowEnabled": false
+}

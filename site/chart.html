@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>BULLENCIAGA — $BULLEN chart</title>
+<meta name="description" content="$BULLEN price and market cap, with every recorded supply event: mints, burns, locks and unlocks.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://bullenciaga.com/chart">
+<meta property="og:title" content="BULLENCIAGA — $BULLEN chart">
+<meta property="og:description" content="Price and market cap on circulating supply, with every burn marked.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bullenciaga.com/chart">
+<meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<!-- Without twitter:card, X falls back to a small square thumbnail even when
+     the OG image is present. This is what makes it render full width. -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BULLENCIAGA — $BULLEN chart">
+<meta name="twitter:description" content="Price and market cap on circulating supply, with every burn marked.">
+<meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#c7a869;
+    /* Aligned with refer.html and thedrop.html -- the chart is one tap from
+       the drop page now, so the two sit side by side in a real journey. */
+    --gold-light:#e8d9ae;
+    --white:#f5f3ee;
+    --black:#050505;
+    --line: rgba(199,168,105,0.16);
+    --listed:#35d07f;
+    --down:#b1483f;
+  }
+  *{ box-sizing:border-box; }
+  html, body{ height:100%; }
+  body{
+    margin:0;
+    background:var(--black);
+    color:var(--white);
+    font-family:'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    -webkit-font-smoothing:antialiased;
+    /* The page is a single screen that should not scroll on desktop; on a
+       phone the controls wrap and a little scroll is fine. */
+    display:flex;
+    flex-direction:column;
+    padding:clamp(14px, 2.2vw, 34px);
+    padding-top:calc(clamp(14px, 2.2vw, 34px) + env(safe-area-inset-top, 0px));
+    padding-bottom:calc(clamp(14px, 2.2vw, 34px) + env(safe-area-inset-bottom, 0px));
+    gap:clamp(10px, 1.4vw, 20px);
+  }
+
+  a{ color:var(--gold); }
+
+  /* ---------------------------------------------------------------- head */
+  .head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .head-left{ min-width:0; }
+  .brand{
+    font-size:clamp(9px, 0.85vw, 13px);
+    letter-spacing:0.34em;
+    text-transform:uppercase;
+    color:rgba(245,243,238,0.4);
+    text-decoration:none;
+    display:inline-block;
+    margin-bottom:clamp(6px, 0.8vw, 12px);
+    transition:color 140ms ease;
+  }
+  .brand:hover{ color:var(--gold); }
+  .price-row{ display:flex; align-items:baseline; gap:clamp(10px, 1.2vw, 20px); flex-wrap:wrap; }
+  .price{
+    font-size:clamp(30px, 4.4vw, 68px);
+    line-height:1;
+    color:var(--gold-light);
+    letter-spacing:0.01em;
+  }
+  /* vertical-align:sub extends the line BOX below the baseline, so the header
+     grew taller whenever a sub-penny price was shown and shrank again on the
+     market cap view -- and since the plot takes the remaining height, the
+     whole line jumped on every PRICE/MCAP toggle.
+     Offset with position instead: `top` on a relatively positioned element is
+     a paint-time nudge and contributes nothing to layout. line-height:0 stops
+     the smaller font from participating in the line box at all. */
+  /* NOT SCOPED TO .price -- IT MUST APPLY WHEREVER fmtPrice() OUTPUT LANDS.
+     fmtPrice returns markup: "$0.0<span class="price-sub">4</span>6106", where
+     the span is the COUNT OF ZEROS, not a digit of the number. Scoped to the
+     header, the hover readout and the compare readout inserted that span
+     unstyled, so the count rendered as an ordinary digit and $0.00006106 was
+     displayed as "$0.046106" -- an order of magnitude out, and reading as a
+     fall while the line rose. Everything here is in em, so it scales to
+     whatever it is dropped into. */
+  .price-sub{
+    font-size:0.58em;
+    letter-spacing:0;
+    display:inline-block;
+    line-height:0;
+    vertical-align:baseline;
+    position:relative;
+    top:0.2em;
+  }
+  .change{
+    font-size:clamp(13px, 1.4vw, 22px);
+    letter-spacing:0.04em;
+  }
+  .change.up{ color:var(--listed); }
+  .change.down{ color:var(--down); }
+  .sub{
+    margin-top:clamp(5px, 0.7vw, 10px);
+    font-size:clamp(10px, 0.95vw, 15px);
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:rgba(245,243,238,0.42);
+  }
+
+  /* ------------------------------------------------------------ controls */
+  .controls{
+    display:flex;
+    align-items:center;
+    gap:clamp(6px, 0.7vw, 12px);
+    flex-wrap:wrap;
+  }
+  .group{ display:flex; gap:clamp(4px, 0.45vw, 8px); }
+  .group.right{ margin-left:auto; }
+  /* ONE TIMING SYSTEM. Every duration and curve on the page comes from here,
+     so a change to the feel is a change in one place and nothing can drift
+     out of step with anything else.
+
+     The cascade on a toggle, in order:
+       press   the button you pressed answers first, on its own
+       chart   the line morphs, the longest movement and the main content
+       row     the comparison buttons arrive last, after the press has landed
+
+     Order is enforced by an actual paint boundary, not by delays -- see
+     staggerIn. Delays alone did not work: render() rebuilds the whole SVG in
+     the same synchronous task as the class change, so nothing painted until
+     all of it was done and every delay was measured from that same moment. */
+  /* WHAT MOVES AND WHAT DOES NOT.
+     Continuous things animate. Discrete things snap.
+     The chart line is a quantity changing into another quantity, so it
+     morphs. The headline is the same, so it rolls. Which buttons exist and
+     which one is lit is neither -- it is a set changing membership, and
+     there is no honest movement between "vs Mcap" and "vs Price". Every
+     attempt to animate it read as decoration pretending to be continuity.
+     So the row snaps, instantly, and the press is the only motion a button
+     has. */
+  :root{
+    --t-chart: 420ms;
+    --e-out:   cubic-bezier(.22, 1, .36, 1);
+  }
+  .btn{
+    font-family:'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size:clamp(10px, 0.92vw, 15px);
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    padding:clamp(7px, 0.7vw, 13px) clamp(12px, 1.25vw, 24px);
+    background:transparent;
+    color:rgba(245,243,238,0.55);
+    border:1px solid rgba(245,243,238,0.18);
+    cursor:pointer;
+    /* NO COLOUR TRANSITION. The highlight has to be the immediate answer to
+       the press, and any fade at all -- even 100ms -- reads as arriving after
+       the other things that changed in the same frame. transform stays: that
+       is the press having weight, not a state change. */
+    transition:transform 110ms ease;
+    /* Comfortably tappable on a phone regardless of how the clamps land. */
+    min-height:38px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .btn:hover{ color:var(--gold); border-color:var(--gold); }
+  .btn:active{ transform:scale(0.965); }
+  .btn.active{ background:var(--gold); color:var(--black); border-color:var(--gold); }
+  @media (prefers-reduced-motion: reduce){
+    .btn{ transition:none; }
+  }
+  .btn[disabled]{ opacity:0.32; cursor:not-allowed; }
+  .btn[disabled]:hover{ color:rgba(245,243,238,0.55); border-color:rgba(245,243,238,0.18); }
+
+  /* ---------------------------------------------------------------- plot */
+  .plot-wrap{
+    flex:1 1 auto;
+    position:relative;
+    min-height:240px;
+  }
+  .plot{ width:100%; display:block; }
+  /* none, not pan-y: pan-y still allows the browser to claim a two-finger
+     gesture as a page zoom on iOS, which is why pinching did nothing at all.
+     The cost is that the page cannot be scrolled by dragging ON the plot --
+     acceptable, since one finger there is already the readout. */
+  .plot-wrap{ touch-action:none; }
+  .msg{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:clamp(11px, 1vw, 16px);
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:rgba(245,243,238,0.35);
+    text-align:center;
+    padding:0 20px;
+  }
+  .fade{ opacity:0; transition:opacity 220ms ease; }
+  /* Transparent, on top, never rebuilt: every pointer lands here, so a redraw
+     underneath cannot cancel a gesture in progress. */
+  .hit{ position:absolute; inset:0; z-index:3; }
+  .fade.in{ opacity:1; }
+
+  .tip{
+    position:absolute;
+    transform:translate(-50%, -100%);
+    background:var(--black);
+    border:1px solid rgba(199,168,105,0.45);
+    padding:clamp(7px, 0.7vw, 12px) clamp(9px, 0.9vw, 15px);
+    pointer-events:none;
+    opacity:0;
+    transition:opacity 120ms ease;
+    white-space:nowrap;
+    z-index:4;
+  }
+  .tip-price{ font-size:clamp(13px, 1.25vw, 21px); color:var(--gold-light); }
+  .tip-time{ font-size:clamp(9px, 0.8vw, 13px); color:rgba(245,243,238,0.42); margin-top:2px; letter-spacing:0.08em; }
+  .tip-evt{
+    display:none;
+    margin-top:5px;
+    padding-top:5px;
+    border-top:1px solid rgba(199,168,105,0.25);
+    font-size:clamp(9px, 0.82vw, 14px);
+    line-height:1.5;
+    color:var(--gold);
+    letter-spacing:0.04em;
+  }
+
+  /* EVENT MARKS
+     Three weights, no type. A stub on the baseline for the ordinary, a taller
+     spike for the notable, and a full rule with a diamond for the few that
+     changed the supply meaningfully. Burns are gold, locks and unlocks are
+     pale -- one is permanent and the other is not, and that distinction is
+     worth a colour rather than a word. */
+  .evt-mark{ stroke:rgba(199,168,105,0.62); stroke-linecap:round; }
+  .evt-mark.mint{ stroke:rgba(199,168,105,0.30); }
+  .evt-mark.move{ stroke:rgba(245,243,238,0.42); }
+  .evt-rule{ stroke:rgba(199,168,105,0.22); stroke-width:1; stroke-dasharray:2 4; }
+  .evt-rule.move{ stroke:rgba(245,243,238,0.16); }
+  .evt-node{ fill:rgba(199,168,105,0.85); }
+  .evt-node.move{ fill:rgba(245,243,238,0.6); }
+
+  /* ---------------------------------------------------------------- foot */
+  .sel{
+    min-height:clamp(18px, 1.6vw, 26px);
+    font-size:clamp(10px, 0.95vw, 15px);
+    letter-spacing:0.06em;
+    color:rgba(245,243,238,0.5);
+    opacity:0;
+    transition:opacity 140ms ease;
+  }
+  .sel.on{ opacity:1; }
+  .sel b{ font-weight:400; }
+  .sel .up{ color:var(--listed); }
+  .sel .down{ color:var(--down); }
+  .sel .px{ color:var(--gold); }
+  .sel .arrow{ color:rgba(199,168,105,0.45); }
+  .sel .hint{ margin-left:12px; color:rgba(245,243,238,0.25); font-size:0.86em; }
+  /* THE HEADLINE ROLLS, IT DOES NOT BLINK.
+     The first attempt faded the number to nothing and back, which leaves an
+     empty box for a fifth of a second -- read as the number vanishing rather
+     than changing. A roll never has an empty state: the outgoing value leaves
+     upward while the incoming one arrives from below, both on screen at once,
+     so the eye follows a substitution instead of a disappearance. */
+  .roll{ position:relative; display:inline-block; overflow:hidden; vertical-align:bottom; }
+  .roll > .rv{
+    display:block;
+    transition:transform var(--t-chart) var(--e-out), opacity 220ms ease;
+    will-change:transform, opacity;
+  }
+  /* The outgoing copy is taken out of flow so the box keeps the incoming
+     value's size -- left in flow the container doubles in height for a third
+     of a second and shoves the chart down, which is the jump this exists to
+     remove. */
+  .roll > .rv.leaving{
+    position:absolute; left:0; top:0; right:0;
+    transform:translateY(-0.9em); opacity:0; pointer-events:none;
+  }
+  .roll > .rv.entering{ transform:translateY(0.9em); opacity:0; }
+  @media (prefers-reduced-motion: reduce){
+    .roll > .rv{ transition:none; }
+    .roll > .rv.entering{ transform:none; opacity:1; }
+    .roll > .rv.leaving{ display:none; }
+  }
+  .note{
+    font-size:clamp(9px, 0.82vw, 14px);
+    line-height:1.6;
+    letter-spacing:0.05em;
+    color:rgba(245,243,238,0.34);
+    /* Reserved at its tallest, three lines. The market cap view carries an
+       extra line about the circulating basis; without a floor here the plot
+       gained a line's height on the price view and lost it again on market
+       cap, moving the chart every time the toggle was pressed. */
+    /* Six lines. An overlay carries the basis, what the gap means, the legend
+       and the two gesture hints; without the floor the footer walks up and
+       down the page every time the comparison is toggled. */
+    min-height:6.4em;
+  }
+  .foot{
+    font-size:clamp(9px, 0.8vw, 13px);
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:rgba(245,243,238,0.28);
+  }
+
+  /* --------------------------------------------------------------- phone */
+  @media (max-width: 700px){
+    body{ display:block; min-height:100%; }
+    .plot-wrap{ height:52vh; min-height:260px; }
+    .group.right{ margin-left:0; }
+    .controls{ gap:6px; }
+    .btn{ flex:1 1 auto; padding:9px 8px; letter-spacing:0.08em; }
+    .group{ flex:1 1 100%; }
+    /* Three rows: four ranges, four modes, then events. The modes used to
+       share a row with EVENTS, which worked at two modes and does not at
+       four -- six buttons across a phone puts "GENESIS" in a 60px box and it
+       wraps mid-word. Ranges and modes are now four equal buttons each, one
+       above the other, and EVENTS runs full width beneath them. It is a
+       different kind of control -- on and off rather than one of four -- so
+       reading differently is correct rather than accidental. */
+    .group.right{ flex:1 1 100%; }
+    /* Compare is three buttons and EVENTS is one, so together they make a row
+       of four equal buttons matching the two rows above rather than a third
+       full-width bar. */
+    #compare{ flex:3 1 0; }
+    #eventsToggle{ flex:1 1 0; }
+    .head{ gap:8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div class="head-left">
+    <a class="brand" href="/">&larr; Bullenciaga</a>
+    <div class="price-row">
+      <div class="price" id="price">--</div>
+      <div class="change" id="change"></div>
+    </div>
+    <div class="sub" id="sub">$BULLEN / USD</div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="group" id="ranges">
+    <button type="button" class="btn" data-tf="1h">1H</button>
+    <button type="button" class="btn active" data-tf="24h">24H</button>
+    <button type="button" class="btn" data-tf="7d">7D</button>
+    <button type="button" class="btn" data-tf="all">All</button>
+  </div>
+  <div class="group right" id="modes">
+    <button type="button" class="btn active" data-mode="price">Price</button>
+    <button type="button" class="btn" data-mode="mcap">Mcap</button>
+    <button type="button" class="btn" data-mode="fdv">FDV</button>
+    <button type="button" class="btn" data-mode="genesis">Genesis</button>
+  </div>
+  <div class="group" id="compare"></div>
+  <div class="group" id="eventsToggle">
+    <button type="button" class="btn active" data-events="on">Events</button>
+  </div>
+</div>
+
+<div class="plot-wrap" id="plotWrap">
+  <div class="msg" id="msg">loading&hellip;</div>
+</div>
+
+<div class="sel" id="sel"></div>
+<div class="note" id="note"></div>
+<div class="foot">data: <a href="https://www.geckoterminal.com/solana/pools/9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ" target="_blank" rel="noopener">geckoterminal</a> &middot; pumpswap pool &middot; supply from <a href="/supply/history" target="_blank" rel="noopener">/supply/history</a></div>
+<div class="foot" style="opacity:.45;">build 2026-08-16.12 — grid stays put, identical shapes do not animate</div>
+
+<script>
+(function fullChart(){
+  'use strict';
+
+  const wrap    = document.getElementById('plotWrap');
+  const priceEl = document.getElementById('price');
+  const chgEl   = document.getElementById('change');
+  const subEl   = document.getElementById('sub');
+  const selEl   = document.getElementById('sel');
+  const noteEl  = document.getElementById('note');
+  const ranges  = document.getElementById('ranges');
+  const modes   = document.getElementById('modes');
+  const cmpBtns = document.getElementById('compare');
+  const evtBtns = document.getElementById('eventsToggle');
+
+  const cache = new Map();          // tf -> full payload
+  let currentTf = '24h';
+  let mode = 'price';
+  // null, or one of the money modes other than `mode`.
+  let compare = null;
+  let showEventsPref = true;
+  let loadToken = 0;
+  let selA = null, selB = null;
+  let eventsByPt = new Map();
+  // Zoom window as indices into the drawn series. null = the whole thing.
+  // Slices data that is ALREADY LOADED: no request, no finer candles, just
+  // the same points spread across the full width with readable timestamps.
+  let zoomA = null, zoomB = null;
+  const MIN_SPAN = 3;
+  // Explicit price bounds, or null to let the data decide. Bounds rather than
+  // a multiplier so the scale expands about the point being scrolled FROM.
+  let yLo = null, yHi = null;
+  const Y_MIN_FACTOR = 0.05, Y_MAX_FACTOR = 20;
+  // Refreshed by every render, read by the persistent input handlers.
+  // NOT named S: render() already uses S for its scale factor, and the
+  // collision threw "assignment to constant variable" on every draw.
+  let ST = null;
+  // One redraw per frame at most: interactions fire far faster than the
+  // screen refreshes, and a redraw per event is the other half of the jitter.
+  let rafPending = false;
+  function scheduleRedraw(){
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(function(){
+      rafPending = false;
+      const c = cache.get(currentTf);
+      if (c) render(c);
+    });
+  }
+
+  const RANGE_LABEL = { '1h':'past hour', '24h':'past 24 hours', '7d':'past 7 days', 'all':'since launch' };
+
+  // THE THREE MONEY VIEWS ARE THREE DIFFERENT SUPPLIES, NOT THREE OPINIONS.
+  //
+  //   mcap     price x circulating -- locked excluded, burned excluded
+  //   fdv      price x total       -- locked INCLUDED, burned excluded
+  //   genesis  price x 1,000,000,000
+  //
+  // The first two are per-point series computed by the worker from recorded
+  // supply, so both are real history rather than today's supply painted
+  // backwards over old candles. The third needs no supply at all, which is
+  // why it is the only one that can never be unavailable -- and, being the
+  // one that ignores every burn, that is quietly the joke.
+  const MODES = ['price', 'mcap', 'fdv', 'genesis'];
+  const MODE_SHORT = { price:'Price', mcap:'Mcap', fdv:'FDV', genesis:'Genesis' };
+
+  // PRICE AGAINST GENESIS IS THE SAME LINE TWICE.
+  //
+  // genesis is price x a constant, so once both are rebased the constant
+  // divides out and the two series are identical to the last decimal. Drawn,
+  // it is one line with another exactly on top of it, which reads as a broken
+  // chart rather than as a true fact about the maths. Every other pairing is
+  // offered.
+  //
+  // The same identity is why mcap-vs-genesis and mcap-vs-price draw the same
+  // picture. Both are kept: one is the intuitive way to ask the question and
+  // the other is the rigorous one.
+  // Which series the current payload can actually draw. Written by
+  // syncModeAvailability, read when the comparison buttons are built -- a
+  // partner with no data must be offered greyed rather than offered live and
+  // doing nothing when pressed.
+  let modeState = { price:true, mcap:false, fdv:false, genesis:true };
+
+  // ---------------------------------------------------------------- motion
+  //
+  // ANIMATE A CHANGE OF VIEW, NEVER A GESTURE.
+  //
+  // Switching mode tore the whole <svg> down and rebuilt it: the old line
+  // vanished and a differently scaled one appeared in the same frame. But
+  // render() also runs on every pan, wheel tick and window resize, and
+  // tweening those would be far worse than the jump -- the line would restart
+  // its sweep under a moving finger and read as lag.
+  //
+  // So the tween is armed explicitly, by the two things that are a change of
+  // view, and every other redraw leaves it alone.
+  let wantAnim = false;
+  let animId = null;
+  // ROLL A HEADER FIELD TO A NEW VALUE.
+  //
+  // Called instead of writing .innerHTML directly. If the value has not
+  // changed it does nothing at all -- which matters, because render() runs on
+  // every pan and resize and re-rolling an identical number on each of those
+  // would be exactly the flicker this replaces.
+  //
+  // The element keeps ONE live child. On a change the live child is marked
+  // leaving and taken out of flow, a new child is inserted below the box, and
+  // both move together on the next frame. Nothing is ever empty.
+  // ONE FIELD ROLLS: THE PRICE.
+  //
+  // A rolled field briefly holds two children, and anything that leaves one
+  // of them behind shows two values at once. That is survivable for a figure
+  // -- you see the same number twice -- and not for a label, where two
+  // percentages side by side read as two different measurements. So the
+  // change and the subtitle snap, and this is used for the price alone.
+  //
+  // The outgoing copy is dropped on a timer AND at the start of the next
+  // call, so a missed timer cannot accumulate.
+  function rollTo(el, html, cls){
+    if (!el) return;
+    if (!el.classList.contains('roll')) {
+      el.classList.add('roll');
+      el.innerHTML = '<span class="rv"></span>';
+    }
+    // Belt and braces: anything still marked leaving goes now, whatever its
+    // own timer did or did not do.
+    [...el.querySelectorAll('.rv.leaving')].forEach(n => n.remove());
+    const live = el.querySelector('.rv:not(.leaving)');
+    if (live && live.innerHTML === html && (cls === undefined || live.className === 'rv ' + cls)) return;
+
+    if (live) {
+      live.classList.add('leaving');
+      setTimeout(() => { if (live.parentNode) live.remove(); }, 400);
+    }
+    const next = document.createElement('span');
+    next.className = 'rv entering' + (cls ? ' ' + cls : '');
+    next.innerHTML = html;
+    el.appendChild(next);
+    // Two frames: one for the browser to accept the starting transform, one
+    // to move off it. A single frame is applied and undone in the same paint
+    // on some engines and nothing animates.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      next.classList.remove('entering');
+      if (cls !== undefined) next.className = 'rv ' + cls;
+    }));
+  }
+  let prevShape = null;
+  // Durations live in the stylesheet as custom properties so the CSS and the
+  // JS animations can never drift apart. Declared before first use.
+  const cssMs = (name, fallback) => {
+    try {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      const n = parseFloat(v);
+      return isFinite(n) ? (/ms$/.test(v) ? n : n * 1000) : fallback;
+    } catch (e) { return fallback; }
+  };
+
+  // Read from the stylesheet rather than declared twice. The chart morph and
+   // the header roll are the same length by design: the number and the line
+   // are describing the same change and should finish together.
+  const ANIM_MS = cssMs('--t-chart', 420);
+  // Ease out rather than in-out: the line leaves on the press and settles,
+  // so the button feels answered immediately instead of after a beat.
+  const ease = t => 1 - Math.pow(1 - t, 3);
+
+  // Two shapes rarely share a point count -- market cap drops candles with no
+  // recorded supply, price keeps them. Resampling the old shape onto the new
+  // length lets any view morph into any other.
+  function resample(a, n) {
+    if (!a || !a.length) return null;
+    if (a.length === n) return a.slice();
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const t = (n === 1) ? 0 : i * (a.length - 1) / (n - 1);
+      const lo = Math.floor(t), hi = Math.min(a.length - 1, lo + 1);
+      out.push(a[lo] + (a[hi] - a[lo]) * (t - lo));
+    }
+    return out;
+  }
+
+  const pairKey = (a, b) => [a, b].sort().join('|');
+  const DEGENERATE = { 'genesis|price': 1 };
+  const canPair = (a, b) => !!a && !!b && a !== b && !DEGENERATE[pairKey(a, b)];
+
+  // OVERLAY: TWO SUPPLIES, ONE PRICE, REBASED TO THE LEFT EDGE.
+  //
+  // The three money views share the same price at every point and differ only
+  // by which supply they multiply it by. Drawn as dollars on one axis they sit
+  // apart by a constant-looking gap and the price swamps everything -- both
+  // lines just trace the candle.
+  //
+  // Rebasing each to its own value at the LEFT EDGE OF THE CURRENT VIEW makes
+  // the price cancel out exactly: (p[i]*s[i]) / (p[0]*s[0]) leaves s[i]/s[0].
+  // So both lines start together at 0% and the gap that opens between them is
+  // purely the supply change, which is the only thing being compared.
+  //
+  // That gives each pairing a plain meaning:
+  //
+  //   mcap vs genesis   burns and locking together, against a supply that
+  //                     never moved
+  //   fdv  vs genesis   burns alone -- genesis is total supply as it was at
+  //                     launch, fdv is total supply as it is
+  //   mcap vs fdv       locking alone -- the two differ only by locked tokens
+  //
+  // Rebasing on the VIEW rather than the whole series is deliberate: zoom in
+  // and both lines re-anchor to the new left edge, so the question is always
+  // "what has happened since the start of what I am looking at".
+  const GENESIS_SUPPLY = 1e9;
+  const MONEY = { mcap:1, fdv:1, genesis:1 };
+  const isMoney = m => !!MONEY[m];
+
+  // Deep-link support: /chart.html#mcap/7d opens straight into that view, so
+  // a link can point at a specific thing rather than at "the chart".
+  (function readHash(){
+    const h = (location.hash || '').replace('#','').toLowerCase().split('/');
+    for (const part of h) {
+      if (MODES.indexOf(part) !== -1) mode = part;
+      else if (part.slice(0, 3) === 'vs-' && MODES.indexOf(part.slice(3)) !== -1) compare = part.slice(3);
+      else if (['1h','24h','7d','all'].indexOf(part) !== -1) currentTf = part;
+      else if (part === 'noevents') showEventsPref = false;
+    }
+  })();
+
+  // THE COMPARE BUTTONS ARE BUILT FROM THE CURRENT MODE.
+  //
+  // A fixed row of four with the current one greyed out was the obvious
+  // version and it reads badly: the disabled button looks broken rather than
+  // inapplicable. Offering only the two series you could actually compare
+  // against removes the question entirely, and "vs FDV" says what pressing it
+  // does without a legend.
+  // REBUILD ONLY WHEN THE SET ACTUALLY CHANGES.
+  //
+  // syncButtons() runs on every load and every toggle, and this used to blow
+  // the row away and write it again each time. Recreated elements have no
+  // transition to run from, so the active state snapped, the press feedback
+  // was lost, and the whole row flickered on toggles that had not changed it
+  // at all. A signature of what the row should contain is compared first and
+  // the DOM is left alone when it matches.
+  let cmpSig = null;
+  // THE ROW IS DIFFED, NOT REBUILT.
+  //
+  // This used to write the whole row with innerHTML on any change. Going from
+  // Price to Mcap turns [Off, vs Mcap, vs FDV] into [Off, vs Price, vs FDV,
+  // vs Genesis] -- but Off and vs FDV are the SAME BUTTONS and should not
+  // move. Rebuilding destroyed them and staggered all four back in, so four
+  // things animated when two had actually changed, and that is most of what
+  // read as jitter.
+  //
+  // Now the buttons that survive are kept as the same DOM nodes: they hold
+  // their active state, their transitions do not restart, and only the
+  // genuinely new ones animate. appendChild on an existing child MOVES it, so
+  // reordering costs nothing and interrupts nothing.
+  function renderCompareButtons(){
+    const others = MODES.filter(m => canPair(mode, m));
+    const want = others.length ? ['off'].concat(others) : [];
+    const sig = want.map(m => m + (m === 'off' || modeState[m] ? '' : '!')).join(',');
+    if (sig === cmpSig) return;
+    cmpSig = sig;
+
+    if (!want.length) {
+      cmpBtns.innerHTML = '';
+      cmpBtns.style.display = 'none';
+      return;
+    }
+    cmpBtns.style.display = '';
+
+    const existing = new Map(
+      [...cmpBtns.querySelectorAll('.btn')].map(b => [b.dataset.cmp, b]));
+    const ordered = [];
+    const fresh = [];
+
+    const makeBtn = m => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn';
+      b.dataset.cmp = m;
+      b.textContent = m === 'off' ? 'Off' : 'vs ' + MODE_SHORT[m];
+      return b;
+    };
+
+    want.forEach(m => {
+      let b = existing.get(m);
+      if (b) {
+        existing.delete(m);
+      } else {
+        b = makeBtn(m);
+        fresh.push(b);
+      }
+      const avail = m === 'off' || modeState[m];
+      b.disabled = !avail;
+      b.title = avail ? '' : 'supply history is still being recorded';
+      b.classList.toggle('active', m === (compare || 'off'));
+      ordered.push(b);
+    });
+
+    const outgoing = [...existing.values()];
+
+    // Placing the survivors and the newcomers in order. insertBefore MOVES a
+    // node, and a move is a detach and a reattach, which cancels any
+    // transition running on it -- so only touch a node whose position is
+    // actually wrong.
+    const place = () => {
+      ordered.forEach((b, i) => {
+        if (cmpBtns.children[i] !== b) cmpBtns.insertBefore(b, cmpBtns.children[i] || null);
+      });
+    };
+
+    outgoing.forEach(b => b.remove());
+    place();
+  }
+
+  function syncButtons(){
+    [...ranges.querySelectorAll('.btn')].forEach(b => b.classList.toggle('active', b.dataset.tf === currentTf));
+    [...modes.querySelectorAll('.btn')].forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+    renderCompareButtons();
+    [...cmpBtns.querySelectorAll('.btn')].forEach(b =>
+      b.classList.toggle('active', b.dataset.cmp === (compare || 'off')));
+    evtBtns.querySelector('.btn').classList.toggle('active', showEventsPref);
+  }
+
+  function setHash(){
+    // replaceState rather than assigning location.hash: assigning pushes a
+    // history entry per click, so Back would walk through every toggle the
+    // visitor pressed instead of leaving the page.
+    try {
+      history.replaceState(null, '', '#' + mode + '/' + currentTf +
+        (compare ? '/vs-' + compare : '') +
+        (showEventsPref ? '' : '/noevents'));
+    } catch (e) { /* file:// and some in-app browsers refuse this; harmless */ }
+  }
+
+  // ------------------------------------------------------------ formatting
+  function fmtPrice(v){
+    if (!isFinite(v) || v <= 0) return '--';
+    if (v >= 0.01) return '$' + v.toFixed(4);
+    const s = v.toFixed(12).replace(/0+$/, '');
+    const m = s.match(/^0\.(0*)(\d{1,4})/);
+    if (!m) return '$' + v.toPrecision(4);
+    return '$0.0<span class="price-sub">' + m[1].length + '</span>' + m[2];
+  }
+  function fmtMcap(v){
+    if (!isFinite(v) || v <= 0) return '--';
+    if (v >= 1e9) return '$' + (v/1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return '$' + (v/1e6).toFixed(2) + 'M';
+    if (v >= 1e3) return '$' + (v/1e3).toFixed(1) + 'K';
+    return '$' + Math.round(v);
+  }
+  const fmtVal  = v => (isMoney(mode) ? fmtMcap(v) : fmtPrice(v));
+  // The two lines in an overlay can be in different units -- price against
+  // market cap -- so each is formatted for its OWN series rather than for
+  // whichever happens to be primary.
+  const fmtSeries = (m, v) => (isMoney(m) ? fmtMcap(v) : fmtPrice(v));
+  // Axis prices in plain decimal, not scientific notation. "3.16e-4" is
+  // correct and unreadable: it makes a reader do arithmetic to find out
+  // whether the number went up. Three significant figures, written out.
+  function fmtAxisPrice(v){
+    if (!isFinite(v) || v <= 0) return '0';
+    if (v >= 0.01) return '$' + v.toFixed(4);
+    const exp = Math.floor(Math.log10(v));
+    const dp = Math.max(2, Math.min(9, 2 - exp));
+    return '$' + v.toFixed(dp);
+  }
+  // In an overlay the axis is percent from the left edge, not dollars.
+  const fmtPct = v => (v >= 0 ? '+' : '') + v.toFixed(v >= 10 || v <= -10 ? 0 : 1) + '%';
+  const fmtAxis = v => compare ? fmtPct(v)
+                     : isMoney(mode) ? fmtMcap(v)
+                     : fmtAxisPrice(v);
+  const esc = str => String(str).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  // Rounds for display, but never rounds a real burn down to "0". The dust
+  // burns are fractions of a token and were rendering as "burn 0", which
+  // reads like a bug or an empty event rather than a very small one.
+  const grp = n => {
+    const r = Math.round(n);
+    return (r === 0 && n > 0) ? '<1' : r.toLocaleString('en-US');
+  };
+
+  // Collapses events of the same kind sharing one position into one record.
+  // The bonding curve did not burn 29 times: it burned once at migration, in
+  // 29 instructions across about a minute. Printing 29 near identical labels
+  // described the transaction's mechanics instead of the event.
+  // External burns merge only within their own source -- a bonding curve burn
+  // and a holder burn are different facts, so the label prefix is in the key.
+  const labelPrefix = ev => String(ev.label || ev.kind).replace(/[\d,.\s]+$/, '').trim();
+  function mergeSame(list){
+    const out = new Map();
+    for (const e of list) {
+      const kind = e.kind === 'mints' ? 'escrowburn' : e.kind;
+      const key = kind === 'externalburn' ? 'externalburn:' + labelPrefix(e) : kind;
+      const acc = out.get(key) || { kind: kind, amount: 0, mints: 0, count: 0, prefix: labelPrefix(e) };
+      acc.amount += Number(e.amount) || 0;
+      acc.mints  += e.mints || (kind === 'mint' ? 1 : 0);
+      acc.count++;
+      out.set(key, acc);
+    }
+    out.forEach(function(a){
+      if (a.kind === 'externalburn') a.label = a.prefix + ' ' + grp(a.amount);
+    });
+    return Array.from(out.values());
+  }
+
+  // Labels are derived from kind and amount, not trusted from storage, so a
+  // claim ("1 piece claimed") can never read like the escrow burn that
+  // follows it ("escrow burn 250,000"). Only external burns keep their stored
+  // label, because only the scrape knows whether it was the bonding curve or
+  // a holder.
+  function eventLabel(ev){
+    const amt = Number(ev.amount) || 0;
+    switch (ev.kind) {
+      case 'mint': {
+        const n = ev.mints || Math.max(1, Math.round(amt / 250000));
+        return n + ' piece' + (n === 1 ? '' : 's') + ' claimed';
+      }
+      case 'mints':
+      case 'escrowburn': return 'escrow burn ' + grp(amt);
+      case 'tier':       return 'tier burn ' + grp(amt);
+      case 'burn':       return 'burn ' + grp(amt);
+      case 'lock':       return 'locked ' + grp(amt);
+      case 'unlock':     return 'unlocked ' + grp(amt);
+      default:           return ev.label || ev.kind;
+    }
+  }
+
+  // Locks and unlocks are drawn pale rather than gold: one is permanent and
+  // the other is not, and that is worth a colour rather than a word.
+  const MOVE_KINDS = new Set(['lock','unlock']);
+
+  // --------------------------------------------------------------- render
+  function render(payload){
+    payload = payload || {};
+    const candles = payload.candles;
+    if (!candles || candles.length < 2) {
+      wrap.innerHTML = '<div class="msg">not enough data for this range yet</div>';
+      noteEl.innerHTML = '';
+      return;
+    }
+
+    const mcapArr = Array.isArray(payload.mcap) ? payload.mcap : null;
+    const fdvArr  = Array.isArray(payload.fdv)  ? payload.fdv  : null;
+    // Derived from the candle close alone, so it exists whenever the price
+    // chart does. No supply lookup, nothing to be missing.
+    const genArr  = candles.map(c => (c[4] > 0 ? c[4] * GENESIS_SUPPLY : null));
+
+    const priceArr = candles.map(c => (c[4] > 0 ? c[4] : null));
+    const pick = m => m === 'price' ? priceArr
+                    : m === 'mcap' ? mcapArr
+                    : m === 'fdv'  ? fdvArr
+                    : m === 'genesis' ? genArr
+                    : null;
+    const seriesArr = pick(mode);
+    const cmpArr = canPair(mode, compare) ? pick(compare) : null;
+    // A money mode whose series is missing falls back to drawing price, and
+    // syncModeAvailability has already disabled the button that got us here.
+    // showMcap decides whether values are formatted as money. showCmp decides
+    // whether there are two lines -- and price is a perfectly good line, so
+    // the overlay must not be gated on the primary being a money view.
+    const showMcap = isMoney(mode) && !!seriesArr;
+    const showCmp = !!seriesArr && !!cmpArr;
+    const showEvents = showEventsPref && Array.isArray(payload.events) && payload.events.length;
+
+    // Candles with no recorded supply are dropped rather than multiplied by
+    // today's supply -- the line simply starts where the record starts.
+    const pts = [];
+    for (let i = 0; i < candles.length; i++) {
+      const v = seriesArr ? seriesArr[i] : candles[i][4];
+      if (v == null || !isFinite(v) || v <= 0) continue;
+      // A point is only usable in an overlay if BOTH series have a value
+      // there. Keeping one and dropping the other would put the two lines on
+      // different x positions for the same timestamp.
+      let v2 = null;
+      if (showCmp) {
+        v2 = cmpArr[i];
+        if (v2 == null || !isFinite(v2) || v2 <= 0) continue;
+      }
+      pts.push({ t: candles[i][0], v: v, v2: v2, ci: i });
+    }
+    if (pts.length < 2) {
+      // genesis needs no supply at all, so if IT is short of points the range
+      // itself is short of candles -- saying "not enough supply history"
+      // there would send someone looking for a problem that is not theirs.
+      const supplyBacked = showMcap && mode !== 'genesis';
+      wrap.innerHTML = '<div class="msg">' +
+        (supplyBacked ? 'not enough supply history for this range yet' : 'not enough data for this range yet') + '</div>';
+      noteEl.innerHTML = supplyBacked
+        ? 'this view needs recorded supply. the record starts when it starts, and it is not backfilled.'
+        : '';
+      return;
+    }
+
+    const W = Math.max(280, Math.round(wrap.clientWidth || 900));
+    const H = Math.max(240, Math.round(wrap.clientHeight || 480));
+    // Everything below scales off the plot's real size, so a 4K monitor gets
+    // proportionally larger type instead of the same 9px labels floating in
+    // the middle of a very large chart.
+    const S = Math.min(Math.max(W / 900, 0.78), 2.1);
+    const FS_AXIS = Math.round(11 * S);
+    const FS_LABEL = Math.round(10 * S);
+    const PAD_L = Math.round(10 * S);
+    // Price labels are written out now, so the gutter has to fit "$0.000316"
+    // rather than "3.16e-4".
+    // An overlay axis is percentages, which are short whatever the units were.
+    const PAD_R = Math.round(((compare || showMcap) ? 74 : 82) * S);
+    const PAD_T = Math.round(18 * S);
+    const PAD_B = Math.round(30 * S);
+
+    const full = pts;
+    let za = zoomA == null ? 0 : Math.max(0, Math.min(zoomA, full.length - 2));
+    let zb = zoomB == null ? full.length - 1 : Math.max(za + 1, Math.min(zoomB, full.length - 1));
+    const view = full.slice(za, zb + 1);
+    const zoomed = view.length < full.length;
+
+    // The real figures, kept separately from what is plotted. The headline,
+    // the tooltip and the measure readout all quote real values even when the
+    // plot is in percent, because "$375K" is the answer and "0.00%" is not.
+    const rawVals  = view.map(p => p.v);
+    const rawVals2 = showCmp ? view.map(p => p.v2) : null;
+
+    // Rebased to the left edge of the VIEW, so a zoom re-anchors both lines.
+    const base1 = rawVals[0];
+    const base2 = showCmp ? rawVals2[0] : 1;
+    const vals  = showCmp ? rawVals.map(v => (v / base1 - 1) * 100) : rawVals;
+    const vals2 = showCmp ? rawVals2.map(v => (v / base2 - 1) * 100) : null;
+
+    const times = view.map(p => p.t);
+    const spanVals = showCmp ? vals.concat(vals2) : vals;
+    let lo = Math.min.apply(null, spanVals), hi = Math.max.apply(null, spanVals);
+    if (hi === lo) { hi = lo * 1.02; lo = lo * 0.98; }
+    const pad = (hi - lo) * 0.12;
+    lo -= pad; hi += pad;
+
+    const baseLo = lo, baseHi = hi;
+    if (yLo !== null && yHi !== null && yHi > yLo) { lo = yLo; hi = yHi; }
+
+    const x = i => PAD_L + (i / Math.max(1, view.length - 1)) * (W - PAD_L - PAD_R);
+    const y = v => PAD_T + (1 - (v - lo) / (hi - lo)) * (H - PAD_T - PAD_B);
+
+    // SHAPES ARE HELD IN 0..1, NOT IN DOLLARS, SO THEY CAN BE TWEENED.
+    //
+    // Switching price to market cap changes the units by nine orders of
+    // magnitude. Tweening raw values would fling the line off the canvas and
+    // back. Normalising against each view's own range first makes a
+    // transition a morph between two SHAPES: it stays on screen the whole
+    // way, and the shape is the thing worth watching anyway.
+    //
+    // ny() reproduces y() exactly for a normalised input, so the static draw
+    // is unchanged -- this is a change of basis, not of output.
+    const norm  = vals.map(v => (v - lo) / (hi - lo));
+    const norm2 = showCmp ? vals2.map(v => (v - lo) / (hi - lo)) : null;
+    const ny = n => PAD_T + (1 - n) * (H - PAD_T - PAD_B);
+    const pathOf = a => a.map((v, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ',' + ny(v).toFixed(1)).join('');
+    const areaOf = a => pathOf(a) + 'L' + x(a.length - 1).toFixed(1) + ',' + (H - PAD_B) +
+                        'L' + x(0).toFixed(1) + ',' + (H - PAD_B) + 'Z';
+
+    const line = pathOf(norm);
+    const area = areaOf(norm);
+    // Dashed as well as paler: the two lines have to be distinguishable in a
+    // screenshot, on a phone, and by someone who cannot separate the colours.
+    const line2 = showCmp ? pathOf(norm2) : '';
+
+    // More gridlines on a taller plot: four rows on a phone would leave huge
+    // unlabelled gaps on a desktop screen.
+    const GRID = H > 620 ? 6 : (H > 400 ? 4 : 3);
+    let grid = '';
+    for (let g = 0; g <= GRID; g++) {
+      const v = lo + (hi - lo) * (g / GRID);
+      const gy = y(v).toFixed(1);
+      grid += '<line x1="' + PAD_L + '" y1="' + gy + '" x2="' + (W - PAD_R) + '" y2="' + gy +
+              '" stroke="var(--line)" stroke-width="1"/>';
+      grid += '<text x="' + (W - PAD_R + 7 * S) + '" y="' + (+gy + FS_AXIS * 0.36).toFixed(1) +
+              '" fill="rgba(245,243,238,0.4)" font-family="\'Space Mono\', monospace" font-size="' +
+              FS_AXIS + '">' + fmtAxis(v) + '</text>';
+    }
+
+    // ---- event marks
+    //
+    // NO TEXT ON THE PLOT.
+    //
+    // Labels were stacked at the top in up to six rows and still collided,
+    // and on a busy range they covered the thing they were annotating. Worse,
+    // they gave a 100,000 dev burn the same visual weight as a 250,000,000
+    // lock, because both are one line of type.
+    //
+    // Magnitude is carried by the mark itself now: every event is a mark on
+    // the baseline whose height grows with size, and only the genuinely large
+    // ones earn a full-height rule and a diamond. What each one WAS lives in
+    // the hover readout, which can say it properly instead of in eleven
+    // characters.
+    let marks = '';
+    eventsByPt = new Map();
+    if (showEvents) {
+      const ptIndexForCandle = ci => {
+        let found = -1;
+        for (let k = 0; k < full.length; k++) { if (full[k].ci <= ci) found = k; else break; }
+        return found;
+      };
+      const placed = [];
+      for (const ev of payload.events) {
+        // Clamped at the left edge when it precedes the first drawn point --
+        // that event still happened and is why the line starts where it does.
+        // Outside the ZOOM window it is dropped: pinning it to an edge would
+        // put a burn at a time it did not happen.
+        const kFull = ptIndexForCandle(ev.i);
+        const k = (kFull < 0 ? 0 : kFull) - za;
+        if (k < 0 || k > view.length - 1) continue;
+        placed.push({ k: k, ev: ev });
+      }
+
+      const groups = new Map();
+      for (const p of placed) {
+        const g = groups.get(p.k) || { k: p.k, events: [] };
+        g.events.push(p.ev);
+        groups.set(p.k, g);
+      }
+      eventsByPt = groups;
+
+      // One mark per position. Size from everything that happened there,
+      // colour from whichever single event was largest.
+      const items = [];
+      groups.forEach(function(g){
+        const merged = mergeSame(g.events);
+        let total = 0, dom = merged[0];
+        for (const m of merged) {
+          total += Math.abs(Number(m.amount) || 0);
+          if (!dom || (m.amount || 0) > (dom.amount || 0)) dom = m;
+        }
+        items.push({ k: g.k, total: total, kind: dom ? dom.kind : 'burn' });
+      });
+      if (items.length) {
+        // Height is a log scale against the largest mark IN VIEW, so a range
+        // containing only mints still shows its own variation rather than a
+        // row of identical stubs.
+        let max = 0, sum = 0;
+        for (const it of items) { if (it.total > max) max = it.total; sum += it.total; }
+        const denom = Math.log1p(max) || 1;
+
+        // A RULE MEANS "THIS STANDS OUT", NOT "THIS IS BIG".
+        //
+        // Thresholding on size alone drew a full-height rule on all fifty
+        // marks of a range containing nothing but mints -- every one of them
+        // was also the largest, so every one qualified, and the result was a
+        // picket fence. An event earns a rule by dominating the range: either
+        // it accounts for a fifth of everything that moved, or it is an order
+        // of magnitude above the typical mark.
+        const sorted = items.map(i => i.total).sort((a, b) => a - b);
+        const median = sorted[Math.floor(sorted.length / 2)] || 0;
+        const standsOut = t => sum > 0 && (t >= sum * 0.2 || (median > 0 && t >= median * 10));
+
+        for (const it of items) {
+          const ratio = Math.max(0, Math.min(1, Math.log1p(it.total) / denom));
+          const px = x(it.k).toFixed(1);
+          const move = MOVE_KINDS.has(it.kind);
+          const cls = move ? ' move' : (it.kind === 'mint' || it.kind === 'mints' ? ' mint' : '');
+
+          // Everything gets a baseline mark, from a 4px stub to a 22px spike.
+          const h = (4 + 18 * ratio) * S;
+          marks += '<line class="evt-mark' + cls + '" x1="' + px + '" y1="' + (H - PAD_B - h).toFixed(1) +
+                   '" x2="' + px + '" y2="' + (H - PAD_B) + '" stroke-width="' + (1 + 1.2 * ratio).toFixed(2) + '"/>';
+
+          // The large ones also get a full-height rule and a diamond at the
+          // top, which is what makes a tier burn findable at a glance without
+          // reading anything.
+          if (standsOut(it.total)) {
+            marks += '<line class="evt-rule' + cls + '" x1="' + px + '" y1="' + PAD_T +
+                     '" x2="' + px + '" y2="' + (H - PAD_B - h).toFixed(1) + '"/>';
+            const r = (3 + 3 * ratio) * S;
+            const cy = PAD_T;
+            marks += '<path class="evt-node' + cls + '" d="M' + px + ',' + (cy - r).toFixed(1) +
+                     ' L' + (Number(px) + r).toFixed(1) + ',' + cy +
+                     ' L' + px + ',' + (cy + r).toFixed(1) +
+                     ' L' + (Number(px) - r).toFixed(1) + ',' + cy + ' Z"/>';
+          }
+        }
+      }
+    }
+
+    const stamp = d => (currentTf === '1h' || currentTf === '24h')
+      ? d.toISOString().slice(11,16) + ' UTC'
+      : d.toISOString().slice(5,10);
+
+    // Intermediate time stops, not just the two ends -- spreading fifteen
+    // points across a wide screen only helps if you can see WHEN they are.
+    const stops = Math.max(2, Math.min(7, Math.floor(W / 210)));
+    let axis = '';
+    for (let g = 0; g < stops; g++) {
+      const i = Math.round((g / (stops - 1)) * (times.length - 1));
+      const anchor = g === 0 ? 'start' : (g === stops - 1 ? 'end' : 'middle');
+      const tx = g === 0 ? PAD_L : (g === stops - 1 ? W - PAD_R : x(i));
+      axis += '<text x="' + tx.toFixed(1) + '" y="' + (H - 9 * S) + '" text-anchor="' + anchor +
+              '" fill="rgba(245,243,238,0.35)" font-family="\'Space Mono\', monospace" font-size="' +
+              FS_AXIS + '">' + stamp(new Date(times[i])) + '</text>';
+    }
+
+    // THE SHELL IS BUILT ONCE AND KEPT. Replacing it on every draw re-ran the
+    // fade transition (the flash on each wheel tick) and deleted the node
+    // under the finger mid-gesture, so a pinch could only advance one step.
+    // A redraw now swaps only the contents of the <svg>; the wrap, the tooltip
+    // and a transparent hit layer persist.
+    const fresh = !wrap.querySelector('#fade');
+    if (fresh) {
+      wrap.innerHTML =
+        '<div class="fade" id="fade">'
+        + '<svg class="plot" role="img" aria-label="chart"></svg>'
+        + '<div class="tip"><div class="tip-price"></div><div class="tip-time"></div><div class="tip-evt"></div></div>'
+        + '<div class="hit"></div>'
+        + '</div>';
+    }
+    const fadeEl = wrap.querySelector('#fade');
+    const svgNode = fadeEl.querySelector('.plot');
+    svgNode.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svgNode.setAttribute('width', W);
+    svgNode.setAttribute('height', H);
+    svgNode.innerHTML =
+          '<defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">' +
+            '<stop offset="0%" stop-color="#c7a869" stop-opacity="0.28"/>' +
+            '<stop offset="100%" stop-color="#c7a869" stop-opacity="0"/>' +
+          '</linearGradient></defs>' +
+          grid +
+          '<rect class="sel-band" x="0" y="' + PAD_T + '" width="0" height="' + (H - PAD_T - PAD_B) +
+            '" fill="rgba(199,168,105,0.10)" opacity="0"/>' +
+          '<line class="sel-a" x1="0" y1="' + PAD_T + '" x2="0" y2="' + (H - PAD_B) + '" stroke="rgba(199,168,105,0.55)" stroke-width="1" opacity="0"/>' +
+          '<line class="sel-b" x1="0" y1="' + PAD_T + '" x2="0" y2="' + (H - PAD_B) + '" stroke="rgba(199,168,105,0.55)" stroke-width="1" opacity="0"/>' +
+          // No fill in an overlay: an area under one of two rebased lines
+          // implies that line is the baseline, and neither of them is.
+          (showCmp ? '' : '<path class="data-area" d="' + area + '" fill="url(#fill)"/>') +
+          marks +
+          (showCmp
+            ? '<path class="data-line2" d="' + line2 + '" fill="none" stroke="rgba(245,243,238,0.5)" stroke-width="' +
+              (1.4 * S).toFixed(1) + '" stroke-dasharray="' + (5 * S).toFixed(1) + ' ' + (4 * S).toFixed(1) +
+              '" stroke-linejoin="round" stroke-linecap="round"/>' +
+              '<circle class="end-dot2" cx="' + x(norm2.length-1).toFixed(1) + '" cy="' + ny(norm2[norm2.length-1]).toFixed(1) +
+              '" r="' + (3.0*S).toFixed(1) + '" fill="rgba(245,243,238,0.6)"/>'
+            : '') +
+          '<path class="data-line" d="' + line + '" fill="none" stroke="#c7a869" stroke-width="' + (1.8 * S).toFixed(1) + '" stroke-linejoin="round" stroke-linecap="round"/>' +
+          '<circle class="end-dot" cx="' + x(norm.length-1).toFixed(1) + '" cy="' + ny(norm[norm.length-1]).toFixed(1) + '" r="' + (3.6*S).toFixed(1) + '" fill="#e3c98f"/>' +
+          '<line class="cross" x1="0" y1="' + PAD_T + '" x2="0" y2="' + (H - PAD_B) + '" stroke="rgba(199,168,105,0.5)" stroke-width="1" opacity="0"/>' +
+          '<circle class="cross-dot" cx="0" cy="0" r="' + (4*S).toFixed(1) + '" fill="#e3c98f" opacity="0"/>' +
+          axis;
+
+    // ---- the transition -------------------------------------------------
+    //
+    // ONLY THE LINE MOVES. NOTHING FADES.
+    //
+    // Gridlines, axis labels and event marks used to be set to opacity 0 and
+    // faded back in on every mode change, which is the whole grid blinking
+    // for no reason a reader can connect to anything. They are labels: they
+    // are drawn at their final positions and simply are what they are.
+    //
+    // Worse, the fade fired even when nothing had moved. Genesis is price
+    // multiplied by a constant, so normalised it is the SAME SHAPE as price
+    // -- the line has nothing to morph into, and the only visible result of
+    // switching was the grid disappearing and coming back.
+    if (animId) { cancelAnimationFrame(animId); animId = null; }
+    const linePath  = svgNode.querySelector('.data-line');
+    const areaPath  = svgNode.querySelector('.data-area');
+    const linePath2 = svgNode.querySelector('.data-line2');
+    const endDot    = svgNode.querySelector('.end-dot');
+    const endDot2   = svgNode.querySelector('.end-dot2');
+
+    let from  = (wantAnim && prevShape && linePath) ? resample(prevShape.norm, norm.length) : null;
+    const from2 = (from && prevShape.norm2 && norm2) ? resample(prevShape.norm2, norm2.length) : null;
+
+    // If the shape is unchanged there is nothing to animate, and running the
+    // tween anyway costs 420ms of work to arrive exactly where it started.
+    if (from && !from2 && !norm2) {
+      const same = from.every((v, i) => Math.abs(v - norm[i]) < 0.002);
+      if (same) from = null;
+    }
+
+    if (from) {
+      // A comparison being switched ON has no previous second line to move
+      // from. It grows out of the primary, which is where it genuinely
+      // starts: rebased, both series are the same value at the left edge, so
+      // the two lines really do begin as one and separate.
+      const base2 = from2 || (norm2 ? from : null);
+      if (linePath2 && !from2) linePath2.style.opacity = '0';
+
+      // SEED THE STARTING SHAPE SYNCHRONOUSLY, BEFORE ANYTHING PAINTS.
+      //
+      // The SVG has just been written with the FINAL geometry. Leaving it and
+      // waiting for the first animation frame means the browser paints the
+      // destination once and the tween then moves away from it -- a flash of
+      // the answer followed by a morph, which looks worse than no animation
+      // at all. Writing the old shape here, in the same synchronous block
+      // that built the markup, means the first painted frame is where the
+      // line already was.
+      linePath.setAttribute('d', pathOf(from));
+      if (areaPath) areaPath.setAttribute('d', areaOf(from));
+      if (endDot) {
+        endDot.setAttribute('cx', x(from.length - 1).toFixed(1));
+        endDot.setAttribute('cy', ny(from[from.length - 1]).toFixed(1));
+      }
+      if (linePath2 && base2) {
+        linePath2.setAttribute('d', pathOf(base2));
+        if (endDot2) {
+          endDot2.setAttribute('cx', x(base2.length - 1).toFixed(1));
+          endDot2.setAttribute('cy', ny(base2[base2.length - 1]).toFixed(1));
+          if (!from2) endDot2.setAttribute('opacity', '0');
+        }
+      }
+
+      const start = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+      const step = now => {
+        const t = Math.min(1, (now - start) / ANIM_MS);
+        const e = ease(t);
+        const cur = norm.map((v, i) => from[i] + (v - from[i]) * e);
+        linePath.setAttribute('d', pathOf(cur));
+        if (areaPath) areaPath.setAttribute('d', areaOf(cur));
+        if (endDot) {
+          endDot.setAttribute('cx', x(cur.length - 1).toFixed(1));
+          endDot.setAttribute('cy', ny(cur[cur.length - 1]).toFixed(1));
+        }
+        if (linePath2 && norm2 && base2) {
+          const cur2 = norm2.map((v, i) => base2[i] + (v - base2[i]) * e);
+          linePath2.setAttribute('d', pathOf(cur2));
+          if (!from2) {
+            linePath2.style.opacity = String(e);
+            if (endDot2) endDot2.setAttribute('opacity', String(e));
+          }
+          if (endDot2) {
+            endDot2.setAttribute('cx', x(cur2.length - 1).toFixed(1));
+            endDot2.setAttribute('cy', ny(cur2[cur2.length - 1]).toFixed(1));
+          }
+        }
+        if (t < 1) animId = requestAnimationFrame(step);
+        else animId = null;
+      };
+      animId = requestAnimationFrame(step);
+    }
+    // Recorded every render, armed only by a toggle: panning updates the
+    // shape the next toggle will start from, without animating anything.
+    prevShape = { norm: norm.slice(), norm2: norm2 ? norm2.slice() : null };
+    wantAnim = false;
+
+    const fade  = fadeEl;
+    const svgEl = svgNode;
+    const cross = wrap.querySelector('.cross');
+    const dot   = wrap.querySelector('.cross-dot');
+    const tip   = wrap.querySelector('.tip');
+    const tipP  = wrap.querySelector('.tip-price');
+    const tipT  = wrap.querySelector('.tip-time');
+    const tipE  = wrap.querySelector('.tip-evt');
+    const band  = wrap.querySelector('.sel-band');
+    const lineA = wrap.querySelector('.sel-a');
+    const lineB = wrap.querySelector('.sel-b');
+
+    function idxAt(clientX){
+      const box = svgEl.getBoundingClientRect();
+      const scale = box.width / W;
+      const localX = (clientX - box.left) / scale;
+      const span = (W - PAD_L - PAD_R);
+      let i = Math.round(((localX - PAD_L) / span) * (view.length - 1));
+      return Math.max(0, Math.min(view.length - 1, i));
+    }
+
+    function moveTo(clientX){
+      const i = idxAt(clientX);
+      const box = svgEl.getBoundingClientRect();
+      const scale = box.width / W;
+      const px = x(i), py = y(vals[i]);
+      cross.setAttribute('x1', px); cross.setAttribute('x2', px); cross.setAttribute('opacity','1');
+      dot.setAttribute('cx', px); dot.setAttribute('cy', py); dot.setAttribute('opacity','1');
+      tipP.innerHTML = showCmp
+        ? fmtSeries(mode, rawVals[i]) + ' <span style="opacity:.55">' + fmtPct(vals[i]) + '</span>' +
+          '<br><span style="opacity:.6">' + fmtSeries(compare, rawVals2[i]) + ' ' + fmtPct(vals2[i]) + '</span>'
+        : fmtVal(rawVals[i]);
+      const iso = new Date(times[i]).toISOString();
+      tipT.textContent = (currentTf === '1h' || currentTf === '24h')
+        ? iso.slice(5,10) + ' ' + iso.slice(11,16) + ' UTC'
+        : iso.slice(0,10);
+
+      // Aggregated by kind: three escrow burns in one candle are one fact,
+      // not three identical lines.
+      const g = eventsByPt.get(i);
+      if (g && g.events.length) {
+        // Same merge the labels use, so the readout and the marks cannot
+        // disagree about what happened at this point.
+        const order = ['mint','escrowburn','tier','burn','externalburn','lock','unlock'];
+        tipE.innerHTML = mergeSame(g.events)
+          .sort((a,b) => order.indexOf(a.kind) - order.indexOf(b.kind))
+          .map(a => esc(eventLabel(a))).join('<br>');
+        tipE.style.display = 'block';
+      } else {
+        tipE.textContent = '';
+        tipE.style.display = 'none';
+      }
+
+      tip.style.opacity = '1';
+      const tipW = tip.offsetWidth || 120;
+      const clampX = Math.min(Math.max(px * scale, tipW/2 + 4), box.width - tipW/2 - 4);
+      tip.style.left = clampX + 'px';
+      tip.style.top  = Math.max(py * scale - 12, tip.offsetHeight + 6) + 'px';
+    }
+
+    function hide(){
+      cross.setAttribute('opacity','0');
+      dot.setAttribute('opacity','0');
+      tip.style.opacity = '0';
+    }
+
+    // selA and selB index the FULL series, not the visible slice. As view
+    // indices the markers stayed at fixed screen positions while panning slid
+    // different data underneath them, so the measurement quietly became a
+    // measurement of two other points. Anchored to the data, they travel with
+    // it.
+    function drawSelection(){
+      if (selA === null || selB === null || selA === selB) {
+        band.setAttribute('opacity','0');
+        lineA.setAttribute('opacity','0');
+        lineB.setAttribute('opacity','0');
+        selEl.classList.remove('on');
+        return;
+      }
+      const a = Math.min(selA, selB), b = Math.max(selA, selB);
+
+      // Scrolled fully out of view: the readout goes with it rather than
+      // reporting a window that cannot be seen.
+      const va = a - za, vb = b - za;
+      if (vb < 0 || va > view.length - 1) {
+        band.setAttribute('opacity','0');
+        lineA.setAttribute('opacity','0');
+        lineB.setAttribute('opacity','0');
+        selEl.classList.remove('on');
+        return;
+      }
+      const cA = Math.max(0, Math.min(view.length - 1, va));
+      const cB = Math.max(0, Math.min(view.length - 1, vb));
+      const xa = x(cA), xb = x(cB);
+      band.setAttribute('x', xa);
+      band.setAttribute('width', Math.max(1, xb - xa));
+      band.setAttribute('opacity','1');
+      lineA.setAttribute('x1', xa); lineA.setAttribute('x2', xa);
+      lineA.setAttribute('opacity', va < 0 ? '0' : '1');
+      lineB.setAttribute('x1', xb); lineB.setAttribute('x2', xb);
+      lineB.setAttribute('opacity', vb > view.length - 1 ? '0' : '1');
+
+      // Read from the FULL series so the figures stay the ones picked, even
+      // with an endpoint scrolled past the edge.
+      const from = full[a].v, to = full[b].v;
+      const pct = from > 0 ? ((to - from) / from) * 100 : 0;
+      const ms = full[b].t - full[a].t;
+      const mins = Math.round(ms / 60000);
+      const span = mins < 60 ? mins + 'm'
+                 : mins < 1440 ? Math.floor(mins/60) + 'h ' + (mins%60) + 'm'
+                 : Math.floor(mins/1440) + 'd ' + Math.floor((mins%1440)/60) + 'h';
+      selEl.innerHTML = '<b class="' + (pct >= 0 ? 'up' : 'down') + '">' + (pct>=0?'+':'') + pct.toFixed(2) + '%</b>' +
+        ' &nbsp;<span class="px">' + fmtVal(from) + '</span> <span class="arrow">&rarr;</span> ' +
+        '<span class="px">' + fmtVal(to) + '</span> &nbsp;&middot;&nbsp; ' + span +
+        '<span class="hint">click to clear</span>';
+      selEl.classList.add('on');
+    }
+
+    // ---- zoom / pan
+    // Anchored at the cursor: zooming in on something keeps that something
+    // under the pointer, so no step needs correcting with a pan afterwards.
+    function setZoom(na, nb){
+      na = Math.round(na); nb = Math.round(nb);
+      if (nb - na < MIN_SPAN) return;
+      if (na <= 0 && nb >= full.length - 1) { zoomA = null; zoomB = null; }
+      else { zoomA = Math.max(0, na); zoomB = Math.min(full.length - 1, nb); }
+      scheduleRedraw();
+    }
+    function zoomAt(viewIdx, factor){
+      const span = Math.max(1, zb - za);
+      let newSpan = Math.round(span * factor);
+      newSpan = Math.max(MIN_SPAN, Math.min(full.length - 1, newSpan));
+      if (newSpan === span) return;
+      const anchor = za + viewIdx;
+      const ratio = (anchor - za) / span;
+      let na = anchor - ratio * newSpan;
+      let nb = na + newSpan;
+      if (na < 0) { na = 0; nb = newSpan; }
+      if (nb > full.length - 1) { nb = full.length - 1; na = nb - newSpan; }
+      setZoom(na, nb);
+    }
+    function panBy(points){
+      if (!zoomed) return;
+      const span = zb - za;
+      let na = za + points, nb = zb + points;
+      if (na < 0) { na = 0; nb = span; }
+      if (nb > full.length - 1) { nb = full.length - 1; na = nb - span; }
+      setZoom(na, nb);
+    }
+
+    // Published for the handlers, which are bound ONCE to #plotWrap -- a node
+    // render() never replaces. They used to live on the inner fade div, which
+    // is rebuilt on every draw, and zooming draws: the first pinch step
+    // deleted the element the gesture was attached to and iOS cancelled the
+    // sequence, so pinch appeared to do nothing whatsoever.
+    // The right gutter in client coordinates, with slack for a fingertip.
+    function inYAxis(clientX){
+      const box = svgEl.getBoundingClientRect();
+      // Zero width means not laid out yet; without this the division gives
+      // Infinity and every pointer counts as being on the axis.
+      if (!box.width) return false;
+      const scale = box.width / W;
+      return (clientX - box.left) / scale > (W - PAD_R - 10 * S);
+    }
+    // Scales about the price under the pointer: the value at clientY stays
+    // put and everything else moves relative to it.
+    function scaleY(factor, clientY){
+      const box = svgEl.getBoundingClientRect();
+      if (!box.height) return;
+      const sc = box.height / H;
+      const py = (clientY - box.top) / sc;
+      const plotH = H - PAD_T - PAD_B;
+      const t = Math.max(0, Math.min(1, (py - PAD_T) / plotH));
+      const anchor = hi - t * (hi - lo);
+      const baseRange = baseHi - baseLo;
+      let range = (hi - lo) * factor;
+      range = Math.max(baseRange * Y_MIN_FACTOR, Math.min(baseRange * Y_MAX_FACTOR, range));
+      const nLo = anchor - (1 - t) * range;
+      if (Math.abs(nLo - lo) < 1e-12 && Math.abs(range - (hi - lo)) < 1e-12) return;
+      yLo = nLo; yHi = nLo + range;
+      scheduleRedraw();
+    }
+    function resetY(){
+      if (yLo === null && yHi === null) return;
+      yLo = yHi = null;
+      scheduleRedraw();
+    }
+    function panPixels(dx){
+      const box = svgEl.getBoundingClientRect();
+      if (!box.width) return;
+      const sc = box.width / W;
+      const perPoint = ((W - PAD_L - PAD_R) * sc) / Math.max(1, view.length - 1);
+      if (!perPoint) return;
+      const steps = Math.round(-dx / perPoint);
+      if (steps) panBy(steps);
+    }
+
+    ST = {
+      idxAt, moveTo, hide, zoomAt, panBy, setZoom, inYAxis, scaleY, resetY, panPixels, full, view,
+      // Callers pass view indices; stored as full-series indices so the
+      // selection is pinned to the data rather than to the screen.
+      setSel: (a, b) => {
+        if (a !== null) selA = a + za;
+        if (b !== null) selB = b + za;
+        drawSelection();
+      },
+      clearSel: () => { selA = selB = null; drawSelection(); },
+    };
+
+    drawSelection();
+    // Only a genuinely new shell fades in; re-running it per redraw flashed.
+    if (fresh) requestAnimationFrame(() => fade.classList.add('in'));
+    else fade.classList.add('in');
+
+    // rawVals, not vals: rebased, vals[0] is exactly 0 and the percentage
+    // below would divide by it.
+    const first = rawVals[0], last = rawVals[rawVals.length-1];
+    rollTo(priceEl, fmtVal(last));
+    const pct = first > 0 ? ((last - first) / first) * 100 : 0;
+    // The up/down colour rides on the inner span so it rolls with the figure
+    // rather than recolouring the outgoing one on its way off screen.
+    // SNAPPED, NOT ROLLED. A rolled field holds two children for the length
+    // of the animation, and a percentage sitting beside another percentage
+    // reads as two different figures rather than as one being replaced --
+    // which is exactly what it looked like. The price is a quantity becoming
+    // another quantity and is worth rolling. This is a label on it.
+    chgEl.textContent = (pct>=0?'+':'') + pct.toFixed(2) + '%';
+    chgEl.className = 'change ' + (pct >= 0 ? 'up' : 'down');
+    const SUBTITLE = {
+      price:   '$BULLEN / USD',
+      mcap:    '$BULLEN market cap',
+      fdv:     '$BULLEN fully diluted',
+      genesis: '$BULLEN at genesis supply',
+    };
+    subEl.textContent = ((showCmp
+        ? MODE_SHORT[mode].toLowerCase() + ' vs ' + MODE_SHORT[compare].toLowerCase() +
+          ', rebased to the left edge'
+        : (showMcap ? SUBTITLE[mode] : SUBTITLE.price))
+      + ' \u00b7 ' + (RANGE_LABEL[currentTf] || ''));
+
+    const notes = [];
+    const BASIS = {
+      mcap: 'price \u00d7 circulating supply at each point, excluding locked tokens.',
+      fdv:  'price \u00d7 total supply at each point \u2014 locked tokens included, ' +
+            'burned tokens excluded. this is the basis most aggregators print.',
+      // Stated plainly rather than winked at. The number is real arithmetic on
+      // a real price and it is still not the market cap, and saying so is the
+      // only thing that makes showing it honest.
+      genesis: 'price \u00d7 1,000,000,000, the supply at launch. what the number ' +
+               'would read if nothing had ever been burned or locked. ' +
+               'this is not the market cap.',
+    };
+    if (showCmp) {
+      const a = (vals[vals.length-1]).toFixed(2);
+      const b = (vals2[vals2.length-1]).toFixed(2);
+      const gap = (vals2[vals2.length-1] - vals[vals.length-1]);
+      // Keys in sorted order because the lookup sorts. Written the natural
+      // way round -- 'mcap|genesis' -- they never matched and the pairing
+      // silently lost its one line of explanation while everything else on
+      // the view looked right.
+      const MEANING = {
+        // The one people came for: price is what a single token costs, market
+        // cap is that times how many are circulating. Burn enough and the
+        // second can fall while the first rises.
+        'mcap|price':   'price is what one token costs. mcap is that times how many circulate. ' +
+                        'when the gap opens downward, supply fell faster than price rose.',
+        'fdv|price':    'the gap is burned tokens alone. locked tokens are counted in both.',
+        'genesis|mcap': 'the gap is every burn and every lock since the left edge.',
+        'fdv|genesis':  'the gap is every burn since the left edge. locking does not move it.',
+        'fdv|mcap':     'the gap is locking alone. both exclude burned tokens.',
+      };
+      const key = pairKey(mode, compare);
+      // Two decimals here, not fmtPct: the axis can round to whole percent
+      // because it is a scale, but this line exists to state a difference and
+      // "-10%" against "-5.0%" hides the very thing being measured.
+      const pc = v => (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+      notes.push('both rebased to 0% at the left edge, so price cancels and only the ' +
+        'supply difference is left. ' + MODE_SHORT[mode].toLowerCase() + ' ' + pc(+a) +
+        ' \u00b7 ' + MODE_SHORT[compare].toLowerCase() + ' ' + pc(+b) +
+        ' \u00b7 ' + Math.abs(gap).toFixed(2) + ' points apart.');
+      if (MEANING[key]) notes.push(MEANING[key]);
+      notes.push('gold is ' + MODE_SHORT[mode].toLowerCase() + ', dashed is ' +
+        MODE_SHORT[compare].toLowerCase() + '. zoom and both re-anchor to the new left edge.');
+    } else if (showMcap) {
+      notes.push(BASIS[mode]);
+      // genesis is derived from price alone, so the supply record has no
+      // bearing on where its line starts.
+      if (mode !== 'genesis' && full.length < candles.length && payload.supplyCoverageFrom) {
+        notes.push('supply has been recorded since ' +
+          new Date(payload.supplyCoverageFrom).toISOString().slice(0,10) +
+          '; earlier candles are not drawn rather than assumed.');
+      }
+    }
+    if (marks) notes.push('each mark is a recorded supply event, sized by how much moved. hover one to read it. every one has a transaction behind it.');
+    if (zoomed) notes.unshift('zoomed to ' + view.length + ' of ' + full.length +
+      ' points \u00b7 double-click or double-tap to reset');
+    else {
+      notes.push('drag to move \u00b7 scroll or pinch to zoom \u00b7 drag the price scale to stretch it');
+      notes.push('shift-drag, or two fingers, to measure between two points');
+    }
+    noteEl.innerHTML = notes.join('<br>');
+  }
+
+  // ----------------------------------------------------------------- load
+  function syncModeAvailability(payload){
+    // Each supply-backed mode is gated on its OWN series. fdv arrives from a
+    // later worker than mcap did, so a page deployed ahead of that worker
+    // must disable the button rather than draw a blank chart under a label
+    // that promises a number.
+    const has = key => !!(payload && Array.isArray(payload[key]) && payload[key].some(v => v != null));
+    const state = { mcap: has('mcap'), fdv: has('fdv'), genesis: true, price: true };
+    modeState = state;
+    MODES.forEach(m => {
+      const btn = modes.querySelector('[data-mode="' + m + '"]');
+      if (!btn) return;
+      btn.disabled = !state[m];
+      btn.title = state[m] ? '' : 'supply history is still being recorded';
+    });
+    if (!state[mode]) mode = 'price';
+    // The overlay depends on a second series that can be just as unavailable
+    // as the first, and on the primary still being a money view.
+    if (compare && (!state[compare] || !canPair(mode, compare))) compare = null;
+    syncButtons();
+  }
+
+  async function load(tf){
+    currentTf = tf;
+    // A different range is different data on a different x axis. Morphing one
+    // into the other would imply a continuity that is not there, so the shape
+    // is dropped and the new range simply appears.
+    prevShape = null;
+    wantAnim = false;
+    selA = selB = null;
+    // Indices into one particular series; meaningless against another.
+    zoomA = zoomB = null;
+    yLo = yHi = null;
+    syncButtons();
+    setHash();
+    if (cache.has(tf)) { syncModeAvailability(cache.get(tf)); render(cache.get(tf)); return; }
+    wrap.innerHTML = '<div class="msg">loading&hellip;</div>';
+    const token = ++loadToken;
+    try {
+      const res = await fetch(window.location.origin + '/ohlcv?tf=' + encodeURIComponent(tf), { cache:'no-store' });
+      const j = await res.json();
+      if (token !== loadToken) return;
+      if (!j.ok || !j.candles || !j.candles.length) throw new Error(j.error || 'chart unavailable');
+      cache.set(tf, j);
+      syncModeAvailability(j);
+      render(j);
+    } catch (e) {
+      if (token !== loadToken) return;
+      wrap.innerHTML = '<div class="msg">chart unavailable &mdash; try again shortly</div>';
+      noteEl.innerHTML = '';
+    }
+  }
+
+  // ---- input, bound ONCE to #plotWrap, which outlives every redraw
+  (function bindInput(){
+    const TWO_FINGER_ZOOM_THRESHOLD = 22;
+    const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+    let dragging = false;
+    let pinch = null;
+    let yTouch = null;   // clientY while a finger drags the price scale
+    let panTouch = null; // clientX while a finger drags the chart sideways
+
+    wrap.addEventListener('wheel', e => {
+      if (!ST) return;
+      e.preventDefault();
+      // Over the price scale the wheel stretches the price scale: same
+      // gesture, different axis, decided by where the pointer is.
+      if (ST.inYAxis(e.clientX)) {
+        ST.scaleY(e.deltaY > 0 ? 1.12 : 1 / 1.12, e.clientY);
+        return;
+      }
+      if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        const step = Math.max(1, Math.round(ST.view.length * 0.06));
+        ST.panBy((e.deltaX || e.deltaY) > 0 ? step : -step);
+        return;
+      }
+      ST.zoomAt(ST.idxAt(e.clientX), e.deltaY > 0 ? 1.22 : 1 / 1.22);
+    }, { passive: false });
+
+    wrap.addEventListener('dblclick', e => {
+      if (!ST) return;
+      e.preventDefault();
+      // Reset whatever is under the pointer: the price scale on the gutter,
+      // the time window anywhere else.
+      if (ST.inYAxis(e.clientX)) { ST.resetY(); return; }
+      ST.setZoom(0, ST.full.length - 1);
+    });
+
+    let yDrag = null, panDrag = null;
+    // DRAG MOVES THE CHART. Measuring is shift+drag, or two fingers on touch:
+    // panning is constant, measuring is deliberate, so panning gets the
+    // gesture that costs nothing to start.
+    wrap.addEventListener('mousedown', e => {
+      if (!ST) return;
+      e.preventDefault();
+      if (ST.inYAxis(e.clientX)) { yDrag = e.clientY; return; }
+      if (e.shiftKey) {
+        const i = ST.idxAt(e.clientX);
+        ST.setSel(i, i);
+        dragging = true;
+        return;
+      }
+      panDrag = e.clientX;
+    });
+    wrap.addEventListener('mousemove', e => {
+      if (!ST) return;
+      if (yDrag !== null) {
+        const dy = e.clientY - yDrag;
+        if (Math.abs(dy) >= 2) { ST.scaleY(1 + dy * 0.006, yDrag); yDrag = e.clientY; }
+        return;
+      }
+      if (panDrag !== null) {
+        const dx = e.clientX - panDrag;
+        if (Math.abs(dx) >= 1) { ST.panPixels(dx); panDrag = e.clientX; }
+        ST.moveTo(e.clientX);
+        return;
+      }
+      ST.moveTo(e.clientX);
+      if (dragging) ST.setSel(null, ST.idxAt(e.clientX));
+    });
+    window.addEventListener('mouseup', () => { dragging = false; yDrag = null; panDrag = null; });
+    // GUARDED ON ST, NOT S.
+    //
+    // This read `if (S)`. S is the display scale factor and it is declared
+    // inside render(); out here it does not exist at all, and the whole file
+    // runs under 'use strict', so every mouseleave threw a ReferenceError
+    // before it could reach hide(). The crosshair and the readout were never
+    // told to go away, so a single hover left them on the chart permanently.
+    //
+    // Nothing else failed, which is why it survived: the error was thrown
+    // inside a listener, so it landed in the console and stopped there.
+    wrap.addEventListener('mouseleave', () => { if (ST) ST.hide(); });
+
+    // One finger reads a point. TWO FINGERS MEASURE BETWEEN THEM -- the only
+    // way to compare two moments without a mouse to drag with. If the fingers
+    // travel apart or together past the threshold the gesture commits to zoom
+    // and drops the measurement, so the two can never be confused.
+    let lastTap = 0;
+    wrap.addEventListener('touchstart', e => {
+      if (!ST) return;
+      if (e.touches.length === 2) {
+        pinch = { d0: dist(e.touches), d: dist(e.touches), mode: 'measure' };
+        panTouch = null;   // the second finger ends any pan the first began
+        yTouch = null;
+        ST.hide();
+        ST.setSel(ST.idxAt(e.touches[0].clientX), ST.idxAt(e.touches[1].clientX));
+      } else if (e.touches.length === 1) {
+        if (ST.inYAxis(e.touches[0].clientX)) {
+          const now = Date.now();
+          if (now - lastTap < 320) ST.resetY();     // double-tap the scale resets it
+          lastTap = now;
+          yTouch = e.touches[0].clientY;
+          return;
+        }
+        const now = Date.now();
+        if (now - lastTap < 320) ST.setZoom(0, ST.full.length - 1);   // double-tap resets
+        lastTap = now;
+        panTouch = e.touches[0].clientX;
+        ST.moveTo(e.touches[0].clientX);
+      }
+    }, { passive: true });
+
+    ['gesturestart','gesturechange','gestureend'].forEach(g => {
+      wrap.addEventListener(g, e => e.preventDefault());
+    });
+
+    wrap.addEventListener('touchmove', e => {
+      if (!ST) return;
+      if (e.touches.length === 2 && pinch) {
+        e.preventDefault();
+        const d = dist(e.touches);
+        const mid = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        if (pinch.mode === 'measure' && Math.abs(d - pinch.d0) > TWO_FINGER_ZOOM_THRESHOLD) {
+          pinch.mode = 'zoom';
+          ST.clearSel();
+        }
+        if (pinch.mode === 'zoom') {
+          if (Math.abs(d - pinch.d) > 6 && d > 8) {
+            ST.zoomAt(ST.idxAt(mid), pinch.d / d);
+            pinch.d = d;
+          }
+        } else {
+          ST.setSel(ST.idxAt(e.touches[0].clientX), ST.idxAt(e.touches[1].clientX));
+        }
+        return;
+      }
+      if (yTouch !== null && e.touches[0]) {
+        e.preventDefault();
+        const dy = e.touches[0].clientY - yTouch;
+        if (Math.abs(dy) >= 2) { ST.scaleY(1 + dy * 0.006, yTouch); yTouch = e.touches[0].clientY; }
+        return;
+      }
+      if (panTouch !== null && e.touches[0]) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - panTouch;
+        if (Math.abs(dx) >= 1) { ST.panPixels(dx); panTouch = e.touches[0].clientX; }
+        ST.moveTo(e.touches[0].clientX);
+        return;
+      }
+      if (e.touches[0]) ST.moveTo(e.touches[0].clientX);
+    }, { passive: false });
+
+    wrap.addEventListener('touchend', e => {
+      if (!ST) return;
+      if (e.touches.length < 2) pinch = null;
+      if (e.touches.length === 0) { yTouch = null; panTouch = null; }
+      // The measurement stays on screen after the fingers lift: it exists to
+      // be read, and it cannot be read under two fingers.
+      if (e.touches.length === 0) ST.hide();
+    }, { passive: true });
+  })();
+
+  ranges.addEventListener('click', e => {
+    const btn = e.target.closest('.btn');
+    if (!btn || btn.disabled || btn.dataset.tf === currentTf) return;
+    load(btn.dataset.tf);
+  });
+  modes.addEventListener('click', e => {
+    const btn = e.target.closest('.btn');
+    if (!btn || btn.disabled || btn.dataset.mode === mode) return;
+    mode = btn.dataset.mode;
+    // Switching the primary onto the series being compared against would ask
+    // for a chart of something against itself. Dropped rather than swapped:
+    // silently reversing which line is which is worse than clearing it.
+    if (!canPair(mode, compare)) compare = null;
+    wantAnim = true;
+    selA = selB = null;
+    zoomA = zoomB = null;
+    yLo = yHi = null;
+    syncButtons(); setHash();
+    const c = cache.get(currentTf);
+    if (c) render(c);
+  });
+  cmpBtns.addEventListener('click', e => {
+    const btn = e.target.closest('.btn');
+    if (!btn || btn.disabled) return;
+    const want = btn.dataset.cmp === 'off' ? null : btn.dataset.cmp;
+    if (want === compare) return;
+    compare = want;
+    wantAnim = true;
+    // The y range is a percentage range in an overlay and a dollar one
+    // otherwise, so a stretch carried across the toggle would be nonsense.
+    yLo = yHi = null;
+    syncButtons(); setHash();
+    const c = cache.get(currentTf);
+    if (c) render(c);
+  });
+  evtBtns.addEventListener('click', e => {
+    const btn = e.target.closest('.btn');
+    if (!btn) return;
+    showEventsPref = !showEventsPref;
+    syncButtons(); setHash();
+    const c = cache.get(currentTf);
+    if (c) render(c);
+  });
+
+  // Redraw at the new size, straight from cache, so resizing never costs a
+  // request. Debounced because resize fires continuously while dragging.
+  let rt = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => {
+      const c = cache.get(currentTf);
+      if (c) render(c);
+    }, 150);
+  });
+
+  syncButtons();
+  load(currentTf);
+})();
+</script>
+</body>
+</html>

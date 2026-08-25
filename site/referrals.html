@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<!-- BULLENCIAGA referrals.html | build 2026-08-16.1 — custom piece grant ledger
+
+     ONE JOB: who gets paid what for a given week. Bindings come from the
+     signed store (/refbind/all), fees are measured from the chain per trade,
+     and the output is a payment sheet. Everything that used to be an input is
+     now a constant, because every one of those decisions has been made:
+     buys only, 50% split, fees measured against the pump.fun creator vault.
+
+     Still read-only. No keypair, no signing, no spending authority. It works
+     out the numbers; sending the SOL stays manual, from your own machine. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BULLENCIAGA — Weekly Payouts</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --black:#050505; --panel:#0b0b0b;
+    --line:rgba(199,168,105,0.18);
+    --gold:#c7a869; --gold-light:#e8d9ae;
+    --text:#f5f3ee; --dim:rgba(245,243,238,0.45);
+    --good:#5fd39a; --bad:#e0685f;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--black); color:var(--text);
+    font-family:'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size:13px; line-height:1.6; padding:26px 20px 80px;
+    max-width:1060px; margin:0 auto;
+  }
+  h1{ font-size:15px; letter-spacing:0.26em; text-transform:uppercase; color:var(--gold); margin:0 0 4px; font-weight:400; }
+  .sub{ color:var(--dim); font-size:11px; letter-spacing:0.06em; margin-bottom:24px; }
+  .bar{
+    display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;
+    border:1px solid var(--line); background:var(--panel); padding:16px; margin-bottom:18px;
+  }
+  .bar label{ display:block; font-size:9.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim); margin-bottom:5px; }
+  .bar input{
+    background:#000; color:var(--text); border:1px solid var(--line);
+    padding:9px 11px; font-family:inherit; font-size:12.5px; width:150px;
+  }
+  .bar input:focus{ outline:none; border-color:var(--gold); }
+  button{
+    font-family:inherit; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+    background:var(--gold); color:var(--black); border:1px solid var(--gold);
+    padding:11px 26px; cursor:pointer;
+  }
+  button:hover:not(:disabled){ background:var(--gold-light); }
+  button:disabled{ opacity:0.35; cursor:not-allowed; }
+  button.ghost{ background:transparent; color:var(--gold); }
+  .quick{ display:flex; gap:8px; }
+  .quick button{ background:transparent; color:var(--dim); border-color:var(--line); padding:9px 12px; font-size:9.5px; }
+  .quick button:hover{ color:var(--gold); border-color:var(--gold); background:transparent; }
+  #status{ font-size:11px; color:var(--dim); margin:0 0 14px; min-height:18px; }
+  table{ width:100%; border-collapse:collapse; font-size:12px; }
+  th{
+    text-align:left; font-size:9.5px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--dim); font-weight:400; padding:9px 10px; border-bottom:1px solid var(--line);
+  }
+  td{ padding:10px; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; }
+  td.num, th.num{ text-align:right; font-variant-numeric:tabular-nums; }
+  tr.total td{ border-top:1px solid var(--line); border-bottom:none; color:var(--gold); font-size:13px; }
+  .mono{ font-size:11px; color:var(--dim); }
+  .owed{ color:var(--gold); }
+  .panel{ border:1px solid var(--line); background:var(--panel); padding:16px; }
+  .note{ font-size:10.5px; color:var(--dim); margin-top:12px; line-height:1.7; }
+  .err{ color:var(--bad); }
+  .build{ margin-top:30px; font-size:9px; color:rgba(245,243,238,0.18); letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+
+<h1>Weekly Payouts</h1>
+<div class="sub">buys only &middot; from each binding forward &middot; 50% of measured fees &middot; read-only</div>
+
+<div class="bar">
+  <div>
+    <label>From (UTC)</label>
+    <input type="text" id="fromDate" placeholder="2026-08-13">
+  </div>
+  <div>
+    <label>To (UTC)</label>
+    <input type="text" id="toDate" placeholder="2026-08-20">
+  </div>
+  <div class="quick">
+    <button type="button" id="q7">last 7 days</button>
+    <button type="button" id="qAll">all time</button>
+  </div>
+  <div style="flex:1"></div>
+  <button id="runBtn">Who gets paid</button>
+  <button class="ghost" id="csvBtn" disabled>CSV</button>
+  <button class="ghost" id="paidBtn" disabled>Mark paid</button>
+</div>
+
+<div id="status">ready — bindings load automatically when you run.</div>
+
+<div class="panel" id="out" style="display:none;"></div>
+
+<div class="bar" style="margin-top:18px;">
+  <div style="flex:1 1 260px;">
+    <label>Admin secret &mdash; only needed to mark paid</label>
+    <input type="password" id="secret" style="width:100%;" placeholder="REFERRAL_ADMIN_SECRET" autocomplete="off">
+  </div>
+</div>
+
+<div class="note">
+  Fees are the lamports (or wrapped SOL) that actually reached the creator vault in each
+  buy, so the payout tracks the real rate as it moves with market cap. A trade where the
+  vault is absent falls back to 0.785% and is flagged. Sends stay manual &mdash; this page
+  cannot move funds.
+</div>
+
+<div class="build">build 2026-08-16.1 &mdash; custom piece grant ledger</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // Decisions already made, now constants:
+  var MINT       = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
+  var FEE_VAULT  = '66sCGYPJcWvDX9APcHscG4Svo86aC7CPWzXuoqerteHe';
+  var FALLBACK   = 0.00785;   // observed 13 Aug; used only when the vault is absent from a tx
+  var SPLIT      = 0.5;
+  var SIDES      = 'buy';     // sells generate fees but earn nothing
+  // Paying yourself half of your own fee is a transfer from one pocket to the
+  // other. Anyone naming the dev wallet as their referrer is still recorded --
+  // the binding is signed history and stays -- but it never becomes a line on
+  // the payment sheet, because there is nothing to send.
+  var DEV_WALLET = 'GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd';
+  // A Herd mint pays 250,000 $BULLEN into this escrow. That movement is
+  // already inside the transactions this page fetches for fees, so counting
+  // mints costs no extra requests and touches nothing in the payout path.
+  var MINT_ESCROW = 'FUtAEk1TAVf2WZ3wqXeHYttqfpTftEf6qrprue5x6mLy';
+  // Wrapped SOL. An aggregator-routed buy spends this instead of the native
+  // balance, and the two are the same money.
+  var WSOL       = 'So11111111111111111111111111111111111111112';
+  var MINT_COST = 250000;
+  var CUSTOM_AT = 3;   // referred mints that earn the referrer a custom piece
+  var MAX_SIGS   = 300;
+  var RPC        = window.location.origin + '/rpc';
+  var LAMPORTS   = 1e9;
+
+  var $ = function(id){ return document.getElementById(id); };
+  var stop = false;
+  var lastRows = null;
+  var customMap = {};
+  var lastPaid = {};
+
+  function say(m, isErr){ $('status').textContent = m || ''; $('status').className = isErr ? 'err' : ''; }
+  function log(m){ say(m); }
+  function setStatus(m){ say(m); }
+  function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  function shortAddr(a){ return a.slice(0,4) + '\u2026' + a.slice(-4); }
+  function fmtSol(n){ return n.toFixed(6); }
+
+  async function rpc(method, params, attempt){
+    attempt = attempt || 0;
+    if (stop) throw new Error('stopped');
+    var res;
+    try {
+      res = await fetch(RPC, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc:'2.0', id:1, method:method, params:params }),
+      });
+    } catch (e) {
+      if (attempt < 5) { await sleep(400 * Math.pow(2, attempt)); return rpc(method, params, attempt+1); }
+      throw e;
+    }
+    if (res.status === 429 || res.status >= 500) {
+      if (attempt < 6) {
+        await sleep(600 * Math.pow(2, attempt));
+        return rpc(method, params, attempt+1);
+      }
+      throw new Error(method + ' upstream ' + res.status);
+    }
+    var j = await res.json();
+    if (j.error) throw new Error(method + ': ' + (j.error.message || 'rpc error'));
+    return j.result;
+  }
+
+  function readTrade(tx, wallet, feeAccount){
+    if (!tx || !tx.meta || tx.meta.err) return null;
+    var meta = tx.meta;
+    var keys = (tx.transaction && tx.transaction.message && tx.transaction.message.accountKeys) || [];
+
+    var idx = -1;
+    for (var i = 0; i < keys.length; i++){
+      var k = typeof keys[i] === 'string' ? keys[i] : keys[i].pubkey;
+      if (k === wallet){ idx = i; break; }
+    }
+    if (idx === -1) return null;
+
+    function tokenTotal(list){
+      var sum = 0;
+      for (var i = 0; i < (list || []).length; i++){
+        var b = list[i];
+        if (b.mint === MINT && b.owner === wallet){
+          sum += Number((b.uiTokenAmount && b.uiTokenAmount.uiAmountString) || 0);
+        }
+      }
+      return sum;
+    }
+    var tokenDelta = tokenTotal(meta.postTokenBalances) - tokenTotal(meta.preTokenBalances);
+    if (Math.abs(tokenDelta) < 1e-9) return null;
+
+    var solDelta = (meta.postBalances[idx] - meta.preBalances[idx]) / LAMPORTS;
+    if (idx === 0) solDelta += (meta.fee || 0) / LAMPORTS;   // fee payer
+
+    // A BUY PAID IN WRAPPED SOL MOVES NO NATIVE BALANCE.
+    //
+    // Volume was measured from the native balance alone, so a wallet holding
+    // a standing wSOL account -- which routed swaps and most bots use -- read
+    // solDelta of exactly zero on a real purchase. The guard below then threw
+    // the trade away as zero-volume, AFTER it had already been correctly
+    // identified as a buy. Three genuine buys on one referred wallet were
+    // dropped this way and the referrer was shown as owed nothing.
+    //
+    // Native and wrapped are the same money leaving the same wallet, so both
+    // are counted. Wrapping inside the trade nets out on its own: the native
+    // side falls and the wrapped side rises by the same amount, leaving the
+    // real cost.
+    function wsolTotal(list){
+      var sum = 0;
+      for (var i = 0; i < (list || []).length; i++){
+        var b = list[i];
+        if (b.mint === WSOL && b.owner === wallet){
+          sum += Number((b.uiTokenAmount && b.uiTokenAmount.uiAmountString) || 0);
+        }
+      }
+      return sum;
+    }
+    var wsolDelta = wsolTotal(meta.postTokenBalances) - wsolTotal(meta.preTokenBalances);
+
+    var side = tokenDelta > 0 ? 'buy' : 'sell';
+    var volume = Math.abs(solDelta + wsolDelta);
+
+    // A ZERO SOL DELTA DOES NOT MEAN A ZERO TRADE.
+    //
+    // This used to `return null` whenever volume rounded to nothing, which
+    // threw away every buy paid in USDC: the wallet's native balance moves by
+    // exactly the transaction fee, the fee is added back above for the fee
+    // payer, and the result is precisely zero. One referred wallet bought
+    // 1,174,014 $BULLEN for 283 USDC and the trade vanished here -- after the
+    // token delta had already proved it was a buy.
+    //
+    // The token delta is the proof that a trade happened. Volume is only used
+    // for the 0.785% fallback when the fee cannot be measured, so a trade
+    // with no SOL leg is kept and simply has no usable volume. Fees on those
+    // are measured from the vault, which is the accurate path anyway.
+    if (Math.abs(tokenDelta) < 1e-9) return null;
+
+    // THE FEE IS MEASURED, NOT ESTIMATED.
+    //
+    // The creator fee rate is not a constant -- it is higher at low market
+    // caps -- so a single percentage applied across a period silently
+    // overpays whoever traded late and underpays whoever traded early. The
+    // lamports that actually arrived in the fee account during THIS
+    // transaction are the fee THIS trade generated, whatever the rate was at
+    // the time. Nothing to look up and nothing to keep in sync.
+    var feeMeasured = null;
+    if (feeAccount){
+      for (var j = 0; j < keys.length; j++){
+        var kk = typeof keys[j] === 'string' ? keys[j] : keys[j].pubkey;
+        if (kk === feeAccount){
+          var d = (meta.postBalances[j] - meta.preBalances[j]) / LAMPORTS;
+          if (d > 0) feeMeasured = d;
+          break;
+        }
+      }
+      // Some venues credit the fee as wrapped SOL rather than natively. The
+      // fee account may be the TOKEN ACCOUNT itself or the owner of one, so
+      // match on both -- checking only `owner` missed the case where the
+      // address given is the token account, which is the usual shape for a
+      // creator vault.
+      if (feeMeasured === null){
+        var feeIdx = -1;
+        for (var q = 0; q < keys.length; q++){
+          var qq = typeof keys[q] === 'string' ? keys[q] : keys[q].pubkey;
+          if (qq === feeAccount){ feeIdx = q; break; }
+        }
+        var wsolBefore = 0, wsolAfter = 0;
+        function match(b){ return b.owner === feeAccount || (feeIdx >= 0 && b.accountIndex === feeIdx); }
+        (meta.preTokenBalances || []).forEach(function(b){
+          if (match(b)) wsolBefore += Number((b.uiTokenAmount && b.uiTokenAmount.uiAmountString) || 0);
+        });
+        (meta.postTokenBalances || []).forEach(function(b){
+          if (match(b)) wsolAfter += Number((b.uiTokenAmount && b.uiTokenAmount.uiAmountString) || 0);
+        });
+        if (wsolAfter - wsolBefore > 0) feeMeasured = wsolAfter - wsolBefore;
+      }
+    }
+
+    // MINT DETECTION, PURELY ADDITIVE.
+    //
+    // A mint moves 250,000 $BULLEN from the wallet into the escrow. It reads
+    // as a token decrease with no SOL coming back, so buys-only already
+    // excludes it from every fee and payout figure -- this flag is counted
+    // separately and can never alter what anyone is owed.
+    var isMint = false, mintCount = 0;
+    if (tokenDelta < 0){
+      var escIdx = -1;
+      for (var e = 0; e < keys.length; e++){
+        var ek = typeof keys[e] === 'string' ? keys[e] : keys[e].pubkey;
+        if (ek === MINT_ESCROW){ escIdx = e; break; }
+      }
+      if (escIdx >= 0){
+        var pre0 = {}, gained = 0;
+        (meta.preTokenBalances || []).forEach(function(b){
+          if (b.accountIndex === escIdx && b.mint === MINT){
+            pre0[b.accountIndex] = Number((b.uiTokenAmount || {}).uiAmountString || 0);
+          }
+        });
+        (meta.postTokenBalances || []).forEach(function(b){
+          if (b.accountIndex === escIdx && b.mint === MINT){
+            gained += Number((b.uiTokenAmount || {}).uiAmountString || 0) - (pre0[b.accountIndex] || 0);
+          }
+        });
+        if (gained > 0){
+          isMint = true;
+          // A single transaction can claim more than one piece.
+          mintCount = Math.max(1, Math.round(gained / MINT_COST));
+        }
+      }
+    }
+
+    return {
+      side: side, volume: volume, tokens: Math.abs(tokenDelta),
+      feeMeasured: feeMeasured, isMint: isMint, mintCount: mintCount,
+    };
+  }
+
+  async function walletTrades(wallet, bounds, maxSigs, feeAccount){
+    // SCAN THE WALLET, NOT ITS TOKEN ACCOUNT.
+    //
+    // Reading signatures from the token account meant a wallet whose account
+    // had been CLOSED -- by burning out, or selling everything, which
+    // reclaims the rent -- returned nothing, and every buy it ever made
+    // vanished from the payout. The wallet signs every swap, so its own
+    // signature list is a superset and cannot be closed.
+    var trades = [], before = null, fetched = 0;
+    while (fetched < maxSigs){
+      if (stop) throw new Error('stopped');
+      var batch = await rpc('getSignaturesForAddress', [
+        wallet, { limit: Math.min(100, maxSigs - fetched), before: before },
+      ]);
+      if (!batch || !batch.length) break;
+      fetched += batch.length;
+      before = batch[batch.length - 1].signature;
+
+      for (var i = 0; i < batch.length; i++){
+        var sg = batch[i];
+        if (sg.err) continue;
+        if (!sg.blockTime) continue;
+        if (bounds.from && sg.blockTime < bounds.from) { fetched = maxSigs; break; }
+        if (bounds.to   && sg.blockTime > bounds.to)   continue;
+
+        var tx = await rpc('getTransaction', [
+          sg.signature, { encoding:'jsonParsed', maxSupportedTransactionVersion: 0 },
+        ]);
+        var t = readTrade(tx, wallet, feeAccount);
+        if (t){
+          t.signature = sg.signature;
+          t.time = sg.blockTime;
+          trades.push(t);
+        }
+        setStatus('scanning ' + shortAddr(wallet) + ' \u2014 ' + trades.length + ' trades');
+      }
+      if (batch.length < 100) break;
+    }
+    return trades;
+  }
+
+  function bounds(){
+    var f = $('fromDate').value.trim(), t = $('toDate').value.trim();
+    var from = f ? Math.floor(Date.parse(f + 'T00:00:00Z')/1000) : null;
+    var to   = t ? Math.floor(Date.parse(t + 'T23:59:59Z')/1000) : null;
+    if (f && isNaN(from)) throw new Error('from is not a date: ' + f);
+    if (t && isNaN(to))   throw new Error('to is not a date: ' + t);
+    return { from: from, to: to };
+  }
+
+  async function run(){
+    $('runBtn').disabled = true;
+    $('csvBtn').disabled = true;
+    $('paidBtn').disabled = true;
+    $('out').style.display = 'none';
+    try {
+      var b = bounds();
+
+      say('loading signed bindings\u2026');
+      var res = await fetch(window.location.origin + '/refbind/all?nocache=' + Date.now(), { cache:'no-store' });
+      var j = await res.json();
+      if (!j.ok) throw new Error(j.error || 'could not read bindings');
+      if (!j.bindings.length){ say('no bindings recorded yet — nobody to pay.'); return; }
+
+      // one referred wallet -> one referrer; scan each referred wallet once
+      // Totals already paid, returned by the same request as the bindings.
+      // Owed is earned minus paid, so a period that has been settled shows
+      // zero rather than being paid twice.
+      var paidMap = j.paid || {};
+      customMap = j.custom || {};
+
+      var payable = j.bindings.filter(function(b){ return b.referrer !== DEV_WALLET; });
+      var skipped = j.bindings.length - payable.length;
+      if (skipped) log(skipped + ' binding(s) name the dev wallet — recorded, not payable.');
+      if (!payable.length){ say('no payable bindings in this period.'); return; }
+
+      var rows = [];
+      for (var i = 0; i < payable.length; i++){
+        var bd = payable[i];
+        say('[' + (i+1) + '/' + payable.length + '] scanning ' + shortAddr(bd.referred) + '\u2026');
+        // COUNTING STARTS AT THE BINDING, PER WALLET. Buys made before the
+        // referral was recorded were not referred by anyone -- paying on them
+        // would let everyone who already bought bind today and be owed for
+        // history. The effective window is the LATER of the period start and
+        // this wallet's boundAt.
+        var boundSec = Math.floor((bd.boundAt || 0) / 1000);
+        var eff = { from: Math.max(b.from || 0, boundSec) || null, to: b.to };
+        var trades = await walletTrades(bd.referred, eff, MAX_SIGS, FEE_VAULT);
+        var buys = trades.filter(function(t){ return SIDES === 'both' || t.side === SIDES; });
+        // Counted from the same trade list, outside the fee maths entirely.
+        var mints = trades.reduce(function(n, t){ return n + (t.isMint ? t.mintCount : 0); }, 0);
+        var fees = 0, estimated = 0;
+        buys.forEach(function(t){
+          if (t.feeMeasured !== null && t.feeMeasured !== undefined) { fees += t.feeMeasured; return; }
+          // No measured fee AND no SOL leg -- a stablecoin buy where the vault
+          // was absent. There is nothing to apply the fallback percentage to,
+          // so it contributes nothing and is flagged rather than silently
+          // counted as zero.
+          if (t.volume < 1e-9) { estimated++; return; }
+          fees += t.volume * FALLBACK; estimated++;
+        });
+        rows.push({
+          referrer: bd.referrer, referred: bd.referred, boundAt: bd.boundAt,
+          buys: buys.length, fees: fees, owed: fees * SPLIT, estimated: estimated,
+          mints: mints,
+        });
+      }
+
+      lastRows = rows;
+      lastPaid = paidMap;
+      render(rows, b);
+      $('csvBtn').disabled = false;
+      $('paidBtn').disabled = false;
+      say('done.');
+    } catch (e){
+      say((e && e.message) || String(e), true);
+    } finally {
+      $('runBtn').disabled = false;
+    }
+  }
+
+  function render(rows, b){
+    // THE SHEET IS PER REFERRER -- that is who you pay. Multiple referred
+    // wallets under one referrer collapse into one line and one amount.
+    var byRef = {};
+    rows.forEach(function(r){
+      var g = byRef[r.referrer] || (byRef[r.referrer] = { earned:0, fees:0, buys:0, people:0, estimated:0, mints:0, list:[] });
+      g.earned += r.owed; g.fees += r.fees; g.buys += r.buys; g.people++; g.estimated += r.estimated;
+      g.mints += (r.mints || 0);
+      g.list.push(r);
+    });
+    // EARNED MINUS PAID. Clamped at zero so a rounding difference or an
+    // overpayment never renders as a negative amount to send.
+    Object.keys(byRef).forEach(function(ref){
+      byRef[ref].paid = Number(lastPaid[ref] || 0);
+      byRef[ref].owed = Math.max(0, byRef[ref].earned - byRef[ref].paid);
+    });
+
+    var period = ($('fromDate').value || 'all time') + ' \u2192 ' + ($('toDate').value || 'now');
+    var html = '<div class="mono" style="margin-bottom:12px;">' + period + ' \u00b7 buys only \u00b7 50% of measured fees</div>';
+    html += '<table><thead><tr><th>Pay to</th><th class="num">People</th><th class="num">Buys</th>' +
+            '<th class="num">Mints</th>' +
+            '<th class="num">Earned SOL</th><th class="num">Paid SOL</th><th class="num">Send SOL</th></tr></thead><tbody>';
+
+    var refs = Object.keys(byRef).sort(function(a,z){ return byRef[z].owed - byRef[a].owed; });
+    var tOwed = 0, tFees = 0, tEarned = 0, tPaid = 0, tMints = 0, anyEst = 0, customs = [];
+    refs.forEach(function(ref){
+      var g = byRef[ref];
+      tOwed += g.owed; tFees += g.fees; tEarned += g.earned; tPaid += g.paid;
+      tMints += g.mints; anyEst += g.estimated;
+      if (g.mints >= CUSTOM_AT) customs.push(ref);
+      // WHO they referred, inline under the payment line. The sheet is the
+      // only place this pairing is visible, and it is needed to answer "who
+      // actually came in from this person".
+      var who = g.list.map(function(r){
+        return '<div style="font-size:10.5px; color:var(--dim); padding:2px 0;">' +
+               r.referred +
+               ' &middot; ' + r.buys + (r.buys === 1 ? ' buy' : ' buys') +
+               (r.mints ? ' &middot; <span style="color:var(--gold)">' + r.mints +
+                 (r.mints === 1 ? ' mint' : ' mints') + '</span>' : '') +
+               ' &middot; bound ' + new Date(r.boundAt).toISOString().slice(0,10) +
+               '</div>';
+      }).join('');
+
+      // EARNED IS DERIVED, GRANTED IS RECORDED.
+      //
+      // Mint count is recomputed every run, so the earned badge looks
+      // identical the week after the piece was sent -- which is how a piece
+      // gets sent twice, or never. Delivery is a fact and has to be written
+      // down, so it lives in its own ledger and is shown instead of the
+      // badge once it exists.
+      var earnedCustom = g.mints >= CUSTOM_AT;
+      var granted = customMap[ref] || null;
+      var customBlock = '';
+      if (granted) {
+        customBlock =
+          '<div style="font-size:10px; color:var(--dim); letter-spacing:0.1em; margin-top:4px;">' +
+          '&#9670; CUSTOM GRANTED &middot; ' +
+          new Date(granted.at).toISOString().slice(0,10) +
+          (granted.mint ? ' &middot; <span style="color:var(--gold)">' + granted.mint.slice(0,8) + '&hellip;</span>' : '') +
+          '</div>';
+      } else if (earnedCustom) {
+        customBlock =
+          '<div style="font-size:10px; color:var(--gold); letter-spacing:0.1em; margin-top:4px;">' +
+          '&#9670; CUSTOM EARNED &mdash; ' + g.mints + ' mints ' +
+          '<button type="button" class="grantBtn" data-ref="' + ref + '" ' +
+          'style="font-size:9px; letter-spacing:0.1em; padding:2px 6px; margin-left:6px; cursor:pointer;">' +
+          'MARK GRANTED</button></div>';
+      }
+      html += '<tr><td>' + ref + customBlock +
+              '<details style="margin-top:6px;"><summary style="font-size:10px; color:var(--dim); cursor:pointer;">' +
+              g.people + ' referred</summary>' + who + '</details></td>' +
+              '<td class="num">' + g.people + '</td>' +
+              '<td class="num">' + g.buys + '</td>' +
+              '<td class="num"' + (earnedCustom ? ' style="color:var(--gold)"' : '') + '>' + g.mints + '</td>' +
+              '<td class="num">' + fmtSol(g.earned) + '</td>' +
+              '<td class="num">' + (g.paid ? fmtSol(g.paid) : '\u2014') + '</td>' +
+              '<td class="num owed">' + fmtSol(g.owed) + '</td></tr>';
+    });
+    html += '<tr class="total"><td>Total</td><td class="num"></td><td class="num"></td>' +
+            '<td class="num">' + tMints + '</td>' +
+            '<td class="num">' + fmtSol(tEarned) + '</td>' +
+            '<td class="num">' + fmtSol(tPaid) + '</td>' +
+            '<td class="num">' + fmtSol(tOwed) + '</td></tr></tbody></table>';
+    if (customs.length){
+      var pending = customs.filter(function(r){ return !customMap[r]; });
+      html += '<div class="note" style="color:var(--gold);">' + customs.length +
+              ' referrer(s) have brought in ' + CUSTOM_AT + '+ mints and have earned a custom piece' +
+              (pending.length
+                ? ' \u2014 ' + pending.length + ' still to send.'
+                : ' \u2014 all sent.') + '</div>';
+    }
+    if (anyEst){
+      html += '<div class="note err">' + anyEst + ' trade(s) had no vault credit and used the 0.785% fallback.</div>';
+    }
+    $('out').innerHTML = html;
+    $('out').style.display = '';
+  }
+
+  // RECORD A ROUND OF PAYMENTS, after the SOL has actually been sent.
+  //
+  // Writes to an append-only ledger; it cannot move funds. Once recorded,
+  // every referrer's page shows outstanding rather than lifetime earned, so
+  // nobody is left wondering whether last week counted.
+  // AFTER SENDING, NOT BEFORE. This records amounts in the ledger; the next
+  // run subtracts them, so a settled period shows zero. It cannot know
+  // whether the SOL actually left, which is exactly why it is a separate,
+  // deliberate step rather than part of Calculate.
+  $('paidBtn').addEventListener('click', async function(){
+    if (!lastRows) return;
+    var secret = $('secret').value.trim();
+    if (!secret){ say('paste the admin secret first', true); return; }
+
+    var byRef = {};
+    lastRows.forEach(function(r){
+      var g = byRef[r.referrer] || (byRef[r.referrer] = 0);
+      byRef[r.referrer] = g + r.owed;
+    });
+    var payments = Object.keys(byRef)
+      .map(function(ref){ return { referrer: ref, amount: Math.max(0, byRef[ref] - Number(lastPaid[ref] || 0)) }; })
+      .filter(function(p){ return p.amount > 0; });
+    if (!payments.length){ say('nothing outstanding — nothing to record.', true); return; }
+
+    var total = payments.reduce(function(a, p){ return a + p.amount; }, 0);
+    if (!confirm('Record ' + payments.length + ' payment(s) totalling ' + total.toFixed(6) +
+                 ' SOL?\n\nOnly do this AFTER the SOL has been sent.')) return;
+
+    $('paidBtn').disabled = true;
+    try {
+      var res = await fetch(window.location.origin + '/refbind/paid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': secret },
+        body: JSON.stringify({ payments: payments, note: 'weekly payout' }),
+      });
+      var j = await res.json();
+      if (j.ok) say('recorded ' + j.recorded + ' payment(s). Re-run to see it settled.');
+      else say(j.error || 'could not record', true);
+    } catch (e){
+      say('could not record: ' + ((e && e.message) || e), true);
+    } finally {
+      $('paidBtn').disabled = false;
+    }
+  });
+
+  try {
+    var sv = localStorage.getItem('bullen-referral-secret');
+    if (sv) $('secret').value = sv;
+    $('secret').addEventListener('input', function(){
+      try { localStorage.setItem('bullen-referral-secret', $('secret').value); } catch (e) {}
+    });
+  } catch (e) {}
+
+  // Delegated, because the rows are rebuilt on every run and a handler bound
+  // to a button that no longer exists is a silent dead click.
+  $('out').addEventListener('click', async function(e){
+    var btn = e.target.closest ? e.target.closest('.grantBtn') : null;
+    if (!btn || btn.disabled) return;
+    var ref = btn.getAttribute('data-ref');
+    if (!ref) return;
+
+    var secret = $('secret').value.trim();
+    if (!secret){ say('admin secret required to mark a piece granted.', true); return; }
+
+    // Optional. If the asset address is given the record points at something
+    // checkable rather than only asserting the piece was sent.
+    var mint = prompt('Asset address of the piece sent to\n' + ref +
+                      '\n\nLeave blank to record it without one.');
+    if (mint === null) return;
+    mint = String(mint || '').trim();
+
+    if (!confirm('Mark the custom piece as GRANTED for\n' + ref +
+                 '\n\nOnly do this AFTER the piece has been sent. ' +
+                 'It will be announced in Telegram.')) return;
+
+    btn.disabled = true;
+    try {
+      var res = await fetch(window.location.origin + '/refbind/custom', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': secret },
+        body: JSON.stringify({ referrer: ref, mint: mint, note: 'custom piece' }),
+      });
+      var j = await res.json();
+      if (j.ok){
+        customMap[ref] = { at: j.at, mint: j.mint || '', note: '' };
+        say('recorded and announced. re-run to see it settled.');
+      } else {
+        say(j.error || 'could not record', true);
+        btn.disabled = false;
+      }
+    } catch (err){
+      say('could not record: ' + ((err && err.message) || err), true);
+      btn.disabled = false;
+    }
+  });
+
+  $('runBtn').addEventListener('click', run);
+  $('csvBtn').addEventListener('click', function(){
+    if (!lastRows) return;
+    var byRef = {};
+    lastRows.forEach(function(r){
+      var g = byRef[r.referrer] || (byRef[r.referrer] = { owed:0 });
+      g.owed += r.owed;
+    });
+    var lines = ['pay_to,send_sol'];
+    Object.keys(byRef).sort().forEach(function(ref){
+      lines.push(ref + ',' + byRef[ref].owed.toFixed(9));
+    });
+    var blob = new Blob([lines.join('\n')], { type:'text/csv' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'bullen-payouts-' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  });
+  $('q7').addEventListener('click', function(){
+    var now = new Date(), then = new Date(now.getTime() - 7*86400*1000);
+    $('fromDate').value = then.toISOString().slice(0,10);
+    $('toDate').value = now.toISOString().slice(0,10);
+  });
+  $('qAll').addEventListener('click', function(){
+    $('fromDate').value = ''; $('toDate').value = '';
+  });
+})();
+</script>
+</body>
+</html>

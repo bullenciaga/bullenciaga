@@ -1,0 +1,29 @@
+{
+  "drawnAt": "2026-08-04T00:48:29.730Z",
+  "seedBlockhash": "JXkA3PKtzdNtGPwWuTMc1uAVBqJsr1K8tknHda4AFT2",
+  "method": "sha256(blockhash + \":\" + wallet), lowest hashes win",
+  "snapshotSlot": 437075440,
+  "eligibleWallets": 27,
+  "winners": [
+    {
+      "place": 1,
+      "wallet": "GYDud4FYYUBF88rs8Dg2jnbGvo7GiYVzMvwfmpauLNQn",
+      "ticket": "012f1973d555526f35ce1a54d6e27b3bd0734b88b8a1cbe200ad907520006c62"
+    },
+    {
+      "place": 2,
+      "wallet": "CohRnrcs3u599MG7h2r4nRhwP7WmeRJ3shCVp1kWAXPk",
+      "ticket": "0153fa64f9ba48705faa08b46983f138fad8bcabc70f8ca8894f6aab49af6c68"
+    },
+    {
+      "place": 3,
+      "wallet": "F5k2e3CXyaVkmacAgGrRps8ikUkaabzLfgjYh3LA1khW",
+      "ticket": "06ade7f5a85160b3bcfbe78295a33cde08d391ee635c69176b93a2aa1db1b3d2"
+    },
+    {
+      "place": 4,
+      "wallet": "7DqWHcEeRD7ysbCmLqg4B3esV9HbkfCb889ANq3KWZe7",
+      "ticket": "0e3e72b2de9dafd15da246e8d696e6f44b85a997668de7a63beb59838e5508bb"
+    }
+  ]
+}

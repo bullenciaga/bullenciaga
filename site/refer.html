@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<!-- BULLENCIAGA refer.html | build 2026-08-13.11
+
+     THE PUBLIC FACE. referrals.html is the admin tool and stays unlinked;
+     this is what a holder sees. Two fields, one number, no configuration.
+
+     Read-only: getSignaturesForAddress and getTransaction through the /rpc
+     proxy, plus POST /refbind to record the signed binding. No keypair and
+     nothing that can move funds.
+
+     It does NOT record the binding -- that needs a worker endpoint. What it
+     does is let someone see the real number and produce one line to send,
+     which is the honest version of a claim until bindings are stored. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BULLENCIAGA — Referrals</title>
+<meta name="description" content="See what your referrer has earned from your buys. Every figure read from chain.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bullenciaga.com/refer">
+<meta property="og:title" content="BULLENCIAGA — Referrals">
+<meta property="og:description" content="Half of every fee your buys generate goes to whoever brought you in.">
+<meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BULLENCIAGA — Referrals">
+<meta name="twitter:description" content="Half of every fee your buys generate goes to whoever brought you in.">
+<meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
+<style>
+  :root{
+    --black:#050505; --panel:#0a0a0a;
+    --line:rgba(199,168,105,0.16);
+    --gold:#c7a869; --gold-light:#e8d9ae;
+    --text:#f5f3ee; --dim:rgba(245,243,238,0.42);
+    --bad:#e0685f;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:var(--black); color:var(--text); }
+  body{
+    font-family:'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size:13px; line-height:1.65;
+    min-height:100vh; padding:44px 22px 90px;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .wrap{ width:100%; max-width:620px; }
+  .back{
+    display:inline-block; font-size:10px; letter-spacing:0.2em; text-transform:uppercase;
+    color:var(--dim); text-decoration:none; margin-bottom:30px;
+  }
+  .back:hover{ color:var(--gold); }
+  h1{
+    font-size:15px; letter-spacing:0.28em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 10px; font-weight:400;
+  }
+  .lede{ color:var(--dim); font-size:12px; margin:0 0 34px; line-height:1.85; }
+  .lede b{ color:var(--gold-light); font-weight:400; }
+  .lede-line{ display:block; }
+  /* Inline on desktop, its own line on a phone. */
+  .m-break{ display:inline; }
+  label{
+    display:block; font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--dim); margin-bottom:6px;
+  }
+  input[type=text]{
+    width:100%; background:#000; color:var(--text); border:1px solid var(--line);
+    padding:13px 14px; font-family:inherit; font-size:12.5px; letter-spacing:0.01em;
+  }
+  input:focus{ outline:none; border-color:var(--gold); }
+  /* The wallet field is display-only: Connect fills it. It must not read as
+     a place to type -- no focus ring, no text cursor, dimmer until filled. */
+  input[readonly]{
+    color:var(--gold-light); cursor:default; pointer-events:none;
+    border-style:dashed; border-color:rgba(199,168,105,0.28);
+  }
+  input[readonly]:focus{ border-color:rgba(199,168,105,0.28); }
+  input[readonly].filled{ border-style:solid; border-color:var(--line); }
+  .field{ margin-bottom:20px; }
+  .with-btn{ display:flex; gap:9px; }
+  .with-btn input{ flex:1 1 auto; min-width:0; }
+  button{
+    font-family:inherit; font-size:11px; letter-spacing:0.16em; text-transform:uppercase;
+    background:transparent; color:var(--gold); border:1px solid var(--gold);
+    padding:13px 20px; cursor:pointer; white-space:nowrap;
+    transition:background .15s, color .15s;
+  }
+  button:hover:not(:disabled){ background:var(--gold); color:var(--black); }
+  button:disabled{ opacity:0.3; cursor:not-allowed; }
+  button.solid{ background:var(--gold); color:var(--black); width:100%; padding:15px; }
+  button.small{ font-size:10px; padding:11px 15px; letter-spacing:0.12em; }
+  .status{ font-size:11px; color:var(--dim); min-height:20px; margin-top:14px; text-align:center; }
+  .applink{
+    flex:1 1 0; text-align:center; text-decoration:none;
+    font-family:inherit; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--gold); border:1px solid var(--gold); padding:13px 14px;
+  }
+  .applink:hover{ background:var(--gold); color:var(--black); }
+  .hint{ font-size:10.5px; color:var(--dim); }
+  .custom-box{
+    margin-top:14px; padding:14px 16px;
+    border:1px solid var(--line); background:var(--panel);
+  }
+  .custom-box.earned{ border-color:var(--gold); background:rgba(199,168,105,0.06); }
+  .custom-head{
+    font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim);
+  }
+  .custom-box.earned .custom-head{ color:var(--gold); }
+  .custom-sub{ font-size:11px; color:var(--dim); margin-top:6px; line-height:1.6; }
+  .custom-claim{ margin-top:14px; }
+  .custom-label{ font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--dim); margin-bottom:8px; }
+  .custom-claim code{
+    display:block; background:#000; border:1px solid var(--line); padding:11px;
+    font-size:10.5px; color:var(--gold-light); white-space:pre-wrap; word-break:break-all;
+    line-height:1.65; margin-bottom:11px;
+  }
+  .custom-actions{ display:flex; gap:9px; flex-wrap:wrap; }
+  .status.err{ color:var(--bad); }
+
+  .result{ display:none; margin-top:38px; border-top:1px solid var(--line); padding-top:32px; }
+  .headline{ text-align:center; margin-bottom:30px; }
+  .headline .cap{
+    font-size:9.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim);
+    margin-bottom:10px;
+  }
+  .headline .big{
+    font-size:40px; line-height:1.1; color:var(--gold); letter-spacing:0.01em;
+    font-variant-numeric:tabular-nums;
+  }
+  .headline .sub{ font-size:11px; color:var(--dim); margin-top:8px; }
+  .facts{ border:1px solid var(--line); background:var(--panel); }
+  .fact{
+    display:flex; justify-content:space-between; gap:14px;
+    padding:13px 16px; border-bottom:1px solid rgba(255,255,255,0.045);
+    font-size:12px;
+  }
+  .fact:last-child{ border-bottom:none; }
+  .fact span:first-child{ color:var(--dim); }
+  .fact span:last-child{ font-variant-numeric:tabular-nums; text-align:right; }
+  .claim{
+    margin-top:24px; border:1px solid var(--line); background:var(--panel); padding:16px;
+  }
+  .claim h3{
+    font-size:9.5px; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--dim); margin:0 0 10px; font-weight:400;
+  }
+  .claim code{
+    display:block; background:#000; border:1px solid var(--line); padding:12px;
+    font-size:11px; color:var(--gold-light); word-break:break-all; line-height:1.7;
+    margin-bottom:12px;
+  }
+  .mine-row{
+    display:flex; justify-content:space-between; gap:12px; align-items:baseline;
+    padding:11px 14px; border:1px solid var(--line); border-bottom:none; background:var(--panel);
+    font-size:11.5px;
+  }
+  .mine-row:last-child{ border-bottom:1px solid var(--line); }
+  .mine-row .who{ color:var(--dim); }
+  .mine-row .amt{ color:var(--gold); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .mine-foot{
+    display:flex; justify-content:space-between; gap:12px;
+    padding:12px 14px; font-size:11.5px; color:var(--dim);
+  }
+  .terms{
+    margin-top:34px; font-size:10.5px; color:var(--dim); line-height:1.85;
+    border-top:1px solid rgba(255,255,255,0.06); padding-top:22px;
+  }
+  .terms b{ color:rgba(245,243,238,0.62); font-weight:400; }
+  .build{ margin-top:40px; font-size:9px; color:rgba(245,243,238,0.16); letter-spacing:0.06em; text-align:center; }
+  @media (max-width:480px){
+    body{ padding:30px 16px 70px; }
+    .headline .big{ font-size:31px; }
+    /* The wallet field and Connect stack; the field stays display-only so it
+       simply shows the address once connected. */
+    .with-btn{ flex-direction:column; }
+    button{ width:100%; }
+    .applink{ width:100%; }
+    /* Sentences still own their lines, but a long one wraps INSIDE its line
+       on a narrow screen rather than overflowing -- .lede-line is a block,
+       not nowrap, precisely for this. Slightly tighter leading so the three
+       lines don't push the form below the fold. */
+    .m-break{ display:block; }
+    .lede{ font-size:11.5px; line-height:1.7; }
+    /* 9.5px keeps the longest specified line -- "Figures are live and move
+       with every buy. Paid weekly in SOL." at 61 characters -- inside a
+       358px content width, so the chosen breaks are the breaks that render
+       rather than the browser adding its own. */
+    .terms{ font-size:9.5px; line-height:1.8; }
+    .facts .fact{ font-size:11px; padding:11px 12px; }
+    .claim code{ font-size:10px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="/">&larr; Bullenciaga</a>
+
+  <h1>Referrals</h1>
+  <!-- Each sentence is its own line ON PURPOSE, and .lede-line keeps a
+       sentence whole: it wraps as a unit rather than mid-thought. On a phone
+       a long sentence still wraps internally (span, not nowrap) because
+       forcing 90 characters onto a 380px screen would overflow instead. -->
+  <p class="lede">
+    <span class="lede-line">Half of every fee your buys generate goes to whoever brought you in.</span>
+    <span class="lede-line"><b>Paid weekly, in SOL.</b> Record it once and every buy you make from then on counts.</span>
+    <span class="lede-line">Signing costs nothing, approves no transaction, and moves nothing out of your wallet.</span>
+  </p>
+
+  <div class="field">
+    <label>Your wallet</label>
+    <div class="with-btn">
+      <!-- readonly + tabindex=-1: the address comes from the wallet, never
+           from typing. A typed address cannot sign, so accepting one only
+           manufactures the "signature does not match" dead end. -->
+      <input type="text" id="me" readonly tabindex="-1" aria-readonly="true" placeholder="connect your wallet">
+      <button type="button" class="small" id="connectBtn">Connect</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Who referred you</label>
+    <input type="text" id="ref" spellcheck="false" autocomplete="off" placeholder="their address">
+  </div>
+
+  <div id="walletApps" style="display:none; margin:-8px 0 20px;"></div>
+
+  <button class="solid" id="goBtn">Record referral</button>
+  <div class="status" id="status"></div>
+
+  <!-- REFERRER VIEW. Appears only when the connected wallet has actually
+       referred someone, so it never clutters the page for a first-time
+       visitor who has nothing to see. -->
+  <div class="result" id="mine" style="display:none;">
+    <div class="headline">
+      <div class="cap">You are owed</div>
+      <div class="big" id="mineOwed">0.000000 SOL</div>
+      <div class="sub" id="mineSub"></div>
+    </div>
+    <div class="facts" id="mineList"></div>
+    <div class="custom-box" id="customBox" style="display:none;"></div>
+    <div class="hint" style="margin-top:12px; text-align:center;">
+      Paid weekly in SOL. Amounts here are unpaid earnings since your last payout.
+    </div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="headline">
+      <div class="cap" id="resultCap">Referral recorded</div>
+      <div class="big" id="payout">0.000000 SOL</div>
+      <div class="sub" id="payoutSub"></div>
+    </div>
+    <div class="facts">
+      <div class="fact"><span>Your buys</span><span id="fBuys">&mdash;</span></div>
+      <div class="fact"><span>Total bought</span><span id="fVolume">&mdash;</span></div>
+      <div class="fact"><span>$BULLEN acquired</span><span id="fTokens">&mdash;</span></div>
+      <div class="fact"><span>Fees those buys generated</span><span id="fFees">&mdash;</span></div>
+      <div class="fact"><span>Referrer's share</span><span id="fShare">50%</span></div>
+    </div>
+
+    <div class="claim">
+      <h3>Your referrer</h3>
+      <code id="claimLine">&mdash;</code>
+      <div class="hint" style="color:var(--dim); font-size:10.5px;">
+        Recorded permanently. Nothing further to send &mdash; payouts are worked
+        out from this and paid weekly.
+      </div>
+    </div>
+  </div>
+
+  <!-- Breaks are specified per breakpoint. .lede-line is always a block;
+       .m-break is inline on desktop and a block on phones, which is what
+       splits two of these lines further without duplicating the text. -->
+  <div class="result" id="mine" style="display:none;">
+    <div class="headline">
+      <div class="cap">You are owed</div>
+      <div class="big" id="mineOwed">0.000000 SOL</div>
+      <div class="sub" id="mineSub"></div>
+    </div>
+    <div id="mineList"></div>
+  </div>
+
+  <div class="terms">
+    <span class="lede-line"><b>Terms.</b> Buys only &mdash; a sell generates a fee but earns nothing.</span>
+    <span class="lede-line"><span class="m-break">One referrer per wallet.</span> The first one recorded stands and cannot be changed,</span>
+    <span class="lede-line">so check the address before you sign.</span>
+    <span class="lede-line"><span class="m-break"><b>Counting starts when the referral is recorded</b> &mdash;</span> buys made before it earn nothing.</span>
+    <span class="lede-line">Record first, buy after.</span>
+    <span class="lede-line">Referring yourself is allowed and earns fees,</span>
+    <span class="lede-line">but your own mints do not count toward a custom piece.</span>
+    <span class="lede-line">Figures are live and move with every buy. Paid weekly in SOL.</span>
+  </div>
+
+  <div class="build">build 2026-08-13.11</div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var MINT        = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
+  var FEE_VAULT   = '66sCGYPJcWvDX9APcHscG4Svo86aC7CPWzXuoqerteHe';
+  var SPLIT       = 0.5;
+  // A Herd mint pays 250,000 $BULLEN into this escrow. That movement sits in
+  // transactions this page already fetches, so counting mints costs nothing
+  // extra and is kept entirely apart from the fee arithmetic.
+  var MINT_ESCROW = 'FUtAEk1TAVf2WZ3wqXeHYttqfpTftEf6qrprue5x6mLy';
+  var MINT_COST   = 250000;
+  var CUSTOM_AT   = 3;
+  var CONTACT     = 'contact@bullenciaga.com';
+  var FALLBACK    = 0.00785;    // observed 13 Aug; only used if the vault is absent from a tx
+  var MAX_SIGS    = 300;
+  var RPC         = window.location.origin + '/rpc';
+  var LAMPORTS    = 1e9;
+
+  var $ = function(id){ return document.getElementById(id); };
+  var busy = false;
+
+  function say(msg, isErr){
+    var el = $('status');
+    el.textContent = msg || '';
+    el.className = 'status' + (isErr ? ' err' : '');
+  }
+  function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+  // Base58, 32 bytes. Caught here so a typo reads as a typo rather than as
+  // an RPC error the visitor cannot interpret.
+  function looksLikeWallet(a){
+    return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(a);
+  }
+
+  async function rpc(method, params, attempt){
+    attempt = attempt || 0;
+    var res;
+    try {
+      res = await fetch(RPC, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc:'2.0', id:1, method:method, params:params }),
+      });
+    } catch (e) {
+      if (attempt < 4){ await sleep(500 * Math.pow(2, attempt)); return rpc(method, params, attempt+1); }
+      throw new Error('network unavailable');
+    }
+    if (res.status === 429 || res.status >= 500){
+      if (attempt < 5){ await sleep(700 * Math.pow(2, attempt)); return rpc(method, params, attempt+1); }
+      throw new Error('the network is busy — try again in a moment');
+    }
+    var j = await res.json();
+    if (j.error) throw new Error(j.error.message || 'lookup failed');
+    return j.result;
+  }
+
+  // Same reading as the admin tool: the token delta says which way the trade
+  // went, the wallet's SOL delta says how much it was worth, and the fee is
+  // the lamports that actually reached the vault in that transaction. The
+  // creator fee rate moves with market cap, so it is measured rather than
+  // assumed.
+  function readTrade(tx, wallet){
+    if (!tx || !tx.meta || tx.meta.err) return null;
+    var meta = tx.meta;
+    var keys = (tx.transaction && tx.transaction.message && tx.transaction.message.accountKeys) || [];
+
+    var idx = -1;
+    for (var i = 0; i < keys.length; i++){
+      var k = typeof keys[i] === 'string' ? keys[i] : keys[i].pubkey;
+      if (k === wallet){ idx = i; break; }
+    }
+    if (idx === -1) return null;
+
+    function tot(list){
+      var sum = 0;
+      for (var i = 0; i < (list || []).length; i++){
+        var b = list[i];
+        if (b.mint === MINT && b.owner === wallet){
+          sum += Number((b.uiTokenAmount && b.uiTokenAmount.uiAmountString) || 0);
+        }
+      }
+      return sum;
+    }
+    var tokenDelta = tot(meta.postTokenBalances) - tot(meta.preTokenBalances);
+
+    // A MINT LEAVES THE WALLET, SO IT WOULD OTHERWISE BE DISCARDED HERE.
+    // Detected before the buys-only return and flagged, never priced: it
+    // carries no creator fee and must not touch a single payout figure.
+    if (tokenDelta < 0){
+      var escIdx = -1;
+      for (var e = 0; e < keys.length; e++){
+        var ek = typeof keys[e] === 'string' ? keys[e] : keys[e].pubkey;
+        if (ek === MINT_ESCROW){ escIdx = e; break; }
+      }
+      if (escIdx >= 0){
+        var preEsc = {}, gained = 0;
+        (meta.preTokenBalances || []).forEach(function(b){
+          if (b.accountIndex === escIdx && b.mint === MINT){
+            preEsc[b.accountIndex] = Number((b.uiTokenAmount || {}).uiAmountString || 0);
+          }
+        });
+        (meta.postTokenBalances || []).forEach(function(b){
+          if (b.accountIndex === escIdx && b.mint === MINT){
+            gained += Number((b.uiTokenAmount || {}).uiAmountString || 0) - (preEsc[b.accountIndex] || 0);
+          }
+        });
+        if (gained > 0){
+          return { isMint: true, mintCount: Math.max(1, Math.round(gained / MINT_COST)),
+                   volume: 0, tokens: 0, fee: null };
+        }
+      }
+      return null;
+    }
+    if (tokenDelta <= 1e-9) return null;             // buys only
+
+    var solDelta = (meta.postBalances[idx] - meta.preBalances[idx]) / LAMPORTS;
+    if (idx === 0) solDelta += (meta.fee || 0) / LAMPORTS;
+    var volume = Math.abs(solDelta);
+    if (volume < 1e-9) return null;
+
+    // THE FEE ARRIVES AS WRAPPED SOL, NOT AS LAMPORTS.
+    //
+    // Checking only the native balance of the vault address found nothing on
+    // every single trade, because the creator fee is credited to a WSOL token
+    // account OWNED BY the vault rather than to the vault itself. Matching on
+    // the token balance's owner -- and on the token account address, in case
+    // that is what was configured -- catches it either way. The native check
+    // stays first for venues that do pay in lamports.
+    var fee = null, vaultIdx = -1;
+    for (var j = 0; j < keys.length; j++){
+      var kk = typeof keys[j] === 'string' ? keys[j] : keys[j].pubkey;
+      if (kk === FEE_VAULT){
+        vaultIdx = j;
+        var d = (meta.postBalances[j] - meta.preBalances[j]) / LAMPORTS;
+        if (d > 0) fee = d;
+        break;
+      }
+    }
+    if (fee === null){
+      var pre = {}, gained = 0;
+      (meta.preTokenBalances || []).forEach(function(b){
+        pre[b.accountIndex] = Number((b.uiTokenAmount || {}).uiAmountString || 0);
+      });
+      (meta.postTokenBalances || []).forEach(function(b){
+        var isVault = b.owner === FEE_VAULT || (vaultIdx >= 0 && b.accountIndex === vaultIdx);
+        if (!isVault) return;
+        var d = Number((b.uiTokenAmount || {}).uiAmountString || 0) - (pre[b.accountIndex] || 0);
+        if (d > 0) gained += d;
+      });
+      if (gained > 0) fee = gained;      // WSOL is 1:1 with SOL
+    }
+    return { isMint: false, mintCount: 0, volume: volume, tokens: tokenDelta, fee: fee };
+  }
+
+  async function scan(wallet, sinceTs){
+    // SCAN THE WALLET, NOT ITS TOKEN ACCOUNT.
+    //
+    // Reading signatures from the token account meant a wallet whose account
+    // had been CLOSED -- by burning out, or selling everything, which
+    // reclaims the rent -- returned nothing at all, and every buy it ever
+    // made became invisible. The wallet signs every swap, so its own
+    // signature list is a superset and cannot be closed.
+    var out = [], before = null, got = 0;
+    while (got < MAX_SIGS){
+      var batch = await rpc('getSignaturesForAddress', [wallet, { limit: Math.min(100, MAX_SIGS - got), before: before }]);
+      if (!batch || !batch.length) break;
+      got += batch.length;
+      before = batch[batch.length - 1].signature;
+      for (var i = 0; i < batch.length; i++){
+        if (batch[i].err) continue;
+        // Newest first, so anything before the binding ends the scan.
+        if (sinceTs && batch[i].blockTime && batch[i].blockTime < sinceTs){ got = MAX_SIGS; break; }
+        var tx = await rpc('getTransaction', [batch[i].signature,
+          { encoding:'jsonParsed', maxSupportedTransactionVersion: 0 }]);
+        var t = readTrade(tx, wallet);
+        if (t) out.push(t);
+        say('reading your buys \u2014 ' + out.length + ' found');
+      }
+      if (batch.length < 100) break;
+    }
+    return out;
+  }
+
+  function fmt(n, dp){ return n.toFixed(dp === undefined ? 6 : dp); }
+
+  // PURE ASCII, BYTE-IDENTICAL TO THE WORKER. An em dash or a curly quote here
+  // breaks signing silently: the wallet signs one byte sequence and the worker
+  // verifies a different one, and the only symptom is a signature that never
+  // matches. Hyphens and plain newlines only.
+  function bindMessage(referred, referrer){
+    return 'BULLENCIAGA referral\nreferred: ' + referred + '\nreferrer: ' + referrer;
+  }
+
+  async function signBinding(provider, message){
+    var encoded = new TextEncoder().encode(message);
+    var res = await provider.signMessage(encoded, 'utf8');
+    // Phantom returns { signature: Uint8Array }; Solflare may return the
+    // array directly. Both end up as base58 for the worker.
+    var raw = (res && res.signature) ? res.signature : res;
+    return b58(raw);
+  }
+
+  // Base58 encode, no dependency. The worker decodes with the same alphabet.
+  function b58(bytes){
+    var A = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+    var digits = [0];
+    for (var i = 0; i < bytes.length; i++){
+      var carry = bytes[i];
+      for (var j = 0; j < digits.length; j++){
+        carry += digits[j] << 8;
+        digits[j] = carry % 58;
+        carry = (carry / 58) | 0;
+      }
+      while (carry){ digits.push(carry % 58); carry = (carry / 58) | 0; }
+    }
+    var out = '';
+    for (var k = 0; k < bytes.length && bytes[k] === 0; k++) out += '1';
+    for (var m = digits.length - 1; m >= 0; m--) out += A[digits[m]];
+    return out;
+  }
+
+  async function go(){
+    if (busy) return;
+    var me  = $('me').value.trim();
+    var ref = $('ref').value.trim();
+
+    if (!looksLikeWallet(me))  return say('connect your wallet first', true);
+    if (!looksLikeWallet(ref)) return say('your referrer\u2019s address does not look right', true);
+
+    var provider = getProvider();
+    if (!provider || !provider.publicKey){
+      return say('connect your wallet first \u2014 you have to sign to prove it is yours', true);
+    }
+    if (provider.publicKey.toString() !== me){
+      return say('the connected wallet does not match the address above', true);
+    }
+
+    busy = true;
+    $('goBtn').disabled = true;
+    $('result').style.display = 'none';
+
+    try {
+      // RECORD FIRST, THEN SHOW THE NUMBER.
+      // The signature is what makes this real -- without it anyone could name
+      // any wallet as theirs and claim its fees.
+      say('approve the signature in your wallet\u2026');
+      var sig;
+      try {
+        sig = await signBinding(provider, bindMessage(me, ref));
+      } catch (e){
+        say('signature cancelled', true);
+        return;
+      }
+
+      say('recording\u2026');
+      var save = await fetch(window.location.origin + '/refbind', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ referred: me, referrer: ref, signature: sig }),
+      });
+      var saved = await save.json();
+
+      if (!saved.ok && !saved.already){
+        say(saved.error || 'could not record that', true);
+        return;
+      }
+      if (saved.already){
+        $('resultCap').textContent = 'Already recorded';
+        ref = saved.referrer || ref;
+        say('this wallet already has a referrer \u2014 showing that one');
+      } else {
+        $('resultCap').textContent = 'Referral recorded';
+        say('');
+      }
+
+      // FROM THE BINDING FORWARD, and the display must agree with the payout.
+      // saved.boundAt exists on both a fresh recording and an already:true
+      // response, so the number shown here is computed over exactly the same
+      // window the weekly sheet pays on. Showing lifetime figures against a
+      // forward-only payout would make every first payment look short.
+      var since = (saved && saved.boundAt) ? Math.floor(saved.boundAt / 1000) : null;
+      say('reading your buys\u2026');
+      var buys = await scan(me, since);
+      if (!buys.length){
+        $('payout').textContent = '0.000000 SOL';
+        $('payoutSub').textContent = 'recorded — buys from now on count';
+        $('fBuys').textContent = '0';
+        $('fVolume').textContent = '0.000000 SOL';
+        $('fTokens').textContent = '0';
+        $('fFees').textContent = '0.000000 SOL';
+        $('fShare').textContent = '50%';
+        $('claimLine').textContent = ref;
+        $('result').style.display = 'block';
+        say('');
+        return;
+      }
+
+      // Mints are in the same list and must be filtered out before anything
+      // is priced -- they carry no fee and are not buys.
+      buys = buys.filter(function(b){ return !b.isMint; });
+      if (!buys.length){
+        say('no $BULLEN buys found for that wallet yet', true);
+        return;
+      }
+      var volume = 0, tokens = 0, fees = 0, measured = 0;
+      buys.forEach(function(b){
+        volume += b.volume;
+        tokens += b.tokens;
+        if (b.fee !== null){ fees += b.fee; measured++; }
+        else { fees += b.volume * FALLBACK; }
+      });
+      var payout = fees * SPLIT;
+
+      $('payout').textContent = fmt(payout) + ' SOL';
+      $('payoutSub').textContent = measured === buys.length
+        ? 'every fee read directly from the chain'
+        : measured + ' of ' + buys.length + ' fees read from chain, the rest estimated';
+      $('fBuys').textContent   = buys.length;
+      $('fVolume').textContent = fmt(volume) + ' SOL';
+      $('fTokens').textContent = Math.round(tokens).toLocaleString('en-US');
+      $('fFees').textContent   = fmt(fees) + ' SOL';
+      $('fShare').textContent  = '50%';
+      $('claimLine').textContent = ref;
+      $('result').style.display = 'block';
+      say('');
+    } catch (e){
+      say((e && e.message) || 'something went wrong — try again', true);
+    } finally {
+      busy = false;
+      $('goBtn').disabled = false;
+    }
+  }
+
+  // Phantom resolves connect() with { publicKey }; Solflare resolves with
+  // true and exposes the key on the provider. Reading provider.publicKey
+  // after the await covers both without branching on which wallet it is.
+  // Solflare has shipped both isSolflare and isSolFlare in its own docs, so
+  // neither casing can be relied on -- the object's presence is the test.
+  function getProvider(){
+    if (window.phantom && window.phantom.solana) return window.phantom.solana;
+    if (window.solflare) return window.solflare;
+    if (window.solana) return window.solana;
+    return null;
+  }
+
+  function isMobile(){
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+  }
+
+  // MOBILE HAS NO EXTENSION.
+  //
+  // In mobile Safari or Chrome there is no injected provider at all, so
+  // Connect could only ever fail there. Both wallets expose a universal link
+  // that reopens the CURRENT url inside their own in-app browser, where a
+  // provider does exist and the normal flow works. The full url is carried
+  // through, so a ?ref= link survives the hop and the referrer field is
+  // still filled on the other side.
+  function deepLinks(){
+    var here = encodeURIComponent(window.location.href);
+    var ref  = encodeURIComponent(window.location.origin);
+    return {
+      phantom:  'https://phantom.app/ul/browse/' + here + '?ref=' + ref,
+      solflare: 'https://solflare.com/ul/v1/browse/' + here + '?ref=' + ref,
+    };
+  }
+
+  function offerWalletApps(){
+    var d = deepLinks();
+    var el = $('walletApps');
+    el.innerHTML =
+      '<div class="hint" style="margin-bottom:10px;">Open this page inside your wallet to connect.</div>' +
+      '<div class="with-btn">' +
+        '<a class="applink" href="' + d.phantom + '">Open in Phantom</a>' +
+        '<a class="applink" href="' + d.solflare + '">Open in Solflare</a>' +
+      '</div>';
+    el.style.display = 'block';
+    say('');
+  }
+
+  async function connect(){
+    var p = getProvider();
+    if (!p){
+      if (isMobile()) return offerWalletApps();
+      return say('no wallet extension found \u2014 install Phantom or Solflare', true);
+    }
+    try {
+      say('connecting\u2026');
+      await p.connect();
+      var pk = p.publicKey && p.publicKey.toString ? p.publicKey.toString() : String(p.publicKey || '');
+      if (!pk) throw new Error('wallet did not return an address');
+      $('me').value = pk;
+      $('me').classList.add('filled');
+      say('');
+      loadMine(pk);
+      // Fire and forget: someone connecting to RECORD a referral should not
+      // wait on a scan of referrals they may already have.
+      loadMine(pk).catch(function(){});
+    } catch (e){
+      say('connection cancelled', true);
+    }
+  }
+
+  $('goBtn').addEventListener('click', go);
+  $('connectBtn').addEventListener('click', connect);
+  $('copyBtn').addEventListener('click', function(){
+    var t = $('claimLine').textContent;
+    if (navigator.clipboard) navigator.clipboard.writeText(t);
+    $('copyBtn').textContent = 'Copied';
+    setTimeout(function(){ $('copyBtn').textContent = 'Copy'; }, 1600);
+  });
+  ['me','ref'].forEach(function(id){
+    $(id).addEventListener('keydown', function(e){ if (e.key === 'Enter') go(); });
+  });
+
+  // WHAT YOU ARE OWED, for the connected wallet.
+  //
+  // Scans only the wallets that named YOU, so the cost scales with your own
+  // referrals rather than with the whole programme -- which is why this lives
+  // here and not on a page that scans everyone for every visitor.
+  async function loadMine(wallet){
+    var j;
+    try {
+      var res = await fetch(window.location.origin + '/refbind/all?nocache=' + Date.now(), { cache:'no-store' });
+      j = await res.json();
+      if (!j.ok) return;
+    } catch (e){ return; }
+
+    var mine = (j.bindings || []).filter(function(b){ return b.referrer === wallet; });
+    if (!mine.length) return;
+
+    $('mine').style.display = 'block';
+    $('mineSub').textContent = 'scanning ' + mine.length + ' referral' + (mine.length === 1 ? '' : 's') + '\u2026';
+
+    var rows = [], earned = 0;
+    for (var i = 0; i < mine.length; i++){
+      var since = Math.floor((mine[i].boundAt || 0) / 1000);
+      var buys = await scan(mine[i].referred, since);
+      var fees = 0;
+      buys.forEach(function(t){
+        fees += (t.fee !== null && t.fee !== undefined) ? t.fee : t.volume * FALLBACK;
+      });
+      earned += fees * SPLIT;
+      rows.push({ who: mine[i].referred, buys: buys.length, owed: fees * SPLIT });
+      $('mineSub').textContent = 'scanned ' + (i+1) + ' of ' + mine.length;
+    }
+
+    var paidTotal = (j.paid && j.paid[wallet]) || 0;
+    var outstanding = Math.max(0, earned - paidTotal);
+
+    var html = '';
+    rows.sort(function(a,b){ return b.owed - a.owed; }).forEach(function(r){
+      html += '<div class="mine-row"><span class="who">' + shortAddr(r.who) +
+              ' \u00b7 ' + r.buys + ' buy' + (r.buys === 1 ? '' : 's') + '</span>' +
+              '<span class="amt">' + r.owed.toFixed(6) + ' SOL</span></div>';
+    });
+    html += '<div class="mine-foot"><span>earned in total</span><span>' + earned.toFixed(6) + ' SOL</span></div>';
+    if (paidTotal > 0){
+      html += '<div class="mine-foot"><span>already paid to you</span><span>' + paidTotal.toFixed(6) + ' SOL</span></div>';
+    }
+    $('mineList').innerHTML = html;
+    $('mineOwed').textContent = outstanding.toFixed(6) + ' SOL';
+    $('mineSub').textContent = rows.length + ' referral' + (rows.length === 1 ? '' : 's') +
+      (paidTotal > 0 ? ' \u00b7 outstanding after payments made' : ' \u00b7 nothing paid out yet');
+  }
+
+  // ---- REFERRER VIEW
+  //
+  // Scans only the wallets THIS person referred, so the cost of the page
+  // scales with their own list rather than with the whole programme. The
+  // admin sheet scans everyone; a holder should never pay that price.
+  async function loadMine(wallet){
+    try {
+      var res = await fetch(window.location.origin + '/refbind/all?nocache=' + Date.now(), { cache:'no-store' });
+      var j = await res.json();
+      if (!j.ok || !j.bindings) return;
+      var mine = j.bindings.filter(function(b){ return b.referrer === wallet; });
+      if (!mine.length) return;
+
+      // /refbind/all already returns totals paid per referrer, so the amount
+      // already sent comes back in the same request that returns the
+      // bindings. Owed is earned minus paid.
+      var alreadyPaid = Number((j.paid || {})[wallet] || 0);
+
+      $('mine').style.display = 'block';
+      $('mineSub').textContent = 'from ' + mine.length + ' ' + (mine.length === 1 ? 'person' : 'people') + ' you brought in';
+      $('mineList').innerHTML = '<div class="fact"><span>reading the chain\u2026</span><span></span></div>';
+
+      // counted: the wallets whose mints advance the custom -- everyone the
+      // referrer actually brought in, themselves excluded.
+      var total = 0, totalMints = 0, html = '', counted = [];
+      for (var i = 0; i < mine.length; i++){
+        var b = mine[i];
+        // Everything since their binding; what has already been sent is
+        // subtracted once at the end rather than per person, because a
+        // payment covers a referrer, not an individual referral.
+        var since = Math.floor((b.boundAt || 0) / 1000) || null;
+        var all = await scan(b.referred, since);
+        var buys = all.filter(function(t){ return !t.isMint; });
+        var mints = all.reduce(function(n, t){ return n + (t.isMint ? t.mintCount : 0); }, 0);
+        // SELF-REFERRED MINTS DO NOT COUNT TOWARD THE CUSTOM.
+        //
+        // Self-referral is harmless for fees -- paying yourself half of your
+        // own fee is a wash. A custom piece is not: it is a real object made
+        // by hand, so binding to yourself and minting three would be a free
+        // one-of-one. The mints still show in the list, they just do not
+        // advance the counter.
+        var isSelf = (b.referred === wallet);
+        if (!isSelf){ totalMints += mints; counted.push(b.referred); }
+        var fees = 0;
+        buys.forEach(function(t){ fees += (t.fee !== null && t.fee !== undefined) ? t.fee : t.volume * FALLBACK; });
+        var owed = fees * SPLIT;
+        total += owed;
+        html += '<div class="fact"><span>' + b.referred.slice(0,4) + '\u2026' + b.referred.slice(-4) +
+                '<br><span style="font-size:10px;">' + buys.length + ' ' + (buys.length === 1 ? 'buy' : 'buys') +
+                (mints ? ' \u00b7 <span style="color:' + (isSelf ? 'var(--dim)' : 'var(--gold)') + '">' +
+                  mints + ' minted' + (isSelf ? ' (your own \u2014 does not count)' : '') + '</span>' : '') +
+                '</span></span>' +
+                '<span>' + owed.toFixed(6) + ' SOL</span></div>';
+        $('mineOwed').textContent = Math.max(0, total - alreadyPaid).toFixed(6) + ' SOL';
+        $('mineList').innerHTML = html;
+      }
+      // CUSTOM PIECE. Mint counts are not public anywhere else, so without
+      // this a referrer has no way to know they have qualified.
+      var box = $('customBox');
+      if (totalMints >= CUSTOM_AT){
+        box.className = 'custom-box earned';
+        box.innerHTML =
+          '<div class="custom-head">&#9670; Custom piece earned</div>' +
+          '<div class="custom-sub">' + totalMints + ' pieces minted by wallets you referred.</div>' +
+          '<div class="custom-claim">' +
+            '<div class="custom-label">Email this to claim, with what you would like made:</div>' +
+            '<code id="claimCode">referrer: ' + wallet + '\nminted: ' + totalMints +
+              '\nreferred: ' + counted.join(', ') + '</code>' +
+            '<div class="custom-actions">' +
+              '<button type="button" class="small" id="copyClaim">Copy</button>' +
+              '<a class="applink" href="mailto:' + CONTACT + '?subject=' +
+                encodeURIComponent('Custom piece claim') + '&body=' +
+                encodeURIComponent('referrer: ' + wallet + '\nminted: ' + totalMints +
+                  '\nreferred: ' + counted.join(', ') +
+                  '\n\nwhat I would like made:\n') + '">Email ' + CONTACT + '</a>' +
+            '</div>' +
+          '</div>';
+        box.style.display = 'block';
+        var cc = $('copyClaim');
+        if (cc) cc.addEventListener('click', function(){
+          var t = $('claimCode').textContent;
+          if (navigator.clipboard) navigator.clipboard.writeText(t);
+          cc.textContent = 'Copied';
+          setTimeout(function(){ cc.textContent = 'Copy'; }, 1600);
+        });
+      } else {
+        box.className = 'custom-box';
+        box.innerHTML =
+          '<div class="custom-head">Custom piece &mdash; ' + totalMints + ' of ' + CUSTOM_AT + '</div>' +
+          '<div class="custom-sub">get ' + (CUSTOM_AT - totalMints) + ' more ' +
+          ((CUSTOM_AT - totalMints) === 1 ? 'piece' : 'pieces') +
+          ' minted by wallets you referred and a custom is made for you.</div>';
+        box.style.display = 'block';
+      }
+
+      var owedNow = Math.max(0, total - alreadyPaid);
+      $('mineOwed').textContent = owedNow.toFixed(6) + ' SOL';
+      $('mineList').innerHTML = html;
+      if (alreadyPaid > 0){
+        $('mineSub').textContent = 'from ' + mine.length + ' ' +
+          (mine.length === 1 ? 'person' : 'people') + ' \u00b7 ' +
+          alreadyPaid.toFixed(6) + ' SOL already paid';
+      }
+    } catch (e) { /* the referrer view is a bonus; it must never break recording */ }
+  }
+
+  // Landing in a wallet's in-app browser is the success case for the deep
+  // links, so the offer must never appear there.
+  if (isMobile() && !getProvider()){
+    // Shown up front rather than after a failed tap: on a phone, Connect
+    // cannot work in an ordinary browser and pretending otherwise wastes a
+    // tap and looks broken.
+    offerWalletApps();
+  }
+
+  // ?ref= prefills who referred you, so a shared link does the typing.
+  try {
+    var q = new URLSearchParams(window.location.search).get('ref');
+    if (q && looksLikeWallet(q.trim())) $('ref').value = q.trim();
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

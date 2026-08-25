@@ -1,0 +1,15 @@
+[
+  "rpc",
+  "supply",
+  "listing",
+  "ohlcv",
+  "trade",
+  "entry",
+  "entries",
+  "volume",
+  "tgwebhook",
+  "helius",
+  "drop",
+  "refbind",
+  "modlog"
+]

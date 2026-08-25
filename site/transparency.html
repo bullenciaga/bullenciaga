@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BULLENCIAGA — moderation record</title>
+<meta name="description" content="every removal from the bullenciaga telegram, and the reason for it.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:title" content="BULLENCIAGA — moderation record">
+<meta property="og:description" content="every removal from the telegram, and the reason for it.">
+<style>
+  :root{
+    --gold:#c7a869;
+    --gold-light:#e8d9ae;
+    --bg:#0a0a0a;
+    --panel:#101010;
+    --line:rgba(255,255,255,.10);
+    --text:#ece9e2;
+    --dim:#8d8a83;
+    --dimmer:#5c5a55;
+    --ban:#b4483f;
+    --mute:#c7a869;
+    --delete:#6f6a60;
+    --kick:#7d8a99;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font:400 16px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:0 0 64px;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 20px}
+  a{color:var(--gold);text-decoration:none}
+  a:hover{color:var(--gold-light)}
+
+  header{padding:44px 0 26px;border-bottom:1px solid var(--line)}
+  h1{
+    font-size:clamp(21px,5.2vw,29px);
+    font-weight:400;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+  }
+  .sub{color:var(--dim);font-size:14.5px;margin-top:14px;max-width:72ch;text-wrap:pretty}
+  .sub strong{color:var(--text);font-weight:400}
+  /* The intro reads better broken by sense than by column width, but only
+     where the lines actually fit. Below the breakpoint these collapse to
+     spaces and the browser wraps normally, which beats forcing a break in a
+     place chosen for a screen twice the width. */
+  br.wide{display:none}
+  @media (min-width:660px){ br.wide{display:inline} }
+
+  .counts{
+    display:none;
+    flex-wrap:wrap;gap:10px;
+    padding:22px 0;border-bottom:1px solid var(--line);
+  }
+  .counts.on{display:flex}
+  .chip{
+    border:1px solid var(--line);
+    padding:9px 13px;
+    font-size:12.5px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--dim);
+    display:flex;align-items:baseline;gap:8px;
+  }
+  .chip b{color:var(--text);font-weight:500;font-size:15px;letter-spacing:0}
+  .chip i{width:6px;height:6px;display:block;align-self:center}
+
+  .meta{
+    display:none;
+    padding:16px 0;
+    border-bottom:1px solid var(--line);
+    color:var(--dimmer);
+    font-size:12.5px;
+    letter-spacing:.05em;
+    justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  .meta.on{display:flex}
+
+  ul{list-style:none}
+  li{
+    display:grid;
+    grid-template-columns:76px 1fr;
+    gap:16px;
+    padding:15px 0;
+    border-bottom:1px solid var(--line);
+    align-items:baseline;
+  }
+  .act{
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    display:flex;align-items:center;gap:7px;
+  }
+  .act i{width:6px;height:6px;display:block;flex:none}
+  .act.ban{color:var(--ban)}      .act.ban i{background:var(--ban)}
+  .act.mute{color:var(--mute)}    .act.mute i{background:var(--mute)}
+  .act.delete{color:var(--delete)}.act.delete i{background:var(--delete)}
+  .act.kick{color:var(--kick)}    .act.kick i{background:var(--kick)}
+  .act.undo{color:var(--dim)}     .act.undo i{background:var(--dim)}
+
+  .why{font-size:15px}
+  .why q{quotes:'"' '"';color:var(--gold-light);font-style:normal}
+  .why q:before{content:open-quote} .why q:after{content:close-quote}
+  .why .none{color:var(--dimmer);font-style:italic}
+  .when{display:block;color:var(--dimmer);font-size:12px;margin-top:4px;letter-spacing:.04em}
+
+  .foot{padding:30px 0 0;color:var(--dimmer);font-size:13px;line-height:1.75}
+  .foot a{border-bottom:1px solid rgba(199,168,105,.3)}
+  .state{padding:44px 0;color:var(--dim);font-size:15px}
+  .build{margin-top:26px;color:#3d3b37;font-size:11px;letter-spacing:.08em}
+
+  @media (max-width:520px){
+    li{grid-template-columns:1fr;gap:5px}
+    .act{order:-1}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <h1>Moderation record</h1>
+    <p class="sub">
+      Every removal from the BULLENCIAGA Telegram, and the reason for it.<br class="wide">
+      Published because a group that removes people<br class="wide">
+      ought to show its working, the same way the burn ledger does.<br class="wide">
+      <strong>No names, handles or user ids appear here.</strong>
+    </p>
+  </header>
+
+  <div class="counts" id="counts"></div>
+  <div class="meta" id="meta"></div>
+
+  <ul id="list"></ul>
+  <div class="state" id="state">reading the record…</div>
+
+  <div class="foot">
+    <p>
+      Most of these are automatic. The bot removes accounts that impersonate the project,
+      advertise a service in their display name, post wallet phishing or channel promotion,
+      or arrive selling exchange listings. Reasons quote the phrase that triggered the rule,
+      so you can see what was actually said.
+    </p>
+    <p style="margin-top:12px">
+      The log keeps the most recent 500 actions. Anything older has rolled off.
+      Raw data: <a href="/modlog">/modlog</a> &nbsp;·&nbsp;
+      Burn ledger: <a href="/supply/proof">/supply/proof</a> &nbsp;·&nbsp;
+      <a href="https://t.me/bullenciaga">t.me/bullenciaga</a>
+    </p>
+    <div class="build">build 2026-08-21.1 — moderation record</div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var LIST = document.getElementById('list');
+  var STATE = document.getElementById('state');
+  var COUNTS = document.getElementById('counts');
+  var META = document.getElementById('meta');
+
+  var COLOURS = { ban:'--ban', mute:'--mute', delete:'--delete', kick:'--kick', undo:'--dim' };
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function when(ms) {
+    var d = new Date(ms);
+    if (isNaN(d)) return '';
+    var day = d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    var hm  = d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    return day + ', ' + hm;
+  }
+
+  // REASONS ARRIVE IN TWO SHAPES, because the wording changed at v20.40 and
+  // the log still holds entries written before it. Both are handled rather
+  // than normalised in the worker: rewriting history to look tidy is the
+  // opposite of what this page is for.
+  //
+  //   old: impersonation: name contains "bullen "
+  //   new: name: display name is an advertisement: "0% personal tax"
+  //
+  // The quoted fragment is pulled out and marked up; everything before it is
+  // the rule that fired.
+  function render(reason) {
+    if (!reason) return '<span class="none">no reason recorded</span>';
+    var m = String(reason).match(/^([\s\S]*?)[:\s]*"([\s\S]*)"\s*$/);
+    if (m && m[2]) {
+      var rule = m[1].replace(/[:\s]+$/,'');
+      return esc(rule) + ' <q>' + esc(m[2]) + '</q>';
+    }
+    if (/no reason recorded/i.test(reason)) {
+      return '<span class="none">' + esc(reason) + '</span>';
+    }
+    return esc(reason);
+  }
+
+  fetch('/modlog', { cache:'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function (d) {
+      if (!d || !d.ok || !Array.isArray(d.actions)) throw new Error('unexpected payload');
+
+      var counts = d.counts || {};
+      var order = ['ban','kick','mute','delete','undo'];
+      var keys = Object.keys(counts).sort(function (a, b) {
+        var ia = order.indexOf(a), ib = order.indexOf(b);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+      });
+      COUNTS.innerHTML = keys.map(function (k) {
+        var v = COLOURS[k] || '--dim';
+        return '<span class="chip"><i style="background:var(' + v + ')"></i>'
+             + esc(k) + '<b>' + counts[k] + '</b></span>';
+      }).join('');
+      if (keys.length) COUNTS.className = 'counts on';
+
+      var newest = d.actions.length ? d.actions[0].at : null;
+      var oldest = d.actions.length ? d.actions[d.actions.length - 1].at : null;
+      META.innerHTML =
+        '<span>' + d.actions.length + ' actions shown</span>' +
+        (oldest ? '<span>' + when(oldest) + ' to ' + when(newest) + '</span>' : '') +
+        '<span>' + esc(d.workerVersion || '') + '</span>';
+      META.className = 'meta on';
+
+      if (!d.actions.length) { STATE.textContent = 'nothing recorded yet.'; return; }
+
+      LIST.innerHTML = d.actions.map(function (a) {
+        var act = String(a.action || 'action').toLowerCase();
+        var cls = COLOURS[act] ? act : 'undo';
+        return '<li>'
+          + '<span class="act ' + cls + '"><i></i>' + esc(act) + '</span>'
+          + '<span class="why">' + render(a.reason)
+          + '<span class="when">' + when(a.at) + '</span></span>'
+          + '</li>';
+      }).join('');
+      STATE.style.display = 'none';
+    })
+    .catch(function (e) {
+      STATE.innerHTML = 'the record could not be read right now. '
+        + 'the raw data is at <a href="/modlog">/modlog</a>.';
+      if (window.console) console.log('modlog:', e);
+    });
+})();
+</script>
+
+</body>
+</html>
