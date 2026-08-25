@@ -6,9 +6,10 @@ assert(responseFile, 'CLOUDFLARE_DEPLOYMENTS_FILE is required');
 
 const response = JSON.parse(await readFile(responseFile, 'utf8'));
 assert.equal(response.success, true, 'Cloudflare deployments request was not successful');
-assert(Array.isArray(response.result) && response.result.length > 0, 'Cloudflare returned no production deployments');
+const deployments = response.result?.deployments;
+assert(Array.isArray(deployments) && deployments.length > 0, 'Cloudflare returned no production deployments');
 
-const latestDeployment = response.result[0];
+const latestDeployment = deployments[0];
 assert(Array.isArray(latestDeployment.versions), 'latest deployment has no versions');
 assert.equal(latestDeployment.versions.length, 1, 'production must have exactly one active version before an automatic release');
 
