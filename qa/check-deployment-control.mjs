@@ -67,7 +67,8 @@ assert(!production.includes('environment: production'), 'mobile-only production 
 assert(!production.includes('.release/WEBSITE_DEPLOY_AUTHORIZED'), 'marker-file authorization is forbidden');
 assert(!production.match(/^\s+push:/m), 'production deploy must not run directly on push');
 
-assert.match(rollbackParser, /response\.result\[0\]/, 'rollback parser must use the latest active deployment');
+assert.match(rollbackParser, /response\.result\?\.deployments/, 'rollback parser must read Cloudflare deployment results');
+assert.match(rollbackParser, /deployments\[0\]/, 'rollback parser must use the latest active deployment');
 assert.match(rollbackParser, /versions\.length, 1/, 'rollback parser must reject split production traffic');
 assert.match(rollbackParser, /percentage\), 100/, 'rollback parser must require one version at 100%');
 
