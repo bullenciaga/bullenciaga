@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BULLENCIAGA referrals.html | build 2026-08-16.1 — custom piece grant ledger
+<!-- BULLENCIAGA referrals.html | build 2026-08-25.1 — session-only admin secret
 
      ONE JOB: who gets paid what for a given week. Bindings come from the
      signed store (/refbind/all), fees are measured from the chain per trade,
@@ -100,8 +100,9 @@
 
 <div class="bar" style="margin-top:18px;">
   <div style="flex:1 1 260px;">
-    <label>Admin secret &mdash; only needed to mark paid</label>
-    <input type="password" id="secret" style="width:100%;" placeholder="REFERRAL_ADMIN_SECRET" autocomplete="off">
+    <label>Admin secret &mdash; never saved; cleared after each admin action</label>
+    <input type="password" id="secret" style="width:100%;" placeholder="REFERRAL_ADMIN_SECRET"
+           autocomplete="off" autocapitalize="off" spellcheck="false">
   </div>
 </div>
 
@@ -112,7 +113,7 @@
   cannot move funds.
 </div>
 
-<div class="build">build 2026-08-16.1 &mdash; custom piece grant ledger</div>
+<div class="build">build 2026-08-25.1 &mdash; session-only admin secret</div>
 
 <script>
 (function(){
@@ -154,6 +155,16 @@
   function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
   function shortAddr(a){ return a.slice(0,4) + '\u2026' + a.slice(-4); }
   function fmtSol(n){ return n.toFixed(6); }
+
+  function readAdminSecret(){ return $('secret').value.trim(); }
+  function forgetAdminSecret(){ $('secret').value = ''; }
+
+  // A prior build persisted the admin secret in localStorage. Remove that
+  // legacy value without reading it back into JavaScript, and also clear the
+  // same key from sessionStorage in case it was copied there manually.
+  try { localStorage.removeItem('bullen-referral-secret'); } catch (e) {}
+  try { sessionStorage.removeItem('bullen-referral-secret'); } catch (e) {}
+  window.addEventListener('pagehide', forgetAdminSecret);
 
   async function rpc(method, params, attempt){
     attempt = attempt || 0;
@@ -562,7 +573,7 @@
   // deliberate step rather than part of Calculate.
   $('paidBtn').addEventListener('click', async function(){
     if (!lastRows) return;
-    var secret = $('secret').value.trim();
+    var secret = readAdminSecret();
     if (!secret){ say('paste the admin secret first', true); return; }
 
     var byRef = {};
@@ -579,6 +590,9 @@
     if (!confirm('Record ' + payments.length + ' payment(s) totalling ' + total.toFixed(6) +
                  ' SOL?\n\nOnly do this AFTER the SOL has been sent.')) return;
 
+    // Keep the credential only in this request's local variable. The field is
+    // cleared before network I/O and never written to browser storage.
+    forgetAdminSecret();
     $('paidBtn').disabled = true;
     try {
       var res = await fetch(window.location.origin + '/refbind/paid', {
@@ -592,17 +606,10 @@
     } catch (e){
       say('could not record: ' + ((e && e.message) || e), true);
     } finally {
+      secret = '';
       $('paidBtn').disabled = false;
     }
   });
-
-  try {
-    var sv = localStorage.getItem('bullen-referral-secret');
-    if (sv) $('secret').value = sv;
-    $('secret').addEventListener('input', function(){
-      try { localStorage.setItem('bullen-referral-secret', $('secret').value); } catch (e) {}
-    });
-  } catch (e) {}
 
   // Delegated, because the rows are rebuilt on every run and a handler bound
   // to a button that no longer exists is a silent dead click.
@@ -612,7 +619,7 @@
     var ref = btn.getAttribute('data-ref');
     if (!ref) return;
 
-    var secret = $('secret').value.trim();
+    var secret = readAdminSecret();
     if (!secret){ say('admin secret required to mark a piece granted.', true); return; }
 
     // Optional. If the asset address is given the record points at something
@@ -626,6 +633,7 @@
                  '\n\nOnly do this AFTER the piece has been sent. ' +
                  'It will be announced in Telegram.')) return;
 
+    forgetAdminSecret();
     btn.disabled = true;
     try {
       var res = await fetch(window.location.origin + '/refbind/custom', {
@@ -644,6 +652,8 @@
     } catch (err){
       say('could not record: ' + ((err && err.message) || err), true);
       btn.disabled = false;
+    } finally {
+      secret = '';
     }
   });
 
