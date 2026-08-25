@@ -1,0 +1,70 @@
+name: Deploy website staging
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: staging
+    steps:
+      - name: Check out requested revision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+
+      - name: Run repository checks
+        run: npm test
+
+      - name: Calculate release fingerprint
+        id: fingerprint
+        run: node qa/release-fingerprint.mjs
+
+      - name: Validate production bundle without deploying
+        run: npx --yes wrangler@4.125.0 deploy --dry-run --config wrangler.production.jsonc
+
+      - name: Deploy route-free staging Worker
+        id: deploy
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.125.0"
+          command: deploy --config wrangler.staging.jsonc
+
+      - name: Require a staging URL
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: test -n "$DEPLOYMENT_URL"
+
+      - name: Smoke-test all public pages on staging
+        env:
+          SMOKE_BASE_URL: ${{ steps.deploy.outputs.deployment-url }}
+          SMOKE_INCLUDE_API: "0"
+        run: node qa/smoke-live.mjs
+
+      - name: Publish staging evidence
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          RELEASE_FINGERPRINT: ${{ steps.fingerprint.outputs.release_fingerprint }}
+          SITE_TREE_SHA: ${{ steps.fingerprint.outputs.site_tree_sha }}
+        run: |
+          {
+            echo "## Website staging deployment"
+            echo "- Commit: \`$GITHUB_SHA\`"
+            echo "- Site tree: \`$SITE_TREE_SHA\`"
+            echo "- Release fingerprint: \`$RELEASE_FINGERPRINT\`"
+            echo "- Preview: $DEPLOYMENT_URL"
+            echo "- Production traffic changed: no"
+          } >> "$GITHUB_STEP_SUMMARY"

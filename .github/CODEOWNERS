@@ -1,4 +1,6 @@
 * @bullenciaga
 /.github/ @bullenciaga
+/.release/ @bullenciaga
 /qa/ @bullenciaga
 /wrangler.production.jsonc @bullenciaga
+/wrangler.staging.jsonc @bullenciaga
