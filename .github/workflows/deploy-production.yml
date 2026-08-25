@@ -1,10 +1,31 @@
-name: Deploy website to production
+name: Deploy website production
 
 on:
   workflow_dispatch:
+    inputs:
+      approved_commit_sha:
+        description: Exact 40-character main commit approved after staging
+        required: true
+        type: string
+      approved_release_fingerprint:
+        description: SHA-256 release fingerprint from the staging run
+        required: true
+        type: string
+      rollback_version_id:
+        description: Current production Cloudflare version UUID
+        required: true
+        type: string
+      confirmation:
+        description: Type DEPLOY BULLENCIAGA WEBSITE
+        required: true
+        type: string
 
 permissions:
   contents: read
+
+concurrency:
+  group: website-production
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -13,18 +34,90 @@ jobs:
     timeout-minutes: 20
     environment: production
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v4
+      - name: Check out main
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
-      - name: Verify production authorization marker
-        run: test -f .release/WEBSITE_DEPLOY_AUTHORIZED
-      - run: npm test
-      - name: Deploy static assets
-        uses: cloudflare/wrangler-action@v3
+
+      - name: Run repository checks
+        run: npm test
+
+      - name: Verify exact approved release
+        id: fingerprint
+        env:
+          APPROVED_COMMIT_SHA: ${{ inputs.approved_commit_sha }}
+          APPROVED_RELEASE_FINGERPRINT: ${{ inputs.approved_release_fingerprint }}
+          ROLLBACK_VERSION_ID: ${{ inputs.rollback_version_id }}
+          DEPLOY_CONFIRMATION: ${{ inputs.confirmation }}
+        run: node qa/release-fingerprint.mjs --verify
+
+      - name: Validate production bundle without deploying
+        run: npx --yes wrangler@4.125.0 deploy --dry-run --config wrangler.production.jsonc
+
+      - name: Create immutable release tag
+        id: release
+        run: echo "tag=gh-${GITHUB_SHA:0:12}-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload production version without changing traffic
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --config wrangler.production.jsonc
-      - name: Smoke test
+          wranglerVersion: "4.125.0"
+          command: >-
+            versions upload
+            --config wrangler.production.jsonc
+            --tag ${{ steps.release.outputs.tag }}
+            --message "GitHub ${{ github.sha }}"
+
+      - name: Promote the exact uploaded version
+        id: promote
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.125.0"
+          command: >-
+            versions deploy
+            --config wrangler.production.jsonc
+            --version-tag ${{ steps.release.outputs.tag }}@100%
+            --message "Promote GitHub ${{ github.sha }}"
+            --yes
+
+      - name: Smoke-test production pages and APIs
+        env:
+          SMOKE_BASE_URL: https://bullenciaga.com
+          SMOKE_INCLUDE_API: "1"
         run: node qa/smoke-live.mjs
+
+      - name: Roll back automatically if production smoke fails
+        if: failure() && steps.promote.outcome == 'success'
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.125.0"
+          command: >-
+            rollback ${{ inputs.rollback_version_id }}
+            --config wrangler.production.jsonc
+            --message "Automatic rollback after failed smoke for ${{ github.sha }}"
+            --yes
+
+      - name: Publish production evidence
+        if: always()
+        env:
+          RELEASE_FINGERPRINT: ${{ steps.fingerprint.outputs.release_fingerprint }}
+          SITE_TREE_SHA: ${{ steps.fingerprint.outputs.site_tree_sha }}
+        run: |
+          {
+            echo "## Website production deployment"
+            echo "- Commit: \`$GITHUB_SHA\`"
+            echo "- Site tree: \`$SITE_TREE_SHA\`"
+            echo "- Release fingerprint: \`$RELEASE_FINGERPRINT\`"
+            echo "- Uploaded tag: \`${{ steps.release.outputs.tag }}\`"
+            echo "- Rollback target: \`${{ inputs.rollback_version_id }}\`"
+            echo "- Promotion outcome: \`${{ steps.promote.outcome }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
