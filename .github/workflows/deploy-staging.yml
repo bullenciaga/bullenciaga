@@ -1,6 +1,17 @@
 name: Deploy website staging
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/deploy-staging.yml"
+      - ".github/workflows/deploy-production.yml"
+      - "package*.json"
+      - "qa/**"
+      - "site/**"
+      - "wrangler.production.jsonc"
+      - "wrangler.staging.jsonc"
   workflow_dispatch:
 
 permissions:
@@ -8,7 +19,7 @@ permissions:
 
 concurrency:
   group: website-staging
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
