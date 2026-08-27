@@ -1,0 +1,165 @@
+<!doctype html>
+<!-- BULLENCIAGA giveaways.html | build 2026-08-27.1 — one public campaign ledger -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>BULLENCIAGA — Giveaways</title>
+  <meta name="description" content="Active, upcoming and completed BULLENCIAGA giveaways with public snapshots and reproducible results.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/bullen-ui.css">
+  <script defer src="/bullen-ui.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    html { color-scheme: dark; background: var(--bullen-bg); }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: clamp(20px, 4vw, 52px) var(--bullen-gutter) 80px;
+      color: var(--bullen-text);
+      background:
+        radial-gradient(circle at 78% -8%, rgba(199, 168, 105, 0.13), transparent 34rem),
+        var(--bullen-bg);
+      font: 400 13px/1.7 var(--bullen-font-data);
+    }
+    main { width: min(100%, 1120px); margin: 0 auto; }
+    .eyebrow { color: var(--bullen-brand); letter-spacing: .24em; text-transform: uppercase; font-size: 10px; }
+    h1 { max-width: 15ch; margin: 10px 0 14px; font: 600 clamp(34px, 6vw, 72px)/1.02 var(--bullen-font-display); letter-spacing: .02em; }
+    .lede { max-width: 72ch; margin: 0; color: var(--bullen-muted); }
+    .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; margin: 34px 0 52px; padding: 1px; background: var(--bullen-border); }
+    .summary div { padding: 18px; background: var(--bullen-surface); }
+    .summary b { display: block; color: var(--bullen-brand-light); font-size: 20px; }
+    .summary span { color: var(--bullen-muted); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+    .campaign-section { margin-top: 46px; }
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--bullen-border); }
+    .section-head h2 { margin: 0; font: 600 clamp(20px, 3vw, 30px)/1.2 var(--bullen-font-display); }
+    .section-head span { color: var(--bullen-muted); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+    .campaign-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+    .campaign { position: relative; min-width: 0; padding: clamp(18px, 3vw, 28px); border: 1px solid var(--bullen-border); background: linear-gradient(145deg, rgba(199,168,105,.045), transparent 45%), var(--bullen-surface); }
+    .campaign[data-status="active"] { border-color: rgba(95, 211, 154, .42); }
+    .campaign[data-status="upcoming"] { border-color: rgba(231, 184, 92, .3); }
+    .status { display: inline-flex; margin-bottom: 16px; color: var(--bullen-muted); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; }
+    .status::before { content: ''; width: 7px; height: 7px; margin: 5px 8px 0 0; border-radius: 50%; background: currentColor; }
+    [data-status="active"] .status { color: var(--bullen-success); }
+    [data-status="upcoming"] .status { color: var(--bullen-warning); }
+    .campaign h3 { margin: 0 0 8px; font: 600 19px/1.3 var(--bullen-font-display); }
+    .trigger { color: var(--bullen-brand-light); }
+    .progress { height: 4px; margin: 15px 0 18px; overflow: hidden; background: rgba(245,243,238,.08); }
+    .progress i { display: block; width: var(--progress, 0%); height: 100%; background: var(--bullen-brand); }
+    .rules { margin: 16px 0; padding: 0; list-style: none; color: var(--bullen-muted); }
+    .rules li { position: relative; padding-left: 16px; }
+    .rules li::before { content: '·'; position: absolute; left: 2px; color: var(--bullen-brand); }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .action { min-height: 42px; padding: 11px 14px; border: 1px solid var(--bullen-border); color: var(--bullen-brand-light); text-decoration: none; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+    .action.primary { color: var(--bullen-bg); background: var(--bullen-brand); border-color: var(--bullen-brand); }
+    .empty { grid-column: 1 / -1; padding: 22px; color: var(--bullen-muted); border: 1px dashed var(--bullen-border); }
+    .proof-note { margin-top: 52px; padding: 20px 0 0; border-top: 1px solid var(--bullen-border); color: var(--bullen-muted); }
+    .proof-note strong { color: var(--bullen-text); }
+    @media (max-width: 700px) {
+      .summary, .campaign-grid { grid-template-columns: 1fr; }
+      .summary { margin-bottom: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <main id="main-content">
+    <div class="eyebrow">The public campaign ledger</div>
+    <h1>Nothing drawn in the dark.</h1>
+    <p class="lede">One source records every live, gated, completed and paid campaign. Snapshots are published before seeds are fetched; results remain reproducible after the draw.</p>
+
+    <div class="summary" aria-live="polite">
+      <div><b id="activeCount">—</b><span>active now</span></div>
+      <div><b id="mintProgress">—</b><span>mints toward round 3</span></div>
+      <div><b id="carryover">32 / 62</b><span>wallets / banked entries</span></div>
+    </div>
+
+    <div id="campaigns" aria-live="polite"></div>
+
+    <p class="proof-note"><strong>Owner signatures remain manual.</strong> Code can validate, snapshot, draw and publish proof. It cannot transfer a prize. Payment status changes only when a public receipt is attached to this ledger.</p>
+  </main>
+
+  <script>
+    (async function () {
+      const groups = [
+        ['active', 'Active', 'Open for participation now'],
+        ['upcoming', 'Upcoming', 'Visible before its gate is reached'],
+        ['completed', 'Completed', 'Snapshot and draw result published'],
+        ['paid', 'Paid', 'Public payout evidence attached'],
+      ];
+      const root = document.getElementById('campaigns');
+      const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
+
+      let authority;
+      try {
+        authority = await fetch('/giveaways.json', { cache: 'no-store' }).then((response) => {
+          if (!response.ok) throw new Error(`authority ${response.status}`);
+          return response.json();
+        });
+      } catch (error) {
+        root.innerHTML = '<div class="empty">The campaign ledger is temporarily unavailable. No draw or payment state is inferred.</div>';
+        return;
+      }
+
+      let minted = null;
+      let followerEntries = null;
+      await Promise.all([
+        fetch(authority.freshness.mintedEndpoint).then((response) => response.json()).then((value) => {
+          const count = Number(value.minted ?? value.count);
+          if (Number.isInteger(count)) minted = count;
+        }).catch(() => {}),
+        fetch(authority.freshness.followerEntriesEndpoint).then((response) => response.json()).then((value) => {
+          if (Number.isInteger(value.count)) followerEntries = value.count;
+        }).catch(() => {}),
+      ]);
+
+      const campaigns = authority.campaigns.map((campaign) => {
+        const next = structuredClone(campaign);
+        if (campaign.id === 'mint-round-3' && minted !== null) next.trigger.current = minted;
+        if (campaign.id === 'follow500' && followerEntries !== null) next.entry.publicEntries = followerEntries;
+        return next;
+      });
+
+      document.getElementById('activeCount').textContent = campaigns.filter((campaign) => campaign.status === 'active').length;
+      document.getElementById('mintProgress').textContent = minted === null ? '— / 650' : `${minted} / 650`;
+
+      const link = (href, label, primary = false) => href ? `<a class="action${primary ? ' primary' : ''}" href="${escapeHtml(href)}">${escapeHtml(label)}</a>` : '';
+      const card = (campaign) => {
+        const current = Number(campaign.trigger.current);
+        const target = Number(campaign.trigger.target);
+        const hasProgress = Number.isFinite(current) && Number.isFinite(target) && target > 0;
+        const progress = hasProgress ? Math.max(0, Math.min(100, current / target * 100)) : 0;
+        const trigger = hasProgress
+          ? `${current.toLocaleString()} / ${target.toLocaleString()} ${campaign.trigger.label}`
+          : campaign.trigger.source || campaign.trigger.label;
+        const entries = campaign.entry && Number.isInteger(campaign.entry.publicEntries)
+          ? `<div class="trigger">${campaign.entry.publicEntries} public wallet entries</div>` : '';
+        const payout = campaign.payoutStatus === 'paid' ? 'paid' : campaign.status;
+        return `<article class="campaign" data-status="${escapeHtml(payout)}">
+          <div class="status">${escapeHtml(payout.replaceAll('-', ' '))}</div>
+          <h3>${escapeHtml(campaign.title)}</h3>
+          <div class="trigger">${escapeHtml(trigger)}</div>${entries}
+          ${hasProgress ? `<div class="progress" aria-label="${progress.toFixed(0)} percent complete"><i style="--progress:${progress}%"></i></div>` : ''}
+          <ul class="rules">${campaign.eligibility.map((rule) => `<li>${escapeHtml(rule)}</li>`).join('')}</ul>
+          <div class="actions">
+            ${link(campaign.entry && campaign.entry.homepageAnchor, 'Enter', campaign.status === 'active')}
+            ${link(campaign.snapshot, 'Snapshot')}
+            ${link(campaign.result, 'Result')}
+          </div>
+        </article>`;
+      };
+
+      for (const [status, title, note] of groups) {
+        const rows = campaigns.filter((campaign) => status === 'paid'
+          ? campaign.payoutStatus === 'paid'
+          : campaign.status === status && campaign.payoutStatus !== 'paid');
+        root.insertAdjacentHTML('beforeend', `<section class="campaign-section" aria-labelledby="${status}-title">
+          <div class="section-head"><h2 id="${status}-title">${title}</h2><span>${note}</span></div>
+          <div class="campaign-grid">${rows.length ? rows.map(card).join('') : '<div class="empty">No campaigns in this state.</div>'}</div>
+        </section>`);
+      }
+    })();
+  </script>
+</body>
+</html>

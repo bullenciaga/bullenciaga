@@ -2185,7 +2185,7 @@
     flex-direction:column;
     gap:8px;
   }
-  /* buildWalletRow emits an <a> instead of a <button> when a mobile redirect
+  /* buildWalletRow emits a link instead of a button when a mobile redirect
      is needed, so both must render identically. */
   .wallet-notice{
     border:1px solid var(--gold);
@@ -2977,6 +2977,8 @@
   }
   .gv-verify a{ color:rgba(245,243,238,0.55); text-decoration:underline; }
 </style>
+<link rel="stylesheet" href="/bullen-ui.css">
+<script defer src="/bullen-ui.js"></script>
 </head>
 <body>
 
@@ -4593,7 +4595,7 @@
   };
 
   // In-app browsers -- X, Instagram, Facebook, TikTok -- are the reason this
-  // row is sometimes an <a> and not a <button>.
+  // row is sometimes a link and not a button.
   //
   // Inside X's webview, a scripted `window.location.href = <universal link>`
   // does open the wallet, but the URL arriving at the other end is mangled:
@@ -8300,6 +8302,7 @@ const JUP_VERIFY_URL = 'https://bullenciaga.com/jupiter_vrfd';
   // page. Add a new section to this list any time a new one is added to
   // the page; nothing else needs to change.
   const SECTIONS = [
+    { id: 'giveaway', label: 'Giveaway' },
     { id: 'stats', label: 'Live Stats' },
     { id: 'how-to-buy', label: 'How To Buy' },
     { id: 'nft', label: 'The Herd Collection' },
@@ -8320,6 +8323,7 @@ const JUP_VERIFY_URL = 'https://bullenciaga.com/jupiter_vrfd';
     // eleven third-party platforms. Referrals, the drop and Jupiter
     // verification follow, then everything that belongs to somebody else in
     // the order it was already in.
+    { url: 'giveaways.html', label: 'All Giveaways' },
     { url: 'proof', label: 'Proof' },
     { url: 'refer.html', label: 'Referrals' },
     { url: 'thedrop', label: 'The Drop' },
@@ -8420,7 +8424,7 @@ const JUP_VERIFY_URL = 'https://bullenciaga.com/jupiter_vrfd';
     <span>press for full experience</span>
     <svg class="hint-chevron" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l5 5-5 5"/></svg>
   </div>
-  <button id="audioToggle" class="audio-toggle" aria-pressed="false">Play Music</button>
+  <button type="button" id="audioToggle" class="audio-toggle" aria-pressed="false">Play Music</button>
 </div>
 <script>
 (function(){

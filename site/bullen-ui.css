@@ -1,0 +1,130 @@
+:root {
+  --bullen-bg: #050505;
+  --bullen-surface: #0a0a0a;
+  --bullen-surface-raised: #101010;
+  --bullen-text: #f5f3ee;
+  --bullen-muted: rgba(245, 243, 238, 0.5);
+  --bullen-brand: #c7a869;
+  --bullen-brand-light: #e8d9ae;
+  --bullen-border: rgba(199, 168, 105, 0.18);
+  --bullen-success: #5fd39a;
+  --bullen-warning: #e7b85c;
+  --bullen-danger: #e0685f;
+  --bullen-focus: #f3cf72;
+  --bullen-font-display: Poppins, Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --bullen-font-data: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --bullen-gutter: clamp(16px, 3vw, 36px);
+  --bullen-shell-width: 1120px;
+  --bullen-motion-fast: 120ms;
+  --bullen-motion-normal: 220ms;
+}
+
+.bullen-skip {
+  position: fixed;
+  z-index: 2147483647;
+  top: 10px;
+  left: 10px;
+  padding: 10px 14px;
+  color: var(--bullen-bg);
+  background: var(--bullen-focus);
+  border: 1px solid var(--bullen-text);
+  font: 700 11px/1 var(--bullen-font-data);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transform: translateY(-180%);
+  transition: transform var(--bullen-motion-fast) ease;
+}
+
+.bullen-skip:focus { transform: translateY(0); }
+
+.bullen-site-shell {
+  width: min(100%, var(--bullen-shell-width));
+  margin: 0 auto clamp(18px, 3vw, 32px);
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--bullen-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--bullen-text);
+  font: 400 10px/1.3 var(--bullen-font-data);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  flex: 0 0 auto;
+}
+
+.bullen-site-shell a {
+  color: var(--bullen-muted);
+  text-decoration: none;
+  transition: color var(--bullen-motion-fast) ease, border-color var(--bullen-motion-fast) ease;
+}
+
+.bullen-site-shell a:hover,
+.bullen-site-shell a[aria-current="page"] { color: var(--bullen-brand-light); }
+
+.bullen-site-brand {
+  color: var(--bullen-brand) !important;
+  font-family: var(--bullen-font-display) !important;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  white-space: nowrap;
+}
+
+.bullen-site-brand span {
+  color: var(--bullen-muted);
+  font: 400 9px/1 var(--bullen-font-data);
+  letter-spacing: 0.1em;
+}
+
+.bullen-site-nav {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(10px, 1.6vw, 20px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.bullen-site-nav::-webkit-scrollbar { display: none; }
+.bullen-site-nav a { padding: 9px 1px; white-space: nowrap; }
+
+.bullen-site-shell.is-admin {
+  border-color: rgba(224, 104, 95, 0.35);
+}
+
+.bullen-site-admin-label {
+  color: var(--bullen-danger);
+  white-space: nowrap;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--bullen-focus) !important;
+  outline-offset: 3px !important;
+}
+
+[data-bullen-main]:focus { outline: none; }
+
+@media (max-width: 700px) {
+  .bullen-site-shell {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .bullen-site-nav {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

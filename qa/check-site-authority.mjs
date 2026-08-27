@@ -4,9 +4,14 @@ import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
-const expectedIndexHash = '416e5720e1711c2e3cdafc0caa81dbf7b3ffbb4a9974fda6a78dfce9c636f08a';
+const expectedIndexHash = '6b8b197f7dd9c6633164bbe1ccd4edc1d315c7436f64c3f41313edd06f6fb923';
 const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs'];
-const required = ['index.html', '_redirects', 'stats.html', 'chart.html', 'curve.html', 'proof.html', 'transparency.html', 'whitepaper.pdf'];
+const required = [
+  'index.html', '_redirects', 'stats.html', 'chart.html', 'curve.html',
+  'proof.html', 'transparency.html', 'whitepaper.pdf',
+  'bullen-ui.css', 'bullen-ui.js', 'giveaways.html', 'giveaways.json',
+  'giveaway-snapshot-2.json', 'giveaway-result-2.json',
+];
 const failures = [];
 
 const hash = crypto.createHash('sha256').update(fs.readFileSync(path.join(site, 'index.html'))).digest('hex');

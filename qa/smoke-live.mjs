@@ -24,6 +24,7 @@ const pageChecks = [
   ['/refer', /<title>BULLENCIAGA — Referrals/i],
   ['/referrals', /<title>BULLENCIAGA — Weekly Payouts/i],
   ['/thedrop', /<title>BULLENCIAGA — The Drop/i],
+  ['/giveaways', /<title>BULLENCIAGA — Giveaways/i],
 ];
 
 const apiChecks = [
