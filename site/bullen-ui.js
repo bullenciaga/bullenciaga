@@ -85,6 +85,13 @@
     actions.append(toggle);
     bar.append(actions);
 
+    const extraButton = extraControl ? extraControl.querySelector('button') : null;
+    const closeExtraControl = () => {
+      if (!extraControl) return;
+      extraControl.classList.remove('open');
+      if (extraButton) extraButton.setAttribute('aria-expanded', 'false');
+    };
+
     const closeNav = () => {
       shell.classList.remove('nav-open');
       toggle.setAttribute('aria-expanded', 'false');
@@ -94,15 +101,13 @@
     toggle.addEventListener('click', (event) => {
       event.stopPropagation();
       const open = !shell.classList.contains('nav-open');
+      if (open) closeExtraControl();
       shell.classList.toggle('nav-open', open);
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? 'Close page navigation' : 'Open page navigation');
     });
     nav.addEventListener('click', closeNav);
-    if (extraControl) {
-      const extraButton = extraControl.querySelector('button');
-      if (extraButton) extraButton.addEventListener('click', closeNav);
-    }
+    if (extraButton) extraButton.addEventListener('click', closeNav);
     document.addEventListener('click', (event) => {
       if (shell.classList.contains('nav-open') && !shell.contains(event.target)) closeNav();
     });
