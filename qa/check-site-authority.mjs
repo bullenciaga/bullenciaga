@@ -5,10 +5,10 @@ import path from 'node:path';
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
 const expectedIndexHash = 'c4c63b67c14699933cba591009443efd3029ee00642aabcfd374b3b57b6ffe08';
-const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs'];
+const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs', 'proof.html'];
 const required = [
   'index.html', '_redirects', 'stats.html', 'chart.html', 'curve.html',
-  'proof.html', 'transparency.html', 'whitepaper.pdf',
+  'transparency.html', 'whitepaper.pdf',
   'bullen-ui.css', 'bullen-ui.js', 'giveaways.html', 'giveaways.json',
   'giveaway-snapshot-2.json', 'giveaway-result-2.json',
 ];

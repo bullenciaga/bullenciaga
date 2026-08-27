@@ -21,7 +21,6 @@ const pageChecks = [
   ['/stats', /<title>BULLENCIAGA — Live Dashboard/i],
   ['/chart', /<title>BULLENCIAGA — \$BULLEN chart/i],
   ['/curve', /<title>BULLENCIAGA — the curve/i],
-  ['/proof', /<title>BULLENCIAGA — proof/i],
   ['/transparency', /<title>BULLENCIAGA — moderation record/i],
   ['/refer', /<title>BULLENCIAGA — Referrals/i],
   ['/referrals', /<title>BULLENCIAGA — Weekly Payouts/i],
@@ -69,12 +68,51 @@ async function fetchChecked(path) {
   throw lastError;
 }
 
+async function fetchRedirectChecked(path) {
+  const url = new URL(path, baseUrl);
+  let lastError;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    url.searchParams.set('smoke', `${Date.now()}-${Math.random().toString(16).slice(2)}`);
+    try {
+      const response = await fetch(url, {
+        redirect: 'manual',
+        headers: { 'user-agent': 'bullenciaga-release-smoke/1' },
+        signal: AbortSignal.timeout(45_000),
+      });
+      if (response.status === 301) return { response, url };
+      lastError = new Error(`${url} returned HTTP ${response.status} instead of 301`);
+    } catch (error) {
+      lastError = error;
+    }
+
+    if (attempt === maxAttempts) throw lastError;
+    const delayMs = Math.min(initialRetryDelayMs * (2 ** (attempt - 1)), 10_000);
+    console.warn(`redirect smoke attempt ${attempt}/${maxAttempts} failed for ${url.pathname}: ${lastError.message}; retrying in ${delayMs}ms`);
+    await sleep(delayMs);
+  }
+
+  throw lastError;
+}
+
 for (const [path, marker] of effectivePageChecks) {
   const { response, url } = await fetchChecked(path);
   assert.match(response.headers.get('content-type') ?? '', /text\/html/i, `${url} did not return HTML`);
   const body = await response.text();
   assert(marker.test(body), `${url} is missing its expected build marker`);
   console.log(`page smoke: ok ${url.pathname}`);
+}
+
+if (smokePhase === 'post-release') {
+  for (const path of ['/proof', '/proof.html']) {
+    const { response, url } = await fetchRedirectChecked(path);
+    const location = response.headers.get('location');
+    assert(location, `${url} redirect omitted its Location header`);
+    const target = new URL(location, url);
+    assert.equal(target.origin, baseUrl.origin, `${url} redirects away from the canonical website`);
+    assert.equal(target.pathname, '/curve', `${url} does not redirect to /curve`);
+    console.log(`redirect smoke: ok ${url.pathname} -> ${target.pathname}`);
+  }
 }
 
 if (includeApi) {

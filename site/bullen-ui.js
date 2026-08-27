@@ -7,8 +7,7 @@
     index: 'Home',
     stats: 'Stats',
     chart: 'Chart',
-    curve: 'Supply',
-    proof: 'Proof',
+    curve: 'Curve',
     transparency: 'Moderation',
     refer: 'Referrals',
     referrals: 'Admin',
@@ -20,7 +19,6 @@
     ['stats', '/stats.html'],
     ['chart', '/chart.html'],
     ['curve', '/curve.html'],
-    ['proof', '/proof.html'],
     ['refer', '/refer.html'],
     ['thedrop', '/thedrop.html'],
   ];
