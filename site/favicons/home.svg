@@ -1,16 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
   <title id="title">BULLENCIAGA</title>
-  <desc id="desc">A symmetrical back-to-back BB cufflink monogram in gold on black.</desc>
+  <desc id="desc">A short, wide back-to-back BB cufflink monogram drawn with one uniform gold line on black.</desc>
   <rect width="64" height="64" fill="#050505"/>
-  <g fill="#c7a869">
-    <path d="M32 10H42C51 10 56 15 56 22C56 27 53 30 48.5 32C53.5 33.6 57 37.5 57 43.5C57 50.3 51.8 54 42 54H32Z"/>
-    <path d="M32 10H42C51 10 56 15 56 22C56 27 53 30 48.5 32C53.5 33.6 57 37.5 57 43.5C57 50.3 51.8 54 42 54H32Z" transform="translate(64 0) scale(-1 1)"/>
-  </g>
-  <g fill="#050505">
-    <path d="M39 17H42C46.5 17 49 19 49 22.5C49 26 46.5 28.5 42 28.5H39Z"/>
-    <path d="M39 35.5H42.5C47.2 35.5 50 38.3 50 42.5C50 46.5 47.2 48 42 48H39Z"/>
-    <path d="M39 17H42C46.5 17 49 19 49 22.5C49 26 46.5 28.5 42 28.5H39Z" transform="translate(64 0) scale(-1 1)"/>
-    <path d="M39 35.5H42.5C47.2 35.5 50 38.3 50 42.5C50 46.5 47.2 48 42 48H39Z" transform="translate(64 0) scale(-1 1)"/>
-    <rect x="31.25" y="10" width="1.5" height="44"/>
+  <g fill="none" stroke="#c7a869" stroke-width="7" stroke-linecap="butt" stroke-linejoin="round">
+    <path d="M36 9.5V54.5M36 13H45C52 13 56 17 56 22.5C56 28 52 32 45 32H36M36 32H45C52.5 32 57 35.8 57 41.5C57 47.2 52.5 51 45 51H36"/>
+    <path d="M36 9.5V54.5M36 13H45C52 13 56 17 56 22.5C56 28 52 32 45 32H36M36 32H45C52.5 32 57 35.8 57 41.5C57 47.2 52.5 51 45 51H36" transform="translate(64 0) scale(-1 1)"/>
   </g>
 </svg>

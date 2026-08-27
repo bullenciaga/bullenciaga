@@ -34,6 +34,11 @@ for (const [page, icon] of pages) {
   assert.match(svg, /#c7a869/);
   const colors = [...new Set(svg.match(/#[0-9a-f]{6}/gi)?.map((value) => value.toLowerCase()))].sort();
   assert.deepEqual(colors, ['#050505', '#c7a869'], `${icon} must use only the black-and-gold favicon palette`);
+  if (icon === 'home.svg') {
+    const strokeWidths = [...svg.matchAll(/stroke-width="([^"]+)"/g)].map((match) => match[1]);
+    assert.deepEqual(strokeWidths, ['7'], 'home.svg must use one uniform monogram line width');
+    assert.doesNotMatch(svg, /fill="#c7a869"/, 'home.svg gold must come only from the uniform monogram stroke');
+  }
   assert.doesNotMatch(svg, /<(?:script|image|text)\b/i);
   assert.doesNotMatch(svg, /(?:href|src)="https?:/i);
 }
