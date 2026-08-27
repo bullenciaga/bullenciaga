@@ -21,7 +21,6 @@
     ['chart', '/chart.html'],
     ['curve', '/curve.html'],
     ['proof', '/proof.html'],
-    ['transparency', '/transparency.html'],
     ['refer', '/refer.html'],
     ['thedrop', '/thedrop.html'],
   ];
@@ -65,14 +64,18 @@
     return brand;
   };
 
-  const mountResponsiveNav = (shell, nav, extraControl) => {
+  const mountResponsiveNav = (shell, bar, nav, extraControl) => {
     const actions = document.createElement('div');
     actions.className = 'bullen-site-actions';
 
     const navId = `bullen-public-nav-${page}`;
     nav.id = navId;
     actions.append(nav);
-    if (extraControl) actions.append(extraControl);
+
+    const auxiliary = document.createElement('div');
+    auxiliary.className = 'bullen-site-aux';
+    if (extraControl) auxiliary.append(extraControl);
+    actions.append(auxiliary);
 
     const toggle = document.createElement('button');
     toggle.type = 'button';
@@ -82,7 +85,7 @@
     toggle.setAttribute('aria-expanded', 'false');
     toggle.innerHTML = '<span></span><span></span><span></span>';
     actions.append(toggle);
-    shell.append(actions);
+    bar.append(actions);
 
     const closeNav = () => {
       shell.classList.remove('nav-open');
@@ -110,35 +113,24 @@
     });
   };
 
-  if (page === 'index') {
+  const buildShell = (extraControl) => {
     const shell = document.createElement('header');
-    shell.className = 'bullen-site-shell bullen-home-shell';
-    shell.append(buildBrand());
+    shell.className = `bullen-site-shell${page === 'index' ? ' bullen-home-shell' : ''}${page === 'referrals' ? ' is-admin' : ''}`;
+
+    const bar = document.createElement('div');
+    bar.className = 'bullen-site-bar';
+    bar.append(buildBrand());
+    shell.append(bar);
+    mountResponsiveNav(shell, bar, buildPublicNav(), extraControl);
+    return shell;
+  };
+
+  if (page === 'index') {
     const jumpTo = document.getElementById('jumpToWidget');
     if (jumpTo) jumpTo.setAttribute('aria-label', 'Homepage section navigation');
-    mountResponsiveNav(shell, buildPublicNav(), jumpTo);
-    skip.after(shell);
+    skip.after(buildShell(jumpTo));
   } else {
-    const shell = document.createElement('header');
-    shell.className = `bullen-site-shell${page === 'referrals' ? ' is-admin' : ''}`;
-    shell.append(buildBrand());
-
-    if (page === 'referrals') {
-      const admin = document.createElement('span');
-      admin.className = 'bullen-site-admin-label';
-      admin.textContent = 'unlisted admin surface';
-      shell.append(admin);
-    } else {
-      mountResponsiveNav(shell, buildPublicNav());
-    }
-
-    if (page === 'stats') {
-      const stage = document.getElementById('stage');
-      if (stage) stage.prepend(shell);
-      else skip.after(shell);
-    } else {
-      skip.after(shell);
-    }
+    skip.after(buildShell());
   }
 
   for (const button of document.querySelectorAll('button:not([type])')) {
