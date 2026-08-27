@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BULLENCIAGA giveaways.html | build 2026-08-27.2 — draw states without payout bookkeeping -->
+<!-- BULLENCIAGA giveaways.html | build 2026-08-27.3 — vTURBO Trophy skill campaign -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -38,6 +38,10 @@
     .section-head span { color: var(--bullen-muted); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
     .campaign-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
     .campaign { position: relative; min-width: 0; padding: clamp(18px, 3vw, 28px); border: 1px solid var(--bullen-border); background: linear-gradient(145deg, rgba(199,168,105,.045), transparent 45%), var(--bullen-surface); }
+    .campaign.featured { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(190px, 30%) minmax(0, 1fr); gap: clamp(20px, 4vw, 44px); }
+    .campaign-media { min-height: 260px; overflow: hidden; border: 1px solid var(--bullen-border); background: var(--bullen-bg); }
+    .campaign-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .campaign-copy { min-width: 0; align-self: center; }
     .campaign[data-status="active"] { border-color: rgba(95, 211, 154, .42); }
     .campaign[data-status="upcoming"] { border-color: rgba(231, 184, 92, .3); }
     .status { display: inline-flex; margin-bottom: 16px; color: var(--bullen-muted); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; }
@@ -46,8 +50,13 @@
     [data-status="upcoming"] .status { color: var(--bullen-warning); }
     .campaign h3 { margin: 0 0 8px; font: 600 19px/1.3 var(--bullen-font-display); }
     .trigger { color: var(--bullen-brand-light); }
+    .prize-traits { margin: 8px 0 0; color: var(--bullen-muted); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
     .progress { height: 4px; margin: 15px 0 18px; overflow: hidden; background: rgba(245,243,238,.08); }
     .progress i { display: block; width: var(--progress, 0%); height: 100%; background: var(--bullen-brand); }
+    .milestones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; margin: 18px 0; padding: 1px; background: var(--bullen-border); }
+    .milestone { padding: 13px 14px; background: rgba(0,0,0,.3); }
+    .milestone b { display: block; color: var(--bullen-brand-light); font-size: 19px; line-height: 1.15; }
+    .milestone span { color: var(--bullen-muted); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
     .rules { margin: 16px 0; padding: 0; list-style: none; color: var(--bullen-muted); }
     .rules li { position: relative; padding-left: 16px; }
     .rules li::before { content: '·'; position: absolute; left: 2px; color: var(--bullen-brand); }
@@ -60,6 +69,8 @@
     @media (max-width: 700px) {
       .summary, .campaign-grid { grid-template-columns: 1fr; }
       .summary { margin-bottom: 40px; }
+      .campaign.featured { grid-template-columns: 1fr; }
+      .campaign-media { min-height: 0; aspect-ratio: 1 / 1; }
     }
   </style>
 </head>
@@ -137,9 +148,23 @@
         ? `${carryover.wallets} / ${carryover.bankedEntries}` : '—';
 
       const safeInternalHref = (href) => typeof href === 'string' && /^\/(?!\/)/.test(href) ? href : null;
+      const safeExternalHref = (href) => {
+        try {
+          const value = new URL(href);
+          return value.protocol === 'https:' && ['x.com', 'www.x.com'].includes(value.hostname) ? value.href : null;
+        } catch (_) { return null; }
+      };
+      const safePrizeImage = (href) => {
+        try {
+          const value = new URL(href);
+          return value.protocol === 'https:' && value.hostname === 'gateway.irys.xyz' ? value.href : null;
+        } catch (_) { return null; }
+      };
       const link = (href, label, primary = false) => {
-        const safe = safeInternalHref(href);
-        return safe ? `<a class="action${primary ? ' primary' : ''}" href="${escapeHtml(safe)}">${escapeHtml(label)}</a>` : '';
+        const internal = safeInternalHref(href);
+        const safe = internal || safeExternalHref(href);
+        const external = safe && !internal ? ' target="_blank" rel="noopener noreferrer"' : '';
+        return safe ? `<a class="action${primary ? ' primary' : ''}" href="${escapeHtml(safe)}"${external}>${escapeHtml(label)}</a>` : '';
       };
       const card = (campaign) => {
         const hasCurrent = campaign.trigger.current !== null && campaign.trigger.current !== ''
@@ -155,16 +180,31 @@
             : campaign.trigger.label;
         const entries = campaign.entry && Number.isInteger(campaign.entry.publicEntries)
           ? `<div class="trigger">${campaign.entry.publicEntries} public wallet entries</div>` : '';
-        return `<article class="campaign" data-status="${escapeHtml(campaign.status)}">
+        const milestones = Array.isArray(campaign.milestones) && campaign.milestones.length
+          ? `<div class="milestones" aria-label="Collective unlock targets">${campaign.milestones.map((milestone) => {
+              const value = Number(milestone.target);
+              return Number.isFinite(value) && value > 0
+                ? `<div class="milestone"><b>${escapeHtml(value.toLocaleString())}</b><span>${escapeHtml(milestone.label)}</span></div>` : '';
+            }).join('')}</div>` : '';
+        const image = safePrizeImage(campaign.prizes && campaign.prizes.image);
+        const media = image ? `<div class="campaign-media"><img src="${escapeHtml(image)}" alt="HERD #699 in a golden fancy jacket" loading="lazy" decoding="async"></div>` : '';
+        const traits = campaign.prizes && campaign.prizes.traits;
+        const prizeLine = traits ? [traits.Outerwear, traits.Horns && `${traits.Horns} horns`,
+          traits['Glasses And Headgear'], traits.Branding && `${traits.Branding} branding`].filter(Boolean).join(' · ') : '';
+        const featured = campaign.featured && media ? ' featured' : '';
+        return `<article class="campaign${featured}" data-status="${escapeHtml(campaign.status)}">
+          ${media}<div class="campaign-copy">
           <div class="status">${escapeHtml(campaign.status.replaceAll('-', ' '))}</div>
           <h3>${escapeHtml(campaign.title)}</h3>
-          <div class="trigger">${escapeHtml(trigger)}</div>${entries}
+          ${prizeLine ? `<div class="prize-traits">${escapeHtml(prizeLine)}</div>` : ''}
+          <div class="trigger">${escapeHtml(trigger)}</div>${entries}${milestones}
           ${hasProgress ? `<div class="progress" aria-label="${progress.toFixed(0)} percent complete"><i style="--progress:${progress}%"></i></div>` : ''}
           <ul class="rules">${campaign.eligibility.map((rule) => `<li>${escapeHtml(rule)}</li>`).join('')}</ul>
           <div class="actions">
-            ${link(campaign.entry && campaign.entry.homepageAnchor, 'Enter', campaign.status === 'active')}
+            ${link(campaign.entry && (campaign.entry.url || campaign.entry.homepageAnchor), campaign.kind === 'skill' ? 'Name #699 on X' : 'Enter', campaign.status === 'active')}
             ${link(campaign.snapshot, 'Snapshot')}
             ${link(campaign.result, 'Result')}
+          </div>
           </div>
         </article>`;
       };

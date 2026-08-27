@@ -40,8 +40,16 @@ if (!shellCss.includes('height: 34px;') || !shellCss.includes('.bullen-home-shel
 
 const authority = JSON.parse(fs.readFileSync(path.join(site, 'giveaways.json'), 'utf8'));
 if (authority.schema !== 'bullenciaga.giveaways.v1') failures.push('giveaway authority schema mismatch');
-for (const id of ['follow500', 'mint-round-0', 'mint-round-1', 'mint-round-2', 'mint-round-3', 'mint-final']) {
+for (const id of ['vturbo-trophy-699', 'follow500', 'mint-round-0', 'mint-round-1', 'mint-round-2', 'mint-round-3', 'mint-final']) {
   if (!authority.campaigns.some((campaign) => campaign.id === id)) failures.push(`giveaway authority missing ${id}`);
+}
+const trophy = authority.campaigns.find((campaign) => campaign.id === 'vturbo-trophy-699');
+if (trophy?.status !== 'active' || trophy?.kind !== 'skill' || trophy?.prizes?.positions?.[0] !== 699
+    || trophy?.entry?.url !== 'https://x.com/bullenciagax/status/2093018896466923945'
+    || trophy?.close?.afterUnlockHours !== 24 || trophy?.judging?.random !== false
+    || trophy?.milestones?.length !== 3
+    || trophy.milestones.some((milestone) => milestone.target !== 50 || milestone.current !== null)) {
+  failures.push('vTURBO Trophy must remain an active manual skill campaign tied to the published 50/50/50 post');
 }
 const round3 = authority.campaigns.find((campaign) => campaign.id === 'mint-round-3');
 if (round3?.round !== 3 || round3?.trigger?.target !== 650 || round3?.status !== 'upcoming'
@@ -59,6 +67,7 @@ for (const state of ['Active', 'Upcoming', 'Completed']) {
 }
 if (giveaways.includes("['paid', 'Paid'") || giveaways.includes('campaign.payoutStatus')) failures.push('giveaways page still exposes payout bookkeeping');
 if (!giveaways.includes('No draw or result state is inferred')) failures.push('giveaways page does not fail closed');
+if (!giveaways.includes('Collective unlock targets') || !giveaways.includes("campaign.entry.url || campaign.entry.homepageAnchor")) failures.push('giveaways page does not render the vTURBO Trophy unlock and X entry action');
 
 const curve = fs.readFileSync(path.join(site, 'curve.html'), 'utf8');
 if (!curve.includes('.wrap') || !curve.includes('max-width:900px')) failures.push('curve.html: record suite width drifted');
