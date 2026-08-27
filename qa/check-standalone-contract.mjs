@@ -14,11 +14,16 @@ for (const name of [...publicPages, 'referrals.html']) {
   if (!source.includes('href="/bullen-ui.css"')) failures.push(`${name}: shared visual tokens missing`);
   if (!source.includes('src="/bullen-ui.js"')) failures.push(`${name}: shared shell/accessibility helper missing`);
   if (/<button(?![^>]*\btype=)[^>]*>/i.test(source)) failures.push(`${name}: button without an explicit type`);
+  const ids = [...source.matchAll(/\bid=["']([^"']+)/g)]
+    .map((match) => match[1]).filter((id) => !id.includes('${'));
+  const duplicateIds = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
+  if (duplicateIds.length) failures.push(`${name}: duplicate ids ${duplicateIds.join(', ')}`);
 }
 
 const shell = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
 if (!shell.includes("page === 'referrals'")) failures.push('admin page classification missing');
-if (!shell.includes("if (page === 'index') return")) failures.push('homepage duplicate-navigation guard missing');
+if (!shell.includes("document.querySelector('[data-bullen-home-nav]')")) failures.push('homepage shared-navigation mount missing');
+if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
 if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
 
 const authority = JSON.parse(fs.readFileSync(path.join(site, 'giveaways.json'), 'utf8'));
@@ -45,7 +50,10 @@ if (!giveaways.includes("link(campaign.payoutProof, 'Payout proof')")) failures.
 
 const home = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
 if (!home.includes("{ id: 'giveaway', label: 'Giveaway' }")) failures.push('homepage Jump To menu omits the live giveaway');
-if (!home.includes("{ url: 'giveaways.html', label: 'All Giveaways' }")) failures.push('homepage omits the campaign ledger link');
+if (!home.includes('data-bullen-home-nav')) failures.push('homepage omits the visible shared-navigation mount');
+for (const duplicate of ["giveaways.html', label: 'All Giveaways", "proof', label: 'Proof", "refer.html', label: 'Referrals", "thedrop', label: 'The Drop", "stats.html', label: 'Live Dashboard"]) {
+  if (home.includes(duplicate)) failures.push(`homepage Jump To duplicates shared navigation: ${duplicate}`);
+}
 if (!home.includes("fetch('/giveaways.json'")) failures.push('homepage giveaway card is not driven by the campaign authority');
 if (home.includes("const ENTRY_MESSAGE = 'bullenciaga giveaway entry")) failures.push('homepage duplicates the campaign signature message');
 

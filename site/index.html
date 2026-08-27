@@ -3036,6 +3036,8 @@
     <p class="tagline"><span class="tagline-line">A token with horns.</span> <span class="tagline-line">No stitching required.</span></p>
   </div>
 
+  <div class="bullen-home-public-nav" data-bullen-home-nav></div>
+
   <main>
 
     <div class="socials">
@@ -8370,23 +8372,12 @@ const JUP_VERIFY_URL = 'https://bullenciaga.com/jupiter_vrfd';
     { id: 'roadmap', label: 'Roadmap' },
     { id: 'faq', label: 'FAQ' },
   ];
-  // External links -- url left blank hides the item entirely (same pattern
-  // as the marketplace buttons elsewhere on the page). X Chat (below) is a
-  // different, already-live link from a future X Community -- if a real
-  // Community link shows up later, add it as its own separate entry rather
-  // than reusing this one.
+  // Public BULLENCIAGA pages live in the visible shared navigation above.
+  // This list is only for destinations outside that navigation. A blank URL
+  // hides the item entirely (same pattern as the marketplace buttons
+  // elsewhere on the page). X Chat is a different, already-live link from a
+  // future X Community; add a real Community as a separate entry later.
   const EXTERNAL = [
-    // OURS FIRST, AND IN THE ORDER SOMEONE WOULD WANT THEM.
-    //
-    // Proof leads: it is the one page that answers "is any of this real"
-    // without asking anyone to take our word for it, and it was buried under
-    // eleven third-party platforms. Referrals, the drop and Jupiter
-    // verification follow, then everything that belongs to somebody else in
-    // the order it was already in.
-    { url: 'giveaways.html', label: 'All Giveaways' },
-    { url: 'proof', label: 'Proof' },
-    { url: 'refer.html', label: 'Referrals' },
-    { url: 'thedrop', label: 'The Drop' },
     // Blank until JUP_VERIFY_URL is set, and blank hides the item entirely.
     { url: JUP_VERIFY_URL, label: 'Jupiter Verification' },
     { url: 'https://x.com/bullenciagax', label: 'X Profile' },
@@ -8396,7 +8387,6 @@ const JUP_VERIFY_URL = 'https://bullenciaga.com/jupiter_vrfd';
     { url: links.tensor, label: 'Tensor' },
     { url: links.magicEden, label: 'Magic Eden' },
     { url: links.graveMarket, label: 'GraveMarket' },
-    { url: 'stats.html', label: 'Live Dashboard' },
     { url: 'whitepaper.pdf', label: 'Whitepaper' },
   ];
 

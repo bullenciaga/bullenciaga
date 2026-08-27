@@ -270,18 +270,6 @@
     </div>
   </div>
 
-  <!-- Breaks are specified per breakpoint. .lede-line is always a block;
-       .m-break is inline on desktop and a block on phones, which is what
-       splits two of these lines further without duplicating the text. -->
-  <div class="result" id="mine" style="display:none;">
-    <div class="headline">
-      <div class="cap">You are owed</div>
-      <div class="big" id="mineOwed">0.000000 SOL</div>
-      <div class="sub" id="mineSub"></div>
-    </div>
-    <div id="mineList"></div>
-  </div>
-
   <div class="terms">
     <span class="lede-line"><b>Terms.</b> Buys only &mdash; a sell generates a fee but earns nothing.</span>
     <span class="lede-line"><span class="m-break">One referrer per wallet.</span> The first one recorded stands and cannot be changed,</span>
@@ -701,11 +689,12 @@
 
   $('goBtn').addEventListener('click', go);
   $('connectBtn').addEventListener('click', connect);
-  $('copyBtn').addEventListener('click', function(){
+  var copyBtn = $('copyBtn');
+  if (copyBtn) copyBtn.addEventListener('click', function(){
     var t = $('claimLine').textContent;
     if (navigator.clipboard) navigator.clipboard.writeText(t);
-    $('copyBtn').textContent = 'Copied';
-    setTimeout(function(){ $('copyBtn').textContent = 'Copy'; }, 1600);
+    copyBtn.textContent = 'Copied';
+    setTimeout(function(){ copyBtn.textContent = 'Copy'; }, 1600);
   });
   ['me','ref'].forEach(function(id){
     $(id).addEventListener('keydown', function(e){ if (e.key === 'Enter') go(); });
