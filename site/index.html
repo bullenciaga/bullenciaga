@@ -2651,7 +2651,7 @@
   .jumpto-chevron{ width:8px; height:12px; transform:rotate(90deg); transition:transform .2s ease; }
   .jumpto-widget.open .jumpto-chevron{ transform:rotate(-90deg); }
   .jumpto-menu{
-    display:none;
+    display:block;
     position:absolute;
     top:calc(100% + 8px);
     right:0;
@@ -2668,8 +2668,22 @@
     max-height:70vh;
     overflow-y:auto;
     overscroll-behavior:contain;
+    visibility:hidden;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(-4px);
+    transition:
+      opacity .14s ease,
+      transform .14s ease,
+      visibility 0s linear .14s;
   }
-  .jumpto-widget.open .jumpto-menu{ display:block; }
+  .jumpto-widget.open .jumpto-menu{
+    visibility:visible;
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(0);
+    transition-delay:0s;
+  }
   .jumpto-group-label{
     font-family:'Space Mono', monospace;
     font-size:9px;
