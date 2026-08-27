@@ -12,7 +12,7 @@ Canonical public source for the BULLENCIAGA website and its public verification 
 The production website snapshot in `site/` is preserved byte-for-byte. Its authoritative `index.html` SHA-256 is:
 
 ```text
-416e5720e1711c2e3cdafc0caa81dbf7b3ffbb4a9974fda6a78dfce9c636f08a
+b34b95c40e1c47d40e0ede308dec8a9435a5ac25ea8888b893e16a7ee5beb04d
 ```
 
 ## Repository boundary
