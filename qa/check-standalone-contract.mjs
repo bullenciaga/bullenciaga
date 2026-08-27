@@ -4,7 +4,7 @@ import path from 'node:path';
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
 const publicPages = [
-  'index.html', 'stats.html', 'chart.html', 'curve.html', 'proof.html',
+  'index.html', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html',
 ];
 const failures = [];
@@ -30,6 +30,7 @@ if (!shell.includes("document.getElementById('jumpToWidget')")) failures.push('h
 if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
 if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
 if (shell.includes("['transparency', '/transparency.html']")) failures.push('Telegram-only moderation page is exposed in public navigation');
+if (shell.includes("['proof', '/proof.html']") || shell.includes("proof: 'Proof'")) failures.push('retired Proof page remains in public navigation');
 if (!shell.includes('skip.after(buildShell())')) failures.push('standalone pages do not mount the same outward navigation shell');
 if (!shellCss.includes('position: fixed;') || !shellCss.includes('backdrop-filter: blur(20px)')) failures.push('shared header is not fixed dark glass');
 if (!shellCss.includes('background: var(--bullen-bg) !important;')) failures.push('standalone background color is not centrally unified');
@@ -60,10 +61,20 @@ if (giveaways.includes("['paid', 'Paid'") || giveaways.includes('campaign.payout
 if (!giveaways.includes('No draw or result state is inferred')) failures.push('giveaways page does not fail closed');
 
 const curve = fs.readFileSync(path.join(site, 'curve.html'), 'utf8');
-const proof = fs.readFileSync(path.join(site, 'proof.html'), 'utf8');
-for (const [name, source] of [['curve.html', curve], ['proof.html', proof]]) {
-  if (!source.includes('.wrap') || !source.includes('max-width:900px')) failures.push(`${name}: record suite width drifted`);
-  if (!source.includes('font-size:clamp(21px,5.2vw,29px)') || !source.includes('font-weight:400')) failures.push(`${name}: record suite heading typography drifted`);
+if (!curve.includes('.wrap') || !curve.includes('max-width:900px')) failures.push('curve.html: record suite width drifted');
+if (!curve.includes('font-size:clamp(21px,5.2vw,29px)') || !curve.includes('font-weight:400')) failures.push('curve.html: record suite heading typography drifted');
+if (!curve.includes('Public burn ledger') || !curve.includes('ledgerMetrics')) failures.push('curve.html: merged Proof ledger is missing');
+if (!curve.includes("fetch('/supply/history'") || !curve.includes("fetch('/supply/proof'")) failures.push('curve.html: supply history and transaction proof are not both authoritative');
+if (!curve.includes('class="sig"') || !curve.includes('burned, evidenced') || !curve.includes('<b>Coverage.</b>')) failures.push('curve.html: Proof transaction details or reconciliation are missing');
+if (curve.includes('<br class="wide">') || curve.includes('br.wide')) failures.push('curve.html: forced desktop prose breaks remain');
+
+const redirects = fs.readFileSync(path.join(site, '_redirects'), 'utf8');
+if (!/^\/proof\s+\/curve\s+301$/m.test(redirects) || !/^\/proof\.html\s+\/curve\s+301$/m.test(redirects)) failures.push('Proof URLs do not permanently redirect to Curve');
+if (fs.existsSync(path.join(site, 'proof.html'))) failures.push('retired standalone Proof asset still exists');
+
+for (const name of ['chart.html', 'refer.html', 'thedrop.html']) {
+  const source = fs.readFileSync(path.join(site, name), 'utf8');
+  if (/class=["'][^"']*\b(?:back|brand)\b[^"']*["'][^>]*href=["']\/["']/i.test(source)) failures.push(`${name}: redundant in-page home link remains`);
 }
 
 const home = fs.readFileSync(path.join(site, 'index.html'), 'utf8');

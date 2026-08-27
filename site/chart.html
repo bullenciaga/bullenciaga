@@ -64,17 +64,6 @@
     flex-wrap:wrap;
   }
   .head-left{ min-width:0; }
-  .brand{
-    font-size:clamp(9px, 0.85vw, 13px);
-    letter-spacing:0.34em;
-    text-transform:uppercase;
-    color:rgba(245,243,238,0.4);
-    text-decoration:none;
-    display:inline-block;
-    margin-bottom:clamp(6px, 0.8vw, 12px);
-    transition:color 140ms ease;
-  }
-  .brand:hover{ color:var(--gold); }
   .price-row{ display:flex; align-items:baseline; gap:clamp(10px, 1.2vw, 20px); flex-wrap:wrap; }
   .price{
     font-size:clamp(30px, 4.4vw, 68px);
@@ -347,7 +336,6 @@
 
 <div class="head">
   <div class="head-left">
-    <a class="brand" href="/">&larr; Bullenciaga</a>
     <div class="price-row">
       <div class="price" id="price">--</div>
       <div class="change" id="change"></div>

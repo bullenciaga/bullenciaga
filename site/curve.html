@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BULLENCIAGA — the curve</title>
-<meta name="description" content="every token that has left the supply since launch, recorded every fifteen minutes.">
+<meta name="description" content="The live $BULLEN supply curve and its complete public burn ledger, with every indexed transaction linked on-chain.">
 <meta name="theme-color" content="#0a0a0a">
 <meta property="og:title" content="BULLENCIAGA — the curve">
-<meta property="og:description" content="the only chart here that goes one direction.">
+<meta property="og:description" content="The supply curve, every indexed burn and the on-chain proof behind it.">
 <style>
   :root{
     --gold:#c7a869;
@@ -34,10 +34,8 @@
 
   header{padding:44px 0 24px;border-bottom:1px solid var(--line)}
   h1{font-size:clamp(21px,5.2vw,29px);font-weight:400;letter-spacing:.16em;text-transform:uppercase}
-  .sub{color:var(--dim);font-size:14.5px;margin-top:14px;max-width:72ch;text-wrap:pretty}
+  .sub{color:var(--dim);font-size:14.5px;margin-top:14px;max-width:none;text-wrap:pretty}
   .sub strong{color:var(--text);font-weight:400}
-  br.wide{display:none}
-  @media (min-width:660px){ br.wide{display:inline} }
 
   .figs{display:flex;flex-wrap:wrap;gap:1px;background:var(--line);border:1px solid var(--line);margin:24px 0 0}
   .fig{background:var(--bg);flex:1 1 150px;padding:16px 18px}
@@ -57,7 +55,16 @@
   .legend{display:flex;flex-wrap:wrap;gap:18px;padding:14px 18px;border-top:1px solid var(--line);font-size:12px;color:var(--dim)}
   .legend i{display:inline-block;width:9px;height:2px;vertical-align:middle;margin-right:7px}
 
-  .events{margin-top:34px;border-top:1px solid var(--line);list-style:none}
+  .ledger{margin-top:38px}
+  .ledger-head{padding-bottom:18px;border-bottom:1px solid var(--line)}
+  .ledger-head h2{font-size:13px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+  .ledger-head p{max-width:78ch;margin-top:8px;color:var(--dim);font-size:13px;line-height:1.75;text-wrap:pretty}
+  .ledger-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin-top:18px;padding:1px;background:var(--line)}
+  .ledger-metric{min-width:0;padding:13px 15px;background:var(--bg)}
+  .ledger-metric b{display:block;overflow-wrap:anywhere;color:var(--text);font-size:15px;font-weight:500;font-variant-numeric:tabular-nums}
+  .ledger-metric span{display:block;margin-top:4px;color:var(--dimmer);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase}
+
+  .events{border-top:1px solid var(--line);list-style:none}
   /* FOUR COLUMNS. The date had no column of its own and rendered welded to
      the label -- "burn 2,50023 Aug 2026". Kind, label, date and amount each
      get their own track, and the two numeric columns are right-aligned with
@@ -73,18 +80,18 @@
   }
   .events .k{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
   .events .k.tier{color:var(--tier)}
-  .events .lbl{color:var(--text);min-width:0;overflow-wrap:anywhere}
+  .events .entry{min-width:0}
+  .events .lbl{display:block;color:var(--text);min-width:0;overflow-wrap:anywhere}
+  .events .sig{display:block;min-width:0;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dimmer);font-size:9.5px;letter-spacing:.02em}
+  .events .sig:hover{color:var(--gold)}
   .events .when{color:var(--dimmer);font-size:12.5px;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+  .events .when small{display:block;margin-top:2px;font-size:9px;letter-spacing:.04em}
   .events .amt{color:var(--dim);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;min-width:9ch}
   .events li.tierrow .amt{color:var(--tier)}
 
-  .recon{
-    display:flex;flex-direction:column;gap:7px;
-    padding:18px 0 0;color:var(--dimmer);font-size:13px;
-  }
+  .recon{padding:18px 0 0;color:var(--dimmer);font-size:12.5px;line-height:1.8;text-wrap:pretty}
   .recon b{color:var(--dim);font-weight:500;font-variant-numeric:tabular-nums}
-  .events a.lbl{color:var(--text);border-bottom:1px solid rgba(255,255,255,.14)}
-  .events a.lbl:hover{color:var(--gold);border-bottom-color:rgba(199,168,105,.5)}
+  .recon a{border-bottom:1px solid rgba(199,168,105,.3)}
   .state{padding:40px 0;color:var(--dim)}
   .foot{padding:30px 0 0;color:var(--dimmer);font-size:13px;line-height:1.8}
   .foot a{border-bottom:1px solid rgba(199,168,105,.3)}
@@ -93,10 +100,11 @@
   /* On a phone four columns cannot fit. Kind and amount share the top line,
      label and date the one below, so nothing wraps mid-number. */
   @media (max-width:620px){
+    .ledger-metrics{grid-template-columns:1fr}
     .events li{grid-template-columns:1fr auto;gap:3px 14px}
     .events .k{grid-column:1;grid-row:1}
     .events .amt{grid-column:2;grid-row:1}
-    .events .lbl{grid-column:1;grid-row:2}
+    .events .entry{grid-column:1;grid-row:2;min-width:0}
     .events .when{grid-column:2;grid-row:2}
   }
 </style>
@@ -110,8 +118,8 @@
   <header>
     <h1>The curve</h1>
     <p class="sub">
-      Total supply, sampled from Solana mainnet every fifteen minutes since launch.<br class="wide">
-      It has never gone up and it cannot: mint authority was revoked before trading opened.<br class="wide">
+      Total supply, sampled from Solana mainnet every fifteen minutes since launch.
+      It has never gone up and it cannot: mint authority was revoked before trading opened.
       <strong>This is the only chart here that goes one direction.</strong>
     </p>
   </header>
@@ -127,9 +135,16 @@
     </div>
   </div>
 
-  <ul class="events" id="events"></ul>
-  <div class="recon" id="recon" hidden></div>
-  <div class="state" id="state">reading the chain record…</div>
+  <section class="ledger" aria-labelledby="ledger-title">
+    <div class="ledger-head">
+      <h2 id="ledger-title">Public burn ledger</h2>
+      <p>Every indexed burn is one transaction. Its signature is printed and linked to Solscan, while the totals below reconcile the signed ledger against the mint itself.</p>
+      <div class="ledger-metrics" id="ledgerMetrics" hidden></div>
+    </div>
+    <ul class="events" id="events"></ul>
+    <div class="recon" id="recon" hidden></div>
+    <div class="state" id="state">reading the chain record…</div>
+  </section>
 
   <div class="foot">
     <p>
@@ -143,7 +158,7 @@
       Per-transaction ledger: <a href="/supply/proof">/supply/proof</a> &nbsp;·&nbsp;
       Raw samples: <a href="/supply/history">/supply/history</a>
     </p>
-    <div class="build">build 2026-08-23.3 — ledger read from the proof endpoint</div>
+    <div class="build">build 2026-08-27.4 — curve and signed proof unified</div>
   </div>
 
 </div>
@@ -154,12 +169,15 @@
   var FIGS  = document.getElementById('figs');
   var BOX   = document.getElementById('chartbox');
   var EVTS  = document.getElementById('events');
-
   var RECON = document.getElementById('recon');
+  var LEDGER_METRICS = document.getElementById('ledgerMetrics');
   var KINDS = {
-    escrowburn: 'escrow burn, from tokens spent minting',
-    tier: 'scheduled tier burn',
-    burn: 'burn',
+    tier:   { label: 'Scheduled', note: 'burn tier owed at a published volume threshold' },
+    dev:    { label: 'Dev burn',  note: 'bought on the open market and burned outright' },
+    escrow: { label: 'Mints',     note: 'mint escrow emptied by a burn instruction' },
+    escrowburn: { label: 'Mints', note: 'mint escrow emptied by a burn instruction' },
+    launch: { label: 'Curve',     note: 'burned by pump.fun mechanics as the bonding curve completed' },
+    burn:   { label: 'Burn',      note: 'burned on-chain' },
   };
 
   var W = 900, H = 380, PAD_L = 62, PAD_R = 14, PAD_T = 18, PAD_B = 30;
@@ -189,7 +207,7 @@
   // The LEDGER comes from /supply/proof, and the first version of this page
   // wrongly took it from the history payload's derived events. Those double
   // counted -- a mint claim and the escrow burn of the same 250,000 appeared
-  // as two separate reductions. The proof endpoint is per transaction,every row
+  // as two separate reductions. The proof endpoint is per transaction; every row
   // carries a signature, and it reconciles itself against the mint, so it is
   // the only honest source for a list of what was destroyed.
   Promise.all([
@@ -278,19 +296,31 @@
       document.getElementById('span').textContent =
         when(t0) + ' to ' + when(t1) + ' · sampled every ' + (d.sampleMinutes || 15) + ' min';
 
-      // newest first. Every row is one transaction and links to it.
+      // Newest first. Every row is one transaction, and the full signature is
+      // printed as well as linked so the retired standalone Proof page loses
+      // no audit information when it redirects here.
       var rows = ledger.slice().reverse().filter(function(e){ return e.amount > 0; });
       if (rows.length) {
+        var newest = rows[0], oldest = rows[rows.length - 1];
+        LEDGER_METRICS.innerHTML =
+            metric(nfmt(proof.burnedInLedger || 0) + ' $BULLEN', 'burned, evidenced')
+          + metric((proof.count || rows.length).toLocaleString('en-GB'), 'signed transactions')
+          + metric(when(newest.ts), 'most recent');
+        LEDGER_METRICS.hidden = false;
+
         EVTS.innerHTML = rows.map(function(e){
           var isTier = e.kind === 'tier';
-          var label = e.note || KINDS[e.kind] || e.kind || 'burn';
-          var cell = e.sig
-            ? '<a class="lbl" href="https://solscan.io/tx/'+esc(e.sig)+'" target="_blank" rel="noopener">'+esc(label)+'</a>'
-            : '<span class="lbl">'+esc(label)+'</span>';
+          var kind = KINDS[e.kind] || KINDS.burn;
+          var label = e.note || kind.note;
+          var signature = String(e.sig || '');
+          var transaction = signature
+            ? '<a class="sig" href="https://solscan.io/tx/'+encodeURIComponent(signature)+'" target="_blank" rel="noopener" title="Open transaction on Solscan">'+esc(signature)+'</a>'
+            : '<span class="sig">signature unavailable</span>';
+          var time = new Date(e.ts).toISOString().slice(11,16) + ' UTC';
           return '<li'+(isTier?' class="tierrow"':'')+'>'
-            + '<span class="k'+(isTier?' tier':'')+'">'+esc(e.kind||'burn')+'</span>'
-            + cell
-            + '<span class="when">'+when(e.ts)+'</span>'
+            + '<span class="k'+(isTier?' tier':'')+'">'+esc(kind.label)+'</span>'
+            + '<span class="entry"><span class="lbl">'+esc(label)+'</span>'+transaction+'</span>'
+            + '<span class="when">'+when(e.ts)+'<small>'+time+'</small></span>'
             + '<span class="amt">-'+nfmt(e.amount)+'</span>'
             + '</li>';
         }).join('');
@@ -300,17 +330,23 @@
         // difference is the point of the proof endpoint and it belongs here
         // rather than being quietly omitted.
         if (proof && isFinite(proof.burnedActual)) {
+          var missing = Number(proof.unaccounted || 0);
+          var actual = Number(proof.burnedActual);
+          var pct = actual > 0 ? (missing / actual) * 100 : 0;
           RECON.innerHTML =
-              '<span>ledger evidences <b>'+nfmt(proof.burnedInLedger||0)+'</b> across '+(proof.count||rows.length)+' transactions</span>'
-            + '<span>chain destroyed <b>'+nfmt(proof.burnedActual)+'</b></span>'
-            + (proof.unaccounted > 0
-                ? '<span>unaccounted <b>'+nfmt(proof.unaccounted)+'</b>, burned before signatures were captured</span>'
-                : '');
+              '<b>Coverage.</b> The signed index runs from '+when(oldest.ts)+' through '+when(newest.ts)+'. '
+            + 'It evidences <b>'+nfmt(proof.burnedInLedger||0)+'</b> $BULLEN across <b>'+(proof.count||rows.length)+'</b> transactions; '
+            + 'the mint shows <b>'+nfmt(actual)+'</b> destroyed.'
+            + (missing > 0
+                ? ' The remaining difference is <b>'+nfmt(missing)+'</b> ('+pct.toFixed(2)+'%) between the signed index and the mint total; it remains exposed in the raw proof API instead of being rounded away.'
+                : ' The signed ledger and mint total reconcile exactly.')
+            + ' Locked tokens are not burned and are not counted here. The mint escrow is <a href="/escrow" target="_blank" rel="noopener">public on Solscan</a>.';
           RECON.hidden = false;
         }
+        STATE.style.display = 'none';
+      } else {
+        STATE.innerHTML = 'the supply curve is live, but the signed transaction ledger could not be read right now. raw proof remains at <a href="/supply/proof">/supply/proof</a>.';
       }
-
-      STATE.style.display = 'none';
     })
     .catch(function(e){
       STATE.innerHTML = 'the record could not be read right now. raw samples are at <a href="/supply/history">/supply/history</a>.';
@@ -319,6 +355,9 @@
 
   function fig(v, label, cls){
     return '<div class="fig'+(cls?' '+cls:'')+'"><b>'+esc(v)+'</b><span>'+esc(label)+'</span></div>';
+  }
+  function metric(v, label){
+    return '<div class="ledger-metric"><b>'+esc(v)+'</b><span>'+esc(label)+'</span></div>';
   }
 })();
 </script>
