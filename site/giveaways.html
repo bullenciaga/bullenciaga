@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BULLENCIAGA giveaways.html | build 2026-08-27.1 — one public campaign ledger -->
+<!-- BULLENCIAGA giveaways.html | build 2026-08-27.2 — draw states without payout bookkeeping -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -67,7 +67,7 @@
   <main id="main-content">
     <div class="eyebrow">The public campaign ledger</div>
     <h1>Nothing drawn in the dark.</h1>
-    <p class="lede">One source records every live, gated, completed and paid campaign. Snapshots are published before seeds are fetched; results remain reproducible after the draw.</p>
+    <p class="lede">One source records every live, gated and completed campaign. Snapshots are published before seeds are fetched; results remain reproducible after the draw.</p>
 
     <div class="summary" aria-live="polite">
       <div><b id="activeCount">—</b><span>active now</span></div>
@@ -77,7 +77,7 @@
 
     <div id="campaigns" aria-live="polite"></div>
 
-    <p class="proof-note"><strong>Owner signatures remain manual.</strong> Code can validate, snapshot, draw and publish proof. It cannot transfer a prize. Payment status changes only when a public receipt is attached to this ledger.</p>
+    <p class="proof-note"><strong>Nothing is drawn in the dark.</strong> The entry snapshot is published before the seed exists, and every completed result stays reproducible from the public record.</p>
   </main>
 
   <script>
@@ -86,7 +86,6 @@
         ['active', 'Active', 'Open for participation now'],
         ['upcoming', 'Upcoming', 'Visible before its gate is reached'],
         ['completed', 'Completed', 'Snapshot and draw result published'],
-        ['paid', 'Paid', 'Public payout evidence attached'],
       ];
       const root = document.getElementById('campaigns');
       const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
@@ -107,7 +106,7 @@
           throw new Error('campaign authority schema mismatch');
         }
       } catch (error) {
-        root.innerHTML = '<div class="empty">The campaign ledger is temporarily unavailable. No draw or payment state is inferred.</div>';
+        root.innerHTML = '<div class="empty">The campaign ledger is temporarily unavailable. No draw or result state is inferred.</div>';
         return;
       }
 
@@ -156,9 +155,8 @@
             : campaign.trigger.label;
         const entries = campaign.entry && Number.isInteger(campaign.entry.publicEntries)
           ? `<div class="trigger">${campaign.entry.publicEntries} public wallet entries</div>` : '';
-        const payout = campaign.payoutStatus === 'paid' ? 'paid' : campaign.status;
-        return `<article class="campaign" data-status="${escapeHtml(payout)}">
-          <div class="status">${escapeHtml(payout.replaceAll('-', ' '))}</div>
+        return `<article class="campaign" data-status="${escapeHtml(campaign.status)}">
+          <div class="status">${escapeHtml(campaign.status.replaceAll('-', ' '))}</div>
           <h3>${escapeHtml(campaign.title)}</h3>
           <div class="trigger">${escapeHtml(trigger)}</div>${entries}
           ${hasProgress ? `<div class="progress" aria-label="${progress.toFixed(0)} percent complete"><i style="--progress:${progress}%"></i></div>` : ''}
@@ -167,15 +165,12 @@
             ${link(campaign.entry && campaign.entry.homepageAnchor, 'Enter', campaign.status === 'active')}
             ${link(campaign.snapshot, 'Snapshot')}
             ${link(campaign.result, 'Result')}
-            ${link(campaign.payoutProof, 'Payout proof')}
           </div>
         </article>`;
       };
 
       for (const [status, title, note] of groups) {
-        const rows = campaigns.filter((campaign) => status === 'paid'
-          ? campaign.payoutStatus === 'paid'
-          : campaign.status === status && campaign.payoutStatus !== 'paid');
+        const rows = campaigns.filter((campaign) => campaign.status === status);
         root.insertAdjacentHTML('beforeend', `<section class="campaign-section" aria-labelledby="${status}-title">
           <div class="section-head"><h2 id="${status}-title">${title}</h2><span>${note}</span></div>
           <div class="campaign-grid">${rows.length ? rows.map(card).join('') : '<div class="empty">No campaigns in this state.</div>'}</div>

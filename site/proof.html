@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BULLENCIAGA proof.html | build 2026-08-16.7 — skeleton loading state -->
+<!-- BULLENCIAGA proof.html | build 2026-08-27.2 — unified record suite -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -19,73 +19,67 @@
 <meta name="twitter:title" content="BULLENCIAGA — proof">
 <meta name="twitter:description" content="Every burn, with its transaction. Nothing here asks to be believed.">
 <meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --gold:#c7a869;
     --gold-light:#e8d9ae;
-    --white:#f5f3ee;
-    --black:#050505;
-    --line: rgba(199,168,105,0.16);
-    --dim: rgba(245,243,238,0.38);
+    --bg:#050505;
+    --panel:#101010;
+    --line:rgba(255,255,255,.10);
+    --text:#ece9e2;
+    --dim:#8d8a83;
+    --dimmer:#5c5a55;
   }
-  *{ box-sizing:border-box; }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
   body{
-    margin:0;
-    background:var(--black);
-    color:var(--white);
-    font-family:'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    padding:clamp(16px, 3vw, 48px);
+    background:var(--bg);
+    color:var(--text);
+    font:400 16px/1.6 var(--bullen-font-data, "Space Mono", ui-monospace, SFMono-Regular, Menlo, monospace);
+    padding:0 0 64px;
     -webkit-font-smoothing:antialiased;
   }
+  .wrap{ max-width:900px; margin:0 auto; padding:0 20px; }
   a{ color:var(--gold); text-decoration:none; }
   a:hover{ color:var(--gold-light); }
 
-  .brand{
-    font-size:clamp(10px, 0.9vw, 13px);
-    letter-spacing:0.3em;
-    color:var(--dim);
-    text-transform:uppercase;
-    display:inline-block;
-    margin-bottom:clamp(18px, 2.5vw, 34px);
-  }
+  .page-head{ padding:44px 0 24px; border-bottom:1px solid var(--line); }
   h1{
-    font-size:clamp(24px, 3.4vw, 46px);
-    letter-spacing:0.14em;
-    margin:0 0 6px;
+    font-size:clamp(21px,5.2vw,29px);
+    letter-spacing:.16em;
     text-transform:uppercase;
-    font-weight:700;
+    font-weight:400;
   }
   .lede{
-    font-size:clamp(11px, 1vw, 15px);
-    line-height:1.75;
-    color:rgba(245,243,238,0.5);
-    max-width:60ch;
-    margin:0 0 clamp(20px, 2.6vw, 36px);
+    color:var(--dim);
+    font-size:14.5px;
+    line-height:1.6;
+    max-width:72ch;
+    margin-top:14px;
   }
 
   .totals{
     display:flex;
     flex-wrap:wrap;
-    gap:clamp(18px, 3vw, 54px);
-    padding:clamp(14px, 1.8vw, 24px) 0;
-    border-top:1px solid var(--line);
-    border-bottom:1px solid var(--line);
-    margin-bottom:clamp(18px, 2.4vw, 32px);
+    gap:1px;
+    padding:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    margin:24px 0 26px;
   }
+  .totals > div{ flex:1 1 180px; padding:16px 18px; background:var(--bg); }
   .t-k{
-    font-size:clamp(9px, 0.75vw, 12px);
-    letter-spacing:0.22em;
+    font-size:11px;
+    letter-spacing:.13em;
     color:var(--dim);
     text-transform:uppercase;
-    margin-bottom:6px;
+    margin-top:5px;
   }
   .t-v{
-    font-size:clamp(18px, 2.2vw, 32px);
-    letter-spacing:0.04em;
-    color:var(--gold);
+    font-size:clamp(17px,3.4vw,22px);
+    font-weight:500;
+    letter-spacing:.01em;
+    color:var(--text);
   }
 
   table{ width:100%; border-collapse:collapse; }
@@ -93,7 +87,7 @@
     text-align:left;
     font-size:clamp(9px, 0.75vw, 12px);
     letter-spacing:0.2em;
-    color:var(--dim);
+    color:var(--dimmer);
     text-transform:uppercase;
     font-weight:400;
     padding:0 10px 10px 0;
@@ -102,19 +96,19 @@
   td{
     padding:12px 10px 12px 0;
     border-bottom:1px solid rgba(245,243,238,0.06);
-    font-size:clamp(10px, 0.9vw, 14px);
+    font-size:13px;
     vertical-align:top;
   }
   .num{ text-align:right; white-space:nowrap; }
-  .amt{ color:var(--gold); }
+  .amt{ color:var(--gold); font-variant-numeric:tabular-nums; }
   .kind{
     font-size:clamp(8px, 0.7vw, 11px);
     letter-spacing:0.16em;
     text-transform:uppercase;
-    color:var(--dim);
+    color:var(--dimmer);
     white-space:nowrap;
   }
-  .note{ display:block; color:var(--dim); font-size:0.85em; margin-top:3px; }
+  .note{ display:block; color:var(--dimmer); font-size:0.85em; margin-top:3px; }
   /* The signature is the whole point of the page, so it is never truncated
      into something you would have to trust rather than check. On a phone it
      wraps instead. */
@@ -126,10 +120,10 @@
     border-top:1px solid var(--line);
     font-size:clamp(10px, 0.85vw, 13px);
     line-height:1.8;
-    color:var(--dim);
+    color:var(--dimmer);
     max-width:70ch;
   }
-  .caveat b{ color:rgba(245,243,238,0.6); font-weight:400; }
+  .caveat b{ color:var(--dim); font-weight:500; }
 
   .msg{ padding:40px 0; color:var(--dim); font-size:clamp(11px, 1vw, 14px); }
 
@@ -185,7 +179,7 @@
     margin-top:clamp(24px, 3vw, 44px);
     font-size:clamp(9px, 0.8vw, 12px);
     letter-spacing:0.1em;
-    color:rgba(245,243,238,0.22);
+    color:#3d3b37;
   }
   @media (max-width: 620px){
     .hide-sm{ display:none; }
@@ -196,14 +190,15 @@
 </head>
 <body>
 
-<a class="brand" href="/">&larr; Bullenciaga</a>
-
-<h1>Proof</h1>
-<p class="lede">
-  Every burn below is a transaction. The signature is printed in full and
-  linked. Nothing on this page asks to be taken on faith, and nothing on it is
-  a figure this project calculated for you.
-</p>
+<main class="wrap" id="main-content">
+<header class="page-head">
+  <h1>Proof</h1>
+  <p class="lede">
+    Every burn below is a transaction. The signature is printed in full and
+    linked. Nothing on this page asks to be taken on faith, and nothing on it is
+    a figure this project calculated for you.
+  </p>
+</header>
 
 <div class="totals">
   <div>
@@ -232,7 +227,8 @@
 
 <div class="caveat" id="caveat"></div>
 
-<div class="foot">build 2026-08-16.7 &mdash; skeleton loading state</div>
+<div class="foot">build 2026-08-27.2 &mdash; unified record suite</div>
+</main>
 
 <script>
 (function proofPage(){
