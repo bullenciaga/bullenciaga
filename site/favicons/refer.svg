@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">BULLENCIAGA Referrals</title>
+  <desc id="desc">Two finely interlocked gold referral links on black.</desc>
+  <rect width="64" height="64" fill="#050505"/>
+  <rect x="8" y="29" width="31" height="13" rx="6.5" transform="rotate(-37 23.5 35.5)" fill="none" stroke="#c7a869" stroke-width="4"/>
+  <rect x="25" y="22" width="31" height="13" rx="6.5" transform="rotate(-37 40.5 28.5)" fill="none" stroke="#050505" stroke-width="9"/>
+  <rect x="25" y="22" width="31" height="13" rx="6.5" transform="rotate(-37 40.5 28.5)" fill="none" stroke="#c7a869" stroke-width="4"/>
+</svg>

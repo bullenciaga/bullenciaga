@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">BULLENCIAGA Stats</title>
+  <desc id="desc">Three ascending gold statistical columns on black.</desc>
+  <rect width="64" height="64" fill="#050505"/>
+  <g fill="#c7a869">
+    <rect x="14" y="35" width="8" height="15"/>
+    <rect x="28" y="26" width="8" height="24"/>
+    <rect x="42" y="15" width="8" height="35"/>
+    <rect x="12" y="52" width="40" height="3"/>
+  </g>
+</svg>

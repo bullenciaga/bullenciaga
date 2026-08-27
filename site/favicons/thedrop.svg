@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">BULLENCIAGA The Drop</title>
+  <desc id="desc">A gold prize coin descending toward a segmented progress line on black.</desc>
+  <rect width="64" height="64" fill="#050505"/>
+  <circle cx="32" cy="17" r="7" fill="#c7a869"/>
+  <path d="M32 28V38M26.5 33.5L32 39L37.5 33.5" fill="none" stroke="#c7a869" stroke-width="4" stroke-linecap="square" stroke-linejoin="miter"/>
+  <g fill="#c7a869">
+    <rect x="10" y="48" width="7" height="4"/>
+    <rect x="19" y="48" width="7" height="4"/>
+    <rect x="28.5" y="48" width="7" height="4"/>
+    <rect x="38" y="48" width="7" height="4"/>
+    <rect x="47" y="48" width="7" height="4"/>
+  </g>
+</svg>

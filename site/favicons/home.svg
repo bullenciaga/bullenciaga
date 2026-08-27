@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">BULLENCIAGA</title>
+  <desc id="desc">A short, wide back-to-back BB cufflink monogram drawn with one uniform gold line on black.</desc>
+  <rect width="64" height="64" fill="#050505"/>
+  <g fill="none" stroke="#c7a869" stroke-width="7" stroke-linecap="butt" stroke-linejoin="round">
+    <path d="M36 9.5V54.5M36 13H45C52 13 56 17 56 22.5C56 28 52 32 45 32H36M36 32H45C52.5 32 57 35.8 57 41.5C57 47.2 52.5 51 45 51H36"/>
+    <path d="M36 9.5V54.5M36 13H45C52 13 56 17 56 22.5C56 28 52 32 45 32H36M36 32H45C52.5 32 57 35.8 57 41.5C57 47.2 52.5 51 45 51H36" transform="translate(64 0) scale(-1 1)"/>
+  </g>
+</svg>
