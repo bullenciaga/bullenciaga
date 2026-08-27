@@ -2,7 +2,7 @@
   "schema": "bullenciaga.giveaways.v1",
   "project": "BULLENCIAGA",
   "token": "$BULLEN",
-  "updatedAt": "2026-08-27T00:00:00Z",
+  "updatedAt": "2026-08-27T16:53:45Z",
   "finalCarryover": {
     "rounds": [0, 1, 2],
     "wallets": 32,
@@ -13,6 +13,61 @@
     "followerEntriesEndpoint": "/entries"
   },
   "campaigns": [
+    {
+      "id": "vturbo-trophy-699",
+      "title": "The vTURBO Trophy — HERD #699",
+      "kind": "skill",
+      "status": "active",
+      "featured": true,
+      "trigger": {
+        "label": "Collective unlock on the main upgrade post",
+        "target": null,
+        "current": null,
+        "source": "manual authenticated X check",
+        "url": "https://x.com/bullenciagax/status/2093018896466923945"
+      },
+      "milestones": [
+        { "label": "likes", "target": 50, "current": null },
+        { "label": "reposts", "target": 50, "current": null },
+        { "label": "replies", "target": 50, "current": null }
+      ],
+      "eligibility": [
+        "Reply to the main upgrade post with a name for HERD #699",
+        "Add one sentence of lore",
+        "One entry per person; duplicate or alt-account entries are ineligible",
+        "No purchase necessary",
+        "After all three targets hit, entries stay open for another 24 hours",
+        "The winner is selected manually for originality, BULLENCIAGA energy and horns — no random picker"
+      ],
+      "prizes": {
+        "type": "herd-position",
+        "positions": [699],
+        "count": 1,
+        "description": "HERD #699 — Golden Fancy Jacket",
+        "image": "https://gateway.irys.xyz/GP5Hh4w56obg6f222QHwq5Axsej4AkrHekMAA3goii8Z",
+        "traits": {
+          "Background": "Butter Yellow",
+          "Bull": "Grey",
+          "Horns": "Black",
+          "Outerwear": "Golden Fancy Jacket",
+          "Eyes": "Basic",
+          "Branding": "Double Brown",
+          "Glasses And Headgear": "Black Basic Glasses"
+        }
+      },
+      "entry": {
+        "type": "skill-reply",
+        "url": "https://x.com/bullenciagax/status/2093018896466923945",
+        "instructions": ["Name HERD #699", "Write one sentence of lore"]
+      },
+      "judging": {
+        "method": "manual",
+        "random": false,
+        "criteria": ["Originality", "BULLENCIAGA energy", "Horns"]
+      },
+      "close": { "afterUnlockHours": 24 },
+      "contact": "Winner contacted privately for a Solana address"
+    },
     {
       "id": "follow500",
       "title": "500 follower Herd giveaway",
