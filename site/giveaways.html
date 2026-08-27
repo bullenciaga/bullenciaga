@@ -72,7 +72,7 @@
     <div class="summary" aria-live="polite">
       <div><b id="activeCount">—</b><span>active now</span></div>
       <div><b id="mintProgress">—</b><span>mints toward round 3</span></div>
-      <div><b id="carryover">32 / 62</b><span>wallets / banked entries</span></div>
+      <div><b id="carryover">—</b><span>wallets / banked entries</span></div>
     </div>
 
     <div id="campaigns" aria-live="polite"></div>
@@ -97,6 +97,15 @@
           if (!response.ok) throw new Error(`authority ${response.status}`);
           return response.json();
         });
+        if (!authority || authority.schema !== 'bullenciaga.giveaways.v1'
+            || !authority.freshness || !Array.isArray(authority.campaigns)
+            || authority.campaigns.some((campaign) => !campaign
+              || typeof campaign.id !== 'string'
+              || typeof campaign.title !== 'string'
+              || !['active', 'upcoming', 'completed'].includes(campaign.status)
+              || !campaign.trigger || !Array.isArray(campaign.eligibility))) {
+          throw new Error('campaign authority schema mismatch');
+        }
       } catch (error) {
         root.innerHTML = '<div class="empty">The campaign ledger is temporarily unavailable. No draw or payment state is inferred.</div>';
         return;
@@ -123,16 +132,28 @@
 
       document.getElementById('activeCount').textContent = campaigns.filter((campaign) => campaign.status === 'active').length;
       document.getElementById('mintProgress').textContent = minted === null ? '— / 650' : `${minted} / 650`;
+      const carryover = authority.finalCarryover;
+      document.getElementById('carryover').textContent = carryover
+        && Number.isInteger(carryover.wallets) && Number.isInteger(carryover.bankedEntries)
+        ? `${carryover.wallets} / ${carryover.bankedEntries}` : '—';
 
-      const link = (href, label, primary = false) => href ? `<a class="action${primary ? ' primary' : ''}" href="${escapeHtml(href)}">${escapeHtml(label)}</a>` : '';
+      const safeInternalHref = (href) => typeof href === 'string' && /^\/(?!\/)/.test(href) ? href : null;
+      const link = (href, label, primary = false) => {
+        const safe = safeInternalHref(href);
+        return safe ? `<a class="action${primary ? ' primary' : ''}" href="${escapeHtml(safe)}">${escapeHtml(label)}</a>` : '';
+      };
       const card = (campaign) => {
+        const hasCurrent = campaign.trigger.current !== null && campaign.trigger.current !== ''
+          && typeof campaign.trigger.current !== 'undefined';
         const current = Number(campaign.trigger.current);
         const target = Number(campaign.trigger.target);
-        const hasProgress = Number.isFinite(current) && Number.isFinite(target) && target > 0;
+        const hasProgress = hasCurrent && Number.isFinite(current) && Number.isFinite(target) && target > 0;
         const progress = hasProgress ? Math.max(0, Math.min(100, current / target * 100)) : 0;
         const trigger = hasProgress
           ? `${current.toLocaleString()} / ${target.toLocaleString()} ${campaign.trigger.label}`
-          : campaign.trigger.source || campaign.trigger.label;
+          : Number.isFinite(target) && target > 0
+            ? `${target.toLocaleString()} ${campaign.trigger.label} target`
+            : campaign.trigger.label;
         const entries = campaign.entry && Number.isInteger(campaign.entry.publicEntries)
           ? `<div class="trigger">${campaign.entry.publicEntries} public wallet entries</div>` : '';
         const payout = campaign.payoutStatus === 'paid' ? 'paid' : campaign.status;
@@ -146,6 +167,7 @@
             ${link(campaign.entry && campaign.entry.homepageAnchor, 'Enter', campaign.status === 'active')}
             ${link(campaign.snapshot, 'Snapshot')}
             ${link(campaign.result, 'Result')}
+            ${link(campaign.payoutProof, 'Payout proof')}
           </div>
         </article>`;
       };

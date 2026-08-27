@@ -2937,6 +2937,7 @@
   .gv-btn-primary{ background:var(--gold); color:var(--black); }   /* .btn.solid */
   .gv-btn-primary:hover:not(:disabled){ background:var(--gold-light); color:var(--black); }
   .gv-field{ display:flex; flex-direction:column; gap:10px; }
+  .gv-field[hidden]{ display:none; }
   .gv-label{
     font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.12em;
     text-transform:uppercase; color:rgba(245,243,238,0.5);
@@ -3118,10 +3119,10 @@
 -->
 <!-- ===== SECTION: GIVEAWAY ===== -->
 <section id="giveaway">
-  <div class="stats-label">The Herd Giveaway</div>
+  <div class="stats-label" id="gvTitle">The Herd Giveaway</div>
 
   <div class="gv-wrap">
-    <div class="gv-terms">
+    <div class="gv-terms" id="gvTerms">
       <div class="gv-term">
         <span class="gv-num">1</span>
         <span>hold at least <b>100,000 $BULLEN</b>. checked on chain when you enter.</span>
@@ -3164,8 +3165,9 @@
     </div>
     <div class="gv-verify">
       every entered wallet is public and checkable at
-      <a href="/entries" target="_blank" rel="noopener">/entries</a>
+      <a id="gvPublicEntries" href="/entries" target="_blank" rel="noopener">/entries</a>
       before the draw.
+      <a href="/giveaways">see every campaign and result.</a>
     </div>
   </div>
 </section>
@@ -5526,6 +5528,9 @@
       enter: document.getElementById('gvEnterBtn'),
       msg: document.getElementById('gvMsg'),
       count: document.getElementById('gvCount'),
+      title: document.getElementById('gvTitle'),
+      terms: document.getElementById('gvTerms'),
+      publicEntries: document.getElementById('gvPublicEntries'),
     };
     if (!els.connect || !els.enter) return;
 
@@ -5537,11 +5542,64 @@
     // Phantom's generic "Unexpected error" at signMessage -- wallets display
     // this string and some throw on multi-byte characters. Byte-for-byte
     // identical to ENTRY_MESSAGE in the worker or verification fails.
-    const ENTRY_MESSAGE = 'bullenciaga giveaway entry - follow500';
-    const MIN_BALANCE = 100000;
+    let entryMessage = null;
+    let submitEndpoint = null;
+    let publicEndpoint = null;
 
-    let closed = false;
+    let closed = true;
     let busy = false;
+
+    function internalPath(value){
+      return typeof value === 'string' && /^\/(?!\/)/.test(value) ? value : null;
+    }
+
+    async function loadCampaign(){
+      try {
+        const response = await fetch('/giveaways.json', { cache: 'no-store' });
+        if (!response.ok) throw new Error('campaign ledger unavailable');
+        const authority = await response.json();
+        if (!authority || authority.schema !== 'bullenciaga.giveaways.v1' || !Array.isArray(authority.campaigns)) {
+          throw new Error('campaign ledger malformed');
+        }
+        const campaign = authority.campaigns.find((item) => item && item.id === 'follow500');
+        const entry = campaign && campaign.entry;
+        const nextSubmit = internalPath(entry && entry.submitEndpoint);
+        const nextPublic = internalPath(entry && entry.publicEndpoint);
+        if (!campaign || !Array.isArray(campaign.eligibility) || !entry
+            || entry.campaign !== campaign.id || !nextSubmit || !nextPublic
+            || typeof entry.signatureMessage !== 'string' || !entry.signatureMessage) {
+          throw new Error('campaign entry contract malformed');
+        }
+        entryMessage = entry.signatureMessage;
+        submitEndpoint = nextSubmit;
+        publicEndpoint = nextPublic;
+        closed = campaign.status !== 'active';
+        if (els.title) els.title.textContent = campaign.title;
+        if (els.terms) {
+          els.terms.innerHTML = campaign.eligibility.map((rule, index) => {
+            const number = document.createElement('span');
+            number.className = 'gv-num';
+            number.textContent = String(index + 1);
+            const text = document.createElement('span');
+            text.textContent = String(rule);
+            const row = document.createElement('div');
+            row.className = 'gv-term';
+            row.append(number, text);
+            return row.outerHTML;
+          }).join('');
+        }
+        if (els.publicEntries) {
+          els.publicEntries.href = publicEndpoint;
+          els.publicEntries.textContent = publicEndpoint;
+        }
+        reflect();
+        await loadCount();
+      } catch (error) {
+        closed = true;
+        reflect();
+        say('the public campaign ledger could not be verified. entry is paused rather than guessed.', 'gv-err');
+      }
+    }
 
     function say(text, kind){
       els.msg.textContent = text || '';
@@ -5572,8 +5630,9 @@
     }
 
     async function loadCount(){
+      if (!publicEndpoint) return;
       try {
-        const r = await fetch('/entries', { cache: 'no-store' });
+        const r = await fetch(publicEndpoint, { cache: 'no-store' });
         const j = await r.json();
         if (j && j.ok) {
           els.count.textContent = j.count;
@@ -5631,7 +5690,8 @@
         // work in some wallets and produces a signature over the wrong data
         // in others, which then fails verification server-side for reasons
         // that look like anything but this.
-        const bytes = new TextEncoder().encode(ENTRY_MESSAGE);
+        if (!entryMessage || !submitEndpoint) throw new Error('campaign entry contract is unavailable');
+        const bytes = new TextEncoder().encode(entryMessage);
 
         // TWO CALL SHAPES, because wallets disagree about the second
         // argument. Phantom documents signMessage(bytes, display) where
@@ -5658,7 +5718,7 @@
         const sig = bs58encode(raw instanceof Uint8Array ? raw : new Uint8Array(raw));
 
         say('checking your balance...');
-        const r = await fetch('/entry', {
+        const r = await fetch(submitEndpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ wallet: connectedWalletAddress, signature: sig, x: handle }),
@@ -5709,7 +5769,7 @@
     }
 
     reflect();
-    loadCount();
+    loadCampaign();
     setInterval(loadCount, 60000);
   })();
 

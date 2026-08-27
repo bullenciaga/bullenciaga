@@ -27,8 +27,13 @@ for (const id of ['follow500', 'mint-round-0', 'mint-round-1', 'mint-round-2', '
   if (!authority.campaigns.some((campaign) => campaign.id === id)) failures.push(`giveaway authority missing ${id}`);
 }
 const round3 = authority.campaigns.find((campaign) => campaign.id === 'mint-round-3');
-if (round3?.trigger?.target !== 650 || round3?.status !== 'upcoming' || round3.snapshot || round3.result) {
+if (round3?.round !== 3 || round3?.trigger?.target !== 650 || round3?.status !== 'upcoming'
+    || round3?.qualification?.minPieces !== 6 || round3?.qualification?.minTokens !== 1_000_000
+    || round3.snapshot || round3.result) {
   failures.push('round 3 must remain visibly gated with no fabricated snapshot or result');
+}
+if (authority.finalCarryover?.wallets !== 32 || authority.finalCarryover?.bankedEntries !== 62) {
+  failures.push('giveaway authority carryover is missing or incorrect');
 }
 
 const giveaways = fs.readFileSync(path.join(site, 'giveaways.html'), 'utf8');
@@ -36,10 +41,13 @@ for (const state of ['Active', 'Upcoming', 'Completed', 'Paid']) {
   if (!giveaways.includes(`'${state.toLowerCase()}', '${state}'`)) failures.push(`giveaways page missing ${state} state`);
 }
 if (!giveaways.includes('No draw or payment state is inferred')) failures.push('giveaways page does not fail closed');
+if (!giveaways.includes("link(campaign.payoutProof, 'Payout proof')")) failures.push('giveaways page omits payout-proof links');
 
 const home = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
 if (!home.includes("{ id: 'giveaway', label: 'Giveaway' }")) failures.push('homepage Jump To menu omits the live giveaway');
 if (!home.includes("{ url: 'giveaways.html', label: 'All Giveaways' }")) failures.push('homepage omits the campaign ledger link');
+if (!home.includes("fetch('/giveaways.json'")) failures.push('homepage giveaway card is not driven by the campaign authority');
+if (home.includes("const ENTRY_MESSAGE = 'bullenciaga giveaway entry")) failures.push('homepage duplicates the campaign signature message');
 
 if (failures.length) {
   console.error(failures.join('\n'));
