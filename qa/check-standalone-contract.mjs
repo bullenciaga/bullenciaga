@@ -22,7 +22,9 @@ for (const name of [...publicPages, 'referrals.html']) {
 
 const shell = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
 if (!shell.includes("page === 'referrals'")) failures.push('admin page classification missing');
-if (!shell.includes("document.querySelector('[data-bullen-home-nav]')")) failures.push('homepage shared-navigation mount missing');
+if (!shell.includes("shell.className = 'bullen-site-shell bullen-home-shell'")) failures.push('homepage top-shell navigation missing');
+if (!shell.includes("toggle.className = 'bullen-nav-toggle'")) failures.push('responsive navigation toggle missing');
+if (!shell.includes("document.getElementById('jumpToWidget')")) failures.push('homepage Jump To is not incorporated into the top shell');
 if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
 if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
 
@@ -50,7 +52,7 @@ if (!giveaways.includes("link(campaign.payoutProof, 'Payout proof')")) failures.
 
 const home = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
 if (!home.includes("{ id: 'giveaway', label: 'Giveaway' }")) failures.push('homepage Jump To menu omits the live giveaway');
-if (!home.includes('data-bullen-home-nav')) failures.push('homepage omits the visible shared-navigation mount');
+if (home.includes('data-bullen-home-nav')) failures.push('homepage retains the redundant mid-hero navigation strip');
 for (const duplicate of ["giveaways.html', label: 'All Giveaways", "proof', label: 'Proof", "refer.html', label: 'Referrals", "thedrop', label: 'The Drop", "stats.html', label: 'Live Dashboard"]) {
   if (home.includes(duplicate)) failures.push(`homepage Jump To duplicates shared navigation: ${duplicate}`);
 }

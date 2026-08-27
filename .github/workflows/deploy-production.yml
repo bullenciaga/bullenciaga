@@ -60,6 +60,9 @@ jobs:
         env:
           SMOKE_BASE_URL: https://bullenciaga.com
           SMOKE_INCLUDE_API: "1"
+          # The old deployment cannot contain a page introduced by this
+          # release. Post-release smoke still requires /giveaways.
+          SMOKE_PHASE: preflight
         run: node qa/smoke-live.mjs
 
       - name: Capture the current production rollback version
@@ -113,6 +116,7 @@ jobs:
         env:
           SMOKE_BASE_URL: https://bullenciaga.com
           SMOKE_INCLUDE_API: "1"
+          SMOKE_PHASE: post-release
         run: node qa/smoke-live.mjs
 
       - name: Roll back automatically if production smoke fails
