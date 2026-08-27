@@ -32,7 +32,8 @@ for (const [page, icon] of pages) {
   assert.match(svg, /viewBox="0 0 64 64"/);
   assert.match(svg, /fill="#050505"/);
   assert.match(svg, /#c7a869/);
-  assert.match(svg, /#f5f3ee/);
+  const colors = [...new Set(svg.match(/#[0-9a-f]{6}/gi)?.map((value) => value.toLowerCase()))].sort();
+  assert.deepEqual(colors, ['#050505', '#c7a869'], `${icon} must use only the black-and-gold favicon palette`);
   assert.doesNotMatch(svg, /<(?:script|image|text)\b/i);
   assert.doesNotMatch(svg, /(?:href|src)="https?:/i);
 }

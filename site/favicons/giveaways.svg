@@ -1,9 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
   <title id="title">BULLENCIAGA Giveaways</title>
-  <desc id="desc">A gold trophy with white handles on black.</desc>
-  <rect width="64" height="64" rx="12" fill="#050505"/>
-  <path d="M22 15H42V27C42 35 38 40 32 40C26 40 22 35 22 27Z" fill="#c7a869"/>
-  <path d="M22 20H15V25C15 32 19 35 25 35M42 20H49V25C49 32 45 35 39 35" fill="none" stroke="#f5f3ee" stroke-width="4" stroke-linecap="square" stroke-linejoin="round"/>
-  <path d="M30 40H34V48H30Z" fill="#f5f3ee"/>
-  <path d="M22 48H42V53H22Z" fill="#c7a869"/>
+  <desc id="desc">A restrained gold prize cup on black.</desc>
+  <rect width="64" height="64" fill="#050505"/>
+  <g fill="#c7a869">
+    <path d="M20 13H44V25C44 34.5 39.2 40 32 40C24.8 40 20 34.5 20 25Z"/>
+    <path d="M20 18H13V25C13 32 17 36 24 36V31C20 31 18 29 18 25V23H20ZM44 18H51V25C51 32 47 36 40 36V31C44 31 46 29 46 25V23H44Z"/>
+    <rect x="29.5" y="39" width="5" height="9"/>
+    <path d="M21 48H43V53H21Z"/>
+  </g>
 </svg>

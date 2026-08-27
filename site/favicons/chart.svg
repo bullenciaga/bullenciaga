@@ -1,14 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
   <title id="title">BULLENCIAGA Chart</title>
-  <desc id="desc">Gold rising market line over white chart axes on black.</desc>
-  <rect width="64" height="64" rx="12" fill="#050505"/>
-  <path d="M14 13V50H52" fill="none" stroke="#f5f3ee" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="round"/>
-  <path d="M18 42L26 34L34 38L43 25L51 18" fill="none" stroke="#c7a869" stroke-width="4.5" stroke-linecap="square" stroke-linejoin="round"/>
-  <g fill="#c7a869">
-    <rect x="16" y="40" width="4" height="4"/>
-    <rect x="24" y="32" width="4" height="4"/>
-    <rect x="32" y="36" width="4" height="4"/>
-    <rect x="41" y="23" width="4" height="4"/>
-    <rect x="49" y="16" width="4" height="4"/>
+  <desc id="desc">Four precise gold market candlesticks on black.</desc>
+  <rect width="64" height="64" fill="#050505"/>
+  <g stroke="#c7a869" stroke-width="3" stroke-linecap="square">
+    <path d="M15 20V47M27 11V38M39 24V52M51 9V36"/>
+    <path d="M11 27H19V39H11ZM23 17H31V31H23ZM35 31H43V44H35ZM47 14H55V27H47Z" fill="#050505" stroke-linejoin="miter"/>
   </g>
 </svg>
