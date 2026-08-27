@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">BULLENCIAGA</title>
+  <desc id="desc">Mirrored gold BB monogram with white bull horns on black.</desc>
+  <rect width="64" height="64" rx="12" fill="#050505"/>
+  <g fill="none" stroke="#f5f3ee" stroke-width="4" stroke-linecap="square" stroke-linejoin="round">
+    <path d="M29 23C21 22 15 17 13 8C8 15 9 24 18 29"/>
+    <path d="M35 23C43 22 49 17 51 8C56 15 55 24 46 29"/>
+  </g>
+  <g fill="none" stroke="#c7a869" stroke-width="4.5" stroke-linecap="square" stroke-linejoin="round">
+    <path d="M32 22V53"/>
+    <path d="M31 24H23C19 24 17 27 17 30C17 34 20 36 24 36H31"/>
+    <path d="M31 36H22C18 36 16 39 16 44C16 49 19 52 24 52H31"/>
+    <path d="M33 24H41C45 24 47 27 47 30C47 34 44 36 40 36H33"/>
+    <path d="M33 36H42C46 36 48 39 48 44C48 49 45 52 40 52H33"/>
+  </g>
+</svg>

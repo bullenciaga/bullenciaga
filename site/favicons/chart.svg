@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">BULLENCIAGA Chart</title>
+  <desc id="desc">Gold rising market line over white chart axes on black.</desc>
+  <rect width="64" height="64" rx="12" fill="#050505"/>
+  <path d="M14 13V50H52" fill="none" stroke="#f5f3ee" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="round"/>
+  <path d="M18 42L26 34L34 38L43 25L51 18" fill="none" stroke="#c7a869" stroke-width="4.5" stroke-linecap="square" stroke-linejoin="round"/>
+  <g fill="#c7a869">
+    <rect x="16" y="40" width="4" height="4"/>
+    <rect x="24" y="32" width="4" height="4"/>
+    <rect x="32" y="36" width="4" height="4"/>
+    <rect x="41" y="23" width="4" height="4"/>
+    <rect x="49" y="16" width="4" height="4"/>
+  </g>
+</svg>

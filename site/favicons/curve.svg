@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">BULLENCIAGA Curve</title>
+  <desc id="desc">A smooth gold falling supply curve with white burn markers on black.</desc>
+  <rect width="64" height="64" rx="12" fill="#050505"/>
+  <path d="M12 14H52M12 50H52" fill="none" stroke="#f5f3ee" stroke-width="2.5" stroke-linecap="square" opacity=".9"/>
+  <path d="M13 18C23 18 24 28 31 30C41 33 41 44 51 46" fill="none" stroke="#c7a869" stroke-width="4.5" stroke-linecap="square" stroke-linejoin="round"/>
+  <g fill="#f5f3ee">
+    <rect x="20" y="16" width="3" height="10"/>
+    <rect x="34" y="29" width="3" height="10"/>
+    <rect x="46" y="39" width="3" height="10"/>
+  </g>
+</svg>

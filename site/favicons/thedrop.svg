@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">BULLENCIAGA The Drop</title>
+  <desc id="desc">A white prize drop half-filled with gold progress on black.</desc>
+  <defs>
+    <clipPath id="drop-fill">
+      <path d="M32 10C27 17 19 27 19 37C19 45 25 52 32 52C39 52 45 45 45 37C45 27 37 17 32 10Z"/>
+    </clipPath>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#050505"/>
+  <path d="M17 40C23 36 28 40 33 39C38 38 42 35 48 39V55H17Z" fill="#c7a869" clip-path="url(#drop-fill)"/>
+  <path d="M32 10C27 17 19 27 19 37C19 45 25 52 32 52C39 52 45 45 45 37C45 27 37 17 32 10Z" fill="none" stroke="#f5f3ee" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M21 40C26 37 29 41 34 39C39 37 42 36 45 39" fill="none" stroke="#050505" stroke-width="2.5" stroke-linecap="square" clip-path="url(#drop-fill)"/>
+</svg>
