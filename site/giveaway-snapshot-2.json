@@ -1,0 +1,36 @@
+{
+  "round": 2,
+  "takenAt": "2026-08-14T19:19:56.106Z",
+  "slot": 439285287,
+  "rules": {
+    "mintTrigger": 500,
+    "minPieces": 4,
+    "minTokens": 500000,
+    "prizes": 8,
+    "entries": "flat - one wallet, one entry per round",
+    "compounding": "qualifying in this round banks one permanent entry in the final draw"
+  },
+  "totals": {
+    "piecesOutstanding": 524,
+    "herdWallets": 68,
+    "eligibleWallets": 16
+  },
+  "eligible": [
+    { "wallet": "2iLeUfaVz6P7VZfyb5qSCJ61iGs8moEHdbnWigvDTTSP", "pieces": 11, "tokens": 5783692 },
+    { "wallet": "2WdFKU8orK9Wk6xvcecmGxa2EmY1y8GpRjXu6h4RhQcf", "pieces": 11, "tokens": 761934 },
+    { "wallet": "3AgyXSNoPZrKQW2gK6oEQPubouCJsUjQ3MWQjoLbh5Er", "pieces": 7, "tokens": 15796118 },
+    { "wallet": "3xw7oVwJQJymxC8Zg1iMQbypKodPAMQHPucucim4bhGh", "pieces": 10, "tokens": 2523526 },
+    { "wallet": "7DqWHcEeRD7ysbCmLqg4B3esV9HbkfCb889ANq3KWZe7", "pieces": 8, "tokens": 5907487 },
+    { "wallet": "9K523kRVRKcLTdsCmemLLTppVfRFaL8hmMQ25yH5dLHR", "pieces": 4, "tokens": 8778033 },
+    { "wallet": "AhqNyru7aGdP16HM8ST1DvJhNMUdg1NtxC8KBffsgCUf", "pieces": 13, "tokens": 2502000 },
+    { "wallet": "AZos1MFLKjFdny7FZsY8KsFyNJRJyUAYmZuR7VMNrdPA", "pieces": 5, "tokens": 4959156 },
+    { "wallet": "BY2cjrXeqMnPkinCLZqkrTyos8njFyUZj1E3wgwXaUum", "pieces": 6, "tokens": 12108805 },
+    { "wallet": "CohRnrcs3u599MG7h2r4nRhwP7WmeRJ3shCVp1kWAXPk", "pieces": 151, "tokens": 11536071 },
+    { "wallet": "E3765S7odLkbvaceCjQoMzLHziiNC2dH6E3FBVE6b9mN", "pieces": 5, "tokens": 7291522 },
+    { "wallet": "EauhQG5URM846Zx6DUJCF7UMEya3X6tNRMzsbTC3FE8w", "pieces": 5, "tokens": 19674956 },
+    { "wallet": "F5k2e3CXyaVkmacAgGrRps8ikUkaabzLfgjYh3LA1khW", "pieces": 15, "tokens": 1945731 },
+    { "wallet": "FszUn2J7Cvbs5S2WD3jFkTMYm2nn1fRZxtkrnmwDndCq", "pieces": 4, "tokens": 4698073 },
+    { "wallet": "GYDud4FYYUBF88rs8Dg2jnbGvo7GiYVzMvwfmpauLNQn", "pieces": 5, "tokens": 1631003 },
+    { "wallet": "HH4serienJHhyT3Qkzfm2FDjyX5YVa4GQjHJyFRAv4No", "pieces": 7, "tokens": 20275907 }
+  ]
+}

@@ -7,6 +7,8 @@ assert.equal(baseUrl.search, '', 'smoke target must not include a query');
 assert.equal(baseUrl.hash, '', 'smoke target must not include a fragment');
 
 const includeApi = process.env.SMOKE_INCLUDE_API !== '0';
+const smokePhase = process.env.SMOKE_PHASE ?? 'post-release';
+assert(['preflight', 'post-release'].includes(smokePhase), 'SMOKE_PHASE must be preflight or post-release');
 const maxAttempts = Number(process.env.SMOKE_MAX_ATTEMPTS ?? 8);
 const initialRetryDelayMs = Number(process.env.SMOKE_RETRY_DELAY_MS ?? 2_000);
 assert(Number.isInteger(maxAttempts) && maxAttempts >= 1 && maxAttempts <= 20, 'SMOKE_MAX_ATTEMPTS must be an integer from 1 to 20');
@@ -24,7 +26,11 @@ const pageChecks = [
   ['/refer', /<title>BULLENCIAGA — Referrals/i],
   ['/referrals', /<title>BULLENCIAGA — Weekly Payouts/i],
   ['/thedrop', /<title>BULLENCIAGA — The Drop/i],
+  ['/giveaways', /<title>BULLENCIAGA — Giveaways/i],
 ];
+const effectivePageChecks = smokePhase === 'preflight'
+  ? pageChecks.filter(([path]) => path !== '/giveaways')
+  : pageChecks;
 
 const apiChecks = [
   ['/supply', (body) => Number.isFinite(Number(body.circulatingSupply)) && typeof body.workerVersion === 'string'],
@@ -63,7 +69,7 @@ async function fetchChecked(path) {
   throw lastError;
 }
 
-for (const [path, marker] of pageChecks) {
+for (const [path, marker] of effectivePageChecks) {
   const { response, url } = await fetchChecked(path);
   assert.match(response.headers.get('content-type') ?? '', /text\/html/i, `${url} did not return HTML`);
   const body = await response.text();

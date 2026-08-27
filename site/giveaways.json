@@ -1,0 +1,103 @@
+{
+  "schema": "bullenciaga.giveaways.v1",
+  "project": "BULLENCIAGA",
+  "token": "$BULLEN",
+  "updatedAt": "2026-08-27T00:00:00Z",
+  "finalCarryover": {
+    "rounds": [0, 1, 2],
+    "wallets": 32,
+    "bankedEntries": 62
+  },
+  "freshness": {
+    "mintedEndpoint": "/supply/minted",
+    "followerEntriesEndpoint": "/entries"
+  },
+  "campaigns": [
+    {
+      "id": "follow500",
+      "title": "500 follower Herd giveaway",
+      "kind": "follower",
+      "status": "active",
+      "trigger": { "label": "X followers", "target": 500, "current": null, "source": "manual authenticated X check" },
+      "eligibility": ["Hold at least 100,000 $BULLEN when entering", "Follow @bullenciagax", "One wallet and one X username per entry"],
+      "prizes": { "type": "herd-positions", "positions": [168, 495, 737, 773, 950] },
+      "entry": {
+        "campaign": "follow500",
+        "submitEndpoint": "/entry",
+        "publicEndpoint": "/entries",
+        "homepageAnchor": "/#giveaway",
+        "signatureMessage": "bullenciaga giveaway entry - follow500"
+      },
+      "payoutStatus": "not-drawn"
+    },
+    {
+      "id": "mint-round-0",
+      "title": "Mint round 0",
+      "kind": "mint",
+      "round": 0,
+      "status": "completed",
+      "trigger": { "label": "Herd mints", "target": 250, "current": 250 },
+      "eligibility": ["1 eligible Herd piece", "100,000 $BULLEN"],
+      "qualification": { "minPieces": 1, "minTokens": 100000, "entries": "flat" },
+      "prizes": { "count": 4 },
+      "snapshot": "/giveaway-snapshot-0.json",
+      "result": "/giveaway-result-0.json",
+      "payoutStatus": "unverified"
+    },
+    {
+      "id": "mint-round-1",
+      "title": "Mint round 1",
+      "kind": "mint",
+      "round": 1,
+      "status": "completed",
+      "trigger": { "label": "Herd mints", "target": 350, "current": 350 },
+      "eligibility": ["2 eligible Herd pieces", "250,000 $BULLEN"],
+      "qualification": { "minPieces": 2, "minTokens": 250000, "entries": "flat" },
+      "prizes": { "count": 8 },
+      "snapshot": "/giveaway-snapshot-1.json",
+      "result": "/giveaway-result-1.json",
+      "payoutStatus": "unverified"
+    },
+    {
+      "id": "mint-round-2",
+      "title": "Mint round 2",
+      "kind": "mint",
+      "round": 2,
+      "status": "completed",
+      "trigger": { "label": "Herd mints", "target": 500, "current": 500 },
+      "eligibility": ["4 eligible Herd pieces", "500,000 $BULLEN"],
+      "qualification": { "minPieces": 4, "minTokens": 500000, "entries": "flat" },
+      "prizes": { "count": 8 },
+      "snapshot": "/giveaway-snapshot-2.json",
+      "result": "/giveaway-result-2.json",
+      "payoutStatus": "unverified"
+    },
+    {
+      "id": "mint-round-3",
+      "title": "Mint round 3",
+      "kind": "mint",
+      "round": 3,
+      "status": "upcoming",
+      "trigger": { "label": "Herd mints", "target": 650, "current": null, "source": "/supply/minted" },
+      "eligibility": ["6 eligible Herd pieces", "1,000,000 $BULLEN"],
+      "qualification": { "minPieces": 6, "minTokens": 1000000, "entries": "flat" },
+      "prizes": { "count": 8, "confirmationRequired": true },
+      "snapshot": null,
+      "result": null,
+      "payoutStatus": "blocked-on-snapshot"
+    },
+    {
+      "id": "mint-final",
+      "title": "Compounded final",
+      "kind": "final",
+      "status": "upcoming",
+      "trigger": { "label": "Round 3 settled and dispute window closed", "target": 1, "current": 0 },
+      "eligibility": ["One permanent entry for every mint round qualified", "Round 3 immutable snapshot and result required"],
+      "prizes": { "count": 2, "description": "$BULLEN plus a custom one-of-one" },
+      "draw": { "requiredRounds": [0, 1, 2, 3], "bullenWinners": 1, "customWinners": 1 },
+      "snapshot": null,
+      "result": null,
+      "payoutStatus": "blocked-on-round-3"
+    }
+  ]
+}

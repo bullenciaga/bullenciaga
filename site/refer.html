@@ -190,6 +190,8 @@
     .claim code{ font-size:10px; }
   }
 </style>
+<link rel="stylesheet" href="/bullen-ui.css">
+<script defer src="/bullen-ui.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -225,7 +227,7 @@
 
   <div id="walletApps" style="display:none; margin:-8px 0 20px;"></div>
 
-  <button class="solid" id="goBtn">Record referral</button>
+  <button type="button" class="solid" id="goBtn">Record referral</button>
   <div class="status" id="status"></div>
 
   <!-- REFERRER VIEW. Appears only when the connected wallet has actually
@@ -266,18 +268,6 @@
         out from this and paid weekly.
       </div>
     </div>
-  </div>
-
-  <!-- Breaks are specified per breakpoint. .lede-line is always a block;
-       .m-break is inline on desktop and a block on phones, which is what
-       splits two of these lines further without duplicating the text. -->
-  <div class="result" id="mine" style="display:none;">
-    <div class="headline">
-      <div class="cap">You are owed</div>
-      <div class="big" id="mineOwed">0.000000 SOL</div>
-      <div class="sub" id="mineSub"></div>
-    </div>
-    <div id="mineList"></div>
   </div>
 
   <div class="terms">
@@ -699,11 +689,12 @@
 
   $('goBtn').addEventListener('click', go);
   $('connectBtn').addEventListener('click', connect);
-  $('copyBtn').addEventListener('click', function(){
+  var copyBtn = $('copyBtn');
+  if (copyBtn) copyBtn.addEventListener('click', function(){
     var t = $('claimLine').textContent;
     if (navigator.clipboard) navigator.clipboard.writeText(t);
-    $('copyBtn').textContent = 'Copied';
-    setTimeout(function(){ $('copyBtn').textContent = 'Copy'; }, 1600);
+    copyBtn.textContent = 'Copied';
+    setTimeout(function(){ copyBtn.textContent = 'Copy'; }, 1600);
   });
   ['me','ref'].forEach(function(id){
     $(id).addEventListener('keydown', function(e){ if (e.key === 'Enter') go(); });

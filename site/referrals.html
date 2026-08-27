@@ -69,6 +69,8 @@
   .err{ color:var(--bad); }
   .build{ margin-top:30px; font-size:9px; color:rgba(245,243,238,0.18); letter-spacing:0.06em; }
 </style>
+<link rel="stylesheet" href="/bullen-ui.css">
+<script defer src="/bullen-ui.js"></script>
 </head>
 <body>
 
@@ -89,9 +91,9 @@
     <button type="button" id="qAll">all time</button>
   </div>
   <div style="flex:1"></div>
-  <button id="runBtn">Who gets paid</button>
-  <button class="ghost" id="csvBtn" disabled>CSV</button>
-  <button class="ghost" id="paidBtn" disabled>Mark paid</button>
+  <button type="button" id="runBtn">Who gets paid</button>
+  <button type="button" class="ghost" id="csvBtn" disabled>CSV</button>
+  <button type="button" class="ghost" id="paidBtn" disabled>Mark paid</button>
 </div>
 
 <div id="status">ready — bindings load automatically when you run.</div>
