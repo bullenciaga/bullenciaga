@@ -8,11 +8,11 @@
     grep -n "SECTION:" index.html
     grep -n "SECTION: LIGHTBOX" index.html
 
-  STYLE  TOKENS · RESET · HERO · COUNTDOWN · GLITCH · DASHBOARD LINK · BUTTONS · SOCIALS · TRUST BADGES · CONTRACT ROW · FOOTER · STATS · HOW TO BUY · NFT INTRO · GALLERY CONTROLS · VAULT MODAL · GALLERY GRID · LIGHTBOX · MINT REVEAL · TIER PARTICLES · GALLERY EMPTY · NFT ACTIONS · WALLET · ROADMAP · VOLUME TRACKER · BURN SCHEDULE · WALLET VERIFY · SCROLL CUE · JUMP TO WIDGET · AUDIO WIDGET
+  STYLE  TOKENS · RESET · HERO · COUNTDOWN · GLITCH · DASHBOARD LINK · BUTTONS · SOCIALS · TRUST BADGES · CONTRACT ROW · FOOTER · STATS · HOW TO BUY · NFT INTRO · GALLERY CONTROLS · VAULT MODAL · GALLERY GRID · LIGHTBOX · MINT REVEAL · TIER PARTICLES · GALLERY EMPTY · NFT ACTIONS · WALLET · ROADMAP · VOLUME TRACKER · BURN SCHEDULE · WALLET VERIFY · SCROLL CUE · JUMP TO WIDGET
 
   BODY   HERO · GIVEAWAY · STATS · HOW TO BUY · NFT · GALLERY · ROADMAP · FAQ · FOOTER
 
-  SCRIPT blocks, in order: main app · jump-to widget · audio widget · tail
+  SCRIPT blocks, in order: main app · jump-to widget · tail
 
   Markers are inserted by add-section-markers.cjs, which is idempotent.
   Renaming a component here does not break anything; the marker is a
@@ -2721,98 +2721,6 @@
     body.vault-open .jumpto-widget{ display:none; } /* it overlapped the Vault's X-close button on mobile */
   }
 
-  /* ===== SECTION: AUDIO WIDGET ===== */
-  .audio-widget{
-    position:fixed;
-    right:calc(22px + env(safe-area-inset-right, 0px));
-    bottom:calc(22px + env(safe-area-inset-bottom, 0px));
-    z-index:1000;
-    display:flex;
-    flex-direction:row;
-    align-items:center;
-    gap:10px;
-  }
-  .audio-hint{
-    display:flex;
-    flex-direction:row;
-    align-items:center;
-    gap:6px;
-    font-family:'Space Mono', monospace;
-    font-size:10px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:var(--gold);
-    white-space:nowrap;
-    opacity:1;
-    transition:opacity 1.2s ease;
-  }
-  .audio-hint.hidden{
-    opacity:0;
-    pointer-events:none;
-  }
-  .hint-chevron{
-    width:12px;
-    height:12px;
-    color:var(--gold);
-    flex-shrink:0;
-    animation:hintBounce 1.4s ease-in-out infinite;
-  }
-  @keyframes hintBounce{
-    0%, 100% { transform:translateX(0); }
-    50% { transform:translateX(4px); }
-  }
-
-  .audio-toggle{
-    font-family:'Space Mono', monospace;
-    font-size:11px;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    color:var(--gold);
-    background:var(--black);
-    border:1px solid var(--gold);
-    padding:9px 14px;
-    cursor:pointer;
-    white-space:nowrap;
-    transition:background .25s ease, color .25s ease;
-  }
-  .audio-toggle:hover{
-    background:var(--gold);
-    color:var(--black);
-  }
-
-  /* Idle — a gentle "notice me" breathing glow before anyone's pressed play */
-  .audio-toggle{
-    animation:audioIdlePulse 2.6s ease-in-out infinite;
-  }
-  @keyframes audioIdlePulse{
-    0%, 100% { box-shadow:0 0 0 0 rgba(199,168,105,0.13); }
-    50% { box-shadow:0 0 5px 1.5px rgba(199,168,105,0.18); }
-  }
-  /* Playing — a faster outward "now active" ping, replaces the idle glow */
-  .audio-toggle.playing{
-    animation:audioPulseRing 1.8s ease-in-out infinite;
-  }
-  @keyframes audioPulseRing{
-    0%, 100% { box-shadow:0 0 0 0 rgba(199,168,105,0.2); }
-    50% { box-shadow:0 0 0 4.5px rgba(199,168,105,0); }
-  }
-  @media (max-width:600px){
-    .audio-widget{
-      right:calc(20px + env(safe-area-inset-right, 0px));
-      bottom:calc(20px + env(safe-area-inset-bottom, 0px));
-    }
-    .audio-toggle{
-      font-size:8px;
-      padding:6px 9px;
-    }
-    .audio-hint{ font-size:9px; }
-    /* The widget is fixed-position and sits on top of everything (z-index
-       1000) -- on small screens the lightbox is full-height, so the widget
-       was covering part of the piece and its trait list. Hide it while a
-       lightbox is open. */
-    body.lightbox-open .audio-widget{ display:none; }
-  }
-
   /* Deploy version stamp -- sits at the very bottom of the page (after the
      footer, in normal document flow, not floating) purely so the site
      owner can scroll all the way down and confirm Cloudflare Pages has
@@ -3588,7 +3496,7 @@
   © 2026 BULLENCIAGA.
 </footer>
 
-<div class="version-tag" id="versionTag">build 2026-08-21.2 — roadmap 07</div>
+<div class="version-tag" id="versionTag">build 2026-08-28.1 — silent</div>
 
 <div class="vault-modal" id="vaultModal">
   <button class="vault-modal-close" id="vaultModalClose" type="button">&times;</button>
@@ -8320,9 +8228,8 @@
 
   init();
 
-  // Narrow, deliberate bridge for the separate Jump To widget script below
-  // (which lives in its own closure, same pattern as the audio widget) --
-  // exposes only the 3 URLs it actually needs rather than all of NFT_CONFIG.
+  // Narrow, deliberate bridge for the separate Jump To widget script below.
+  // It exposes only the URLs that widget needs rather than all of NFT_CONFIG.
   window.__JUMPTO_LINKS__ = {
     tensor: NFT_CONFIG.TENSOR_URL,
     magicEden: NFT_CONFIG.MAGIC_EDEN_URL,
@@ -8481,52 +8388,7 @@ const JUP_VERIFY_URL = 'https://bullenciaga.com/jupiter_vrfd';
 })();
 </script>
 
-<audio id="bgAudio" src="theme.mp3" loop preload="none"></audio>
-<div class="audio-widget">
-  <div class="audio-hint" id="audioHint">
-    <span>press for full experience</span>
-    <svg class="hint-chevron" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l5 5-5 5"/></svg>
-  </div>
-  <button type="button" id="audioToggle" class="audio-toggle" aria-pressed="false">Play Music</button>
-</div>
 <script>
-(function(){
-  const audio = document.getElementById('bgAudio');
-  const toggleBtn = document.getElementById('audioToggle');
-  const hint = document.getElementById('audioHint');
-  if (!audio || !toggleBtn) return;
-
-  audio.volume = 0.5;
-
-  let hintTimeout = null;
-  if (hint) {
-    hintTimeout = setTimeout(() => hint.classList.add('hidden'), 4500);
-  }
-  function dismissHint(){
-    if (!hint) return;
-    clearTimeout(hintTimeout);
-    hint.classList.add('hidden');
-  }
-
-  toggleBtn.addEventListener('click', () => {
-    dismissHint();
-    if (audio.paused) {
-      audio.play().then(() => {
-        toggleBtn.classList.add('playing');
-        toggleBtn.setAttribute('aria-pressed', 'true');
-        toggleBtn.textContent = 'Stop Music';
-      }).catch(() => {
-        // playback blocked or file missing — leave the button in its off state
-      });
-    } else {
-      audio.pause();
-      toggleBtn.classList.remove('playing');
-      toggleBtn.setAttribute('aria-pressed', 'false');
-      toggleBtn.textContent = 'Play Music';
-    }
-  });
-})();
-
   // ---- price chart popup ------------------------------------------------
   // An SVG line drawn by hand rather than a charting library or a provider
   // embed. A library is ~100KB for one series, and every embed brings its own
