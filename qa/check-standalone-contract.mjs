@@ -5,7 +5,7 @@ const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
 const publicPages = [
   'index.html', 'stats.html', 'chart.html', 'curve.html',
-  'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html',
+  'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html',
 ];
 const failures = [];
 

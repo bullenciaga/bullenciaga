@@ -13,8 +13,10 @@
     referrals: 'Admin',
     thedrop: 'The Drop',
     giveaways: 'Giveaways',
+    objects: 'House Objects',
   };
   const destinations = [
+    ['objects', '/objects.html'],
     ['giveaways', '/giveaways.html'],
     ['stats', '/stats.html'],
     ['chart', '/chart.html'],

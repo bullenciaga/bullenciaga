@@ -10,6 +10,7 @@ const required = [
   'index.html', '_redirects', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'whitepaper.pdf',
   'bullen-ui.css', 'bullen-ui.js', 'giveaways.html', 'giveaways.json',
+  'objects.html', 'objects.css', 'objects.js',
   'giveaway-snapshot-2.json', 'giveaway-result-2.json',
 ];
 const failures = [];

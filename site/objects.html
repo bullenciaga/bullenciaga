@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-objects-review="true" data-objects-api="https://bullensaga.com">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BULLENCIAGA — House Objects</title>
+  <meta name="description" content="Numbered BULLENCIAGA House Objects. One hundred of each. Claim with a verified 100,000 BULLEN burn.">
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/objects.svg">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bullenciaga.com/objects">
+  <meta property="og:title" content="BULLENCIAGA — House Objects">
+  <meta property="og:description" content="The Signet. The Cufflinks. One hundred numbered records of each.">
+  <meta property="og:image" content="https://bullenciaga.com/assets/house-objects/house-object-01-signet.png">
+  <link rel="stylesheet" href="/bullen-ui.css">
+  <link rel="stylesheet" href="/objects.css">
+  <script defer src="/vendor/solana-web3-1.98.4.min.js"></script>
+  <script defer src="/bullen-ui.js"></script>
+  <script defer src="/objects.js"></script>
+</head>
+<body>
+  <main class="objects-page">
+    <section class="objects-hero" aria-labelledby="objects-title">
+      <div class="objects-hero-copy">
+        <p class="objects-kicker">THE HOUSE / FIRST ISSUE</p>
+        <h1 id="objects-title">Objects that<br>remember who held them.</h1>
+        <p class="objects-lede">One hundred Signets. One hundred Cufflinks. Each numbered unit is a transferable House record, claimed through one exact <strong>100,000 $BULLEN burn</strong>.</p>
+        <div class="objects-rule"><span>FIRST 48 HOURS</span><strong>VERIFIED HOLDERS ONLY</strong><i></i><span>AFTERWARD</span><strong>PUBLIC UNTIL FULLY ALLOCATED</strong></div>
+      </div>
+      <div class="objects-hero-art" aria-label="The Signet and The Cufflinks">
+        <figure class="object-portrait object-portrait-primary"><img src="/assets/house-objects/house-object-01-signet.png" alt="House Object 01, a gold BULLENCIAGA signet ring"><figcaption><span>HOUSE OBJECT 01</span><strong>THE SIGNET</strong></figcaption></figure>
+        <figure class="object-portrait object-portrait-secondary"><img src="/assets/house-objects/house-object-02-cufflinks.png" alt="House Object 02, a pair of gold mirrored-B cufflinks"><figcaption><span>HOUSE OBJECT 02</span><strong>THE CUFFLINKS</strong></figcaption></figure>
+      </div>
+    </section>
+
+    <section class="objects-ledger" aria-labelledby="issue-title">
+      <div class="objects-section-heading"><div><span>01 / THE ISSUE</span><h2 id="issue-title">Nothing above one hundred.</h2></div><p>Preorders, manual awards and token-burn claims all draw from one numbered allocation. A unit reserved somewhere else disappears here immediately.</p></div>
+      <div class="object-editions">
+        <article data-object-id="house-object-01-signet"><img src="/assets/house-objects/house-object-01-signet.png" alt=""><div class="edition-copy"><small>HOUSE OBJECT 01</small><h3>The Signet</h3><p>A broad gold signet carrying the symmetrical mirrored B. The first permanent mark of entry.</p><dl><div><dt>ISSUE</dt><dd>100</dd></div><div><dt>AVAILABLE</dt><dd data-available>100</dd></div><div><dt>CLAIM</dt><dd>100K $BULLEN</dd></div></dl><button type="button" class="object-select is-selected" data-select-object="house-object-01-signet">SELECT THE SIGNET</button></div></article>
+        <article data-object-id="house-object-02-cufflinks"><img src="/assets/house-objects/house-object-02-cufflinks.png" alt=""><div class="edition-copy"><small>HOUSE OBJECT 02</small><h3>The Cufflinks</h3><p>A matched mirrored-B pair. The second record completes House Pair I.</p><dl><div><dt>ISSUE</dt><dd>100</dd></div><div><dt>AVAILABLE</dt><dd data-available>100</dd></div><div><dt>CLAIM</dt><dd>100K $BULLEN</dd></div></dl><button type="button" class="object-select" data-select-object="house-object-02-cufflinks">SELECT THE CUFFLINKS</button></div></article>
+      </div>
+    </section>
+
+    <section class="claim-record" aria-labelledby="claim-title">
+      <div class="claim-intro"><span>02 / THE CLAIM</span><h2 id="claim-title"><span>One wallet.</span><span class="claim-title-line">One burn. One number.</span></h2><p>The transaction is built for your own BULLEN token account and signed inside your wallet. BULLENCIAGA never receives custody and never sees a private key.</p></div>
+      <div class="claim-panel">
+        <div class="review-ribbon" id="reviewRibbon">LOCAL REVIEW · NO TRANSACTION WILL BE SENT</div>
+        <div class="claim-selection"><span>SELECTED RECORD</span><strong id="selectedName">THE SIGNET</strong><small>100,000 $BULLEN · ONE NUMBERED UNIT</small></div>
+        <ol class="claim-steps" id="claimSteps">
+          <li data-step="wallet"><span>01</span><div><strong>PROVE THE WALLET</strong><small>A free message signature prevents anyone else reserving in your name.</small></div></li>
+          <li data-step="reserve"><span>02</span><div><strong>HOLD ONE NUMBER</strong><small>The shared ledger holds the lowest available serial for 20 minutes.</small></div></li>
+          <li data-step="burn"><span>03</span><div><strong>BURN EXACTLY 100,000</strong><small>Your wallet signs the on-chain burn transaction. It cannot transfer the tokens elsewhere.</small></div></li>
+          <li data-step="verify"><span>04</span><div><strong>VERIFY + ENTER MINT QUEUE</strong><small>The same signature cannot be used twice. The final mint address joins the permanent record.</small></div></li>
+        </ol>
+        <div class="wallet-record"><span>CONNECTED WALLET</span><code id="walletAddress">NOT CONNECTED</code></div>
+        <div class="claim-actions"><button type="button" id="connectWallet">CONNECT WALLET</button><button type="button" id="previewWallet">REVIEW WITHOUT A WALLET</button><button type="button" id="beginClaim" class="claim-primary" disabled>BEGIN THE 100K CLAIM</button></div>
+        <p class="claim-status" id="claimStatus" role="status">Choose an object, then connect the Solana wallet that will receive it.</p>
+        <div class="claim-result" id="claimResult" hidden><span>NUMBER HELD</span><strong id="claimSerial">#001</strong><p id="claimResultCopy">The review flow reached the mint queue. No real allocation or burn was made.</p></div>
+      </div>
+    </section>
+
+    <section class="house-benefits" aria-labelledby="benefits-title">
+      <div class="objects-section-heading"><div><span>03 / WHAT THE HOUSE RECORD DOES</span><h2 id="benefits-title">Status with a memory.</h2></div><p>The NFT carries the status. Sell it and the verified access moves with it. Keep both first objects and the House begins to compound.</p></div>
+      <div class="benefit-grid">
+        <article><span>PAIRING</span><h3>House Pair I</h3><p>Hold the Signet and Cufflinks in one wallet to complete the first pair.</p></article>
+        <article><span>FREE THIRD RECORD</span><h3>The Key</h3><p>Every complete Pair I wallet receives The Key NFT when its issue is announced. No second burn.</p></article>
+        <article><span>PRIVATE ACCESS</span><h3>The House Salon</h3><p>Wallet-gated rooms, private releases and direct first-look material.</p></article>
+        <article><span>CURATED PARTICIPATION</span><h3>A seat, not a vote farm</h3><p>Small, deliberate ballots on naming, objects, archives and physical details.</p></article>
+        <article><span>PHYSICAL PRIORITY</span><h3>First refusal</h3><p>Priority windows for any physical House editions. Priority is not a promise of a free item.</p></article>
+        <article><span>SET PROGRESSION</span><h3>Founding Set I</h3><p>Pair I plus The Key unlocks a permanent set badge and one guaranteed 24-hour reservation for the next Object drop. Its published burn still applies.</p></article>
+      </div>
+    </section>
+
+    <section class="objects-rollover"><span>04 / WHEN THE FIRST PAIR IS GONE</span><h2>The record changes names before it changes terms.</h2><p>Estate Founding I closes when either first House Object—or The Triad—has no slot left. No paid order is silently rewritten. A future Estate Founding II may begin with House Objects 03 and 04 only after the new bundle is named and published.</p><a href="https://bullensaga.com/preorder">VIEW THE BULLENSAGA FOUNDING EDITIONS ↗</a></section>
+  </main>
+</body>
+</html>
