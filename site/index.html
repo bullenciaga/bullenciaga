@@ -4114,6 +4114,7 @@
     CANDY_MACHINE_ID: "3j49NrYMzXjJY3EDx4RNSpj66qqpyLQidjCQtjtenTRH",
     COLLECTION_ADDRESS: "5GXF7Uug7mZy2pj5XDk4LP9yH7oA5oMQEbCT49ggQnVC",
     HOUSE_OBJECTS_COLLECTION_ADDRESS: "9ucdkSaiTLUDXmVCjWonxAJqrTH9uyB675BzzRi5vqgM",
+    BULLENSAGA_COLLECTION_ADDRESS: "FnbDXuPxcy87y451eYimMTDrrPqoFRMVi4ctAu73XVkD",
     HELIUS_PROXY_URL: "https://rpc-proxy.bullenciaga-e5c.workers.dev",
     TENSOR_URL: "https://www.tensor.trade/trade/bullenciaga",
     MAGIC_EDEN_URL: "https://magiceden.io/marketplace/bullenciaga",
@@ -6625,7 +6626,7 @@
   const GREEN_PIECES = new Set(['$ANSEM']);
 
   function tierEffectOf(entry){
-    if (entry && entry.series === 'house-object') return 'gold';
+    if (entry && (entry.series === 'house-object' || entry.series === 'bullensaga')) return 'gold';
     const tier = specialTierOf(entry.name);
     if (tier === 'relic' || tier === 'grail') return 'gold';
     if (tier === 'legendary') return 'silver';
@@ -6889,7 +6890,26 @@
   // one source of truth instead of three separate query implementations.
   let cachedAllCollectionAssets = null;
   let cachedHouseObjectAssets = null;
+  let cachedBullensagaAssets = null;
   let ownedHouseObjectNames = new Set();
+  const COLLECTIBLE_PREVIEWS = {
+    signet: '/assets/collection-previews/house-object-01-signet.webp',
+    cufflinks: '/assets/collection-previews/house-object-02-cufflinks.webp',
+    promise: '/assets/collection-previews/promise-nft.webp',
+    triad: '/assets/collection-previews/triad-nft.webp',
+  };
+
+  function collectiblePreview(name, fallback){
+    if (/SIGNET/i.test(name)) return COLLECTIBLE_PREVIEWS.signet;
+    if (/CUFFLINK/i.test(name)) return COLLECTIBLE_PREVIEWS.cufflinks;
+    if (/PROMISE/i.test(name)) return COLLECTIBLE_PREVIEWS.promise;
+    if (/TRIAD/i.test(name)) return COLLECTIBLE_PREVIEWS.triad;
+    return fallback;
+  }
+
+  function isCompanionRecord(entry){
+    return Boolean(entry && (entry.series === 'house-object' || entry.series === 'bullensaga'));
+  }
   // Assets known to have been sent to a scam/poisoned wallet rather than
   // returned to the dev wallet -- these are permanently unrecoverable
   // on-chain (burning requires the current owner's signature, which we
@@ -6955,8 +6975,9 @@
         if (item.burnt) return;
         const name = item.content && item.content.metadata && item.content.metadata.name;
         if (!name) return;
-        const image = (item.content && item.content.links && item.content.links.image)
+        const remoteImage = (item.content && item.content.links && item.content.links.image)
           || (item.content && item.content.files && item.content.files[0] && item.content.files[0].uri);
+        const image = collectiblePreview(name, remoteImage);
         const attributes = (item.content && item.content.metadata && item.content.metadata.attributes) || [];
         const owner = item.ownership && item.ownership.owner;
         allItems.push({ id:item.id, name, image, attributes, owner, series:'house-object' });
@@ -6968,7 +6989,41 @@
     return allItems;
   }
 
+  async function fetchBullensagaAssets(){
+    if (cachedBullensagaAssets) return cachedBullensagaAssets;
+    if (!NFT_CONFIG.HELIUS_PROXY_URL || !NFT_CONFIG.BULLENSAGA_COLLECTION_ADDRESS) return [];
+    const allItems = [];
+    let page = 1;
+    while (page <= 2) {
+      const res = await fetch(NFT_CONFIG.HELIUS_PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', id: 'bullensaga-assets', method: 'getAssetsByGroup',
+          params: { groupKey: 'collection', groupValue: NFT_CONFIG.BULLENSAGA_COLLECTION_ADDRESS, page, limit: 1000 }
+        })
+      });
+      const data = await res.json();
+      const items = (data && data.result && data.result.items) || [];
+      items.forEach(item => {
+        if (item.burnt) return;
+        const name = item.content && item.content.metadata && item.content.metadata.name;
+        if (!name) return;
+        const remoteImage = (item.content && item.content.links && item.content.links.image)
+          || (item.content && item.content.files && item.content.files[0] && item.content.files[0].uri);
+        const attributes = (item.content && item.content.metadata && item.content.metadata.attributes) || [];
+        const owner = item.ownership && item.ownership.owner;
+        allItems.push({ id:item.id, name, image:collectiblePreview(name, remoteImage), attributes, owner, series:'bullensaga' });
+      });
+      if (items.length < 1000) break;
+      page++;
+    }
+    cachedBullensagaAssets = allItems;
+    return allItems;
+  }
+
   function houseStatusLine(entry){
+    if (entry && entry.series === 'bullensaga') return '';
     const hasSignet = Array.from(ownedHouseObjectNames).some(name => /SIGNET/i.test(name));
     const hasCufflinks = Array.from(ownedHouseObjectNames).some(name => /CUFFLINK/i.test(name));
     if (entry && entry.series === 'house-object') {
@@ -6985,7 +7040,7 @@
     if (!connectedWalletAddress || !NFT_CONFIG.HELIUS_PROXY_URL) return [];
     if (cachedMyAssets) return cachedMyAssets;
     try {
-      const results = await Promise.allSettled([fetchAllCollectionAssets(), fetchHouseObjectAssets()]);
+      const results = await Promise.allSettled([fetchAllCollectionAssets(), fetchHouseObjectAssets(), fetchBullensagaAssets()]);
       const all = results.flatMap(result => result.status === 'fulfilled' ? result.value : []);
       const mine = all.filter(a => isMineByAddress(a.id, a.owner));
       ownedHouseObjectNames = new Set(mine.filter(a => a.series === 'house-object').map(a => a.name));
@@ -6994,7 +7049,7 @@
       // gallery expects); anything not in the manifest is a 1-of-1, kept
       // as-is from the live fetch.
       cachedMyAssets = mine.map(a => {
-        if (a.series === 'house-object') return a;
+        if (a.series === 'house-object' || a.series === 'bullensaga') return a;
         const manifestEntry = galleryManifest.find(e => e.name === a.name);
         return manifestEntry || a;
       });
@@ -7036,7 +7091,8 @@
   // transfer and listing flows at the wrong piece.
   function buildLightboxCardHtml(entry){
     const isHouseObject = entry.series === 'house-object';
-    const claimed = isHouseObject || mintedNames.has(entry.name);
+    const isCompanion = isCompanionRecord(entry);
+    const claimed = isCompanion || mintedNames.has(entry.name);
     // Vault entries carry .owner directly (live DAS fetch); manifest entries
     // don't, so fall back to the owner captured during refreshMintedState.
     // Declared here rather than further down: isMineByAddress() below needs
@@ -7046,7 +7102,7 @@
     const assetId = entry.id || mintedAssetIdByName.get(entry.name) || null;
     const resolvedOwner = entry.owner || mintedOwnerByName.get(entry.name) || null;
     const ownedByMe = isMineByAddress(assetId, resolvedOwner);
-    const special = isHouseObject ? null : specialTierOf(entry.name);
+    const special = isCompanion ? null : specialTierOf(entry.name);
     const houseStatus = houseStatusLine(entry);
 
     // Marketplace actions: a direct item link (with SELL/BUY label) once
@@ -7074,7 +7130,7 @@
     // mean this site takes responsibility for moving someone's assets, and
     // ME's own checkout already handles escrow, fees, and royalties
     // correctly. The link is the honest version of "buy".
-    const activeListing = isHouseObject ? null : listingFor(entry);
+    const activeListing = isCompanion ? null : listingFor(entry);
     const priceHtml = activeListing
       ? `<div class="lightbox-price">listed &mdash; ${fmtSol(activeListing.price)} SOL</div>`
       : '';
@@ -7103,13 +7159,13 @@
           ${houseStatus ? `<div class="gallery-lightbox-house-status">${houseStatus}</div>` : ''}
           <div class="lb-actions">
             ${!claimed ? `<button class="lb-btn is-primary" id="lightboxTryMintBtn" type="button">Mint For A Chance</button>` : ''}
-            ${!isHouseObject && TRADING_ENABLED && !ownedByMe && assetId && activeListing ? `<button class="lb-btn is-primary" id="tradeBuyBtn" type="button" data-asset="${assetId}" data-seller="${activeListing.seller || ''}" data-price="${activeListing.price}">Buy &mdash; ${fmtSol(activeListing.price)} SOL</button>` : ''}
-            ${!isHouseObject && TRADING_ENABLED && ownedByMe && assetId ? `<button class="lb-btn ${activeListing ? 'is-quiet' : 'is-primary'}" id="tradeSellBtn" type="button" data-asset="${assetId}" data-listed-price="${activeListing ? activeListing.price : ''}">${activeListing ? 'Change Price' : 'List For Sale'}</button>` : ''}
-            ${!isHouseObject && TRADING_ENABLED && ownedByMe && assetId && activeListing ? `<button class="lb-btn is-quiet" id="tradeDelistBtn" type="button">Delist</button>` : ''}
+            ${!isCompanion && TRADING_ENABLED && !ownedByMe && assetId && activeListing ? `<button class="lb-btn is-primary" id="tradeBuyBtn" type="button" data-asset="${assetId}" data-seller="${activeListing.seller || ''}" data-price="${activeListing.price}">Buy &mdash; ${fmtSol(activeListing.price)} SOL</button>` : ''}
+            ${!isCompanion && TRADING_ENABLED && ownedByMe && assetId ? `<button class="lb-btn ${activeListing ? 'is-quiet' : 'is-primary'}" id="tradeSellBtn" type="button" data-asset="${assetId}" data-listed-price="${activeListing ? activeListing.price : ''}">${activeListing ? 'Change Price' : 'List For Sale'}</button>` : ''}
+            ${!isCompanion && TRADING_ENABLED && ownedByMe && assetId && activeListing ? `<button class="lb-btn is-quiet" id="tradeDelistBtn" type="button">Delist</button>` : ''}
             ${!isHouseObject && ownedByMe && assetId ? `<button class="lb-btn is-quiet" id="sendPieceBtn" type="button" data-asset="${assetId}" data-name="${entry.name}">Send This Piece</button>` : ''}
           </div>
-          ${!isHouseObject && TRADING_ENABLED && (ownedByMe || activeListing) && assetId ? `<div class="send-warn" id="tradeMsg"></div>` : ''}
-          ${!isHouseObject && TRADING_ENABLED && ownedByMe && assetId ? `
+          ${!isCompanion && TRADING_ENABLED && (ownedByMe || activeListing) && assetId ? `<div class="send-warn" id="tradeMsg"></div>` : ''}
+          ${!isCompanion && TRADING_ENABLED && ownedByMe && assetId ? `
           <div class="send-panel" id="tradePanel" style="display:none;">
             <label for="tradePriceInput">${activeListing ? 'new price in SOL' : 'list price in SOL'}</label>
             <input type="number" id="tradePriceInput" step="0.01" min="${TRADE_MIN_SOL}" inputmode="decimal" autocomplete="off" placeholder="${listingsFloor ? fmtSol(listingsFloor) : '1.00'}" value="${activeListing ? activeListing.price : ''}">
@@ -7316,6 +7372,7 @@
   // two separate cache entries, which is what made every committed swipe
   // re-fetch its image and flash an empty frame.
   function lightboxImageUrl(url){
+    if (!url || url.startsWith('/') || url.startsWith(window.location.origin)) return url;
     return NFT_CONFIG.IMG_PROXY_URL
       ? `${NFT_CONFIG.IMG_PROXY_URL}/?url=${encodeURIComponent(url)}`
       : url;
@@ -7325,10 +7382,11 @@
     let attempt = 0;
     let triedDirectFallback = false;
     const proxied = lightboxImageUrl(url);
+    const usesProxy = proxied !== url;
 
     img.addEventListener('error', function onErr(){
       attempt++;
-      if (NFT_CONFIG.IMG_PROXY_URL && !triedDirectFallback && attempt > maxRetries) {
+      if (usesProxy && !triedDirectFallback && attempt > maxRetries) {
         // proxy path exhausted its retries -- try the direct URL once before giving up entirely
         triedDirectFallback = true;
         attempt = 0;
@@ -7512,7 +7570,8 @@
   function renderGalleryCard(entry){
     const card = document.createElement('div');
     const isHouseObject = entry.series === 'house-object';
-    const isClaimed = isHouseObject || mintedNames.has(entry.name);
+    const isBullensaga = entry.series === 'bullensaga';
+    const isClaimed = isCompanionRecord(entry) || mintedNames.has(entry.name);
     const isOwnedByMe = isMine(entry);
     const cardTier = tierEffectOf(entry);
     card.className = 'gallery-card'
@@ -7528,6 +7587,11 @@
       const badge = document.createElement('div');
       badge.className = 'gallery-card-badge';
       badge.textContent = 'HOUSE OBJECT';
+      card.appendChild(badge);
+    } else if (isBullensaga) {
+      const badge = document.createElement('div');
+      badge.className = 'gallery-card-badge';
+      badge.textContent = 'BULLENSAGA';
       card.appendChild(badge);
     } else if (holdKind) {
       // Takes precedence over OWNED. Both are true, but WHICH pool a dev-held
@@ -7643,7 +7707,7 @@
       filtered = filtered.filter(e => !!listingFor(e));
     } else if (galleryClaimedFilter !== 'all') {
       filtered = filtered.filter(e => {
-        const isClaimed = e.series === 'house-object' || mintedNames.has(e.name);
+        const isClaimed = isCompanionRecord(e) || mintedNames.has(e.name);
         return galleryClaimedFilter === 'claimed' ? isClaimed : !isClaimed;
       });
     }
