@@ -47,6 +47,6 @@ assert.match(objectsCss, /\.objects-rule span,\.objects-rule strong \{ display:f
 assert.match(objectsCss, /object-fit:cover/);
 assert.match(objectsCss, /house-object-02-cufflinks[^\n]+object-position:73% center/);
 for (const page of [objects, refer]) assert.match(page, /bullen-wallet-chooser\.js\?v=20260829/);
-assert.match(objects, /objects\.css\?v=20260829/);
+assert.match(objects, /objects\.css\?v=20260829b/);
 
 console.log('House integrations: ok (roadmap, accounting, events, assets, wallets)');
