@@ -14,6 +14,7 @@
     thedrop: 'The Drop',
     giveaways: 'Giveaways',
     objects: 'House Objects',
+    bullensaga: 'BULLENSAGA',
   };
   const destinations = [
     ['objects', '/objects.html'],
@@ -23,6 +24,7 @@
     ['curve', '/curve.html'],
     ['refer', '/refer.html'],
     ['thedrop', '/thedrop.html'],
+    ['bullensaga', 'https://bullensaga.com/'],
   ];
 
   document.body.dataset.bullenPage = page;
@@ -49,6 +51,10 @@
       const link = document.createElement('a');
       link.href = href;
       link.textContent = labels[key];
+      if (key === 'bullensaga') {
+        link.className = 'bullen-site-sister';
+        link.setAttribute('aria-label', 'Visit BULLENSAGA');
+      }
       if (key === page) link.setAttribute('aria-current', 'page');
       nav.append(link);
     }

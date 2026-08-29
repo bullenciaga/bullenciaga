@@ -147,6 +147,10 @@ body[data-bullen-page="stats"]:not(.transparent) #stage {
 .bullen-site-nav a:hover::after,
 .bullen-site-nav a[aria-current="page"]::after { transform: scaleX(1); }
 
+.bullen-site-nav a.bullen-site-sister {
+  color: var(--bullen-brand);
+}
+
 .bullen-site-actions {
   min-width: 0;
   flex: 1 1 auto;
