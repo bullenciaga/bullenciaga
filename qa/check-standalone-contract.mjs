@@ -5,7 +5,7 @@ const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
 const publicPages = [
   'index.html', 'stats.html', 'chart.html', 'curve.html',
-  'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html',
+  'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html',
 ];
 const failures = [];
 
@@ -29,6 +29,7 @@ if (!shell.includes("toggle.className = 'bullen-nav-toggle'")) failures.push('re
 if (!shell.includes("document.getElementById('jumpToWidget')")) failures.push('homepage Jump To is not incorporated into the top shell');
 if (!shell.includes('if (open) closeExtraControl();')) failures.push('hamburger does not close an already-open homepage Jump To panel');
 if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
+if (!shell.includes("['bullensaga', 'https://bullensaga.com/']")) failures.push('BULLENSAGA sister-site navigation missing');
 if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
 if (shell.includes("['transparency', '/transparency.html']")) failures.push('Telegram-only moderation page is exposed in public navigation');
 if (shell.includes("['proof', '/proof.html']") || shell.includes("proof: 'Proof'")) failures.push('retired Proof page remains in public navigation');

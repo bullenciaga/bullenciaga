@@ -13,6 +13,7 @@ const pages = new Map([
   ['curve.html', 'curve.svg'],
   ['refer.html', 'refer.svg'],
   ['thedrop.html', 'thedrop.svg'],
+  ['objects.html', 'objects.svg'],
 ]);
 
 const references = new Set();

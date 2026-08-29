@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BULLENCIAGA — the curve</title>
-<meta name="description" content="The live $BULLEN supply curve and its complete public burn ledger, with every indexed transaction linked on-chain.">
+<meta name="description" content="The live $BULLEN supply curve and its complete public ledger of confirmed Token-2022 burns.">
 <meta name="theme-color" content="#0a0a0a">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/curve.svg">
 <meta property="og:title" content="BULLENCIAGA — the curve">
-<meta property="og:description" content="The supply curve, every indexed burn and the on-chain proof behind it.">
+<meta property="og:description" content="The supply curve and every indexed Token-2022 burn transaction.">
 <style>
   :root{
     --gold:#c7a869;
@@ -89,6 +89,8 @@
   .events .when small{display:block;margin-top:2px;font-size:9px;letter-spacing:.04em}
   .events .amt{color:var(--dim);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;min-width:9ch}
   .events li.tierrow .amt{color:var(--tier)}
+  .events .k.house{color:var(--gold-light)}
+  .events li.housecommitrow .amt{color:var(--gold);font-size:12px}
 
   .recon{padding:18px 0 0;color:var(--dimmer);font-size:12.5px;line-height:1.8;text-wrap:pretty}
   .recon b{color:var(--dim);font-weight:500;font-variant-numeric:tabular-nums}
@@ -131,7 +133,7 @@
     <div id="chart"></div>
     <div class="legend">
       <span><i style="background:var(--gold)"></i>total supply</span>
-      <span><i style="background:var(--tier)"></i>tier burn</span>
+      <span><i style="background:var(--tier)"></i>confirmed burn marker</span>
       <span id="span"></span>
     </div>
   </div>
@@ -149,17 +151,16 @@
 
   <div class="foot">
     <p>
-      Supply falls two ways. Minting a piece from The Herd sends 250,000 BULLEN to a public
-      escrow, which is burned on a schedule. Separately, a locked allocation is released and
-      burned in five tiers as cumulative trading volume passes fixed thresholds set before
-      launch. Both are visible above as steps down.
+      Every supply-reduction mechanism resolves to the same fact here: a confirmed
+      Token-2022 burn. Escrow commitments, game purchases and collectible awards do not
+      move the curve until an actual burn transaction reduces total supply.
     </p>
     <p style="margin-top:12px">
       Live figures: <a href="/supply">/supply</a> &nbsp;·&nbsp;
       Per-transaction ledger: <a href="/supply/proof">/supply/proof</a> &nbsp;·&nbsp;
       Raw samples: <a href="/supply/history">/supply/history</a>
     </p>
-    <div class="build">build 2026-08-27.4 — curve and signed proof unified</div>
+    <div class="build">predeploy 2026-08-29 — confirmed burns only</div>
   </div>
 
 </div>
@@ -173,12 +174,12 @@
   var RECON = document.getElementById('recon');
   var LEDGER_METRICS = document.getElementById('ledgerMetrics');
   var KINDS = {
-    tier:   { label: 'Scheduled', note: 'burn tier owed at a published volume threshold' },
-    dev:    { label: 'Dev burn',  note: 'bought on the open market and burned outright' },
-    escrow: { label: 'Mints',     note: 'mint escrow emptied by a burn instruction' },
-    escrowburn: { label: 'Mints', note: 'mint escrow emptied by a burn instruction' },
-    launch: { label: 'Curve',     note: 'burned by pump.fun mechanics as the bonding curve completed' },
-    burn:   { label: 'Burn',      note: 'burned on-chain' },
+    tier:   { label: 'Burn', note: 'confirmed Token-2022 burn' },
+    dev:    { label: 'Burn', note: 'confirmed Token-2022 burn' },
+    escrow: { label: 'Burn', note: 'confirmed Token-2022 burn' },
+    escrowburn: { label: 'Burn', note: 'confirmed Token-2022 burn' },
+    launch: { label: 'Burn', note: 'confirmed Token-2022 burn' },
+    burn:   { label: 'Burn', note: 'confirmed Token-2022 burn' },
   };
 
   var W = 900, H = 380, PAD_L = 62, PAD_R = 14, PAD_T = 18, PAD_B = 30;
@@ -310,9 +311,9 @@
         LEDGER_METRICS.hidden = false;
 
         EVTS.innerHTML = rows.map(function(e){
-          var isTier = e.kind === 'tier';
+          var isTier = false;
           var kind = KINDS[e.kind] || KINDS.burn;
-          var label = e.note || kind.note;
+          var label = kind.note;
           var signature = String(e.sig || '');
           var transaction = signature
             ? '<a class="sig" href="https://solscan.io/tx/'+encodeURIComponent(signature)+'" target="_blank" rel="noopener" title="Open transaction on Solscan">'+esc(signature)+'</a>'

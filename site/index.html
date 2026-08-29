@@ -1733,6 +1733,17 @@
   .gallery-lightbox-status-block{
     margin-bottom:18px;
   }
+  .gallery-lightbox-house-status{
+    margin-top:12px;
+    padding:11px 13px;
+    border:1px solid rgba(199,168,105,.28);
+    background:rgba(199,168,105,.06);
+    color:var(--gold-light);
+    font-size:9px;
+    line-height:1.6;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+  }
   .gallery-lightbox-status-row{
     display:flex;
     align-items:center;
@@ -2562,11 +2573,16 @@
     color:rgba(245,243,238,0.45);
   }
 
-  .roadmap-note{
-    margin-top:22px;
+  .roadmap-note,
+  .wallet-verify-text{
     font-size:10.5px;
-    color:rgba(245,243,238,0.35);
+    line-height:1.85;
+    color:rgba(245,243,238,0.42);
     letter-spacing:0.03em;
+  }
+  .roadmap-note{
+    max-width:1180px;
+    margin:22px auto 0;
   }
   /* The burn figure doubles as its own receipt: the number links straight to
      the escrow account's Solscan history, where every burn transaction is
@@ -2594,11 +2610,8 @@
     flex-wrap:wrap;
   }
   .wallet-verify-text{
-    max-width:560px;
+    max-width:920px;
     margin:0 auto 50px;
-    font-size:12px;
-    line-height:1.7;
-    color:rgba(245,243,238,0.45);
   }
   @media (max-width:700px){
     .burn-schedule{ grid-template-columns:repeat(3, 1fr); }
@@ -2903,6 +2916,7 @@
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
 <script defer src="/bullen-ui.js"></script>
+<script defer src="/house-burn-registry.js"></script>
 </head>
 <body>
 
@@ -3332,35 +3346,35 @@
     </div>
     <div class="roadmap-phase">
       <div class="phase-head">
-        <svg class="phase-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M9 1 3 9h4l-1 6 6-8H8l1-6z"/></svg>
+        <svg class="phase-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6l6-3 6 3M2 6v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6M2 6l6 3 6-3"/></svg>
         <span class="num">04</span>
       </div>
-      <h3>FULL SPRINT</h3>
-      <p>$20M cumulative volume — token price doesn't matter, market cap plays no role — 55% total dev supply up in flames.</p>
+      <h3>THE VAULT EMPTIES</h3>
+      <p>One portion empties at $20M cumulative volume; the rest follows at $50M. Then 100% of the dev-held allocation is gone, verifiable on-chain.</p>
     </div>
     <div class="roadmap-phase">
       <div class="phase-head">
-        <svg class="phase-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6l6-3 6 3M2 6v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6M2 6l6 3 6-3"/></svg>
+        <svg class="phase-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3h8l1 5-2 5H5L3 8l1-5z"/><path d="M5.5 5.5h5v3h-5z"/></svg>
         <span class="num">05</span>
       </div>
-      <h3>THE VAULT EMPTIES</h3>
-      <p>$50M cumulative volume burns the rest of the dev-held supply. 100% gone, verifiable on-chain.</p>
-    </div>
-    <div class="roadmap-phase">
-      <div class="phase-head">
-        <svg class="phase-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1"/><path d="M5.5 7V4.5a2.5 2.5 0 0 1 5 0V7"/></svg>
-        <span class="num">06</span>
-      </div>
-      <h3>$BULLEN STAKING</h3>
-      <p>lock your $BULLEN for a set term and earn rewards paid in SOL — funded by creator fees, which keep flowing long after the dev supply is gone.</p>
+      <h3>HOUSE OBJECTS</h3>
+      <p>The Signet and The Cufflinks open the House Objects collection: 100 numbered editions of each, claimed with 100,000 $BULLEN. Holders enter first for 48 hours; every public claim commits its payment to the same visible burn escrow.</p>
     </div>
     <div class="roadmap-phase underway">
       <div class="phase-head">
         <svg class="phase-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 14h12M4 14V7l4-3 4 3v7M7 14v-3h2v3"/></svg>
+        <span class="num">06</span>
+      </div>
+      <h3>BULLENSAGA</h3>
+      <p>The new wing is now visible: a full game built around Count, Record and Measure. Founding preorders connect the game to the House through the Promise, the Triad, and shared numbered House Object inventory.</p>
+    </div>
+    <div class="roadmap-phase">
+      <div class="phase-head">
+        <svg class="phase-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1"/><path d="M5.5 7V4.5a2.5 2.5 0 0 1 5 0V7"/></svg>
         <span class="num">07</span>
       </div>
-      <h3>THE NEW WING</h3>
-      <p>a second building on the grounds. it is not a page on this site. it does not sit next to what exists, it is built on top of it, and the token and the herd are load-bearing. take either one out and it does not stand. it is being built now, it is not waiting on a burn tier, and what happens inside is the largest thing this project has attempted. the doors are not open.</p>
+      <h3>$BULLEN STAKING</h3>
+      <p>Lock your $BULLEN for a set term and earn rewards paid in SOL — funded by creator fees, which keep flowing long after the dev supply is gone.</p>
     </div>
     <div class="roadmap-phase">
       <div class="phase-head">
@@ -3368,7 +3382,7 @@
         <span class="num">08</span>
       </div>
       <h3>THE COLLAB</h3>
-      <p>the endgame: collaborations with established fashion brands. talks TBA.</p>
+      <p>The endgame: collaborations with established fashion brands. Talks TBA.</p>
     </div>
   </div>
 
@@ -3421,14 +3435,27 @@
       </div>
     </div>
   </div>
-  <div class="roadmap-note">live from geckoterminal · updates every 5 min<br>cumulative trading volume, all-time.<br class="mobile-break"> each burn is permanent and verifiable on-chain.<br>phases 06 to 08 are not gated on volume and may complete in any order.<br>if the full burn schedule completes and all 1,000 NFTs are minted, total supply drops by 50% — 250M from the burn schedule, 250M from NFT mints, combined.</div>
+  <div class="house-burn-registry" data-house-burn-registry>
+    <div class="house-burn-registry__head">
+      <span class="house-burn-registry__title">House Object Burn Registry</span>
+      <span class="house-burn-registry__state" data-house-burn-status>reading the shared ledger…</span>
+    </div>
+    <div class="house-burn-registry__metrics">
+      <div class="house-burn-registry__metric"><b data-house-burn-value="totals.burnClaims">--</b><span>public burn claims</span></div>
+      <div class="house-burn-registry__metric"><b data-house-burn-value="totals.committedBullen">--</b><span>$BULLEN committed</span></div>
+      <div class="house-burn-registry__metric"><b data-house-burn-value="series.signet.available">--</b><span>Signets available</span></div>
+      <div class="house-burn-registry__metric"><b data-house-burn-value="series.cufflinks.available">--</b><span>Cufflinks available</span></div>
+    </div>
+    <p class="house-burn-registry__note">A public claim moves exactly 100,000 Token-2022 $BULLEN to the public burn escrow. The commitment appears here immediately; the supply pages count it as destroyed only after the scheduled escrow burn lands on-chain. <a href="objects.html">Open House Objects.</a></p>
+  </div>
+  <div class="roadmap-note">live from geckoterminal · updates every 5 min<br>cumulative trading volume, all-time. each completed burn is permanent and verifiable on-chain.<br>phases 05 to 08 are not gated on volume and may complete in any order.<br>the fixed schedule and a complete 1,000-piece Herd remove 500M combined.<br><br>the first 200 House Objects can commit up to another 20M through public burn claims;<br>preorder and manual awards consume the same numbered inventory without inventing a burn.</div>
 
   <div class="wallet-verify">
-    <p class="wallet-verify-text">dev wallet is also used to pay for listings,<br>dex updates, promotions, trending,<br class="mobile-break"> and other services.<br>every transaction is verifiable on-chain,<br class="mobile-break"> just like the burns.<br><br>mint payments land in a public burn escrow<br class="mobile-break"> and are destroyed from it on a recurring schedule.<br>nothing is held back. check it yourself.</p>
+    <p class="wallet-verify-text">dev wallet is also used to pay for listings,<br>dex updates, promotions, trending, and other services.<br>every transaction is verifiable on-chain, just like the burns.<br><br>mint payments land in a public burn escrow<br>and are destroyed from it on a recurring schedule.<br>nothing is held back. check it yourself.</p>
     <div class="verify-actions">
       <a href="https://solscan.io/account/GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd" target="_blank" rel="noopener noreferrer" class="btn btn-wide">Verify the Dev Wallet</a>
       <a href="https://solscan.io/account/FUtAEk1TAVf2WZ3wqXeHYttqfpTftEf6qrprue5x6mLy" target="_blank" rel="noopener noreferrer" class="btn btn-wide">Verify the Burns</a>
-      <a href="whitepaper.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-wide">Read the Whitepaper</a>
+      <a href="/whitepaper" target="_blank" rel="noopener noreferrer" class="btn btn-wide">Read the Whitepaper</a>
     </div>
   </div>
 </section>
@@ -3439,7 +3466,7 @@
   <div class="faq-list">
     <details class="faq-item">
       <summary>what is $BULLEN?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
-      <p>a Solana token. no empty promises, no fluff you can't verify — just a monogram, a herd, and a burn schedule tied to real trading volume.</p>
+      <p>a Solana Token-2022 asset at the centre of a connected House: the 1,000-piece Herd, numbered House Objects, and BULLENSAGA. The burn schedule and every completed burn remain verifiable on-chain.</p>
     </details>
     <details class="faq-item">
       <summary>can the team mint more tokens or freeze wallets?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
@@ -3447,7 +3474,7 @@
     </details>
     <details class="faq-item">
       <summary>how do the burns actually work?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
-      <p>250,000,000 was set aside at launch — 25% of the original supply. it is held in jupiter lock, not in a wallet anyone can spend from, and is excluded from circulating supply. as cumulative trading volume hits each milestone in the burn schedule above, a tier of it burns permanently — verifiable on-chain, not something we just claim happened. tier 1 fired at $250K on 11 august 2026 and destroyed 12,500,000.</p>
+      <p>there are three transparent paths. volume milestones release and destroy the locked 250M schedule; Herd claims commit 250,000 $BULLEN each to public burn escrow; public House Object claims commit 100,000 each to that escrow. escrow deposits are labelled committed, not destroyed, until a scheduled Token-2022 burn reduces supply on-chain. preorder and manual awards consume numbered inventory but do not fabricate a token burn.</p>
     </details>
     <details class="faq-item">
       <summary>what is the dev wallet used for?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
@@ -3479,7 +3506,7 @@
     </details>
     <details class="faq-item">
       <summary>is there more detail on how all of this works?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
-      <p>the full whitepaper covers the burn mechanics, the collection, and the fee-sharing model in one place.</p>
+      <p>the full whitepaper covers the token, all three burn paths, The Herd, House Objects, BULLENSAGA founding records, collection authority, and the fee-sharing model in one place.</p>
     </details>
   </div>
 </section>
@@ -3492,7 +3519,7 @@
 <!-- ===== SECTION: FOOTER ===== -->
 <footer>
   $BULLEN is a community token.<br class="mobile-break"> Not a security. Not financial advice.<br>
-  <a href="whitepaper.pdf" target="_blank" rel="noopener noreferrer">WHITEPAPER</a><br>
+  <a href="/whitepaper" target="_blank" rel="noopener noreferrer">WHITEPAPER</a><br>
   © 2026 BULLENCIAGA.
 </footer>
 
@@ -4086,6 +4113,7 @@
   const NFT_CONFIG = {
     CANDY_MACHINE_ID: "3j49NrYMzXjJY3EDx4RNSpj66qqpyLQidjCQtjtenTRH",
     COLLECTION_ADDRESS: "5GXF7Uug7mZy2pj5XDk4LP9yH7oA5oMQEbCT49ggQnVC",
+    HOUSE_OBJECTS_COLLECTION_ADDRESS: "9ucdkSaiTLUDXmVCjWonxAJqrTH9uyB675BzzRi5vqgM",
     HELIUS_PROXY_URL: "https://rpc-proxy.bullenciaga-e5c.workers.dev",
     TENSOR_URL: "https://www.tensor.trade/trade/bullenciaga",
     MAGIC_EDEN_URL: "https://magiceden.io/marketplace/bullenciaga",
@@ -6597,6 +6625,7 @@
   const GREEN_PIECES = new Set(['$ANSEM']);
 
   function tierEffectOf(entry){
+    if (entry && entry.series === 'house-object') return 'gold';
     const tier = specialTierOf(entry.name);
     if (tier === 'relic' || tier === 'grail') return 'gold';
     if (tier === 'legendary') return 'silver';
@@ -6859,6 +6888,8 @@
   // referenced against the connected wallet) "My Collection", so there's
   // one source of truth instead of three separate query implementations.
   let cachedAllCollectionAssets = null;
+  let cachedHouseObjectAssets = null;
+  let ownedHouseObjectNames = new Set();
   // Assets known to have been sent to a scam/poisoned wallet rather than
   // returned to the dev wallet -- these are permanently unrecoverable
   // on-chain (burning requires the current owner's signature, which we
@@ -6904,17 +6935,66 @@
     return allItems;
   }
 
+  async function fetchHouseObjectAssets(){
+    if (cachedHouseObjectAssets) return cachedHouseObjectAssets;
+    if (!NFT_CONFIG.HELIUS_PROXY_URL || !NFT_CONFIG.HOUSE_OBJECTS_COLLECTION_ADDRESS) return [];
+    const allItems = [];
+    let page = 1;
+    while (page <= 2) {
+      const res = await fetch(NFT_CONFIG.HELIUS_PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', id: 'house-object-assets', method: 'getAssetsByGroup',
+          params: { groupKey: 'collection', groupValue: NFT_CONFIG.HOUSE_OBJECTS_COLLECTION_ADDRESS, page, limit: 1000 }
+        })
+      });
+      const data = await res.json();
+      const items = (data && data.result && data.result.items) || [];
+      items.forEach(item => {
+        if (item.burnt) return;
+        const name = item.content && item.content.metadata && item.content.metadata.name;
+        if (!name) return;
+        const image = (item.content && item.content.links && item.content.links.image)
+          || (item.content && item.content.files && item.content.files[0] && item.content.files[0].uri);
+        const attributes = (item.content && item.content.metadata && item.content.metadata.attributes) || [];
+        const owner = item.ownership && item.ownership.owner;
+        allItems.push({ id:item.id, name, image, attributes, owner, series:'house-object' });
+      });
+      if (items.length < 1000) break;
+      page++;
+    }
+    cachedHouseObjectAssets = allItems;
+    return allItems;
+  }
+
+  function houseStatusLine(entry){
+    const hasSignet = Array.from(ownedHouseObjectNames).some(name => /SIGNET/i.test(name));
+    const hasCufflinks = Array.from(ownedHouseObjectNames).some(name => /CUFFLINK/i.test(name));
+    if (entry && entry.series === 'house-object') {
+      if (hasSignet && hasCufflinks) return 'House Pair I complete · paired status follows this wallet';
+      return 'House Object held · add the matching object to complete House Pair I';
+    }
+    if (hasSignet && hasCufflinks) return 'Enhanced by House Pair I · Signet + Cufflinks verified in this wallet';
+    if (hasSignet) return 'Enhanced by The Signet · founding House mark verified in this wallet';
+    if (hasCufflinks) return 'Enhanced by The Cufflinks · House Object status verified in this wallet';
+    return '';
+  }
+
   async function loadMyAssets(){
     if (!connectedWalletAddress || !NFT_CONFIG.HELIUS_PROXY_URL) return [];
     if (cachedMyAssets) return cachedMyAssets;
     try {
-      const all = await fetchAllCollectionAssets();
+      const results = await Promise.allSettled([fetchAllCollectionAssets(), fetchHouseObjectAssets()]);
+      const all = results.flatMap(result => result.status === 'fulfilled' ? result.value : []);
       const mine = all.filter(a => isMineByAddress(a.id, a.owner));
+      ownedHouseObjectNames = new Set(mine.filter(a => a.series === 'house-object').map(a => a.name));
       // Prefer the manifest's own entry for anything that's one of the
       // 1,000 (keeps the exact same object identity/shape the rest of the
       // gallery expects); anything not in the manifest is a 1-of-1, kept
       // as-is from the live fetch.
       cachedMyAssets = mine.map(a => {
+        if (a.series === 'house-object') return a;
         const manifestEntry = galleryManifest.find(e => e.name === a.name);
         return manifestEntry || a;
       });
@@ -6955,7 +7035,8 @@
   // getElementById, and a duplicate would capture those bindings and aim the
   // transfer and listing flows at the wrong piece.
   function buildLightboxCardHtml(entry){
-    const claimed = mintedNames.has(entry.name);
+    const isHouseObject = entry.series === 'house-object';
+    const claimed = isHouseObject || mintedNames.has(entry.name);
     // Vault entries carry .owner directly (live DAS fetch); manifest entries
     // don't, so fall back to the owner captured during refreshMintedState.
     // Declared here rather than further down: isMineByAddress() below needs
@@ -6965,7 +7046,8 @@
     const assetId = entry.id || mintedAssetIdByName.get(entry.name) || null;
     const resolvedOwner = entry.owner || mintedOwnerByName.get(entry.name) || null;
     const ownedByMe = isMineByAddress(assetId, resolvedOwner);
-    const special = specialTierOf(entry.name);
+    const special = isHouseObject ? null : specialTierOf(entry.name);
+    const houseStatus = houseStatusLine(entry);
 
     // Marketplace actions: a direct item link (with SELL/BUY label) once
     // the piece is actually minted and we know its on-chain asset address
@@ -6992,7 +7074,7 @@
     // mean this site takes responsibility for moving someone's assets, and
     // ME's own checkout already handles escrow, fees, and royalties
     // correctly. The link is the honest version of "buy".
-    const activeListing = listingFor(entry);
+    const activeListing = isHouseObject ? null : listingFor(entry);
     const priceHtml = activeListing
       ? `<div class="lightbox-price">listed &mdash; ${fmtSol(activeListing.price)} SOL</div>`
       : '';
@@ -7018,15 +7100,16 @@
           <div class="gallery-lightbox-status-row">
             <div class="gallery-lightbox-status">${holdStatusLine(entry) || (ownedByMe ? 'Owned by you' : (claimed ? 'Claimed' : 'Available'))}</div>
           </div>
+          ${houseStatus ? `<div class="gallery-lightbox-house-status">${houseStatus}</div>` : ''}
           <div class="lb-actions">
             ${!claimed ? `<button class="lb-btn is-primary" id="lightboxTryMintBtn" type="button">Mint For A Chance</button>` : ''}
-            ${TRADING_ENABLED && !ownedByMe && assetId && activeListing ? `<button class="lb-btn is-primary" id="tradeBuyBtn" type="button" data-asset="${assetId}" data-seller="${activeListing.seller || ''}" data-price="${activeListing.price}">Buy &mdash; ${fmtSol(activeListing.price)} SOL</button>` : ''}
-            ${TRADING_ENABLED && ownedByMe && assetId ? `<button class="lb-btn ${activeListing ? 'is-quiet' : 'is-primary'}" id="tradeSellBtn" type="button" data-asset="${assetId}" data-listed-price="${activeListing ? activeListing.price : ''}">${activeListing ? 'Change Price' : 'List For Sale'}</button>` : ''}
-            ${TRADING_ENABLED && ownedByMe && assetId && activeListing ? `<button class="lb-btn is-quiet" id="tradeDelistBtn" type="button">Delist</button>` : ''}
-            ${ownedByMe && assetId ? `<button class="lb-btn is-quiet" id="sendPieceBtn" type="button" data-asset="${assetId}" data-name="${entry.name}">Send This Piece</button>` : ''}
+            ${!isHouseObject && TRADING_ENABLED && !ownedByMe && assetId && activeListing ? `<button class="lb-btn is-primary" id="tradeBuyBtn" type="button" data-asset="${assetId}" data-seller="${activeListing.seller || ''}" data-price="${activeListing.price}">Buy &mdash; ${fmtSol(activeListing.price)} SOL</button>` : ''}
+            ${!isHouseObject && TRADING_ENABLED && ownedByMe && assetId ? `<button class="lb-btn ${activeListing ? 'is-quiet' : 'is-primary'}" id="tradeSellBtn" type="button" data-asset="${assetId}" data-listed-price="${activeListing ? activeListing.price : ''}">${activeListing ? 'Change Price' : 'List For Sale'}</button>` : ''}
+            ${!isHouseObject && TRADING_ENABLED && ownedByMe && assetId && activeListing ? `<button class="lb-btn is-quiet" id="tradeDelistBtn" type="button">Delist</button>` : ''}
+            ${!isHouseObject && ownedByMe && assetId ? `<button class="lb-btn is-quiet" id="sendPieceBtn" type="button" data-asset="${assetId}" data-name="${entry.name}">Send This Piece</button>` : ''}
           </div>
-          ${TRADING_ENABLED && (ownedByMe || activeListing) && assetId ? `<div class="send-warn" id="tradeMsg"></div>` : ''}
-          ${TRADING_ENABLED && ownedByMe && assetId ? `
+          ${!isHouseObject && TRADING_ENABLED && (ownedByMe || activeListing) && assetId ? `<div class="send-warn" id="tradeMsg"></div>` : ''}
+          ${!isHouseObject && TRADING_ENABLED && ownedByMe && assetId ? `
           <div class="send-panel" id="tradePanel" style="display:none;">
             <label for="tradePriceInput">${activeListing ? 'new price in SOL' : 'list price in SOL'}</label>
             <input type="number" id="tradePriceInput" step="0.01" min="${TRADE_MIN_SOL}" inputmode="decimal" autocomplete="off" placeholder="${listingsFloor ? fmtSol(listingsFloor) : '1.00'}" value="${activeListing ? activeListing.price : ''}">
@@ -7037,7 +7120,7 @@
             </div>
           </div>` : ''}
           ${!claimed ? `<div class="gallery-lightbox-try-mint-note"><span class="try-mint-note-lead">random draw --&nbsp;</span><span class="try-mint-note-rest">minting doesn't guarantee you get this exact piece.</span></div>` : ''}
-          ${ownedByMe && assetId ? `
+          ${!isHouseObject && ownedByMe && assetId ? `
           <div class="send-panel" id="sendPanel" style="display:none;">
             <label for="sendRecipient">recipient wallet address</label>
             <input type="text" id="sendRecipient" spellcheck="false" autocomplete="off" placeholder="paste the full address">
@@ -7428,7 +7511,8 @@
 
   function renderGalleryCard(entry){
     const card = document.createElement('div');
-    const isClaimed = mintedNames.has(entry.name);
+    const isHouseObject = entry.series === 'house-object';
+    const isClaimed = isHouseObject || mintedNames.has(entry.name);
     const isOwnedByMe = isMine(entry);
     const cardTier = tierEffectOf(entry);
     card.className = 'gallery-card'
@@ -7440,7 +7524,12 @@
     attachImageRetry(img, entry.image, 3);
     card.appendChild(img);
     const holdKind = holdKindOf(entry);
-    if (holdKind) {
+    if (isHouseObject) {
+      const badge = document.createElement('div');
+      badge.className = 'gallery-card-badge';
+      badge.textContent = 'HOUSE OBJECT';
+      card.appendChild(badge);
+    } else if (holdKind) {
       // Takes precedence over OWNED. Both are true, but WHICH pool a dev-held
       // piece belongs to is the fact worth surfacing.
       const HOLD_LABEL = { 'ticket-comp': 'TICKET COMP', 'buy-comp': 'BUY COMP', 'gravemarket': 'GRAVEMARKET', 'follower': 'FOLLOWER 500', 'giveaway': 'GIVEAWAY', 'flash-giveaway': 'FLASH GIVEAWAY' };
@@ -7554,7 +7643,7 @@
       filtered = filtered.filter(e => !!listingFor(e));
     } else if (galleryClaimedFilter !== 'all') {
       filtered = filtered.filter(e => {
-        const isClaimed = mintedNames.has(e.name);
+        const isClaimed = e.series === 'house-object' || mintedNames.has(e.name);
         return galleryClaimedFilter === 'claimed' ? isClaimed : !isClaimed;
       });
     }
@@ -7895,6 +7984,7 @@
   updateNftUI = function(){
     originalUpdateNftUI();
     cachedMyAssets = null;
+    if (!connectedWalletAddress) ownedHouseObjectNames = new Set();
     if (galleryMode === 'mine') renderGallery();
   };
 
@@ -8307,7 +8397,7 @@ const JUP_VERIFY_URL = 'https://bullenciaga.com/jupiter_vrfd';
     { url: links.tensor, label: 'Tensor' },
     { url: links.magicEden, label: 'Magic Eden' },
     { url: links.graveMarket, label: 'GraveMarket' },
-    { url: 'whitepaper.pdf', label: 'Whitepaper' },
+    { url: '/whitepaper', label: 'Whitepaper' },
   ];
 
   // Third-party data sources, not partners or affiliates -- CoinPaprika's

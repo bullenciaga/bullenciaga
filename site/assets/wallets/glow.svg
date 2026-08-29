@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path fill="url(#glow__a)" d="M18.312 18.416A8.97 8.97 0 0 1 12 21a8.97 8.97 0 0 1-6.3-2.574c3.685-2.903 8.923-2.906 12.612-.01m.104-.104A8.97 8.97 0 0 0 21 12a8.97 8.97 0 0 0-2.572-6.3c-2.905 3.697-2.908 8.923-.012 12.612m-.09-12.714c-3.695 2.91-8.95 2.906-12.64-.011A8.97 8.97 0 0 1 12 3c2.465 0 4.7.992 6.325 2.598m-12.74.087A8.97 8.97 0 0 0 3 12c0 2.466.992 4.7 2.598 6.325 2.91-3.694 2.906-8.948-.011-12.64"/>
+  <defs>
+    <linearGradient id="glow__a" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7319fa"/>
+      <stop offset="0.5" stop-color="#ff33b4"/>
+      <stop offset="1" stop-color="#ff7e29"/>
+    </linearGradient>
+  </defs>
+</svg>

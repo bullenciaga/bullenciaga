@@ -11,3 +11,4 @@ coverage/
 *.log
 *.bak
 *.tmp
+/qa/whitepaper-v2/
