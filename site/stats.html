@@ -164,10 +164,10 @@
      uses for its own type scale. */
   #stage{
     width:100vw; height:100vh;
-    padding:clamp(22px,2.3vw,50px) clamp(26px,2.7vw,52px);
+    padding:clamp(12px,1.25vw,24px) clamp(26px,2.7vw,52px);
     display:flex;
     flex-direction:column;
-    gap:clamp(16px,1.6vw,30px);
+    gap:clamp(10px,1vw,18px);
   }
 
   /* ---------------------------------------------------------- header */
@@ -176,7 +176,7 @@
     align-items:center;
     justify-content:space-between;
     border-bottom:1px solid var(--line);
-    padding-bottom:clamp(14px,1.3vw,24px);
+    padding-bottom:clamp(8px,.75vw,14px);
     flex:0 0 auto;
   }
   .brand{
@@ -201,10 +201,11 @@
   }
   @keyframes shine{ to{ background-position:220% center; } }
   .ticker{
-    font-size:clamp(15px,1.35vw,27px);
+    font-size:clamp(22px,2vw,40px);
+    font-weight:700;
     letter-spacing:0.22em;
-    color:var(--dim);
-    margin-left:clamp(12px,1.3vw,26px);
+    color:var(--gold-light);
+    margin-left:0;
     white-space:nowrap;
   }
   .live{
@@ -563,7 +564,7 @@
     /* Header: wrap rather than collide. */
     .top{ flex-wrap:wrap; gap:6px 12px; padding-bottom:12px; }
     .brand{ font-size:22px; letter-spacing:0.2em; }
-    .ticker{ font-size:13px; margin-left:9px; letter-spacing:0.16em; }
+    .ticker{ font-size:18px; margin-left:0; letter-spacing:0.16em; }
     .live{ font-size:11px; letter-spacing:0.16em; }
 
     /* 2. Stack the two columns, and let panels be as tall as they need
@@ -647,10 +648,7 @@
 <div id="stage">
 
   <div class="top">
-    <div style="display:flex;align-items:baseline;min-width:0;">
-      <a class="brand" href="index.html">BULLENCIAGA</a>
-      <div class="ticker" id="tickerLabel">$██████</div>
-    </div>
+    <div class="ticker" id="tickerLabel">$██████</div>
     <div class="live"><span class="dot" id="statusDot"></span><span id="statusText">live</span></div>
   </div>
 
@@ -786,6 +784,7 @@
   const CFG = {
     TOKEN: '',                               // resolved at boot, see resolveToken()
     COLLECTION: '5GXF7Uug7mZy2pj5XDk4LP9yH7oA5oMQEbCT49ggQnVC',
+    HOUSE_OBJECTS_COLLECTION: '9ucdkSaiTLUDXmVCjWonxAJqrTH9uyB675BzzRi5vqgM',
     RPC_URL: 'https://solana-rpc.publicnode.com',       // same public RPC index.html uses for getTokenSupply
     RPC_PROXY: 'https://rpc-proxy.bullenciaga-e5c.workers.dev', // Helius DAS calls only (NFT side)
     IMG_PROXY: 'https://bullenciaga-img-proxy.bullenciaga-e5c.workers.dev',
@@ -1025,6 +1024,7 @@
   // public pieces get key '' -- still shown (white particles), just no
   // special border colour.
   function tierOf(name){
+    if (/^(THE )?(SIGNET|CUFFLINKS)(\s*#|$)/i.test(String(name || '')) || /HOUSE OBJECT/i.test(String(name || ''))) return { key:'gold', label:'House Object' };
     if (matchesSpecial(name,'relic')) return { key:'gold', label:'Relic' };
     if (matchesSpecial(name,'grail')) return { key:'gold', label:'Grail' };
     if (matchesSpecial(name,'legendary')) return { key:'silver', label:'Legendary' };
@@ -1447,7 +1447,7 @@
     }catch(e){ return null; }
   }
 
-  async function fetchAssets(){
+  async function fetchAssets(collection, series){
     const out = [];
     let page = 1;
     while (page <= 5){
@@ -1456,7 +1456,7 @@
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           jsonrpc:'2.0', id:'obs-assets', method:'getAssetsByGroup',
-          params:{ groupKey:'collection', groupValue:CFG.COLLECTION, page, limit:1000 }
+          params:{ groupKey:'collection', groupValue:collection, page, limit:1000 }
         })
       });
       const data = await res.json();
@@ -1472,7 +1472,7 @@
         // resolved links above are not. Carried so a fresh mint can still
         // find its picture -- see resolveImage().
         const json_uri = it.content && it.content.json_uri;
-        out.push({ id: it.id, name, image, json_uri });
+        out.push({ id: it.id, name, image, json_uri, series:series || 'herd' });
       });
       if (items.length < 1000) break;
       page++;
@@ -2012,14 +2012,14 @@
   // sortBy option, so the chain itself does the ordering -- the plain
   // fetchAssets() pass above returns pages in DAS's default order, which is
   // NOT creation order and can't be relied on to find "the latest mints".
-  async function fetchRecentAssets(limit){
+  async function fetchRecentAssets(collection, limit, series){
     const res = await fetch(CFG.RPC_PROXY, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         jsonrpc:'2.0', id:'obs-recent', method:'getAssetsByGroup',
         params:{
-          groupKey:'collection', groupValue:CFG.COLLECTION,
+          groupKey:'collection', groupValue:collection,
           page:1, limit,
           sortBy:{ sortBy:'created', sortDirection:'desc' }
         }
@@ -2036,7 +2036,7 @@
       const image = (it.content && it.content.links && it.content.links.image)
                  || (it.content && it.content.files && it.content.files[0] && it.content.files[0].uri);
       const json_uri = it.content && it.content.json_uri;
-      out.push({ id: it.id, name, image, json_uri });
+      out.push({ id: it.id, name, image, json_uri, series:series || 'herd', createdAt:Number(it.created_at || 0) });
     });
     return out;
   }
@@ -2047,11 +2047,14 @@
   async function pollMints(){
     if (CFG.DEMO) return;
     try{
-      const assets = await fetchAssets();
+      const herdAssets = await fetchAssets(CFG.COLLECTION, 'herd');
+      let houseAssets = [];
+      try { houseAssets = await fetchAssets(CFG.HOUSE_OBJECTS_COLLECTION, 'house-object'); } catch (e) { /* collection may not exist until launch */ }
+      const assets = herdAssets.concat(houseAssets);
       lastOkMints = Date.now();
       // Not awaited: the endpoint call inside must not hold up the rest of
       // the render, and the local count paints synchronously first anyway.
-      paintMintProgress(assets).catch(() => {});
+      paintMintProgress(herdAssets).catch(() => {});
 
       if (known === null){
         // First run: seed the KNOWN set silently, so the widget doesn't fire
@@ -2062,7 +2065,13 @@
         // no enqueue(), so nothing pops.
         known = new Set(assets.map(a=>a.id));
         try {
-          const seed = await fetchRecentAssets(RECENT_SEED_COUNT);
+          const recent = await Promise.allSettled([
+            fetchRecentAssets(CFG.COLLECTION, RECENT_SEED_COUNT, 'herd'),
+            fetchRecentAssets(CFG.HOUSE_OBJECTS_COLLECTION, RECENT_SEED_COUNT, 'house-object')
+          ]);
+          const seed = recent.flatMap(result => result.status === 'fulfilled' ? result.value : [])
+            .sort((left, right) => (right.createdAt || 0) - (left.createdAt || 0))
+            .slice(0, RECENT_SEED_COUNT);
           // pushRecent() inserts at the top, so walk oldest -> newest to end
           // up with newest first, matching live arrival order.
           seed.slice().reverse().forEach(a => pushRecent(a));
@@ -2175,7 +2184,7 @@
     }
 
     let pool = [];
-    try{ pool = await fetchAssets(); }catch(e){}
+    try{ pool = await fetchAssets(CFG.COLLECTION, 'herd'); }catch(e){}
     if (!pool.length){
       pool = ['444','555','GOLDEN RELIC','OPAL KING','BLACK MENACE','#127','#894','OZMAN']
         .map((n,i)=>({ id:'demo'+i, name:n, image:'' }));

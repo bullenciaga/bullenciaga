@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>BULLENCIAGA — $BULLEN chart</title>
-<meta name="description" content="$BULLEN price and market cap with recorded supply events, plus the separate House Object burn commitment registry.">
+<meta name="description" content="$BULLEN price and market cap with recorded burns, collection mints and BULLENSAGA preorder commitments.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://bullenciaga.com/chart">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/chart.svg">
 <meta property="og:title" content="BULLENCIAGA — $BULLEN chart">
-<meta property="og:description" content="Price and market cap on circulating supply, with completed burns and separate House Object commitments.">
+<meta property="og:description" content="Price, circulating market cap, confirmed burns, House Object mints and BULLENSAGA commitments.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bullenciaga.com/chart">
 <meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
@@ -19,7 +19,7 @@
      the OG image is present. This is what makes it render full width. -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="BULLENCIAGA — $BULLEN chart">
-<meta name="twitter:description" content="Price and market cap on circulating supply, with completed burns and separate House Object commitments.">
+<meta name="twitter:description" content="Price, circulating market cap, confirmed burns, House Object mints and BULLENSAGA commitments.">
 <meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,7 +65,6 @@
     flex-wrap:wrap;
   }
   .head-left{ min-width:0; }
-  .head .house-burn-registry{ flex:0 1 560px; align-self:stretch; }
   .price-row{ display:flex; align-items:baseline; gap:clamp(10px, 1.2vw, 20px); flex-wrap:wrap; }
   .price{
     font-size:clamp(30px, 4.4vw, 68px);
@@ -333,7 +332,6 @@
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
 <script defer src="/bullen-ui.js"></script>
-<script defer src="/house-burn-registry.js"></script>
 </head>
 <body>
 
@@ -344,17 +342,6 @@
       <div class="change" id="change"></div>
     </div>
     <div class="sub" id="sub">$BULLEN / USD</div>
-  </div>
-  <div class="house-burn-registry house-burn-registry--compact" data-house-burn-registry>
-    <div class="house-burn-registry__head">
-      <span class="house-burn-registry__title">House Object Burn Commitments</span>
-      <span class="house-burn-registry__state" data-house-burn-status>reading the shared ledger…</span>
-    </div>
-    <div class="house-burn-registry__metrics">
-      <div class="house-burn-registry__metric"><b data-house-burn-value="totals.burnClaims">--</b><span>public claims</span></div>
-      <div class="house-burn-registry__metric"><b data-house-burn-value="totals.committedBullen">--</b><span>to escrow</span></div>
-      <div class="house-burn-registry__metric"><b data-house-burn-value="totals.available">--</b><span>Objects available</span></div>
-    </div>
   </div>
 </div>
 
@@ -383,8 +370,8 @@
 
 <div class="sel" id="sel"></div>
 <div class="note" id="note"></div>
-<div class="foot">data: <a href="https://www.geckoterminal.com/solana/pools/9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ" target="_blank" rel="noopener">geckoterminal</a> &middot; pumpswap pool &middot; supply from <a href="/supply/history" target="_blank" rel="noopener">/supply/history</a> &middot; House claims stay separate until escrow is burned</div>
-<div class="foot" style="opacity:.45;">predeploy 2026-08-29 — House commitments remain outside the supply line</div>
+<div class="foot">data: <a href="https://www.geckoterminal.com/solana/pools/9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ" target="_blank" rel="noopener">geckoterminal</a> &middot; pumpswap pool &middot; supply from <a href="/supply/history" target="_blank" rel="noopener">/supply/history</a> &middot; collection and preorder events from the public BULLENSAGA ledger</div>
+<div class="foot" style="opacity:.45;">predeploy 2026-08-29 — only confirmed burns change the supply line</div>
 
 <script>
 (function fullChart(){
@@ -766,31 +753,29 @@
   // The bonding curve did not burn 29 times: it burned once at migration, in
   // 29 instructions across about a minute. Printing 29 near identical labels
   // described the transaction's mechanics instead of the event.
-  // External burns merge only within their own source -- a bonding curve burn
-  // and a holder burn are different facts, so the label prefix is in the key.
   const labelPrefix = ev => String(ev.label || ev.kind).replace(/[\d,.\s]+$/, '').trim();
   function mergeSame(list){
     const out = new Map();
     for (const e of list) {
       const kind = e.kind === 'mints' ? 'escrowburn' : e.kind;
-      const key = kind === 'externalburn' ? 'externalburn:' + labelPrefix(e) : kind;
-      const acc = out.get(key) || { kind: kind, amount: 0, mints: 0, count: 0, prefix: labelPrefix(e) };
+      // Individually numbered collectible mints must stay individually named
+      // in the popup even when several land inside the same chart candle.
+      const key = (kind === 'housemint' || kind === 'foundingmint')
+        ? kind + ':' + String(e.label || '')
+        : kind;
+      const acc = out.get(key) || { kind: kind, amount: 0, mints: 0, count: 0, prefix: labelPrefix(e), usdCents: 0, label: e.label || '' };
       acc.amount += Number(e.amount) || 0;
       acc.mints  += e.mints || (kind === 'mint' ? 1 : 0);
+      acc.usdCents += Number(e.usdCents) || 0;
       acc.count++;
       out.set(key, acc);
     }
-    out.forEach(function(a){
-      if (a.kind === 'externalburn') a.label = a.prefix + ' ' + grp(a.amount);
-    });
     return Array.from(out.values());
   }
 
-  // Labels are derived from kind and amount, not trusted from storage, so a
-  // claim ("1 piece claimed") can never read like the escrow burn that
-  // follows it ("escrow burn 250,000"). Only external burns keep their stored
-  // label, because only the scrape knows whether it was the bonding curve or
-  // a holder.
+  // Labels are derived from kind and amount, so every confirmed supply change
+  // reads as the same plain burn event regardless of which approved mechanism
+  // funded it. Collectible records keep their public numbered name.
   function eventLabel(ev){
     const amt = Number(ev.amount) || 0;
     switch (ev.kind) {
@@ -798,9 +783,13 @@
         const n = ev.mints || Math.max(1, Math.round(amt / 250000));
         return n + ' piece' + (n === 1 ? '' : 's') + ' claimed';
       }
+      case 'housemint':
+      case 'foundingmint': return ev.label || ((ev.count || 1) + ' record' + ((ev.count || 1) === 1 ? '' : 's') + ' minted');
+      case 'gamecommit': return 'BULLENSAGA preorder · $' + ((Number(ev.usdCents) || 0) / 100).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }) + ' committed';
       case 'mints':
-      case 'escrowburn': return 'escrow burn ' + grp(amt);
-      case 'tier':       return 'tier burn ' + grp(amt);
+      case 'escrowburn':
+      case 'externalburn':
+      case 'tier':
       case 'burn':       return 'burn ' + grp(amt);
       case 'lock':       return 'locked ' + grp(amt);
       case 'unlock':     return 'unlocked ' + grp(amt);
@@ -1036,7 +1025,7 @@
           const ratio = Math.max(0, Math.min(1, Math.log1p(it.total) / denom));
           const px = x(it.k).toFixed(1);
           const move = MOVE_KINDS.has(it.kind);
-          const cls = move ? ' move' : (it.kind === 'mint' || it.kind === 'mints' ? ' mint' : '');
+          const cls = move ? ' move' : (['mint','mints','housemint','foundingmint','gamecommit'].includes(it.kind) ? ' mint' : '');
 
           // Everything gets a baseline mark, from a 4px stub to a 22px spike.
           const h = (4 + 18 * ratio) * S;
@@ -1261,7 +1250,7 @@
       if (g && g.events.length) {
         // Same merge the labels use, so the readout and the marks cannot
         // disagree about what happened at this point.
-        const order = ['mint','escrowburn','tier','burn','externalburn','lock','unlock'];
+        const order = ['mint','housemint','foundingmint','gamecommit','escrowburn','tier','burn','externalburn','lock','unlock'];
         tipE.innerHTML = mergeSame(g.events)
           .sort((a,b) => order.indexOf(a.kind) - order.indexOf(b.kind))
           .map(a => esc(eventLabel(a))).join('<br>');
@@ -1511,7 +1500,7 @@
           '; earlier candles are not drawn rather than assumed.');
       }
     }
-    if (marks) notes.push('each mark is a recorded supply event, sized by how much moved. hover one to read it. every one has a transaction behind it.');
+    if (marks) notes.push('marks include confirmed burns, collection mints and published BULLENSAGA preorder commitments. only confirmed Token-2022 burns move supply.');
     if (zoomed) notes.unshift('zoomed to ' + view.length + ' of ' + full.length +
       ' points \u00b7 double-click or double-tap to reset');
     else {
@@ -1560,10 +1549,33 @@
     wrap.innerHTML = '<div class="msg">loading&hellip;</div>';
     const token = ++loadToken;
     try {
-      const res = await fetch(window.location.origin + '/ohlcv?tf=' + encodeURIComponent(tf), { cache:'no-store' });
-      const j = await res.json();
+      const localSaga = /^(127\.0\.0\.1|localhost)$/.test(location.hostname) ? 'http://127.0.0.1:4178' : 'https://bullensaga.com';
+      const [chartResult, activityResult] = await Promise.allSettled([
+        fetch(window.location.origin + '/ohlcv?tf=' + encodeURIComponent(tf), { cache:'no-store' }).then(response => response.json()),
+        fetch(localSaga + '/api/public-activity', { cache:'no-store' }).then(response => response.ok ? response.json() : null)
+      ]);
+      const j = chartResult.status === 'fulfilled' ? chartResult.value : null;
       if (token !== loadToken) return;
-      if (!j.ok || !j.candles || !j.candles.length) throw new Error(j.error || 'chart unavailable');
+      if (!j || !j.ok || !j.candles || !j.candles.length) throw new Error((j && j.error) || 'chart unavailable');
+      const activity = activityResult.status === 'fulfilled' ? activityResult.value : null;
+      if (activity && Array.isArray(activity.events)) {
+        const normalTime = value => value < 1e12 ? value * 1000 : value;
+        const candleTimes = j.candles.map(candle => normalTime(Number(candle[0]) || 0));
+        const first = candleTimes[0], last = candleTimes[candleTimes.length - 1];
+        const publicEvents = activity.events.flatMap(event => {
+          const ts = Date.parse(event.occurredAt || '');
+          if (!Number.isFinite(ts) || ts < first || ts > last) return [];
+          let i = 0;
+          while (i + 1 < candleTimes.length && candleTimes[i + 1] <= ts) i++;
+          if (event.kind === 'gamecommit') return [{ kind:'gamecommit', i, ts, amount:1, usdCents:Number(event.committedUsdCents)||0 }];
+          if (event.kind === 'housemint' || event.kind === 'foundingmint') {
+            const serial = String(event.serialNumber || '').padStart(3, '0');
+            return [{ kind:event.kind, i, ts, amount:1, mints:1, label:(event.collectibleName || 'Collectible') + ' #' + serial + ' minted' }];
+          }
+          return [];
+        });
+        j.events = (Array.isArray(j.events) ? j.events : []).concat(publicEvents);
+      }
       cache.set(tf, j);
       syncModeAvailability(j);
       render(j);

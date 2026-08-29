@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BULLENCIAGA — the curve</title>
-<meta name="description" content="The live $BULLEN supply curve, its complete public burn ledger, and the separate House Object burn commitment registry.">
+<meta name="description" content="The live $BULLEN supply curve and its complete public ledger of confirmed Token-2022 burns.">
 <meta name="theme-color" content="#0a0a0a">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/curve.svg">
 <meta property="og:title" content="BULLENCIAGA — the curve">
-<meta property="og:description" content="The supply curve, every indexed burn, and a separate ledger for House Object escrow commitments.">
+<meta property="og:description" content="The supply curve and every indexed Token-2022 burn transaction.">
 <style>
   :root{
     --gold:#c7a869;
@@ -91,7 +91,6 @@
   .events li.tierrow .amt{color:var(--tier)}
   .events .k.house{color:var(--gold-light)}
   .events li.housecommitrow .amt{color:var(--gold);font-size:12px}
-  .house-ledger{margin-top:46px}
 
   .recon{padding:18px 0 0;color:var(--dimmer);font-size:12.5px;line-height:1.8;text-wrap:pretty}
   .recon b{color:var(--dim);font-weight:500;font-variant-numeric:tabular-nums}
@@ -114,7 +113,6 @@
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
 <script defer src="/bullen-ui.js"></script>
-<script defer src="/house-burn-registry.js"></script>
 </head>
 <body>
 
@@ -135,7 +133,7 @@
     <div id="chart"></div>
     <div class="legend">
       <span><i style="background:var(--gold)"></i>total supply</span>
-      <span><i style="background:var(--tier)"></i>tier burn</span>
+      <span><i style="background:var(--tier)"></i>confirmed burn marker</span>
       <span id="span"></span>
     </div>
   </div>
@@ -151,38 +149,18 @@
     <div class="state" id="state">reading the chain record…</div>
   </section>
 
-  <section class="ledger house-ledger" aria-labelledby="house-ledger-title">
-    <div class="ledger-head">
-      <h2 id="house-ledger-title">House Object burn commitments</h2>
-      <p>Each public House Object claim transfers exactly 100,000 Token-2022 $BULLEN to the public burn escrow. These are deposit proofs, not supply reductions. They join the burn ledger above only when the scheduled escrow burn is confirmed on-chain.</p>
-      <div class="house-burn-registry house-burn-registry--compact" data-house-burn-registry>
-        <div class="house-burn-registry__head">
-          <span class="house-burn-registry__title">Shared allocation ledger</span>
-          <span class="house-burn-registry__state" data-house-burn-status>reading the shared ledger…</span>
-        </div>
-        <div class="house-burn-registry__metrics">
-          <div class="house-burn-registry__metric"><b data-house-burn-value="totals.burnClaims">--</b><span>public claims</span></div>
-          <div class="house-burn-registry__metric"><b data-house-burn-value="totals.committedBullen">--</b><span>to escrow</span></div>
-          <div class="house-burn-registry__metric"><b data-house-burn-value="totals.available">--</b><span>Objects available</span></div>
-        </div>
-      </div>
-    </div>
-    <ul class="events" data-house-burn-recent></ul>
-  </section>
-
   <div class="foot">
     <p>
-      Supply can fall through three published paths. The locked allocation burns in five
-      volume tiers. A Herd claim commits 250,000 $BULLEN to public burn escrow. A public
-      House Object claim commits 100,000. Only confirmed Token-2022 burns appear as steps
-      down in the supply curve; escrow commitments remain separately labelled until then.
+      Every supply-reduction mechanism resolves to the same fact here: a confirmed
+      Token-2022 burn. Escrow commitments, game purchases and collectible awards do not
+      move the curve until an actual burn transaction reduces total supply.
     </p>
     <p style="margin-top:12px">
       Live figures: <a href="/supply">/supply</a> &nbsp;·&nbsp;
       Per-transaction ledger: <a href="/supply/proof">/supply/proof</a> &nbsp;·&nbsp;
       Raw samples: <a href="/supply/history">/supply/history</a>
     </p>
-    <div class="build">predeploy 2026-08-29 — supply proof and commitment proof kept distinct</div>
+    <div class="build">predeploy 2026-08-29 — confirmed burns only</div>
   </div>
 
 </div>
@@ -196,12 +174,12 @@
   var RECON = document.getElementById('recon');
   var LEDGER_METRICS = document.getElementById('ledgerMetrics');
   var KINDS = {
-    tier:   { label: 'Scheduled', note: 'burn tier owed at a published volume threshold' },
-    dev:    { label: 'Dev burn',  note: 'bought on the open market and burned outright' },
-    escrow: { label: 'Mints',     note: 'mint escrow emptied by a burn instruction' },
-    escrowburn: { label: 'Mints', note: 'mint escrow emptied by a burn instruction' },
-    launch: { label: 'Curve',     note: 'burned by pump.fun mechanics as the bonding curve completed' },
-    burn:   { label: 'Burn',      note: 'burned on-chain' },
+    tier:   { label: 'Burn', note: 'confirmed Token-2022 burn' },
+    dev:    { label: 'Burn', note: 'confirmed Token-2022 burn' },
+    escrow: { label: 'Burn', note: 'confirmed Token-2022 burn' },
+    escrowburn: { label: 'Burn', note: 'confirmed Token-2022 burn' },
+    launch: { label: 'Burn', note: 'confirmed Token-2022 burn' },
+    burn:   { label: 'Burn', note: 'confirmed Token-2022 burn' },
   };
 
   var W = 900, H = 380, PAD_L = 62, PAD_R = 14, PAD_T = 18, PAD_B = 30;
@@ -333,9 +311,9 @@
         LEDGER_METRICS.hidden = false;
 
         EVTS.innerHTML = rows.map(function(e){
-          var isTier = e.kind === 'tier';
+          var isTier = false;
           var kind = KINDS[e.kind] || KINDS.burn;
-          var label = e.note || kind.note;
+          var label = kind.note;
           var signature = String(e.sig || '');
           var transaction = signature
             ? '<a class="sig" href="https://solscan.io/tx/'+encodeURIComponent(signature)+'" target="_blank" rel="noopener" title="Open transaction on Solscan">'+esc(signature)+'</a>'

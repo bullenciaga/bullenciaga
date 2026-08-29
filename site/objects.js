@@ -52,12 +52,20 @@
   }
 
   async function connectWallet() {
-    provider = getProvider();
-    if (!provider) return setStatus('No injected Solana wallet found. Use Review without a wallet for this local pass.', true);
     try {
       setStatus('Connecting to the wallet…');
-      await provider.connect();
-      wallet = provider.publicKey && provider.publicKey.toString ? provider.publicKey.toString() : String(provider.publicKey || '');
+      var selected = window.BullenWalletChooser
+        ? await window.BullenWalletChooser.connect()
+        : null;
+      if (!selected) {
+        provider = getProvider();
+        if (!provider) return setStatus('Choose a Solana wallet to continue.', true);
+        await provider.connect();
+        wallet = provider.publicKey && provider.publicKey.toString ? provider.publicKey.toString() : String(provider.publicKey || '');
+      } else {
+        provider = selected.provider;
+        wallet = selected.address;
+      }
       if (!wallet) throw new Error('Wallet did not return an address');
       $('walletAddress').textContent = wallet;
       updateClaimButton();

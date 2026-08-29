@@ -2,6 +2,7 @@
 """Build the public BULLENCIAGA whitepaper v2 PDF."""
 
 from pathlib import Path
+import shutil
 from PIL import Image as PILImage
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
@@ -16,6 +17,7 @@ from reportlab.platypus import (
 ROOT = Path(__file__).resolve().parents[1]
 SAGA_ASSETS = ROOT.parent / "bullensaga-house-objects-v2" / "public" / "assets" / "collectibles"
 OUTPUT = ROOT / "output" / "pdf" / "bullenciaga-whitepaper-v2.pdf"
+SITE_OUTPUT = ROOT / "site" / "whitepaper.pdf"
 PDF_ASSETS = ROOT / "qa" / "whitepaper-v2" / "assets"
 
 PAGE_W, PAGE_H = A4
@@ -216,19 +218,6 @@ def on_cover(canvas, doc):
     canvas.setLineWidth(0.6)
     canvas.rect(16*mm, 16*mm, PAGE_W-32*mm, PAGE_H-32*mm, stroke=1, fill=0)
 
-    # A clean mirrored-B mark, drawn as typography so both halves are exact.
-    canvas.setFillColor(GOLD)
-    canvas.setFont("Helvetica-Bold", 56)
-    cx, cy = PAGE_W/2, PAGE_H-70*mm
-    canvas.saveState()
-    canvas.translate(cx-1.5*mm, cy)
-    canvas.scale(-1, 1)
-    canvas.drawString(0, 0, "B")
-    canvas.restoreState()
-    canvas.drawString(cx+1.5*mm, cy, "B")
-    canvas.setStrokeColor(GOLD)
-    canvas.setLineWidth(0.5)
-    canvas.line(cx, cy-2*mm, cx, cy+16*mm)
     canvas.restoreState()
 
 
@@ -270,7 +259,7 @@ def build_story():
         "An escrow deposit is published as <b>committed to burn</b>.",
         "A token is published as <b>destroyed</b> only after a confirmed Token-2022 burn reduces total supply.",
         "A preorder or manual award consumes numbered collectible inventory but never creates a fictional token-burn record.",
-        "The supply curve, burn proof ledger and House Object commitment registry stay separate and reconcile through public transaction signatures.",
+        "The supply curve and burn proof ledger show confirmed destruction. House Object commitments remain a separate main-page and Stats registry until their escrow burn lands.",
     ])]
     story += [Spacer(1, 5*mm), facts([
         ("1B", "original $BULLEN supply"),
@@ -299,7 +288,8 @@ def build_story():
     story += [p("The 250,000,000-token launch allocation is not reported as circulating. It remains in Jupiter Lock between milestones. When a cumulative-volume threshold is reached, the due share is released, destroyed and the remainder relocked. The site links the current lock rather than pretending one escrow address remains permanent across every cycle.")]
     story += [p("Tier one executed on 11 August 2026 and destroyed 12,500,000 $BULLEN. Every later status is sourced from chain and DEX data, not from this PDF.")]
     story += [p("REFERRALS AND CREATOR FEES", "section")]
-    story += [p("The existing referral ledger remains forward-only and public: a wallet signs its binding, buys after that point can earn the recorded referrer a share of measured creator fees, and weekly payouts are not fixed or guaranteed. The ten Grail and Legendary Herd pieces retain the previously published creator-fee participation model, calculated after marketing spend.")]
+    story += [p("Referral binding is signed, forward-only and permanent. Only buys after the binding count. Sells do not count, and self-referral does not manufacture value. Three referred public Herd mints earn one custom 1-of-1 under the published programme. The record and payout view remain public at bullenciaga.com/refer.")]
+    story += [p("Five Grail pieces retain 2.5% each and five Legendary pieces retain 1.5% each of creator-fee participation after marketing spend. Up to an additional 25% may be assigned to early marketing backers under their published terms. Reconciliation is weekly, normally Sunday; every payout depends on actual trading and is neither fixed nor guaranteed.", "small")]
     story += [PageBreak()]
 
     story += page_title("03 / BURNS", "Three paths, one standard of proof", "Commitment and destruction are related events, not synonyms.")
@@ -388,6 +378,7 @@ def build_story():
         [42*mm, 128*mm],
     )]
     story += [Spacer(1, 5*mm), p("The Promise is capped at 200. The Triad is capped at 100. Estate Founding I can be sold only when all four promised rows can be reserved together. If the first House Object pair closes, a later Estate wave can explicitly name Objects 03 and 04; an already-paid Founding I order is never silently downgraded or substituted.")]
+    story += [p("A published portion of each completed game preorder is tracked as committed to supply reduction. Fulfilment may be a direct $BULLEN burn or a Herd giveaway mint whose 250,000-token claim enters the established escrow flow. The preorder event can show the committed USD amount immediately; destroyed supply changes only after a confirmed Token-2022 burn.", "small")]
     story += [PageBreak()]
 
     story += page_title("07 / ISSUANCE", "Two collections, controlled automation", "Candy Machines are unnecessary for a numbered, server-issued system with several valid allocation paths.")
@@ -431,9 +422,9 @@ def build_story():
     story += [Spacer(1, 7*mm), p("The 520M figure is a theoretical ceiling, not a forecast. It requires every volume tier, every public Herd claim, and all 200 first-wave House Objects to enter through the public burn route. Any House Object allocated by preorder or manual award still reduces inventory but does not add 100,000 to burn commitments. The live supply endpoint is always the current authority.")]
     story += [p("PUBLIC DISPLAYS", "section")]
     story += [bullets([
-        "<b>/stats</b> shows current supply, scheduled burns, Herd mints and House Object commitments.",
-        "<b>/chart</b> keeps price/supply events separate from unburned escrow deposits.",
-        "<b>/curve</b> pairs the signed burn ledger with a second deposit-proof ledger.",
+        "<b>/stats</b> shows current supply, scheduled burns, Herd and House Object mints, plus the compact House commitment registry.",
+        "<b>/chart</b> shows ordinary events for confirmed burns, collectible mints and published BULLENSAGA preorder commitments; only confirmed burns affect supply.",
+        "<b>/curve</b> shows the sampled supply line and signed burn transactions only, whatever mechanism produced them.",
         "The main page shows public claims, committed $BULLEN and remaining Signet/Cufflinks inventory.",
     ])]
     story += [PageBreak()]
@@ -445,16 +436,15 @@ def build_story():
             ["01", "Deploy $BULLEN", "Token and The Herd go live"],
             ["02", "First Blood", "$250K tier executed 11 Aug 2026"],
             ["03", "The House Fills Up", "$1M and $5M burn tiers"],
-            ["04", "Full Sprint", "$20M burn tier"],
-            ["05", "The Vault Empties", "$50M; locked allocation fully burned"],
-            ["06", "House Objects", "Signet and Cufflinks; first 100 each"],
-            ["07", "BULLENSAGA", "Game preorders and founding records"],
-            ["08", "$BULLEN Staking", "Published terms before activation"],
-            ["09", "The Collab", "Fashion-industry collaborations"],
+            ["04", "The Vault Empties", "One portion at $20M; the rest at $50M"],
+            ["05", "House Objects", "Signet and Cufflinks; first 100 each"],
+            ["06", "BULLENSAGA", "Game preorders and founding records"],
+            ["07", "$BULLEN Staking", "Published terms before activation"],
+            ["08", "The Collab", "Fashion-industry collaborations"],
         ],
         [18*mm, 50*mm, 102*mm],
     )]
-    story += [Spacer(1, 7*mm), p("Phases 06 through 09 are not gated by cumulative volume and may complete in a different order. Staking rewards, physical priority, curated participation, the Key snapshot and collaboration terms do not exist merely because they are named here; each requires its own published rules before activation.", "small")]
+    story += [Spacer(1, 7*mm), p("Phases 05 through 08 are not gated by cumulative volume and may complete in a different order. Staking rewards, physical priority, curated participation, the Key snapshot and collaboration terms do not exist merely because they are named here; each requires its own published rules before activation.", "small")]
     story += [PageBreak()]
 
     story += page_title("10 / VERIFY", "Read the records, not the promise", "Every number intended to matter has a public place to be checked.")
@@ -463,7 +453,8 @@ def build_story():
         "Current lock and release custody: <b>bullenciaga.com/lock</b>.",
         "Per-transaction burn proof and reconciliation: <b>bullenciaga.com/supply/proof</b>.",
         "Supply history and curve: <b>bullenciaga.com/curve</b>.",
-        "House Object escrow-deposit commitments: the main page and its shared registry on <b>/stats</b>, <b>/chart</b> and <b>/curve</b>.",
+        "House Object escrow-deposit commitments: the main page and the compact shared registry on <b>/stats</b>.",
+        "Collection mints and BULLENSAGA commitment events: <b>bullenciaga.com/chart</b>.",
         "Referral bindings and payouts: <b>bullenciaga.com/refer</b>.",
         "Current NFT ownership, collection authority and transfers: Solana explorers and compatible wallets/marketplaces.",
     ])]
@@ -476,7 +467,8 @@ def build_story():
 
 def main():
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    frame = Frame(20*mm, 20*mm, PAGE_W-40*mm, PAGE_H-40*mm, leftPadding=0, rightPadding=0, topPadding=5*mm, bottomPadding=5*mm)
+    content_frame = Frame(20*mm, 20*mm, PAGE_W-40*mm, PAGE_H-40*mm, leftPadding=0, rightPadding=0, topPadding=5*mm, bottomPadding=5*mm)
+    cover_frame = Frame(23*mm, 20*mm, PAGE_W-43*mm, PAGE_H-40*mm, leftPadding=0, rightPadding=0, topPadding=5*mm, bottomPadding=5*mm)
     doc = BaseDocTemplate(
         str(OUTPUT), pagesize=A4, leftMargin=20*mm, rightMargin=20*mm,
         topMargin=20*mm, bottomMargin=20*mm,
@@ -485,10 +477,12 @@ def main():
         subject="Token-2022 supply, The Herd, House Objects and BULLENSAGA",
     )
     doc.addPageTemplates([
-        PageTemplate(id="cover", frames=[frame], onPage=on_cover),
-        PageTemplate(id="content", frames=[frame], onPage=on_content),
+        PageTemplate(id="cover", frames=[cover_frame], onPage=on_cover),
+        PageTemplate(id="content", frames=[content_frame], onPage=on_content),
     ])
     doc.build(build_story())
+    SITE_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(OUTPUT, SITE_OUTPUT)
     print(OUTPUT)
 
 

@@ -188,6 +188,7 @@
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
 <script defer src="/bullen-ui.js"></script>
+<script defer src="/bullen-wallet-chooser.js?v=20260829"></script>
 </head>
 <body>
 <div class="wrap">
@@ -299,6 +300,7 @@
 
   var $ = function(id){ return document.getElementById(id); };
   var busy = false;
+  var connectedProvider = null;
 
   function say(msg, isErr){
     var el = $('status');
@@ -508,7 +510,7 @@
     if (!looksLikeWallet(me))  return say('connect your wallet first', true);
     if (!looksLikeWallet(ref)) return say('your referrer\u2019s address does not look right', true);
 
-    var provider = getProvider();
+    var provider = connectedProvider || getProvider();
     if (!provider || !provider.publicKey){
       return say('connect your wallet first \u2014 you have to sign to prove it is yours', true);
     }
@@ -659,15 +661,13 @@
   }
 
   async function connect(){
-    var p = getProvider();
-    if (!p){
-      if (isMobile()) return offerWalletApps();
-      return say('no wallet extension found \u2014 install Phantom or Solflare', true);
-    }
     try {
       say('connecting\u2026');
-      await p.connect();
-      var pk = p.publicKey && p.publicKey.toString ? p.publicKey.toString() : String(p.publicKey || '');
+      var selected = window.BullenWalletChooser ? await window.BullenWalletChooser.connect() : null;
+      if (!selected) return say('', false);
+      var p = selected.provider;
+      connectedProvider = p;
+      var pk = selected.address;
       if (!pk) throw new Error('wallet did not return an address');
       $('me').value = pk;
       $('me').classList.add('filled');
