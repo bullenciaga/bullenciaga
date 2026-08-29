@@ -50,6 +50,11 @@ assert.match(chart, /case 'burn':\s+return 'burn '/);
 
 assert.doesNotMatch(curve, /house-burn-registry\.js|HOUSE OBJECT BURN COMMITMENTS|SHARED ALLOCATION LEDGER/i);
 assert.match(curve, /confirmed Token-2022 burn/);
+assert.match(curve, /tier:\s+\{ label: 'Tier burn'/);
+assert.match(curve, /dev:\s+\{ label: 'Dev burn'/);
+assert.match(curve, /escrow:\s+\{ label: 'Mint burn'/);
+assert.match(curve, /launch:\s+\{ label: 'Launch burn'/);
+assert.match(curve, /var isTier = e\.kind === 'tier'/);
 
 assert.match(objectsCss, /\.objects-rule span,\.objects-rule strong \{ display:flex; align-items:center; min-height:58px/);
 assert.match(objectsCss, /object-fit:cover/);
