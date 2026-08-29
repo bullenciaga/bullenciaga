@@ -2,7 +2,10 @@
   'use strict';
 
   var root = document.documentElement;
-  var reviewMode = root.dataset.objectsReview === 'true';
+  var reviewHost = window.location.hostname === 'localhost'
+    || window.location.hostname === '127.0.0.1'
+    || window.location.hostname === '::1';
+  var reviewMode = reviewHost && root.dataset.objectsReview === 'true';
   var apiBase = (root.dataset.objectsApi || 'https://bullensaga.com').replace(/\/$/, '');
   var selectedId = 'house-object-01-signet';
   var provider = null;
@@ -194,7 +197,8 @@
   $('connectWallet').addEventListener('click', connectWallet);
   $('previewWallet').addEventListener('click', previewWallet);
   $('beginClaim').addEventListener('click', beginClaim);
-  if (!reviewMode) $('previewWallet').hidden = true;
+  if (reviewMode) $('reviewRibbon').textContent = 'LOCAL REVIEW · NO TRANSACTION WILL BE SENT';
+  else $('previewWallet').hidden = true;
   loadInventory();
   if (!reviewMode) window.setInterval(loadInventory, 15_000);
 })();

@@ -12,6 +12,7 @@ const chart = read('chart.html');
 const curve = read('curve.html');
 const objects = read('objects.html');
 const objectsCss = read('objects.css');
+const objectsJs = read('objects.js');
 const refer = read('refer.html');
 const redirects = read('_redirects');
 
@@ -46,7 +47,12 @@ assert.match(curve, /confirmed Token-2022 burn/);
 assert.match(objectsCss, /\.objects-rule span,\.objects-rule strong \{ display:flex; align-items:center; min-height:58px/);
 assert.match(objectsCss, /object-fit:cover/);
 assert.match(objectsCss, /house-object-02-cufflinks[^\n]+object-position:73% center/);
+assert.match(objectsJs, /var reviewMode = reviewHost && root\.dataset\.objectsReview === 'true'/);
+assert.match(objectsJs, /window\.location\.hostname === 'localhost'/);
+assert.match(objectsJs, /window\.location\.hostname === '127\.0\.0\.1'/);
+assert.doesNotMatch(objects, /<div class="review-ribbon" id="reviewRibbon">LOCAL REVIEW/);
 for (const page of [objects, refer]) assert.match(page, /bullen-wallet-chooser\.js\?v=20260829b/);
 assert.match(objects, /objects\.css\?v=20260829b/);
+assert.match(objects, /objects\.js\?v=20260829b/);
 
 console.log('House integrations: ok (roadmap, accounting, events, assets, wallets)');
