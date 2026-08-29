@@ -107,7 +107,7 @@
     try {
       if (reviewMode) {
         activateStep('reserve', true); setStatus('Review: numbered slot held for 20 minutes.');
-        activateStep('burn', true); setStatus('Review: exact 100,000 $BULLEN burn transaction signed.');
+        activateStep('escrow', true); setStatus('Review: exact 100,000 $BULLEN escrow transfer signed.');
         activateStep('verify', true); setStatus('Review complete. The slot reached the mint queue without touching chain or inventory.');
         $('claimSerial').textContent = selectedId === 'house-object-01-signet' ? '#001' : '#002';
         $('claimResult').hidden = false;
@@ -128,24 +128,24 @@
         challengeSignature: base58(proofBytes)
       });
 
-      activateStep('burn', false); setStatus('Approve the exact 100,000 $BULLEN burn in your wallet…');
-      var bytes = Uint8Array.from(atob(reservation.burnTransactionBase64), function (character) { return character.charCodeAt(0); });
+      activateStep('escrow', false); setStatus('Approve the exact 100,000 $BULLEN transfer to the public burn escrow…');
+      var bytes = Uint8Array.from(atob(reservation.escrowTransactionBase64), function (character) { return character.charCodeAt(0); });
       var transaction = window.solanaWeb3.Transaction.from(bytes);
       var sent = await provider.signAndSendTransaction(transaction);
       var signature = sent && sent.signature ? sent.signature : String(sent || '');
 
-      activateStep('verify', false); setStatus('Waiting for Solana confirmation and verifying the burn…');
+      activateStep('verify', false); setStatus('Waiting for Solana confirmation and verifying the escrow deposit…');
       var claim = await post('/api/house-objects/claims', {
         reservationId: reservation.reservationId,
         collectibleId: selectedId,
         solWalletAddress: wallet,
-        burnTransactionSignature: signature
+        escrowTransactionSignature: signature
       });
       activateStep('verify', true);
       $('claimSerial').textContent = '#' + String(claim.slot.serialNumber).padStart(3, '0');
-      $('claimResultCopy').textContent = 'Burn verified. This numbered unit is allocated to the connected wallet and is now in the mint queue.';
+      $('claimResultCopy').textContent = 'Escrow deposit verified. This numbered unit is allocated to the connected wallet and is now in the mint queue.';
       $('claimResult').hidden = false;
-      setStatus('Burn verified. Your permanent mint record is being prepared.');
+      setStatus('Escrow deposit verified. Your permanent mint record is being prepared.');
       loadInventory();
     } catch (error) {
       setStatus((error && error.message) || 'The claim could not be completed.', true);
