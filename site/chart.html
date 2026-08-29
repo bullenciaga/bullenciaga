@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>BULLENCIAGA — $BULLEN chart</title>
-<meta name="description" content="$BULLEN price and market cap, with every recorded supply event: mints, burns, locks and unlocks.">
+<meta name="description" content="$BULLEN price and market cap with recorded supply events, plus the separate House Object burn commitment registry.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://bullenciaga.com/chart">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/chart.svg">
 <meta property="og:title" content="BULLENCIAGA — $BULLEN chart">
-<meta property="og:description" content="Price and market cap on circulating supply, with every burn marked.">
+<meta property="og:description" content="Price and market cap on circulating supply, with completed burns and separate House Object commitments.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bullenciaga.com/chart">
 <meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
@@ -19,7 +19,7 @@
      the OG image is present. This is what makes it render full width. -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="BULLENCIAGA — $BULLEN chart">
-<meta name="twitter:description" content="Price and market cap on circulating supply, with every burn marked.">
+<meta name="twitter:description" content="Price and market cap on circulating supply, with completed burns and separate House Object commitments.">
 <meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,6 +65,7 @@
     flex-wrap:wrap;
   }
   .head-left{ min-width:0; }
+  .head .house-burn-registry{ flex:0 1 560px; align-self:stretch; }
   .price-row{ display:flex; align-items:baseline; gap:clamp(10px, 1.2vw, 20px); flex-wrap:wrap; }
   .price{
     font-size:clamp(30px, 4.4vw, 68px);
@@ -332,6 +333,7 @@
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
 <script defer src="/bullen-ui.js"></script>
+<script defer src="/house-burn-registry.js"></script>
 </head>
 <body>
 
@@ -342,6 +344,17 @@
       <div class="change" id="change"></div>
     </div>
     <div class="sub" id="sub">$BULLEN / USD</div>
+  </div>
+  <div class="house-burn-registry house-burn-registry--compact" data-house-burn-registry>
+    <div class="house-burn-registry__head">
+      <span class="house-burn-registry__title">House Object Burn Commitments</span>
+      <span class="house-burn-registry__state" data-house-burn-status>reading the shared ledger…</span>
+    </div>
+    <div class="house-burn-registry__metrics">
+      <div class="house-burn-registry__metric"><b data-house-burn-value="totals.burnClaims">--</b><span>public claims</span></div>
+      <div class="house-burn-registry__metric"><b data-house-burn-value="totals.committedBullen">--</b><span>to escrow</span></div>
+      <div class="house-burn-registry__metric"><b data-house-burn-value="totals.available">--</b><span>Objects available</span></div>
+    </div>
   </div>
 </div>
 
@@ -370,8 +383,8 @@
 
 <div class="sel" id="sel"></div>
 <div class="note" id="note"></div>
-<div class="foot">data: <a href="https://www.geckoterminal.com/solana/pools/9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ" target="_blank" rel="noopener">geckoterminal</a> &middot; pumpswap pool &middot; supply from <a href="/supply/history" target="_blank" rel="noopener">/supply/history</a></div>
-<div class="foot" style="opacity:.45;">build 2026-08-16.12 — grid stays put, identical shapes do not animate</div>
+<div class="foot">data: <a href="https://www.geckoterminal.com/solana/pools/9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ" target="_blank" rel="noopener">geckoterminal</a> &middot; pumpswap pool &middot; supply from <a href="/supply/history" target="_blank" rel="noopener">/supply/history</a> &middot; House claims stay separate until escrow is burned</div>
+<div class="foot" style="opacity:.45;">predeploy 2026-08-29 — House commitments remain outside the supply line</div>
 
 <script>
 (function fullChart(){

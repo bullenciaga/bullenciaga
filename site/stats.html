@@ -10,20 +10,20 @@
      resolves to the source width it already renders at. -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>BULLENCIAGA — Live Dashboard</title>
-<meta name="description" content="Every mint, burn and supply figure for $BULLEN and The Herd, updating as it happens.">
+<meta name="description" content="Live $BULLEN supply, scheduled burns, Herd mints and House Object burn commitments.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://bullenciaga.com/stats">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/stats.svg">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bullenciaga.com/stats">
 <meta property="og:title" content="BULLENCIAGA — Live Dashboard">
-<meta property="og:description" content="Every mint and burn, the moment it lands.">
+<meta property="og:description" content="Live supply, Herd mints, scheduled burns and House Object burn commitments.">
 <meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="BULLENCIAGA — Live Dashboard">
-<meta name="twitter:description" content="Every mint and burn, the moment it lands.">
+<meta name="twitter:description" content="Live supply, Herd mints, scheduled burns and House Object burn commitments.">
 <meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -640,6 +640,7 @@
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
 <script defer src="/bullen-ui.js"></script>
+<script defer src="/house-burn-registry.js"></script>
 </head>
 <body>
 
@@ -731,6 +732,18 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <div class="house-burn-registry house-burn-registry--compact" data-house-burn-registry>
+    <div class="house-burn-registry__head">
+      <span class="house-burn-registry__title">House Object Burn Registry</span>
+      <span class="house-burn-registry__state" data-house-burn-status>reading the shared ledger…</span>
+    </div>
+    <div class="house-burn-registry__metrics">
+      <div class="house-burn-registry__metric"><b data-house-burn-value="totals.burnClaims">--</b><span>public claims</span></div>
+      <div class="house-burn-registry__metric"><b data-house-burn-value="totals.committedBullen">--</b><span>committed</span></div>
+      <div class="house-burn-registry__metric"><b data-house-burn-value="totals.available">--</b><span>Objects available</span></div>
     </div>
   </div>
 </div>
