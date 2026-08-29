@@ -26,8 +26,8 @@ assert.match(index, /<a href="\/whitepaper"/);
 assert.match(index, /async function fetchHouseObjectAssets\(\)/);
 assert.match(index, /series:'house-object'/);
 assert.match(index, /function houseStatusLine\(entry\)/);
-assert.match(index, /HOUSE PAIR I · COMPLETE/);
-assert.match(index, /HERD ENHANCEMENT · HOUSE PAIR I/);
+assert.match(index, /House Pair I complete · paired status follows this wallet/);
+assert.match(index, /Enhanced by House Pair I · Signet \+ Cufflinks verified in this wallet/);
 assert.match(redirects, /^\/whitepaper\s+\/whitepaper\.pdf\s+302$/m);
 
 assert.doesNotMatch(stats, /<div class="brand"/);
@@ -46,7 +46,7 @@ assert.match(curve, /confirmed Token-2022 burn/);
 assert.match(objectsCss, /\.objects-rule span,\.objects-rule strong \{ display:flex; align-items:center; min-height:58px/);
 assert.match(objectsCss, /object-fit:cover/);
 assert.match(objectsCss, /house-object-02-cufflinks[^\n]+object-position:73% center/);
-for (const page of [objects, refer]) assert.match(page, /bullen-wallet-chooser\.js\?v=20260829/);
+for (const page of [objects, refer]) assert.match(page, /bullen-wallet-chooser\.js\?v=20260829b/);
 assert.match(objects, /objects\.css\?v=20260829b/);
 
 console.log('House integrations: ok (roadmap, accounting, events, assets, wallets)');
