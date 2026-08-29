@@ -133,7 +133,7 @@
     <div id="chart"></div>
     <div class="legend">
       <span><i style="background:var(--gold)"></i>total supply</span>
-      <span><i style="background:var(--tier)"></i>confirmed burn marker</span>
+      <span><i style="background:var(--tier)"></i>tier burn</span>
       <span id="span"></span>
     </div>
   </div>
@@ -174,12 +174,12 @@
   var RECON = document.getElementById('recon');
   var LEDGER_METRICS = document.getElementById('ledgerMetrics');
   var KINDS = {
-    tier:   { label: 'Burn', note: 'confirmed Token-2022 burn' },
-    dev:    { label: 'Burn', note: 'confirmed Token-2022 burn' },
-    escrow: { label: 'Burn', note: 'confirmed Token-2022 burn' },
-    escrowburn: { label: 'Burn', note: 'confirmed Token-2022 burn' },
-    launch: { label: 'Burn', note: 'confirmed Token-2022 burn' },
-    burn:   { label: 'Burn', note: 'confirmed Token-2022 burn' },
+    tier:       { label: 'Tier burn',   note: 'confirmed burn at a published volume threshold' },
+    dev:        { label: 'Dev burn',    note: 'confirmed development-wallet burn' },
+    escrow:     { label: 'Mint burn',   note: 'confirmed burn from the public mint escrow' },
+    escrowburn: { label: 'Mint burn',   note: 'confirmed burn from the public mint escrow' },
+    launch:     { label: 'Launch burn', note: 'confirmed burn from the launch mechanics' },
+    burn:       { label: 'Burn',        note: 'confirmed Token-2022 burn' },
   };
 
   var W = 900, H = 380, PAD_L = 62, PAD_R = 14, PAD_T = 18, PAD_B = 30;
@@ -311,9 +311,9 @@
         LEDGER_METRICS.hidden = false;
 
         EVTS.innerHTML = rows.map(function(e){
-          var isTier = false;
+          var isTier = e.kind === 'tier';
           var kind = KINDS[e.kind] || KINDS.burn;
-          var label = kind.note;
+          var label = e.note || kind.note;
           var signature = String(e.sig || '');
           var transaction = signature
             ? '<a class="sig" href="https://solscan.io/tx/'+encodeURIComponent(signature)+'" target="_blank" rel="noopener" title="Open transaction on Solscan">'+esc(signature)+'</a>'
