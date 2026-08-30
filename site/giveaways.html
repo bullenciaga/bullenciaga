@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BULLENCIAGA giveaways.html | build 2026-08-27.3 — vTURBO Trophy skill campaign -->
+<!-- BULLENCIAGA giveaways.html | build 2026-08-30.1 — verified campaign media -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -40,8 +40,11 @@
     .campaign-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
     .campaign { position: relative; min-width: 0; padding: clamp(18px, 3vw, 28px); border: 1px solid var(--bullen-border); background: linear-gradient(145deg, rgba(199,168,105,.045), transparent 45%), var(--bullen-surface); }
     .campaign.featured { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(190px, 30%) minmax(0, 1fr); gap: clamp(20px, 4vw, 44px); }
+    .campaign.featured.with-video { grid-template-columns: minmax(360px, 48%) minmax(0, 1fr); }
     .campaign-media { min-height: 260px; overflow: hidden; border: 1px solid var(--bullen-border); background: var(--bullen-bg); }
-    .campaign-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .campaign-media img,
+    .campaign-media video { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .campaign-media[data-media="video"] { min-height: 0; aspect-ratio: 16 / 9; align-self: center; }
     .campaign-copy { min-width: 0; align-self: center; }
     .campaign[data-status="active"] { border-color: rgba(95, 211, 154, .42); }
     .campaign[data-status="upcoming"] { border-color: rgba(231, 184, 92, .3); }
@@ -71,7 +74,9 @@
       .summary, .campaign-grid { grid-template-columns: 1fr; }
       .summary { margin-bottom: 40px; }
       .campaign.featured { grid-template-columns: 1fr; }
+      .campaign.featured.with-video { grid-template-columns: 1fr; }
       .campaign-media { min-height: 0; aspect-ratio: 1 / 1; }
+      .campaign-media[data-media="video"] { aspect-ratio: 16 / 9; }
     }
   </style>
 </head>
@@ -156,10 +161,16 @@
         } catch (_) { return null; }
       };
       const safePrizeImage = (href) => {
+        const internal = safeInternalHref(href);
+        if (internal && /^\/assets\/giveaways\/[a-z0-9/_-]+\.(?:avif|gif|jpe?g|png|webp)$/i.test(internal)) return internal;
         try {
           const value = new URL(href);
           return value.protocol === 'https:' && value.hostname === 'gateway.irys.xyz' ? value.href : null;
         } catch (_) { return null; }
+      };
+      const safePrizeVideo = (href) => {
+        const internal = safeInternalHref(href);
+        return internal && /^\/assets\/giveaways\/[a-z0-9/_-]+\.mp4$/i.test(internal) ? internal : null;
       };
       const link = (href, label, primary = false) => {
         const internal = safeInternalHref(href);
@@ -187,12 +198,17 @@
               return Number.isFinite(value) && value > 0
                 ? `<div class="milestone"><b>${escapeHtml(value.toLocaleString())}</b><span>${escapeHtml(milestone.label)}</span></div>` : '';
             }).join('')}</div>` : '';
+        const video = safePrizeVideo(campaign.prizes && campaign.prizes.video);
         const image = safePrizeImage(campaign.prizes && campaign.prizes.image);
-        const media = image ? `<div class="campaign-media"><img src="${escapeHtml(image)}" alt="HERD #699 in a golden fancy jacket" loading="lazy" decoding="async"></div>` : '';
+        const poster = safePrizeImage(campaign.prizes && campaign.prizes.poster);
+        const mediaAlt = campaign.prizes && campaign.prizes.alt || campaign.title;
+        const media = video
+          ? `<div class="campaign-media" data-media="video"><video autoplay muted loop playsinline preload="metadata"${poster ? ` poster="${escapeHtml(poster)}"` : ''} aria-label="${escapeHtml(mediaAlt)}"><source src="${escapeHtml(video)}" type="video/mp4">${escapeHtml(mediaAlt)}</video></div>`
+          : image ? `<div class="campaign-media"><img src="${escapeHtml(image)}" alt="${escapeHtml(mediaAlt)}" loading="lazy" decoding="async"></div>` : '';
         const traits = campaign.prizes && campaign.prizes.traits;
-        const prizeLine = traits ? [traits.Outerwear, traits.Horns && `${traits.Horns} horns`,
-          traits['Glasses And Headgear'], traits.Branding && `${traits.Branding} branding`].filter(Boolean).join(' · ') : '';
-        const featured = campaign.featured && media ? ' featured' : '';
+        const prizeLine = campaign.prizes && campaign.prizes.subtitle || (traits ? [traits.Outerwear, traits.Horns && `${traits.Horns} horns`,
+          traits['Glasses And Headgear'], traits.Branding && `${traits.Branding} branding`].filter(Boolean).join(' · ') : '');
+        const featured = campaign.featured && media ? ` featured${video ? ' with-video' : ''}` : '';
         return `<article class="campaign${featured}" data-status="${escapeHtml(campaign.status)}">
           ${media}<div class="campaign-copy">
           <div class="status">${escapeHtml(campaign.status.replaceAll('-', ' '))}</div>
@@ -217,6 +233,18 @@
           <div class="campaign-grid">${rows.length ? rows.map(card).join('') : '<div class="empty">No campaigns in this state.</div>'}</div>
         </section>`);
       }
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      root.querySelectorAll('video[autoplay]').forEach((video) => {
+        if (reduceMotion) {
+          video.removeAttribute('autoplay');
+          video.pause();
+          return;
+        }
+        const play = () => video.play().catch(() => {});
+        if (video.readyState >= 2) play();
+        else video.addEventListener('canplay', play, { once: true });
+      });
     })();
   </script>
 </body>
