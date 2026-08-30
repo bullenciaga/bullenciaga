@@ -2,7 +2,7 @@
   "schema": "bullenciaga.giveaways.v1",
   "project": "BULLENCIAGA",
   "token": "$BULLEN",
-  "updatedAt": "2026-08-27T16:53:45Z",
+  "updatedAt": "2026-08-30T13:18:37Z",
   "finalCarryover": {
     "rounds": [0, 1, 2],
     "wallets": 32,
@@ -84,6 +84,74 @@
         "signatureMessage": "bullenciaga giveaway entry - follow500"
       },
       "payoutStatus": "not-drawn"
+    },
+    {
+      "id": "herd-buy-hold-680-625-308",
+      "title": "The Herd Buy + Hold Draw",
+      "kind": "buy-hold",
+      "status": "active",
+      "featured": true,
+      "trigger": {
+        "label": "72-hour window · closes 2 Sep 2026 at 13:18 UTC",
+        "target": null,
+        "current": null,
+        "source": "/giveaway-buy-hold-open.json"
+      },
+      "eligibility": [
+        "Every 25,000 $BULLEN bought from the official pool and still held at close earns one entry",
+        "Unlimited entries; wallet transfers do not count and sales reduce the scored amount",
+        "One prize per wallet; project, market-making, exchange and operational wallets are excluded",
+        "Opening and closing snapshots will be public before a future finalized Solana blockhash is used as the draw seed",
+        "The entry window closes 2 Sep 2026 at 13:18:37 UTC"
+      ],
+      "qualification": {
+        "entryUnit": 25000,
+        "entryCap": null,
+        "scoring": "floor(min(net balance increase, net bought from the official pool) / 25000)",
+        "mustHoldAtClose": true,
+        "transfersCount": false,
+        "salesReduceEntries": true,
+        "onePrizePerWallet": true
+      },
+      "prizes": {
+        "type": "herd-positions",
+        "positions": [680, 625, 308],
+        "count": 3,
+        "subtitle": "HERD #680 · HERD #625 · HERD #308",
+        "video": "/assets/giveaways/herd-buy-hold/herd-buy-hold.mp4",
+        "poster": "/assets/giveaways/herd-buy-hold/herd-buy-hold-poster.webp",
+        "alt": "Animated BULLENCIAGA Buy + Hold Draw reveal featuring HERD #680, HERD #625 and HERD #308",
+        "assets": [
+          {
+            "position": 680,
+            "assetId": "63CY3tnJ1Cj9J5kqMM9BHwJW81Q3uagRyoH48QSDLhvZ",
+            "image": "https://gateway.irys.xyz/EET3eDgEHJEYkxCv2oX6nQiWhmnJ1zefHucewd7Cz5tX"
+          },
+          {
+            "position": 625,
+            "assetId": "3xLtMAx9yTuZrVxxmB1vmwhXHLTrbDpndxjyYYZQ6SYF",
+            "image": "https://gateway.irys.xyz/wz54gK4uUQLwHW15ytx96KPe5tDrdjq1jw9tQwEwywx"
+          },
+          {
+            "position": 308,
+            "assetId": "FERTknZW1y4wyTuJK3kxZ86SHzvovbfK8oE6Y6UpQ9UW",
+            "image": "https://gateway.irys.xyz/FZ9yjvjf9R2T1m1Xyp5cFq2sszcDBga42VwHsm5u1wFs"
+          }
+        ]
+      },
+      "entry": {
+        "type": "buy-and-hold",
+        "instructions": ["Buy from the official pool", "Hold the qualifying balance through the close snapshot"]
+      },
+      "draw": {
+        "method": "future-finalized-solana-blockhash",
+        "random": true,
+        "activation": "active",
+        "openedAt": "2026-08-30T13:18:37.000Z",
+        "closesAt": "2026-09-02T13:18:37.000Z"
+      },
+      "snapshot": "/giveaway-buy-hold-open.json",
+      "result": null
     },
     {
       "id": "mint-round-0",

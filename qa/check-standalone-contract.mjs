@@ -42,7 +42,7 @@ if (!shellCss.includes('height: 34px;') || !shellCss.includes('.bullen-home-shel
 
 const authority = JSON.parse(fs.readFileSync(path.join(site, 'giveaways.json'), 'utf8'));
 if (authority.schema !== 'bullenciaga.giveaways.v1') failures.push('giveaway authority schema mismatch');
-for (const id of ['vturbo-trophy-699', 'follow500', 'mint-round-0', 'mint-round-1', 'mint-round-2', 'mint-round-3', 'mint-final']) {
+for (const id of ['vturbo-trophy-699', 'follow500', 'herd-buy-hold-680-625-308', 'mint-round-0', 'mint-round-1', 'mint-round-2', 'mint-round-3', 'mint-final']) {
   if (!authority.campaigns.some((campaign) => campaign.id === id)) failures.push(`giveaway authority missing ${id}`);
 }
 const trophy = authority.campaigns.find((campaign) => campaign.id === 'vturbo-trophy-699');
@@ -59,6 +59,30 @@ if (round3?.round !== 3 || round3?.trigger?.target !== 650 || round3?.status !==
     || round3.snapshot || round3.result) {
   failures.push('round 3 must remain visibly gated with no fabricated snapshot or result');
 }
+const buyHold = authority.campaigns.find((campaign) => campaign.id === 'herd-buy-hold-680-625-308');
+if (buyHold?.status !== 'active' || buyHold?.kind !== 'buy-hold'
+    || buyHold?.qualification?.entryUnit !== 25_000 || buyHold?.qualification?.entryCap !== null
+    || buyHold?.qualification?.mustHoldAtClose !== true || buyHold?.qualification?.transfersCount !== false
+    || buyHold?.qualification?.salesReduceEntries !== true || buyHold?.qualification?.onePrizePerWallet !== true
+    || buyHold?.draw?.activation !== 'active'
+    || buyHold?.draw?.openedAt !== '2026-08-30T13:18:37.000Z'
+    || buyHold?.draw?.closesAt !== '2026-09-02T13:18:37.000Z'
+    || buyHold?.snapshot !== '/giveaway-buy-hold-open.json' || buyHold?.result
+    || buyHold?.prizes?.positions?.join(',') !== '680,625,308') {
+  failures.push('Buy + Hold draw must remain tied to its public 72-hour opening snapshot and fixed prize order');
+}
+const buyHoldOpen = JSON.parse(fs.readFileSync(path.join(site, 'giveaway-buy-hold-open.json'), 'utf8'));
+if (buyHoldOpen?.schema !== 'bullenciaga.buy-hold-open.v1'
+    || buyHoldOpen?.campaign !== buyHold.id || buyHoldOpen?.status !== 'active'
+    || buyHoldOpen?.openedAt !== buyHold.draw.openedAt || buyHoldOpen?.closesAt !== buyHold.draw.closesAt
+    || buyHoldOpen?.windowHours !== 72 || buyHoldOpen?.rules?.entryUnit !== '25000'
+    || buyHoldOpen?.rules?.entryCap !== null || buyHoldOpen?.rules?.onePrizePerWallet !== true
+    || !Number.isInteger(buyHoldOpen?.openingReference?.finalizedSlot)
+    || typeof buyHoldOpen?.openingReference?.blockhash !== 'string'
+    || buyHoldOpen?.prizes?.map((prize) => prize.position).join(',') !== '680,625,308'
+    || Object.keys(buyHoldOpen?.balancesRaw || {}).length !== buyHoldOpen?.totals?.owners) {
+  failures.push('Buy + Hold opening snapshot is missing, incomplete or inconsistent with the campaign authority');
+}
 if (authority.finalCarryover?.wallets !== 32 || authority.finalCarryover?.bankedEntries !== 62) {
   failures.push('giveaway authority carryover is missing or incorrect');
 }
@@ -70,6 +94,7 @@ for (const state of ['Active', 'Upcoming', 'Completed']) {
 if (giveaways.includes("['paid', 'Paid'") || giveaways.includes('campaign.payoutStatus')) failures.push('giveaways page still exposes payout bookkeeping');
 if (!giveaways.includes('No draw or result state is inferred')) failures.push('giveaways page does not fail closed');
 if (!giveaways.includes('Collective unlock targets') || !giveaways.includes("campaign.entry.url || campaign.entry.homepageAnchor")) failures.push('giveaways page does not render the vTURBO Trophy unlock and X entry action');
+if (!giveaways.includes('safePrizeVideo') || !giveaways.includes('playsinline') || !giveaways.includes('campaign.prizes.alt')) failures.push('giveaways page does not render accessible trusted campaign video');
 
 const curve = fs.readFileSync(path.join(site, 'curve.html'), 'utf8');
 if (!curve.includes('.wrap') || !curve.includes('max-width:900px')) failures.push('curve.html: record suite width drifted');
