@@ -140,7 +140,7 @@
         ]
       },
       "entry": {
-        "type": "proposed-buy-and-hold",
+        "type": "buy-and-hold",
         "instructions": ["Buy from the official pool", "Hold the qualifying balance through the close snapshot"]
       },
       "draw": {
