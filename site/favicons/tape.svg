@@ -1,11 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">The Tape</title>
+  <desc id="desc">A simple gold cassette icon.</desc>
   <rect width="64" height="64" fill="#050505"/>
-  <rect x="7.5" y="12.5" width="49" height="39" rx="5.5" fill="#050505" stroke="#c7a869" stroke-width="3"/>
-  <rect x="13" y="18" width="38" height="17" rx="3" fill="#050505" stroke="#c7a869" stroke-width="2"/>
-  <circle cx="23" cy="26.5" r="5.5" fill="none" stroke="#c7a869" stroke-width="3"/>
-  <circle cx="41" cy="26.5" r="5.5" fill="none" stroke="#c7a869" stroke-width="3"/>
-  <path d="M28.5 26.5h7" fill="none" stroke="#c7a869" stroke-width="2"/>
-  <path d="M17 46.5h30l-3.5-8h-23z" fill="#050505" stroke="#c7a869" stroke-width="2.5" stroke-linejoin="round"/>
-  <circle cx="25" cy="43" r="1.5" fill="#c7a869"/>
-  <circle cx="39" cy="43" r="1.5" fill="#c7a869"/>
+  <rect x="7" y="13" width="50" height="38" rx="5" fill="#c7a869"/>
+  <rect x="13" y="19" width="38" height="19" rx="3" fill="#050505"/>
+  <circle cx="23" cy="28.5" r="6" fill="#c7a869"/>
+  <circle cx="41" cy="28.5" r="6" fill="#c7a869"/>
+  <circle cx="23" cy="28.5" r="2.25" fill="#050505"/>
+  <circle cx="41" cy="28.5" r="2.25" fill="#050505"/>
+  <rect x="28" y="27" width="8" height="3" rx="1.5" fill="#c7a869"/>
+  <path d="M18 47h28l-3-7H21z" fill="#050505"/>
 </svg>
