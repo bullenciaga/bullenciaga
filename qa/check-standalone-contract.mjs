@@ -135,6 +135,8 @@ if (!tape.includes("const REST_URL = API_ORIGIN + '/volume/tape'")) failures.pus
 if (!tape.includes("const WS_URL = API_ORIGIN.replace(/^http/, 'ws') + '/volume/tape/live'")) failures.push('tape.html: live market WebSocket endpoint missing');
 if (!tape.includes('Data provided by <a href="https://www.coingecko.com/"')) failures.push('tape.html: CoinGecko attribution missing');
 if (!tape.includes('Wallet identities are not published here')) failures.push('tape.html: public privacy boundary missing');
+if (!tape.includes("event.kind!=='large_buy'") || !tape.includes("data.type==='large_buy'")) failures.push('tape.html: large-buy stream event missing');
+if (!tape.includes('largeBuyGlow') || !tape.includes('large-buy-active')) failures.push('tape.html: large-buy gold pulse missing');
 
 if (failures.length) {
   console.error(failures.join('\n'));
