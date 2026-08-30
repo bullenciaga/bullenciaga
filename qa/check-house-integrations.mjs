@@ -34,14 +34,20 @@ assert.match(index, /badge\.textContent = 'BULLENSAGA'/);
 assert.match(index, /function isCompanionRecord\(entry\)/);
 assert.match(index, /url\.startsWith\('\/'\)/);
 assert.match(index, /function houseStatusLine\(entry\)/);
+assert.match(index, /fetch\('\/volume', \{ cache:'no-store' \}\)/);
 assert.match(index, /House Pair I complete · paired status follows this wallet/);
 assert.match(index, /Enhanced by House Pair I · Signet \+ Cufflinks verified in this wallet/);
 assert.match(redirects, /^\/whitepaper\s+\/whitepaper\.pdf\s+302$/m);
 
 assert.doesNotMatch(stats, /<div class="brand"/);
 assert.match(stats, /HOUSE_OBJECTS_COLLECTION:\s*'9ucdkSaiTLUDXmVCjWonxAJqrTH9uyB675BzzRi5vqgM'/);
+assert.match(stats, /BULLENSAGA_COLLECTION:\s*'FnbDXuPxcy87y451eYimMTDrrPqoFRMVi4ctAu73XVkD'/);
 assert.match(stats, /fetchAssets\(CFG\.HOUSE_OBJECTS_COLLECTION, 'house-object'\)/);
 assert.match(stats, /fetchRecentAssets\(CFG\.HOUSE_OBJECTS_COLLECTION, RECENT_SEED_COUNT, 'house-object'\)/);
+assert.match(stats, /fetchAssets\(CFG\.BULLENSAGA_COLLECTION, 'bullensaga'\)/);
+assert.match(stats, /fetchPublicRecordActivity\(RECENT_SEED_COUNT\)/);
+assert.match(stats, /event\.kind === 'housemint' \|\| event\.kind === 'foundingmint'/);
+assert.match(stats, /fetch\('\/volume', \{ cache:'no-store' \}\)/);
 
 assert.doesNotMatch(chart, /house-burn-registry\.js|HOUSE OBJECT BURN COMMITMENTS/i);
 assert.match(chart, /\/api\/public-activity/);
