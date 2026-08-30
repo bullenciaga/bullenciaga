@@ -66,6 +66,7 @@ assert.match(objectsCss, /\.objects-rule span,\.objects-rule strong \{ display:f
 assert.match(objectsCss, /object-fit:cover/);
 assert.match(objectsCss, /house-object-02-cufflinks[^\n]+object-position:73% center/);
 assert.match(objectsCss, /#connectWallet \{ grid-column:1\/-1; min-height:64px; font-size:12px; \}/);
+assert.match(objectsCss, /#beginClaim \{ font-size:12px; \}/);
 assert.match(objects, /collection-previews\/house-object-01-signet\.webp/);
 assert.match(objects, /collection-previews\/house-object-02-cufflinks\.webp/);
 assert.match(objectsJs, /var reviewMode = reviewHost && root\.dataset\.objectsReview === 'true'/);
