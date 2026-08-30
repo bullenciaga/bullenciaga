@@ -11,6 +11,7 @@
   var provider = null;
   var wallet = '';
   var availability = {};
+  var pendingClaimKey = 'bullen-house-object-pending-v1';
   var names = {
     'house-object-01-signet': 'THE SIGNET',
     'house-object-02-cufflinks': 'THE CUFFLINKS'
@@ -73,7 +74,7 @@
       $('walletAddress').textContent = wallet;
       updateClaimButton();
       activateStep('wallet', true);
-      setStatus('Wallet proved. The selected object is ready to reserve.');
+      if (!await resumePendingClaim()) setStatus('Wallet proved. The selected object is ready to reserve.');
     } catch (error) { setStatus((error && error.message) || 'Connection cancelled.', true); }
   }
 
@@ -107,8 +108,75 @@
   async function post(path, body) {
     var response = await fetch(apiBase + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
     var result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'The House ledger refused the request.');
+    if (!response.ok) {
+      var error = new Error(result.error || 'The House ledger refused the request.');
+      error.status = response.status;
+      error.reason = result.reason || '';
+      throw error;
+    }
     return result;
+  }
+
+  function pause(milliseconds) {
+    return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); });
+  }
+
+  function savePendingClaim(details) {
+    try { window.localStorage.setItem(pendingClaimKey, JSON.stringify(details)); } catch (error) { /* best effort */ }
+  }
+
+  function loadPendingClaim() {
+    try {
+      var raw = window.localStorage.getItem(pendingClaimKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) { return null; }
+  }
+
+  function clearPendingClaim() {
+    try { window.localStorage.removeItem(pendingClaimKey); } catch (error) { /* best effort */ }
+  }
+
+  function showCompletedClaim(claim) {
+    activateStep('verify', true);
+    $('claimSerial').textContent = '#' + String(claim.slot.serialNumber).padStart(3, '0');
+    $('claimResultCopy').textContent = claim.recoveredExpiredReservation
+      ? 'Escrow deposit verified and recovered. This numbered unit is allocated to the connected wallet and is now in the mint queue.'
+      : 'Escrow deposit verified. This numbered unit is allocated to the connected wallet and is now in the mint queue.';
+    $('claimResult').hidden = false;
+    setStatus('Escrow deposit verified. Your permanent mint record is being prepared.');
+    clearPendingClaim();
+    loadInventory();
+  }
+
+  async function finalizeClaim(details) {
+    var lastError = null;
+    for (var attempt = 0; attempt < 5; attempt += 1) {
+      try {
+        return await post('/api/house-objects/claims', details);
+      } catch (error) {
+        lastError = error;
+        var retryable = error.reason === 'TRANSACTION_NOT_CONFIRMED' || error.status >= 500;
+        if (!retryable || attempt === 4) break;
+        setStatus('The transfer was sent. Waiting for Solana to index it…');
+        await pause(2000 * (attempt + 1));
+      }
+    }
+    throw lastError || new Error('The escrow deposit is still waiting for confirmation.');
+  }
+
+  async function resumePendingClaim() {
+    var pending = loadPendingClaim();
+    if (!pending || pending.solWalletAddress !== wallet) return false;
+    selectedId = pending.collectibleId;
+    selectObject(selectedId);
+    activateStep('verify', false);
+    setStatus('Found your submitted escrow transfer. Finishing the claim…');
+    try {
+      showCompletedClaim(await finalizeClaim(pending));
+    } catch (error) {
+      setStatus('Your transfer is saved and has not been lost. Keep this browser data and reconnect shortly to finish verification.', true);
+    }
+    return true;
   }
 
   async function beginClaim() {
@@ -145,21 +213,22 @@
       var sent = await provider.signAndSendTransaction(transaction);
       var signature = sent && sent.signature ? sent.signature : String(sent || '');
 
-      activateStep('verify', false); setStatus('Waiting for Solana confirmation and verifying the escrow deposit…');
-      var claim = await post('/api/house-objects/claims', {
+      var pending = {
         reservationId: reservation.reservationId,
         collectibleId: selectedId,
         solWalletAddress: wallet,
         escrowTransactionSignature: signature
-      });
-      activateStep('verify', true);
-      $('claimSerial').textContent = '#' + String(claim.slot.serialNumber).padStart(3, '0');
-      $('claimResultCopy').textContent = 'Escrow deposit verified. This numbered unit is allocated to the connected wallet and is now in the mint queue.';
-      $('claimResult').hidden = false;
-      setStatus('Escrow deposit verified. Your permanent mint record is being prepared.');
-      loadInventory();
+      };
+      savePendingClaim(pending);
+
+      activateStep('verify', false); setStatus('Waiting for Solana confirmation and verifying the escrow deposit…');
+      showCompletedClaim(await finalizeClaim(pending));
     } catch (error) {
-      setStatus((error && error.message) || 'The claim could not be completed.', true);
+      if (loadPendingClaim()) {
+        setStatus('Your transfer was submitted and saved. Reconnect this same wallet shortly; the claim will resume automatically.', true);
+      } else {
+        setStatus((error && error.message) || 'The claim could not be completed.', true);
+      }
     } finally { updateClaimButton(); }
   }
 
