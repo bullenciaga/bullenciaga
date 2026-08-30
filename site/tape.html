@@ -19,12 +19,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/bullen-ui.css">
+<script src="https://plugin.jup.ag/plugin-v1.js" data-preload defer></script>
 <style>
   :root{
     --bg:#050505;--panel:#090909;--panel2:#0d0d0d;--ink:#f5f3ee;
     --muted:rgba(245,243,238,.46);--ghost:rgba(245,243,238,.22);
     --gold:#c7a869;--gold2:#ead9aa;--line:rgba(199,168,105,.2);
     --buy:#5fd39a;--sell:#e0685f;--warn:#e7b85c;
+    --jupiter-plugin-primary:199,168,105;
+    --jupiter-plugin-background:5,5,5;
+    --jupiter-plugin-primaryText:245,243,238;
+    --jupiter-plugin-warning:224,104,95;
+    --jupiter-plugin-interactive:31,27,18;
+    --jupiter-plugin-module:13,13,13;
   }
   *{box-sizing:border-box}
   html{background:var(--bg);scroll-behavior:smooth}
@@ -32,14 +39,14 @@
     radial-gradient(circle at 50% -20%,rgba(199,168,105,.11),transparent 36rem),
     var(--bg);color:var(--ink);font-family:'Space Mono',monospace;min-height:100vh}
   a{color:inherit}
-  main{width:min(1440px,calc(100% - 40px));margin:0 auto;padding:20px 0 80px}
+  main{width:min(1440px,calc(100% - 40px));margin:0 auto;padding:10px 0 28px}
   .mast{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;
-    padding:32px 0 26px;border-bottom:1px solid var(--line)}
+    padding:16px 0 14px;border-bottom:1px solid var(--line)}
   .eyebrow,.label{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
-  h1{font-family:Poppins,sans-serif;font-size:clamp(54px,8vw,126px);line-height:.82;
-    margin:16px 0 8px;letter-spacing:-.06em;font-weight:600}
-  .intro{max-width:720px;margin:20px 0 0;color:var(--muted);font-size:clamp(12px,1.05vw,15px);line-height:1.8}
-  .live-card{min-width:250px;border:1px solid var(--line);padding:18px 20px;background:rgba(9,9,9,.72)}
+  h1{font-family:Poppins,sans-serif;font-size:clamp(54px,7vw,104px);line-height:.82;
+    margin:11px 0 5px;letter-spacing:-.06em;font-weight:600}
+  .intro{max-width:720px;margin:12px 0 0;color:var(--muted);font-size:clamp(12px,1.05vw,15px);line-height:1.6}
+  .live-card{min-width:250px;border:1px solid var(--line);padding:14px 18px;background:rgba(9,9,9,.72)}
   .connection{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.18em;text-transform:uppercase}
   .connection-dot{width:10px;height:10px;border-radius:50%;background:var(--warn);box-shadow:0 0 16px var(--warn)}
   .connection.live .connection-dot{background:var(--buy);box-shadow:0 0 18px var(--buy);animation:pulse 1.8s ease-in-out infinite}
@@ -47,22 +54,23 @@
   .connection-sub{margin-top:10px;color:var(--muted);font-size:10px;line-height:1.6}
   @keyframes pulse{50%{opacity:.35}}
 
-  .headline{display:grid;grid-template-columns:repeat(4,1fr);margin-top:22px;border:1px solid var(--line)}
-  .metric{min-width:0;padding:22px 24px;background:rgba(9,9,9,.8)}
+  .headline{display:grid;grid-template-columns:repeat(4,1fr);margin-top:14px;border:1px solid var(--line)}
+  .metric{min-width:0;padding:15px 20px;background:rgba(9,9,9,.8)}
   .metric+.metric{border-left:1px solid var(--line)}
   .metric-value{font-family:Poppins,sans-serif;font-size:clamp(26px,3vw,45px);line-height:1;
-    margin-top:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .metric-note{margin-top:10px;color:var(--muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+    margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .metric-note{margin-top:7px;color:var(--muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
   .positive{color:var(--buy)!important}.negative{color:var(--sell)!important}
 
-  .layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(310px,.75fr);gap:22px;margin-top:22px}
+  .layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(310px,.75fr);gap:16px;margin-top:14px;align-items:stretch}
   .panel{border:1px solid var(--line);background:rgba(9,9,9,.86);min-width:0}
-  .panel-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 20px;border-bottom:1px solid var(--line)}
+  .layout>.panel{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:0;overflow:hidden}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 18px;border-bottom:1px solid var(--line)}
   .panel-title{font-family:Poppins,sans-serif;font-size:18px;font-weight:500;letter-spacing:.01em}
   .panel-note{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
-  .tape{height:min(68vh,720px);min-height:500px;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+  .tape{height:auto;min-height:0;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
   .trade{display:grid;grid-template-columns:74px minmax(100px,1fr) minmax(120px,.9fr) minmax(110px,.8fr) 72px;
-    gap:16px;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(199,168,105,.11);
+    gap:16px;align-items:center;padding:13px 18px;border-bottom:1px solid rgba(199,168,105,.11);
     text-decoration:none;transition:background .16s ease,border-color .16s ease}
   .trade:hover{background:rgba(199,168,105,.045);border-color:var(--line)}
   .trade.new{animation:tradeIn .7s cubic-bezier(.2,.75,.2,1)}
@@ -74,40 +82,40 @@
   .time{text-align:right;color:var(--muted);font-size:10px;white-space:nowrap}
   .empty{padding:54px 20px;text-align:center;color:var(--muted);font-size:12px;line-height:1.8}
 
-  .side-stack{display:flex;flex-direction:column;gap:22px}
-  .module{padding:20px}
+  .side-stack{display:flex;flex-direction:column;gap:14px}
+  .module{padding:16px}
   .module+.module{border-top:1px solid var(--line)}
-  .flow-row{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-top:17px}
+  .flow-row{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-top:12px}
   .flow-big{font-family:Poppins,sans-serif;font-size:34px;line-height:1}
   .flow-sub{text-align:right;color:var(--muted);font-size:10px;line-height:1.6}
-  .pressure{height:10px;display:flex;background:rgba(255,255,255,.05);margin-top:20px;overflow:hidden}
+  .pressure{height:9px;display:flex;background:rgba(255,255,255,.05);margin-top:14px;overflow:hidden}
   .pressure-buy{width:50%;background:var(--buy);transition:width .7s ease;box-shadow:0 0 18px rgba(95,211,154,.25)}
   .pressure-sell{flex:1;background:var(--sell);box-shadow:0 0 18px rgba(224,104,95,.2)}
   .pressure-legend{display:flex;justify-content:space-between;margin-top:9px;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
-  .spark{height:118px;margin-top:17px;position:relative;border:1px solid rgba(199,168,105,.1);overflow:hidden;background:
+  .spark{height:96px;margin-top:12px;position:relative;border:1px solid rgba(199,168,105,.1);overflow:hidden;background:
     linear-gradient(rgba(199,168,105,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(199,168,105,.035) 1px,transparent 1px);
     background-size:100% 25%,20% 100%}
   .spark svg{width:100%;height:100%;display:block;overflow:visible}
   .spark path.line{fill:none;stroke:var(--gold2);stroke-width:2;vector-effect:non-scaling-stroke}
   .spark path.area{fill:url(#sparkFill);stroke:none}
-  .burn-number{font-family:Poppins,sans-serif;font-size:clamp(31px,3.3vw,50px);line-height:1;margin-top:16px;color:var(--gold2)}
-  .burn-copy{margin-top:10px;color:var(--muted);font-size:10px;line-height:1.65}
-  .burn-track{height:9px;margin-top:20px;border:1px solid var(--line);background:rgba(255,255,255,.04)}
+  .burn-number{font-family:Poppins,sans-serif;font-size:clamp(31px,3.3vw,50px);line-height:1;margin-top:12px;color:var(--gold2)}
+  .burn-copy{margin-top:7px;color:var(--muted);font-size:10px;line-height:1.55}
+  .burn-track{height:9px;margin-top:14px;border:1px solid var(--line);background:rgba(255,255,255,.04)}
   .burn-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));box-shadow:0 0 18px rgba(199,168,105,.4);transition:width .8s ease}
-  .market-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;margin-top:18px}
+  .market-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px 14px;margin-top:13px}
   .market-v{margin-top:6px;font-size:16px;color:var(--gold2);white-space:nowrap}
-  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
   .action{display:flex;align-items:center;justify-content:center;min-height:48px;border:1px solid var(--gold);text-decoration:none;
-    font-size:10px;letter-spacing:.16em;text-transform:uppercase;transition:.15s ease}
+    appearance:none;border-radius:0;background:transparent;color:inherit;font:inherit;font-size:10px;letter-spacing:.16em;text-transform:uppercase;transition:.15s ease;cursor:pointer}
   .action.primary{background:var(--gold);color:#050505}.action:hover{background:var(--gold2);color:#050505;border-color:var(--gold2)}
-  .source{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:17px 20px;border-top:1px solid var(--line);
+  .source{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:12px 18px;border-top:1px solid var(--line);
     color:var(--muted);font-size:9px;line-height:1.7;letter-spacing:.06em}
   .source a{color:var(--gold);text-underline-offset:3px}
 
   @media(max-width:980px){
     .headline{grid-template-columns:1fr 1fr}.metric:nth-child(3){border-left:0;border-top:1px solid var(--line)}
     .metric:nth-child(4){border-top:1px solid var(--line)}
-    .layout{grid-template-columns:1fr}.tape{height:auto;max-height:680px}.side-stack{display:grid;grid-template-columns:1fr 1fr}.side-stack .panel:last-child{grid-column:1/-1}
+    .layout{grid-template-columns:1fr}.layout>.panel{display:block}.tape{height:auto;min-height:500px;max-height:680px}.side-stack{display:grid;grid-template-columns:1fr 1fr}.side-stack .panel:last-child{grid-column:1/-1}
   }
   @media(max-width:680px){
     main{width:min(100% - 24px,1440px);padding-top:6px}.mast{grid-template-columns:1fr;padding-top:18px}.live-card{min-width:0}
@@ -177,7 +185,7 @@
             <div><div class="label">24h Change</div><div class="market-v" id="change24h">--</div></div>
             <div><div class="label">Cumulative</div><div class="market-v" id="cumulative">--</div></div>
           </div>
-          <div class="actions"><a class="action primary" href="/buy">Buy $BULLEN</a><a class="action" href="/chart">Open Chart</a></div>
+          <div class="actions"><button class="action primary" id="buyBullen" type="button">Buy $BULLEN</button><a class="action" href="/chart">Open Chart</a></div>
         </div>
       </section>
     </aside>
@@ -191,6 +199,9 @@
   const API_ORIGIN = location.protocol === 'file:' ? 'https://bullenciaga.com' : location.origin;
   const REST_URL = API_ORIGIN + '/volume/tape';
   const WS_URL = API_ORIGIN.replace(/^http/, 'ws') + '/volume/tape/live';
+  const SOL_MINT = 'So11111111111111111111111111111111111111112';
+  const BULLEN_MINT = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
+  const JUPITER_FALLBACK = 'https://jup.ag/swap/SOL-' + BULLEN_MINT;
   const MAX_ROWS = 60;
   const BURNS = [250000, 1000000, 5000000, 20000000, 50000000];
   let trades = [];
@@ -201,6 +212,29 @@
   let pingTimer = null;
   let pollTimer = null;
   let lastPriceFallback = null;
+
+  function openBullenSwap(){
+    if(!window.Jupiter || typeof window.Jupiter.init !== 'function'){
+      window.open(JUPITER_FALLBACK,'_blank','noopener,noreferrer');
+      return;
+    }
+    window.Jupiter.init({
+      displayMode:'modal',
+      formProps:{
+        initialInputMint:SOL_MINT,
+        initialOutputMint:BULLEN_MINT,
+        fixedMint:BULLEN_MINT,
+        fixedAmount:false,
+        swapMode:'ExactIn'
+      },
+      branding:{
+        logoUri:'https://bullenciaga.com/logo-200.png',
+        name:'BULLENCIAGA'
+      }
+    });
+  }
+
+  $('buyBullen').addEventListener('click',openBullenSwap);
 
   const finite = value => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value)) ? Number(value) : null;
   const usd = value => {
