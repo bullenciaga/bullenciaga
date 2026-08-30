@@ -61,6 +61,7 @@ if (round3?.round !== 3 || round3?.trigger?.target !== 650 || round3?.status !==
 }
 const buyHold = authority.campaigns.find((campaign) => campaign.id === 'herd-buy-hold-680-625-308');
 if (buyHold?.status !== 'active' || buyHold?.kind !== 'buy-hold'
+    || buyHold?.displayOrder !== 0
     || buyHold?.qualification?.entryUnit !== 25_000 || buyHold?.qualification?.entryCap !== null
     || buyHold?.qualification?.mustHoldAtClose !== true || buyHold?.qualification?.transfersCount !== false
     || buyHold?.qualification?.salesReduceEntries !== true || buyHold?.qualification?.onePrizePerWallet !== true
@@ -70,6 +71,10 @@ if (buyHold?.status !== 'active' || buyHold?.kind !== 'buy-hold'
     || buyHold?.snapshot !== '/giveaway-buy-hold-open.json' || buyHold?.result
     || buyHold?.prizes?.positions?.join(',') !== '680,625,308') {
   failures.push('Buy + Hold draw must remain tied to its public 72-hour opening snapshot and fixed prize order');
+}
+const follower = authority.campaigns.find((campaign) => campaign.id === 'follow500');
+if (follower?.displayOrder !== 20 || follower?.layout !== 'wide') {
+  failures.push('500 follower giveaway must retain its intentional full-width desktop layout');
 }
 const buyHoldOpen = JSON.parse(fs.readFileSync(path.join(site, 'giveaway-buy-hold-open.json'), 'utf8'));
 if (buyHoldOpen?.schema !== 'bullenciaga.buy-hold-open.v1'
@@ -95,6 +100,7 @@ if (giveaways.includes("['paid', 'Paid'") || giveaways.includes('campaign.payout
 if (!giveaways.includes('No draw or result state is inferred')) failures.push('giveaways page does not fail closed');
 if (!giveaways.includes('Collective unlock targets') || !giveaways.includes("campaign.entry.url || campaign.entry.homepageAnchor")) failures.push('giveaways page does not render the vTURBO Trophy unlock and X entry action');
 if (!giveaways.includes('safePrizeVideo') || !giveaways.includes('playsinline') || !giveaways.includes('campaign.prizes.alt')) failures.push('giveaways page does not render accessible trusted campaign video');
+if (!giveaways.includes("campaign.layout === 'wide'") || !giveaways.includes('.sort((a, b) =>')) failures.push('giveaways page does not preserve campaign priority and wide-card layout');
 
 const curve = fs.readFileSync(path.join(site, 'curve.html'), 'utf8');
 if (!curve.includes('.wrap') || !curve.includes('max-width:900px')) failures.push('curve.html: record suite width drifted');

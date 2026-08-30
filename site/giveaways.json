@@ -18,6 +18,7 @@
       "title": "The vTURBO Trophy — HERD #699",
       "kind": "skill",
       "status": "active",
+      "displayOrder": 10,
       "featured": true,
       "trigger": {
         "label": "Collective unlock on the main upgrade post",
@@ -73,6 +74,8 @@
       "title": "500 follower Herd giveaway",
       "kind": "follower",
       "status": "active",
+      "displayOrder": 20,
+      "layout": "wide",
       "trigger": { "label": "X followers", "target": 500, "current": null, "source": "manual authenticated X check" },
       "eligibility": ["Hold at least 100,000 $BULLEN when entering", "Follow @bullenciagax", "One wallet and one X username per entry"],
       "prizes": { "type": "herd-positions", "positions": [168, 495, 737, 773, 950] },
@@ -90,6 +93,7 @@
       "title": "The Herd Buy + Hold Draw",
       "kind": "buy-hold",
       "status": "active",
+      "displayOrder": 0,
       "featured": true,
       "trigger": {
         "label": "72-hour window · closes 2 Sep 2026 at 13:18 UTC",

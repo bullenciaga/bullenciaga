@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BULLENCIAGA giveaways.html | build 2026-08-30.1 — verified campaign media -->
+<!-- BULLENCIAGA giveaways.html | build 2026-08-30.2 — priority campaign layout -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -41,6 +41,16 @@
     .campaign { position: relative; min-width: 0; padding: clamp(18px, 3vw, 28px); border: 1px solid var(--bullen-border); background: linear-gradient(145deg, rgba(199,168,105,.045), transparent 45%), var(--bullen-surface); }
     .campaign.featured { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(190px, 30%) minmax(0, 1fr); gap: clamp(20px, 4vw, 44px); }
     .campaign.featured.with-video { grid-template-columns: minmax(360px, 48%) minmax(0, 1fr); }
+    .campaign.wide { grid-column: 1 / -1; }
+    .campaign.wide .campaign-copy { display: grid; grid-template-columns: minmax(250px, .75fr) minmax(0, 1.25fr); column-gap: clamp(28px, 5vw, 64px); align-items: start; }
+    .campaign.wide .status,
+    .campaign.wide h3,
+    .campaign.wide .prize-traits,
+    .campaign.wide .trigger,
+    .campaign.wide .milestones,
+    .campaign.wide .progress,
+    .campaign.wide .actions { grid-column: 1; }
+    .campaign.wide .rules { grid-column: 2; grid-row: 1 / span 7; align-self: center; margin: 0; }
     .campaign-media { min-height: 260px; overflow: hidden; border: 1px solid var(--bullen-border); background: var(--bullen-bg); }
     .campaign-media img,
     .campaign-media video { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -75,6 +85,8 @@
       .summary { margin-bottom: 40px; }
       .campaign.featured { grid-template-columns: 1fr; }
       .campaign.featured.with-video { grid-template-columns: 1fr; }
+      .campaign.wide .campaign-copy { display: block; }
+      .campaign.wide .rules { margin: 16px 0; }
       .campaign-media { min-height: 0; aspect-ratio: 1 / 1; }
       .campaign-media[data-media="video"] { aspect-ratio: 16 / 9; }
     }
@@ -209,7 +221,8 @@
         const prizeLine = campaign.prizes && campaign.prizes.subtitle || (traits ? [traits.Outerwear, traits.Horns && `${traits.Horns} horns`,
           traits['Glasses And Headgear'], traits.Branding && `${traits.Branding} branding`].filter(Boolean).join(' · ') : '');
         const featured = campaign.featured && media ? ` featured${video ? ' with-video' : ''}` : '';
-        return `<article class="campaign${featured}" data-status="${escapeHtml(campaign.status)}">
+        const wide = campaign.layout === 'wide' && !media ? ' wide' : '';
+        return `<article class="campaign${featured}${wide}" data-status="${escapeHtml(campaign.status)}">
           ${media}<div class="campaign-copy">
           <div class="status">${escapeHtml(campaign.status.replaceAll('-', ' '))}</div>
           <h3>${escapeHtml(campaign.title)}</h3>
@@ -227,7 +240,13 @@
       };
 
       for (const [status, title, note] of groups) {
-        const rows = campaigns.filter((campaign) => campaign.status === status);
+        const rows = campaigns
+          .filter((campaign) => campaign.status === status)
+          .sort((a, b) => {
+            const aOrder = Number(a.displayOrder);
+            const bOrder = Number(b.displayOrder);
+            return (Number.isFinite(aOrder) ? aOrder : 100) - (Number.isFinite(bOrder) ? bOrder : 100);
+          });
         root.insertAdjacentHTML('beforeend', `<section class="campaign-section" aria-labelledby="${status}-title">
           <div class="section-head"><h2 id="${status}-title">${title}</h2><span>${note}</span></div>
           <div class="campaign-grid">${rows.length ? rows.map(card).join('') : '<div class="empty">No campaigns in this state.</div>'}</div>
