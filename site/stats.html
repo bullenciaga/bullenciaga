@@ -391,7 +391,13 @@
      with a settling ease-out curve rather than the previous quick, linear
      "ease", which is what was reading as a bit jittery/abrupt. */
   @keyframes rowPushIn{ from{ opacity:0; transform:translateY(-32px);} to{ opacity:1; transform:translateY(0);} }
-  .rrow img{ width:clamp(40px,3.2vw,62px); height:clamp(40px,3.2vw,62px); object-fit:cover; background:#111; flex:0 0 auto; }
+  .rrow img{
+    width:clamp(40px,3.2vw,62px); height:clamp(40px,3.2vw,62px);
+    object-fit:cover; background:#111; flex:0 0 auto;
+    opacity:0;
+    transition:opacity .34s ease;
+  }
+  .rrow img.image-ready{ opacity:1; }
   .rrow .nm{ font-size:clamp(15px,1.35vw,26px); font-weight:700; letter-spacing:0.06em; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .rrow .tg{ font-size:clamp(10px,0.78vw,15px); letter-spacing:0.18em; text-transform:uppercase; padding:clamp(3px,0.26vw,5px) clamp(7px,0.57vw,11px); border:1px solid var(--line); color:var(--dim); flex:0 0 auto; }
   .rrow.gold{ border-color:var(--gold); } .rrow.gold .tg{ border-color:var(--gold); color:var(--gold); }
@@ -569,10 +575,15 @@
 
     /* 2. Stack the two columns, and let panels be as tall as they need
           instead of stretching into 100vh. */
-    .cols{ grid-template-columns:1fr; gap:14px; }
-    .col{ gap:14px; }
+    .cols{
+      grid-template-columns:1fr;
+      gap:14px;
+      flex:none;
+      min-height:auto;
+    }
+    .col{ gap:14px; min-height:auto; }
     .panel{ padding:14px 15px; }
-    .panel.grow{ flex:0 0 auto; }
+    .panel.grow{ flex:0 0 auto; min-height:auto; }
 
     /* 3. Two-up stat grid. Four across a 390px screen is what was pushing
           the labels into the numbers. */
@@ -989,9 +1000,12 @@
   }
 
   // Sets the picture, resolving it from json_uri first when DAS has not caught
-  // up yet. Fire and forget: the row is already in the DOM.
+  // up yet. Fire and forget: the row is already in the DOM. Recent-mint
+  // thumbnails stay transparent until the final image has decoded, so the
+  // browser's broken/generic image placeholder can never flash first.
   function setPieceImage(img, piece){
     if (!img) return;
+    img.classList.remove('image-ready');
     if (piece && piece.image) { loadImageWithRetry(img, piece.image); return; }
     resolveImage(piece).then(url => { if (url) loadImageWithRetry(img, url); });
   }
@@ -1008,7 +1022,11 @@
       img.src = (attempt % 2 === 1) ? proxied(url) : url;
     };
     img.onerror = () => { setTimeout(tryNext, 400 * attempt); };
-    img.onload = () => { img.onerror = null; };
+    img.onload = async () => {
+      img.onerror = null;
+      try { await img.decode(); } catch (e) { /* onload already proved it usable */ }
+      requestAnimationFrame(() => img.classList.add('image-ready'));
+    };
     tryNext();
   }
 
