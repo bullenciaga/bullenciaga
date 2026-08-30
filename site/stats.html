@@ -2097,6 +2097,70 @@
       .slice(0, limit);
   }
 
+  // DAS can sort collection assets by creation time, but it does not expose
+  // that time on the returned asset. The public record feed does expose a
+  // timestamp, which meant a naïve cross-source sort treated every Herd mint
+  // as time zero and let House Object / BULLENSAGA rows evict the Herd from
+  // the recent list on every cold load.
+  //
+  // Resolve each mint address through finalized Solana signatures and attach
+  // the creation block time before merging the feeds. Requests are batched so
+  // a 12-row dashboard seed does not become a chain of sequential RPC calls.
+  const SOLANA_ADDRESS = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  const mintTimeCache = new Map();
+
+  async function attachOnChainCreatedTimes(pieces){
+    const targets = [];
+    pieces.forEach(piece => {
+      if (!piece || !SOLANA_ADDRESS.test(String(piece.id || ''))) return;
+      if (mintTimeCache.has(piece.id)) {
+        piece.createdAt = mintTimeCache.get(piece.id);
+        return;
+      }
+      targets.push(piece);
+    });
+
+    // Keep each JSON-RPC batch modest; the proxy and upstream both support
+    // batch requests, and twenty is comfortably above the visible row cap.
+    for (let start = 0; start < targets.length; start += 20){
+      const chunk = targets.slice(start, start + 20);
+      try {
+        const calls = chunk.map((piece, index) => ({
+          jsonrpc:'2.0',
+          id:`recent-time-${start + index}`,
+          method:'getSignaturesForAddress',
+          params:[piece.id, { limit:12, commitment:'finalized' }]
+        }));
+        const res = await fetch(CFG.RPC_PROXY, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(calls)
+        });
+        if (!res.ok) continue;
+        const payload = await res.json();
+        const replies = Array.isArray(payload) ? payload : [payload];
+        const byId = new Map(replies.map(reply => [String(reply && reply.id), reply]));
+
+        chunk.forEach((piece, index) => {
+          const reply = byId.get(`recent-time-${start + index}`);
+          const blockTimes = ((reply && reply.result) || [])
+            .filter(signature => signature && signature.err === null && Number(signature.blockTime) > 0)
+            .map(signature => Number(signature.blockTime));
+          if (!blockTimes.length) return;
+          // Signatures are newest first. The earliest successful signature in
+          // this short history is the asset's creation transaction.
+          const createdAt = Math.min(...blockTimes) * 1000;
+          mintTimeCache.set(piece.id, createdAt);
+          piece.createdAt = createdAt;
+        });
+      } catch (e) {
+        // Keep the source timestamp/order as a graceful fallback. One failed
+        // time lookup must never blank the entire recent-mints panel.
+      }
+    }
+    return pieces;
+  }
+
   // ------------------------------------------------------- mint watch
   let known = null;   // null until the first successful fetch establishes a baseline
 
@@ -2133,7 +2197,9 @@
           const ledgerRecent = recent[1].status === 'fulfilled' ? recent[1].value : [];
           const recordFallback = recent.slice(2)
             .flatMap(result => result.status === 'fulfilled' ? result.value : []);
-          const seed = herdRecent.concat(ledgerRecent.length ? ledgerRecent : recordFallback)
+          const candidates = herdRecent.concat(ledgerRecent.length ? ledgerRecent : recordFallback);
+          await attachOnChainCreatedTimes(candidates);
+          const seed = candidates
             .sort((left, right) => (right.createdAt || 0) - (left.createdAt || 0))
             .slice(0, RECENT_SEED_COUNT);
           // pushRecent() inserts at the top, so walk oldest -> newest to end
@@ -2143,7 +2209,13 @@
         return;
       }
       const fresh = assets.filter(a => !known.has(a.id));
-      fresh.forEach(a=>{ known.add(a.id); enqueue(a); pushRecent(a); });
+      await attachOnChainCreatedTimes(fresh);
+      // pushRecent() inserts at the top, so process oldest -> newest. This
+      // also makes multiple assets discovered in one poll land in true chain
+      // order instead of collection-fetch order.
+      fresh
+        .sort((left, right) => (left.createdAt || 0) - (right.createdAt || 0))
+        .forEach(a=>{ known.add(a.id); enqueue(a); pushRecent(a); });
     }catch(e){ /* transient */ }
     finally{ setStatus(); }
   }
