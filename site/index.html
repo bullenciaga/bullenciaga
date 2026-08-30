@@ -40,6 +40,7 @@
 <meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://plugin.jup.ag/plugin-v1.js" data-preload defer></script>
 <style>
   /* ===== SECTION: TOKENS =====  colours, fonts, the gold and silver scales */
   :root{
@@ -61,6 +62,12 @@
     --white:#f5f3ee;
     --black:#050505;
     --line: rgba(245,243,238,0.12);
+    --jupiter-plugin-primary:199,168,105;
+    --jupiter-plugin-background:5,5,5;
+    --jupiter-plugin-primaryText:245,243,238;
+    --jupiter-plugin-warning:224,104,95;
+    --jupiter-plugin-interactive:31,27,18;
+    --jupiter-plugin-module:13,13,13;
 
     /* Shared button geometry -- ONE source of truth for how tall a button is.
        The square marketplace buttons derive their size from this instead of
@@ -3545,6 +3552,8 @@
     REFRESH_MS: 30000,
     REFRESH_VOLUME_MS: 30000   // drives the burn tier trigger, so it is polled like a live figure, not a chart
   };
+  const SOL_MINT = 'So11111111111111111111111111111111111111112';
+  const JUPITER_FALLBACK = 'https://jup.ag/swap/SOL-' + CONFIG.TOKEN_ADDRESS;
 
   const els = {
     price: document.getElementById('statPrice'),
@@ -3998,7 +4007,32 @@
     }
     els.note.textContent = 'live from dexscreener + on-chain data · updates every 30s';
     if (els.contractValue) els.contractValue.textContent = CONFIG.TOKEN_ADDRESS;
-    if (els.buyBtn) els.buyBtn.href = `https://pump.fun/coin/${CONFIG.TOKEN_ADDRESS}`;
+    if (els.buyBtn) {
+      // Keep a real Jupiter href for keyboard/no-script fallback, then replace
+      // the old pump.fun jump with the same branded modal used on The Tape.
+      els.buyBtn.href = JUPITER_FALLBACK;
+      els.buyBtn.addEventListener('click', event => {
+        event.preventDefault();
+        if (!window.Jupiter || typeof window.Jupiter.init !== 'function') {
+          window.open(JUPITER_FALLBACK, '_blank', 'noopener,noreferrer');
+          return;
+        }
+        window.Jupiter.init({
+          displayMode:'modal',
+          formProps:{
+            initialInputMint:SOL_MINT,
+            initialOutputMint:CONFIG.TOKEN_ADDRESS,
+            fixedMint:CONFIG.TOKEN_ADDRESS,
+            fixedAmount:false,
+            swapMode:'ExactIn'
+          },
+          branding:{
+            logoUri:'https://bullenciaga.com/logo-200.png',
+            name:'BULLENCIAGA'
+          }
+        });
+      });
+    }
 
     if (els.copyBtn) {
       els.copyBtn.disabled = false;
