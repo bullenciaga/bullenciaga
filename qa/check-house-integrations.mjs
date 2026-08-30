@@ -68,6 +68,9 @@ assert.match(objectsJs, /window\.location\.hostname === '127\.0\.0\.1'/);
 assert.doesNotMatch(objects, /<div class="review-ribbon" id="reviewRibbon">LOCAL REVIEW/);
 for (const page of [objects, refer]) assert.match(page, /bullen-wallet-chooser\.js\?v=20260829b/);
 assert.match(objects, /objects\.css\?v=20260829c/);
-assert.match(objects, /objects\.js\?v=20260829b/);
+assert.match(objects, /objects\.js\?v=20260830a/);
+assert.match(objectsJs, /bullen-house-object-pending-v1/);
+assert.match(objectsJs, /resumePendingClaim/);
+assert.match(objectsJs, /TRANSACTION_NOT_CONFIRMED/);
 
 console.log('House integrations: ok (roadmap, accounting, events, assets, wallets)');
