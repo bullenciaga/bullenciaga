@@ -4,13 +4,14 @@ import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
-const expectedIndexHash = 'b145c9a319855f3009e455ada268acdfc3a8b532f7674c4010e67c6c6f4f518e';
+const expectedIndexHash = 'afbfbdf148b8482e580c2e2a76b95c3568efe3a0e377b3ab486228162e1b1c77';
 const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs', 'proof.html'];
 const required = [
   'index.html', '_redirects', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'whitepaper.pdf',
   'bullen-ui.css', 'bullen-ui.js', 'giveaways.html', 'giveaways.json',
   'objects.html', 'objects.css', 'objects.js', 'bullen-wallet-chooser.js',
+  'tape.html', 'favicons/tape.svg',
   'house-burn-registry.js',
   'giveaway-snapshot-2.json', 'giveaway-result-2.json',
 ];

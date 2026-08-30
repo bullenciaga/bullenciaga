@@ -5,7 +5,7 @@ const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
 const publicPages = [
   'index.html', 'stats.html', 'chart.html', 'curve.html',
-  'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html',
+  'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html', 'tape.html',
 ];
 const failures = [];
 
@@ -30,6 +30,7 @@ if (!shell.includes("document.getElementById('jumpToWidget')")) failures.push('h
 if (!shell.includes('if (open) closeExtraControl();')) failures.push('hamburger does not close an already-open homepage Jump To panel');
 if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
 if (!shell.includes("['bullensaga', 'https://bullensaga.com/']")) failures.push('BULLENSAGA sister-site navigation missing');
+if (!shell.includes("['tape', '/tape.html']")) failures.push('live market tape navigation missing');
 if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
 if (shell.includes("['transparency', '/transparency.html']")) failures.push('Telegram-only moderation page is exposed in public navigation');
 if (shell.includes("['proof', '/proof.html']") || shell.includes("proof: 'Proof'")) failures.push('retired Proof page remains in public navigation');
@@ -128,6 +129,12 @@ for (const duplicate of ["giveaways.html', label: 'All Giveaways", "proof', labe
 if (!home.includes("fetch('/giveaways.json'")) failures.push('homepage giveaway card is not driven by the campaign authority');
 if (home.includes("const ENTRY_MESSAGE = 'bullenciaga giveaway entry")) failures.push('homepage duplicates the campaign signature message');
 if (!home.includes('visibility:hidden') || !home.includes('opacity:0') || !home.includes('transition:')) failures.push('homepage Jump To no longer uses a quick fade');
+
+const tape = fs.readFileSync(path.join(site, 'tape.html'), 'utf8');
+if (!tape.includes("const REST_URL = API_ORIGIN + '/volume/tape'")) failures.push('tape.html: durable market snapshot endpoint missing');
+if (!tape.includes("const WS_URL = API_ORIGIN.replace(/^http/, 'ws') + '/volume/tape/live'")) failures.push('tape.html: live market WebSocket endpoint missing');
+if (!tape.includes('Data provided by <a href="https://www.coingecko.com/"')) failures.push('tape.html: CoinGecko attribution missing');
+if (!tape.includes('Wallet identities are not published here')) failures.push('tape.html: public privacy boundary missing');
 
 if (failures.length) {
   console.error(failures.join('\n'));
