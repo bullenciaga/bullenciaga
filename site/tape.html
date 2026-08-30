@@ -42,6 +42,8 @@
   main{width:min(1440px,calc(100% - 40px));margin:0 auto;padding:10px 0 28px}
   .mast{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;
     padding:16px 0 14px;border-bottom:1px solid var(--line)}
+  .mast-actions{display:grid;grid-template-columns:minmax(220px,280px) auto;gap:10px;align-items:stretch}
+  .mast-buy{min-height:100%;padding-inline:24px}
   .eyebrow,.label{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
   h1{font-family:Poppins,sans-serif;font-size:clamp(54px,7vw,104px);line-height:.82;
     margin:11px 0 5px;letter-spacing:-.06em;font-weight:600}
@@ -119,7 +121,7 @@
   .burn-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));box-shadow:0 0 18px rgba(199,168,105,.4);transition:width .8s ease}
   .market-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px 14px;margin-top:13px}
   .market-v{margin-top:6px;font-size:16px;color:var(--gold2);white-space:nowrap}
-  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
+  .actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:13px}
   .action{display:flex;align-items:center;justify-content:center;min-height:48px;border:1px solid var(--gold);text-decoration:none;
     appearance:none;border-radius:0;background:transparent;color:inherit;font:inherit;font-size:10px;letter-spacing:.16em;text-transform:uppercase;transition:.15s ease;cursor:pointer}
   .action.primary{background:var(--gold);color:#050505}.action:hover{background:var(--gold2);color:#050505;border-color:var(--gold2)}
@@ -136,12 +138,13 @@
   }
 
   @media(max-width:980px){
+    .mast{grid-template-columns:1fr}.mast-actions{grid-template-columns:1fr 1fr}
     .headline{grid-template-columns:1fr 1fr}.metric:nth-child(3){border-left:0;border-top:1px solid var(--line)}
     .metric:nth-child(4){border-top:1px solid var(--line)}
     .layout{grid-template-columns:1fr}.layout>.panel{display:block}.tape{height:auto;min-height:500px;max-height:680px}.side-stack{display:grid;grid-template-columns:1fr 1fr}.side-stack .panel:last-child{grid-column:1/-1}
   }
   @media(max-width:680px){
-    main{width:min(100% - 24px,1440px);padding-top:6px}.mast{grid-template-columns:1fr;padding-top:18px}.live-card{min-width:0}
+    main{width:min(100% - 24px,1440px);padding-top:6px}.mast{grid-template-columns:1fr;padding-top:18px}.mast-actions{grid-template-columns:1fr}.mast-buy{min-height:58px}.live-card{min-width:0}
     h1{font-size:clamp(52px,22vw,86px)}.headline{margin-top:14px}.metric{padding:17px 14px}.metric-value{font-size:clamp(21px,7.4vw,31px)}
     .metric:first-child,.metric:nth-child(4){grid-column:1/-1}.metric:nth-child(2){border-left:0;border-top:1px solid var(--line)}.metric:nth-child(4){border-left:0}
     .layout{margin-top:14px;gap:14px}.panel-head{padding:15px 14px}.panel-note{display:none}.tape{min-height:380px;max-height:600px}
@@ -164,9 +167,12 @@
       <h1>THE TAPE</h1>
       <p class="intro">Every pool trade, as it lands. No wallet identities, no guessed sentiment—just direction, size, price and the public path toward the next scheduled burn.</p>
     </div>
-    <div class="live-card">
-      <div class="connection" id="connection"><span class="connection-dot"></span><span id="connectionText">connecting</span></div>
-      <div class="connection-sub" id="connectionSub">opening the protected market stream…</div>
+    <div class="mast-actions">
+      <button class="action primary mast-buy" id="buyBullen" type="button">Buy $BULLEN</button>
+      <div class="live-card">
+        <div class="connection" id="connection"><span class="connection-dot"></span><span id="connectionText">connecting</span></div>
+        <div class="connection-sub" id="connectionSub">opening the protected market stream…</div>
+      </div>
     </div>
   </section>
 
@@ -213,7 +219,7 @@
             <div><div class="label">24h Change</div><div class="market-v" id="change24h">--</div></div>
             <div><div class="label">Cumulative</div><div class="market-v" id="cumulative">--</div></div>
           </div>
-          <div class="actions"><button class="action primary" id="buyBullen" type="button">Buy $BULLEN</button><a class="action" href="/chart">Open Chart</a></div>
+          <div class="actions"><a class="action" href="/chart">Open Chart</a></div>
         </div>
       </section>
     </aside>
