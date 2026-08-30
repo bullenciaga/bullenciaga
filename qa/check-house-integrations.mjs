@@ -47,6 +47,10 @@ assert.match(stats, /fetchRecentAssets\(CFG\.HOUSE_OBJECTS_COLLECTION, RECENT_SE
 assert.match(stats, /fetchAssets\(CFG\.BULLENSAGA_COLLECTION, 'bullensaga'\)/);
 assert.match(stats, /fetchPublicRecordActivity\(RECENT_SEED_COUNT\)/);
 assert.match(stats, /event\.kind === 'housemint' \|\| event\.kind === 'foundingmint'/);
+assert.match(stats, /method:'getSignaturesForAddress'/);
+assert.match(stats, /await attachOnChainCreatedTimes\(candidates\)/);
+assert.match(stats, /await attachOnChainCreatedTimes\(fresh\)/);
+assert.match(stats, /Math\.min\(\.\.\.blockTimes\) \* 1000/);
 assert.match(stats, /fetch\('\/volume', \{ cache:'no-store' \}\)/);
 
 assert.doesNotMatch(chart, /house-burn-registry\.js|HOUSE OBJECT BURN COMMITMENTS/i);
