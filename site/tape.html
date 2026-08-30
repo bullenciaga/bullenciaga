@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>THE TAPE — Live $BULLEN Market</title>
+<meta name="description" content="The live $BULLEN market tape: buys, sells, pressure, price and progress toward the next scheduled burn.">
+<link rel="canonical" href="https://bullenciaga.com/tape">
+<meta property="og:type" content="website">
+<meta property="og:title" content="THE TAPE — Live $BULLEN Market">
+<meta property="og:description" content="Every pool trade, as it lands. Live flow and burn-ladder progress for $BULLEN.">
+<meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-30">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="THE TAPE — Live $BULLEN Market">
+<meta name="twitter:description" content="Every pool trade, as it lands. Live flow and burn-ladder progress for $BULLEN.">
+<meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-30">
+<link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/tape.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/bullen-ui.css">
+<style>
+  :root{
+    --bg:#050505;--panel:#090909;--panel2:#0d0d0d;--ink:#f5f3ee;
+    --muted:rgba(245,243,238,.46);--ghost:rgba(245,243,238,.22);
+    --gold:#c7a869;--gold2:#ead9aa;--line:rgba(199,168,105,.2);
+    --buy:#5fd39a;--sell:#e0685f;--warn:#e7b85c;
+  }
+  *{box-sizing:border-box}
+  html{background:var(--bg);scroll-behavior:smooth}
+  body{margin:0;background:
+    radial-gradient(circle at 50% -20%,rgba(199,168,105,.11),transparent 36rem),
+    var(--bg);color:var(--ink);font-family:'Space Mono',monospace;min-height:100vh}
+  a{color:inherit}
+  main{width:min(1440px,calc(100% - 40px));margin:0 auto;padding:20px 0 80px}
+  .mast{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;
+    padding:32px 0 26px;border-bottom:1px solid var(--line)}
+  .eyebrow,.label{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+  h1{font-family:Poppins,sans-serif;font-size:clamp(54px,8vw,126px);line-height:.82;
+    margin:16px 0 8px;letter-spacing:-.06em;font-weight:600}
+  .intro{max-width:720px;margin:20px 0 0;color:var(--muted);font-size:clamp(12px,1.05vw,15px);line-height:1.8}
+  .live-card{min-width:250px;border:1px solid var(--line);padding:18px 20px;background:rgba(9,9,9,.72)}
+  .connection{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+  .connection-dot{width:10px;height:10px;border-radius:50%;background:var(--warn);box-shadow:0 0 16px var(--warn)}
+  .connection.live .connection-dot{background:var(--buy);box-shadow:0 0 18px var(--buy);animation:pulse 1.8s ease-in-out infinite}
+  .connection.down .connection-dot{background:var(--sell);box-shadow:0 0 16px var(--sell)}
+  .connection-sub{margin-top:10px;color:var(--muted);font-size:10px;line-height:1.6}
+  @keyframes pulse{50%{opacity:.35}}
+
+  .headline{display:grid;grid-template-columns:repeat(4,1fr);margin-top:22px;border:1px solid var(--line)}
+  .metric{min-width:0;padding:22px 24px;background:rgba(9,9,9,.8)}
+  .metric+.metric{border-left:1px solid var(--line)}
+  .metric-value{font-family:Poppins,sans-serif;font-size:clamp(26px,3vw,45px);line-height:1;
+    margin-top:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .metric-note{margin-top:10px;color:var(--muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+  .positive{color:var(--buy)!important}.negative{color:var(--sell)!important}
+
+  .layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(310px,.75fr);gap:22px;margin-top:22px}
+  .panel{border:1px solid var(--line);background:rgba(9,9,9,.86);min-width:0}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 20px;border-bottom:1px solid var(--line)}
+  .panel-title{font-family:Poppins,sans-serif;font-size:18px;font-weight:500;letter-spacing:.01em}
+  .panel-note{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+  .tape{height:min(68vh,720px);min-height:500px;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+  .trade{display:grid;grid-template-columns:74px minmax(100px,1fr) minmax(120px,.9fr) minmax(110px,.8fr) 72px;
+    gap:16px;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(199,168,105,.11);
+    text-decoration:none;transition:background .16s ease,border-color .16s ease}
+  .trade:hover{background:rgba(199,168,105,.045);border-color:var(--line)}
+  .trade.new{animation:tradeIn .7s cubic-bezier(.2,.75,.2,1)}
+  @keyframes tradeIn{from{background:rgba(95,211,154,.22);transform:translateY(-10px);opacity:.2}to{background:transparent;transform:none;opacity:1}}
+  .side{font-weight:700;font-size:11px;letter-spacing:.17em}
+  .side.buy{color:var(--buy)}.side.sell{color:var(--sell)}
+  .amount{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .usd,.trade-price{font-size:12px;color:var(--gold2);white-space:nowrap}
+  .time{text-align:right;color:var(--muted);font-size:10px;white-space:nowrap}
+  .empty{padding:54px 20px;text-align:center;color:var(--muted);font-size:12px;line-height:1.8}
+
+  .side-stack{display:flex;flex-direction:column;gap:22px}
+  .module{padding:20px}
+  .module+.module{border-top:1px solid var(--line)}
+  .flow-row{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-top:17px}
+  .flow-big{font-family:Poppins,sans-serif;font-size:34px;line-height:1}
+  .flow-sub{text-align:right;color:var(--muted);font-size:10px;line-height:1.6}
+  .pressure{height:10px;display:flex;background:rgba(255,255,255,.05);margin-top:20px;overflow:hidden}
+  .pressure-buy{width:50%;background:var(--buy);transition:width .7s ease;box-shadow:0 0 18px rgba(95,211,154,.25)}
+  .pressure-sell{flex:1;background:var(--sell);box-shadow:0 0 18px rgba(224,104,95,.2)}
+  .pressure-legend{display:flex;justify-content:space-between;margin-top:9px;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+  .spark{height:118px;margin-top:17px;position:relative;border:1px solid rgba(199,168,105,.1);overflow:hidden;background:
+    linear-gradient(rgba(199,168,105,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(199,168,105,.035) 1px,transparent 1px);
+    background-size:100% 25%,20% 100%}
+  .spark svg{width:100%;height:100%;display:block;overflow:visible}
+  .spark path.line{fill:none;stroke:var(--gold2);stroke-width:2;vector-effect:non-scaling-stroke}
+  .spark path.area{fill:url(#sparkFill);stroke:none}
+  .burn-number{font-family:Poppins,sans-serif;font-size:clamp(31px,3.3vw,50px);line-height:1;margin-top:16px;color:var(--gold2)}
+  .burn-copy{margin-top:10px;color:var(--muted);font-size:10px;line-height:1.65}
+  .burn-track{height:9px;margin-top:20px;border:1px solid var(--line);background:rgba(255,255,255,.04)}
+  .burn-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));box-shadow:0 0 18px rgba(199,168,105,.4);transition:width .8s ease}
+  .market-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;margin-top:18px}
+  .market-v{margin-top:6px;font-size:16px;color:var(--gold2);white-space:nowrap}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+  .action{display:flex;align-items:center;justify-content:center;min-height:48px;border:1px solid var(--gold);text-decoration:none;
+    font-size:10px;letter-spacing:.16em;text-transform:uppercase;transition:.15s ease}
+  .action.primary{background:var(--gold);color:#050505}.action:hover{background:var(--gold2);color:#050505;border-color:var(--gold2)}
+  .source{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:17px 20px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:9px;line-height:1.7;letter-spacing:.06em}
+  .source a{color:var(--gold);text-underline-offset:3px}
+
+  @media(max-width:980px){
+    .headline{grid-template-columns:1fr 1fr}.metric:nth-child(3){border-left:0;border-top:1px solid var(--line)}
+    .metric:nth-child(4){border-top:1px solid var(--line)}
+    .layout{grid-template-columns:1fr}.tape{height:auto;max-height:680px}.side-stack{display:grid;grid-template-columns:1fr 1fr}.side-stack .panel:last-child{grid-column:1/-1}
+  }
+  @media(max-width:680px){
+    main{width:min(100% - 24px,1440px);padding-top:6px}.mast{grid-template-columns:1fr;padding-top:18px}.live-card{min-width:0}
+    h1{font-size:clamp(52px,22vw,86px)}.headline{margin-top:14px}.metric{padding:17px 14px}.metric-value{font-size:clamp(21px,7.4vw,31px)}
+    .metric:first-child,.metric:nth-child(4){grid-column:1/-1}.metric:nth-child(2){border-left:0;border-top:1px solid var(--line)}.metric:nth-child(4){border-left:0}
+    .layout{margin-top:14px;gap:14px}.panel-head{padding:15px 14px}.panel-note{display:none}.tape{min-height:380px;max-height:600px}
+    .trade{grid-template-columns:58px minmax(0,1fr) auto;gap:10px;padding:14px}.trade-price{display:none}.time{grid-column:3}.usd{text-align:right}.amount{font-size:12px}
+    .side-stack{display:flex;gap:14px}.module{padding:17px 14px}.source{align-items:flex-start;flex-direction:column;padding:15px 14px}.actions{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main id="main-content">
+  <section class="mast">
+    <div>
+      <div class="eyebrow">$BULLEN / SOL · PRIMARY POOL</div>
+      <h1>THE TAPE</h1>
+      <p class="intro">Every pool trade, as it lands. No wallet identities, no guessed sentiment—just direction, size, price and the public path toward the next scheduled burn.</p>
+    </div>
+    <div class="live-card">
+      <div class="connection" id="connection"><span class="connection-dot"></span><span id="connectionText">connecting</span></div>
+      <div class="connection-sub" id="connectionSub">opening the protected market stream…</div>
+    </div>
+  </section>
+
+  <section class="headline" aria-label="Live market summary">
+    <div class="metric"><div class="label">Last Price</div><div class="metric-value" id="lastPrice">--</div><div class="metric-note" id="priceNote">waiting for trade</div></div>
+    <div class="metric"><div class="label">Buy Pressure · 15m</div><div class="metric-value" id="buyPressure">--</div><div class="metric-note" id="pressureNote">no completed trades</div></div>
+    <div class="metric"><div class="label">Net Flow · 15m</div><div class="metric-value" id="netFlow">--</div><div class="metric-note" id="netNote">buys minus sells</div></div>
+    <div class="metric"><div class="label">Largest Buy · 24h</div><div class="metric-value" id="largestBuy">--</div><div class="metric-note" id="tradeCount">0 trades observed</div></div>
+  </section>
+
+  <section class="layout">
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">LIVE PRINTS</div><div class="panel-note">NEWEST FIRST · CLICK A ROW FOR SOLSCAN</div></div>
+      <div class="tape" id="tradeTape" aria-live="polite"><div class="empty">The stream is connected. Waiting for the next pool trade.</div></div>
+      <div class="source"><span>Public trade data is normalized and cached by BULLENCIAGA. Wallet identities are not published here.</span><span>Data provided by <a href="https://www.coingecko.com/" target="_blank" rel="noopener">CoinGecko</a></span></div>
+    </div>
+
+    <aside class="side-stack">
+      <section class="panel">
+        <div class="module">
+          <div class="label">Flow Pulse · 1h</div>
+          <div class="flow-row"><div class="flow-big" id="flow1h">--</div><div class="flow-sub" id="flow1hSub">waiting for flow</div></div>
+          <div class="pressure"><div class="pressure-buy" id="pressureBar"></div><div class="pressure-sell"></div></div>
+          <div class="pressure-legend"><span class="positive" id="buyLegend">BUY 0%</span><span class="negative" id="sellLegend">SELL 0%</span></div>
+        </div>
+        <div class="module">
+          <div class="label">Live Price Trace</div>
+          <div class="spark" aria-hidden="true"><svg viewBox="0 0 500 120" preserveAspectRatio="none"><defs><linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c7a869" stop-opacity=".25"/><stop offset="1" stop-color="#c7a869" stop-opacity="0"/></linearGradient></defs><path class="area" id="sparkArea" d=""/><path class="line" id="sparkLine" d=""/></svg></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="module">
+          <div class="label">Burn Ladder</div>
+          <div class="burn-number" id="burnGap">--</div>
+          <div class="burn-copy" id="burnCopy">reading cumulative pool volume…</div>
+          <div class="burn-track"><div class="burn-fill" id="burnFill"></div></div>
+        </div>
+        <div class="module">
+          <div class="label">Market Now</div>
+          <div class="market-grid">
+            <div><div class="label">24h Volume</div><div class="market-v" id="volume24h">--</div></div>
+            <div><div class="label">Liquidity</div><div class="market-v" id="liquidity">--</div></div>
+            <div><div class="label">24h Change</div><div class="market-v" id="change24h">--</div></div>
+            <div><div class="label">Cumulative</div><div class="market-v" id="cumulative">--</div></div>
+          </div>
+          <div class="actions"><a class="action primary" href="/buy">Buy $BULLEN</a><a class="action" href="/chart">Open Chart</a></div>
+        </div>
+      </section>
+    </aside>
+  </section>
+</main>
+<script defer src="/bullen-ui.js"></script>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const API_ORIGIN = location.protocol === 'file:' ? 'https://bullenciaga.com' : location.origin;
+  const REST_URL = API_ORIGIN + '/volume/tape';
+  const WS_URL = API_ORIGIN.replace(/^http/, 'ws') + '/volume/tape/live';
+  const MAX_ROWS = 60;
+  const BURNS = [250000, 1000000, 5000000, 20000000, 50000000];
+  let trades = [];
+  let summary = null;
+  let socket = null;
+  let reconnectTimer = null;
+  let reconnectAttempt = 0;
+  let pingTimer = null;
+  let pollTimer = null;
+  let lastPriceFallback = null;
+
+  const finite = value => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value)) ? Number(value) : null;
+  const usd = value => {
+    const n = finite(value); if (n === null) return '--';
+    if (Math.abs(n) >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
+    if (Math.abs(n) >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
+    if (Math.abs(n) >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
+    return (n < 0 ? '-$' : '$') + Math.abs(n).toFixed(2);
+  };
+  const compact = value => {
+    const n = finite(value); if (n === null) return '--';
+    return new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:2}).format(n);
+  };
+  const price = value => {
+    const n = finite(value); if (!(n > 0)) return '--';
+    if (n >= .01) return '$' + n.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');
+    if (n >= .0001) return '$' + n.toFixed(6).replace(/0+$/,'').replace(/\.$/,'');
+    return '$' + n.toPrecision(4);
+  };
+  const relative = value => {
+    const n = finite(value); if (!n) return '--';
+    const seconds = Math.max(0,Math.floor((Date.now()-n)/1000));
+    if (seconds < 5) return 'now'; if (seconds < 60) return seconds + 's';
+    if (seconds < 3600) return Math.floor(seconds/60) + 'm';
+    if (seconds < 86400) return Math.floor(seconds/3600) + 'h';
+    return Math.floor(seconds/86400) + 'd';
+  };
+  const escape = value => String(value ?? '').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+  function setConnection(state, detail){
+    const el = $('connection');
+    el.className = 'connection ' + (state === 'live' ? 'live' : state === 'down' ? 'down' : '');
+    $('connectionText').textContent = state === 'live' ? 'live stream' : state === 'down' ? 'feed unavailable' : 'reconnecting';
+    $('connectionSub').textContent = detail || (state === 'live' ? 'one protected upstream · every public viewer' : 'the last durable snapshot remains visible');
+  }
+
+  function mergeTrades(incoming, markNewest=false){
+    const map = new Map(trades.map(t=>[t.id,t]));
+    for(const trade of Array.isArray(incoming)?incoming:[]){ if(trade&&trade.id) map.set(trade.id,{...trade,__new:markNewest}); }
+    trades = [...map.values()].sort((a,b)=>(b.occurredAt||0)-(a.occurredAt||0)).slice(0,MAX_ROWS);
+    renderTape(); renderSpark();
+    if(markNewest) setTimeout(()=>{trades.forEach(t=>delete t.__new)},900);
+  }
+
+  function renderTape(){
+    const wrap = $('tradeTape');
+    if(!trades.length){wrap.innerHTML='<div class="empty">The stream is connected. Waiting for the next pool trade.</div>';return}
+    wrap.innerHTML=trades.map(t=>{
+      const side=t.side==='sell'?'sell':'buy';
+      const tx=escape(t.tx); const link=tx?'https://solscan.io/tx/'+encodeURIComponent(t.tx):'#';
+      return `<a class="trade${t.__new?' new':''}" href="${link}" target="_blank" rel="noopener">
+        <span class="side ${side}">${side.toUpperCase()}</span>
+        <span class="amount">${compact(t.tokenAmount)} BULLEN</span>
+        <span class="usd">${usd(t.volumeUsd)}</span>
+        <span class="trade-price">${price(t.priceUsd)}</span>
+        <span class="time">${relative(t.occurredAt)}</span></a>`;
+    }).join('');
+  }
+
+  function setSigned(el,value){
+    const n=finite(value); el.classList.remove('positive','negative');
+    if(n===null){el.textContent='--';return} el.textContent=(n>0?'+':'')+usd(n); el.classList.add(n>=0?'positive':'negative');
+  }
+
+  function renderSummary(next){
+    if(!next)return; summary=next;
+    const latest=finite(next.latestPriceUsd)||lastPriceFallback;
+    $('lastPrice').textContent=price(latest);
+    $('priceNote').textContent=next.lastTradeAt?'last print '+relative(next.lastTradeAt)+' ago':'cached pool price';
+    const share=finite(next.buyShare15m);
+    $('buyPressure').textContent=share===null?'--':Math.round(share*100)+'%';
+    $('buyPressure').classList.toggle('positive',share!==null&&share>=.5);
+    $('buyPressure').classList.toggle('negative',share!==null&&share<.5);
+    $('pressureNote').textContent=(next.tradeCount15m||0)+' trades in the window';
+    setSigned($('netFlow'),next.netUsd15m); setSigned($('flow1h'),next.netUsd1h);
+    $('largestBuy').textContent=usd(next.largestBuyUsd24h);
+    $('tradeCount').textContent=(next.tradeCount24h||0)+' trades observed · 24h';
+    const share1=finite(next.buyShare1h); const pct=share1===null?50:Math.round(share1*100);
+    $('pressureBar').style.width=pct+'%'; $('buyLegend').textContent='BUY '+(share1===null?0:pct)+'%'; $('sellLegend').textContent='SELL '+(share1===null?0:100-pct)+'%';
+    $('flow1hSub').innerHTML=`<span class="positive">${usd(next.buyUsd1h)} buys</span><br><span class="negative">${usd(next.sellUsd1h)} sells</span>`;
+  }
+
+  function renderSpark(){
+    const values=trades.slice().reverse().map(t=>finite(t.priceUsd)).filter(v=>v>0);
+    if(values.length<2){$('sparkLine').setAttribute('d','');$('sparkArea').setAttribute('d','');return}
+    const min=Math.min(...values),max=Math.max(...values),range=max-min||Math.max(max*.01,1e-12);
+    const pts=values.map((v,i)=>[i/(values.length-1)*500,110-(v-min)/range*100]);
+    const line='M'+pts.map(p=>p.map(n=>n.toFixed(2)).join(',')).join(' L');
+    $('sparkLine').setAttribute('d',line); $('sparkArea').setAttribute('d',line+' L500,120 L0,120 Z');
+  }
+
+  function applySnapshot(data){
+    if(!data||!data.ok)return;
+    mergeTrades(data.trades||[]); renderSummary(data.summary);
+    const state=data.status&&data.status.state;
+    if(state==='live')setConnection('live');
+    else setConnection('waiting',data.status&&data.status.error?'upstream reconnecting · durable history preserved':'opening the protected market stream…');
+  }
+
+  async function fetchSnapshot(){
+    try{const r=await fetch(REST_URL,{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));applySnapshot(await r.json())}
+    catch(e){if(!trades.length)setConnection('down','the live endpoint did not answer · retrying automatically')}
+  }
+
+  async function fetchMarket(){
+    try{
+      const r=await fetch(API_ORIGIN+'/volume',{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));const d=await r.json();
+      lastPriceFallback=finite(d.price); if(summary)renderSummary(summary); else $('lastPrice').textContent=price(lastPriceFallback);
+      $('volume24h').textContent=usd(finite(d.volume24h)); $('liquidity').textContent=usd(finite(d.liquidityUsd));
+      const ch=finite(d.priceChange24h);$('change24h').textContent=ch===null?'--':(ch>0?'+':'')+ch.toFixed(2)+'%';$('change24h').className='market-v '+(ch===null?'':ch>=0?'positive':'negative');
+      const total=finite(d.total);$('cumulative').textContent=usd(total);renderBurn(total);
+    }catch(e){}
+  }
+
+  function renderBurn(total){
+    if(!(total>=0))return;
+    let previous=0,next=BURNS[BURNS.length-1];for(const threshold of BURNS){if(total<threshold){next=threshold;break}previous=threshold}
+    const complete=total>=BURNS[BURNS.length-1]; const gap=Math.max(0,next-total); const pct=complete?100:Math.max(0,Math.min(100,(total-previous)/(next-previous)*100));
+    $('burnGap').textContent=complete?'SCHEDULE COMPLETE':usd(gap)+' TO GO';
+    $('burnCopy').textContent=complete?'Every published volume tier has been crossed.':usd(total)+' cumulative volume · next scheduled threshold '+usd(next);
+    $('burnFill').style.width=pct.toFixed(2)+'%';
+  }
+
+  function connect(){
+    clearTimeout(reconnectTimer); if(socket){try{socket.close()}catch(e){}}
+    setConnection('waiting');
+    try{socket=new WebSocket(WS_URL)}catch(e){scheduleReconnect();return}
+    socket.addEventListener('open',()=>{reconnectAttempt=0;setConnection('live');clearInterval(pingTimer);pingTimer=setInterval(()=>{if(socket&&socket.readyState===1)socket.send('ping')},25000)});
+    socket.addEventListener('message',event=>{let data;try{data=JSON.parse(event.data)}catch(e){return}if(data.type==='snapshot')applySnapshot(data);else if(data.type==='trade'){mergeTrades([data.trade],true);renderSummary(data.summary)}else if(data.type==='status'&&data.status){setConnection(data.status.state==='live'?'live':'waiting',data.status.error?'upstream reconnecting · durable history preserved':'')}});
+    socket.addEventListener('close',scheduleReconnect);socket.addEventListener('error',()=>{try{socket.close()}catch(e){scheduleReconnect()}});
+  }
+  function scheduleReconnect(){clearInterval(pingTimer);setConnection('waiting');const delay=Math.min(30000,1500*2**Math.min(reconnectAttempt++,5));clearTimeout(reconnectTimer);reconnectTimer=setTimeout(connect,delay)}
+
+  // Local-only populated state for visual QA. It cannot be enabled on the
+  // public domain, so a preview can never be mistaken for live market data.
+  const localPreview = /^(127\.0\.0\.1|localhost)$/.test(location.hostname)
+    && new URLSearchParams(location.search).get('preview') === '1';
+  if(localPreview){
+    const now=Date.now();
+    const sample=[
+      ['b',48250,214.18,.00004439,1],['b',25000,111.03,.00004441,2],['s',18440,81.75,.00004433,4],
+      ['b',125000,552.66,.00004421,7],['s',33700,149.32,.00004431,9],['b',76000,336.74,.00004429,13],
+      ['b',12150,53.77,.00004426,18],['s',28000,123.87,.00004424,23],['b',61000,269.84,.00004419,31]
+    ].map((x,i)=>({id:'preview-'+i,tx:'5YfPreviewTransactionSignature'+i,side:x[0]==='b'?'buy':'sell',tokenAmount:x[1],volumeUsd:x[2],priceUsd:x[3],occurredAt:now-x[4]*60000}));
+    const buys=sample.filter(t=>t.side==='buy').reduce((a,t)=>a+t.volumeUsd,0),sells=sample.filter(t=>t.side==='sell').reduce((a,t)=>a+t.volumeUsd,0);
+    applySnapshot({ok:true,status:{state:'live'},trades:sample,summary:{tradeCount15m:6,tradeCount1h:sample.length,tradeCount24h:37,buyUsd15m:878.61,sellUsd15m:231.07,netUsd15m:647.54,buyShare15m:.792,buyUsd1h:buys,sellUsd1h:sells,netUsd1h:buys-sells,buyShare1h:buys/(buys+sells),volumeUsd24h:9842.18,largestBuyUsd24h:1834.22,latestPriceUsd:sample[0].priceUsd,lastTradeAt:sample[0].occurredAt}});
+    lastPriceFallback=.00004439;$('volume24h').textContent=usd(9842.18);$('liquidity').textContent=usd(42781.55);$('change24h').textContent='+8.42%';$('change24h').className='market-v positive';$('cumulative').textContent=usd(343200);renderBurn(343200);setConnection('live','local visual preview · no market calls');
+    return;
+  }
+
+  fetchSnapshot();fetchMarket();connect();
+  pollTimer=setInterval(()=>{fetchSnapshot();fetchMarket();renderTape()},20000);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInterval(pingTimer)}else{fetchSnapshot();fetchMarket();if(!socket||socket.readyState>1)connect()}});
+})();
+</script>
+</body>
+</html>

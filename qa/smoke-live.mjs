@@ -26,9 +26,10 @@ const pageChecks = [
   ['/referrals', /<title>BULLENCIAGA — Weekly Payouts/i],
   ['/thedrop', /<title>BULLENCIAGA — The Drop/i],
   ['/giveaways', /<title>BULLENCIAGA — Giveaways/i],
+  ['/tape', /<title>THE TAPE — Live \$BULLEN Market/i],
 ];
 const effectivePageChecks = smokePhase === 'preflight'
-  ? pageChecks.filter(([path]) => path !== '/giveaways')
+  ? pageChecks.filter(([path]) => !['/giveaways', '/tape'].includes(path))
   : pageChecks;
 
 const apiChecks = [
@@ -36,6 +37,7 @@ const apiChecks = [
   ['/ohlcv?tf=1h', (body) => body.ok === true && Array.isArray(body.candles)],
   ['/supply/history', (body) => body.ok === true && Number(body.count) > 0 && Array.isArray(body.events)],
   ['/supply/proof', (body) => body.ok === true && Array.isArray(body.burns) && 'burnedActual' in body && 'unaccounted' in body],
+  ['/volume/tape', (body) => body.ok === true && Array.isArray(body.trades) && typeof body.summary === 'object'],
 ];
 
 async function fetchChecked(path) {

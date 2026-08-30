@@ -6,6 +6,7 @@
   const labels = {
     index: 'Home',
     stats: 'Stats',
+    tape: 'The Tape',
     chart: 'Chart',
     curve: 'Curve',
     transparency: 'Moderation',
@@ -20,6 +21,7 @@
     ['objects', '/objects.html'],
     ['giveaways', '/giveaways.html'],
     ['stats', '/stats.html'],
+    ['tape', '/tape.html'],
     ['chart', '/chart.html'],
     ['curve', '/curve.html'],
     ['refer', '/refer.html'],
