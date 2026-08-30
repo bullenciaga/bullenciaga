@@ -60,14 +60,28 @@ if (round3?.round !== 3 || round3?.trigger?.target !== 650 || round3?.status !==
   failures.push('round 3 must remain visibly gated with no fabricated snapshot or result');
 }
 const buyHold = authority.campaigns.find((campaign) => campaign.id === 'herd-buy-hold-680-625-308');
-if (buyHold?.status !== 'upcoming' || buyHold?.kind !== 'buy-hold'
+if (buyHold?.status !== 'active' || buyHold?.kind !== 'buy-hold'
     || buyHold?.qualification?.entryUnit !== 25_000 || buyHold?.qualification?.entryCap !== null
     || buyHold?.qualification?.mustHoldAtClose !== true || buyHold?.qualification?.transfersCount !== false
     || buyHold?.qualification?.salesReduceEntries !== true || buyHold?.qualification?.onePrizePerWallet !== true
-    || buyHold?.draw?.activation !== 'blocked-on-official-terms'
-    || buyHold?.snapshot || buyHold?.result
+    || buyHold?.draw?.activation !== 'active'
+    || buyHold?.draw?.openedAt !== '2026-08-30T13:18:37.000Z'
+    || buyHold?.draw?.closesAt !== '2026-09-02T13:18:37.000Z'
+    || buyHold?.snapshot !== '/giveaway-buy-hold-open.json' || buyHold?.result
     || buyHold?.prizes?.positions?.join(',') !== '680,625,308') {
-  failures.push('Buy + Hold draw must remain a transparent upcoming proposal until official terms activate it');
+  failures.push('Buy + Hold draw must remain tied to its public 72-hour opening snapshot and fixed prize order');
+}
+const buyHoldOpen = JSON.parse(fs.readFileSync(path.join(site, 'giveaway-buy-hold-open.json'), 'utf8'));
+if (buyHoldOpen?.schema !== 'bullenciaga.buy-hold-open.v1'
+    || buyHoldOpen?.campaign !== buyHold.id || buyHoldOpen?.status !== 'active'
+    || buyHoldOpen?.openedAt !== buyHold.draw.openedAt || buyHoldOpen?.closesAt !== buyHold.draw.closesAt
+    || buyHoldOpen?.windowHours !== 72 || buyHoldOpen?.rules?.entryUnit !== '25000'
+    || buyHoldOpen?.rules?.entryCap !== null || buyHoldOpen?.rules?.onePrizePerWallet !== true
+    || !Number.isInteger(buyHoldOpen?.openingReference?.finalizedSlot)
+    || typeof buyHoldOpen?.openingReference?.blockhash !== 'string'
+    || buyHoldOpen?.prizes?.map((prize) => prize.position).join(',') !== '680,625,308'
+    || Object.keys(buyHoldOpen?.balancesRaw || {}).length !== buyHoldOpen?.totals?.owners) {
+  failures.push('Buy + Hold opening snapshot is missing, incomplete or inconsistent with the campaign authority');
 }
 if (authority.finalCarryover?.wallets !== 32 || authority.finalCarryover?.bankedEntries !== 62) {
   failures.push('giveaway authority carryover is missing or incorrect');
