@@ -54,6 +54,21 @@
   .connection-sub{margin-top:10px;color:var(--muted);font-size:10px;line-height:1.6}
   @keyframes pulse{50%{opacity:.35}}
 
+  .large-buy-glow{position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:0;border:1px solid transparent}
+  .large-buy-signal{position:fixed;z-index:9998;top:calc(var(--bullen-header-height,64px) + 18px);right:20px;
+    max-width:min(390px,calc(100vw - 40px));padding:13px 16px;border:1px solid rgba(234,217,170,.78);
+    background:rgba(8,7,4,.94);box-shadow:0 14px 50px rgba(0,0,0,.45),0 0 28px rgba(199,168,105,.12);
+    opacity:0;transform:translateY(-10px);pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+  .large-buy-signal strong{display:block;color:var(--gold2);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+  .large-buy-signal span{display:block;margin-top:5px;color:var(--ink);font-size:12px;line-height:1.45}
+  body.large-buy-active .large-buy-glow{animation:largeBuyGlow 1.8s cubic-bezier(.16,.8,.3,1)}
+  body.large-buy-active .large-buy-signal{opacity:1;transform:none}
+  @keyframes largeBuyGlow{
+    0%{opacity:0;border-color:transparent;box-shadow:inset 0 0 0 rgba(199,168,105,0)}
+    22%{opacity:1;border-color:rgba(234,217,170,.75);box-shadow:inset 0 0 100px rgba(199,168,105,.18)}
+    100%{opacity:0;border-color:rgba(234,217,170,0);box-shadow:inset 0 0 180px rgba(199,168,105,0)}
+  }
+
   .headline{display:grid;grid-template-columns:repeat(4,1fr);margin-top:14px;border:1px solid var(--line)}
   .metric{min-width:0;padding:15px 20px;background:rgba(9,9,9,.8)}
   .metric+.metric{border-left:1px solid var(--line)}
@@ -132,11 +147,16 @@
     .layout{margin-top:14px;gap:14px}.panel-head{padding:15px 14px}.panel-note{display:none}.tape{min-height:380px;max-height:600px}
     .trade{grid-template-columns:58px minmax(0,1fr) auto;gap:10px;padding:14px}.trade-price{display:none}.time{grid-column:3}.usd{text-align:right}.amount{font-size:12px}
     .side-stack{display:flex;gap:14px}.module{padding:17px 14px}.source{align-items:flex-start;flex-direction:column;padding:15px 14px}.actions{grid-template-columns:1fr}
+    .large-buy-signal{top:auto;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:calc(100vw - 24px)}
   }
   @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<div class="large-buy-glow" aria-hidden="true"></div>
+<div class="large-buy-signal" id="largeBuySignal" role="status" aria-live="assertive" aria-atomic="true">
+  <strong>Large buy landed</strong><span id="largeBuySignalDetail"></span>
+</div>
 <main id="main-content">
   <section class="mast">
     <div>
@@ -220,6 +240,7 @@
   let pingTimer = null;
   let pollTimer = null;
   let lastPriceFallback = null;
+  let largeBuyTimer = null;
 
   function openBullenSwap(){
     if(!window.Jupiter || typeof window.Jupiter.init !== 'function'){
@@ -285,6 +306,18 @@
     trades = [...map.values()].sort((a,b)=>(b.occurredAt||0)-(a.occurredAt||0)).slice(0,MAX_ROWS);
     renderTape(); renderSpark();
     if(markNewest) setTimeout(()=>{trades.forEach(t=>delete t.__new)},900);
+  }
+
+  function triggerLargeBuy(event,trade){
+    if(!event||event.kind!=='large_buy')return;
+    const volume=finite(event.volumeUsd);if(!(volume>0))return;
+    const amount=finite(event.tokenAmount)||finite(trade&&trade.tokenAmount);
+    $('largeBuySignalDetail').textContent=usd(volume)+(amount!==null?' · '+compact(amount)+' $BULLEN':'');
+    clearTimeout(largeBuyTimer);
+    document.body.classList.remove('large-buy-active');
+    void document.body.offsetWidth;
+    document.body.classList.add('large-buy-active');
+    largeBuyTimer=setTimeout(()=>document.body.classList.remove('large-buy-active'),2600);
   }
 
   function renderTape(){
@@ -371,7 +404,7 @@
     setConnection('waiting');
     try{socket=new WebSocket(WS_URL)}catch(e){scheduleReconnect();return}
     socket.addEventListener('open',()=>{reconnectAttempt=0;setConnection('live');clearInterval(pingTimer);pingTimer=setInterval(()=>{if(socket&&socket.readyState===1)socket.send('ping')},25000)});
-    socket.addEventListener('message',event=>{let data;try{data=JSON.parse(event.data)}catch(e){return}if(data.type==='snapshot')applySnapshot(data);else if(data.type==='trade'){mergeTrades([data.trade],true);renderSummary(data.summary)}else if(data.type==='status'&&data.status){setConnection(data.status.state==='live'?'live':'waiting',data.status.error?'upstream reconnecting · durable history preserved':'')}});
+    socket.addEventListener('message',event=>{let data;try{data=JSON.parse(event.data)}catch(e){return}if(data.type==='snapshot')applySnapshot(data);else if(data.type==='trade'){mergeTrades([data.trade],true);renderSummary(data.summary);triggerLargeBuy(data.event,data.trade)}else if(data.type==='large_buy'){triggerLargeBuy(data.event,data.trade)}else if(data.type==='status'&&data.status){setConnection(data.status.state==='live'?'live':'waiting',data.status.error?'upstream reconnecting · durable history preserved':'')}});
     socket.addEventListener('close',scheduleReconnect);socket.addEventListener('error',()=>{try{socket.close()}catch(e){scheduleReconnect()}});
   }
   function scheduleReconnect(){clearInterval(pingTimer);setConnection('waiting');const delay=Math.min(30000,1500*2**Math.min(reconnectAttempt++,5));clearTimeout(reconnectTimer);reconnectTimer=setTimeout(connect,delay)}
@@ -390,6 +423,7 @@
     const buys=sample.filter(t=>t.side==='buy').reduce((a,t)=>a+t.volumeUsd,0),sells=sample.filter(t=>t.side==='sell').reduce((a,t)=>a+t.volumeUsd,0);
     applySnapshot({ok:true,status:{state:'live'},trades:sample,summary:{tradeCount15m:6,tradeCount1h:sample.length,tradeCount24h:37,buyUsd15m:878.61,sellUsd15m:231.07,netUsd15m:647.54,buyShare15m:.792,buyUsd1h:buys,sellUsd1h:sells,netUsd1h:buys-sells,buyShare1h:buys/(buys+sells),volumeUsd24h:9842.18,largestBuyUsd24h:1834.22,latestPriceUsd:sample[0].priceUsd,lastTradeAt:sample[0].occurredAt}});
     lastPriceFallback=.00004439;$('volume24h').textContent=usd(9842.18);$('liquidity').textContent=usd(42781.55);$('change24h').textContent='+8.42%';$('change24h').className='market-v positive';$('cumulative').textContent=usd(343200);renderBurn(343200);setConnection('live','local visual preview · no market calls');
+    setTimeout(()=>triggerLargeBuy({kind:'large_buy',volumeUsd:1834.22,tokenAmount:125000},sample[3]),600);
     return;
   }
 
