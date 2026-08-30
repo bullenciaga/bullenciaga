@@ -785,6 +785,8 @@
     TOKEN: '',                               // resolved at boot, see resolveToken()
     COLLECTION: '5GXF7Uug7mZy2pj5XDk4LP9yH7oA5oMQEbCT49ggQnVC',
     HOUSE_OBJECTS_COLLECTION: '9ucdkSaiTLUDXmVCjWonxAJqrTH9uyB675BzzRi5vqgM',
+    BULLENSAGA_COLLECTION: 'FnbDXuPxcy87y451eYimMTDrrPqoFRMVi4ctAu73XVkD',
+    PUBLIC_ACTIVITY: 'https://bullensaga.com/api/public-activity',
     RPC_URL: 'https://solana-rpc.publicnode.com',       // same public RPC index.html uses for getTokenSupply
     RPC_PROXY: 'https://rpc-proxy.bullenciaga-e5c.workers.dev', // Helius DAS calls only (NFT side)
     IMG_PROXY: 'https://bullenciaga-img-proxy.bullenciaga-e5c.workers.dev',
@@ -1023,8 +1025,9 @@
   // silver for Legendary, pink for anything outside the manifest. Ordinary
   // public pieces get key '' -- still shown (white particles), just no
   // special border colour.
-  function tierOf(name){
-    if (/^(THE )?(SIGNET|CUFFLINKS)(\s*#|$)/i.test(String(name || '')) || /HOUSE OBJECT/i.test(String(name || ''))) return { key:'gold', label:'House Object' };
+  function tierOf(name, series){
+    if (series === 'bullensaga' || /^(THE )?(PROMISE|TRIAD)(\s*#|$)/i.test(String(name || ''))) return { key:'gold', label:'BULLENSAGA' };
+    if (series === 'house-object' || /^(THE )?(SIGNET|CUFFLINKS)(\s*#|$)/i.test(String(name || '')) || /HOUSE OBJECT/i.test(String(name || ''))) return { key:'gold', label:'House Object' };
     if (matchesSpecial(name,'relic')) return { key:'gold', label:'Relic' };
     if (matchesSpecial(name,'grail')) return { key:'gold', label:'Grail' };
     if (matchesSpecial(name,'legendary')) return { key:'silver', label:'Legendary' };
@@ -1194,9 +1197,29 @@
     const addr = CFG.DEMO ? DEMO_COIN_TOKEN : CFG.TOKEN;
     if (!addr) return;
     try{
-      const res = await fetch(`https://api.dexscreener.com/tokens/v1/solana/${addr}`);
-      const arr = await res.json();
-      const p = Array.isArray(arr) ? arr[0] : null;
+      let p = null;
+      if (!CFG.DEMO) {
+        try {
+          const cached = await fetch('/volume', { cache:'no-store' }).then(r => r.json());
+          if (cached && cached.ok && Number(cached.price) > 0) {
+            const marketNumber = value => value === null || value === undefined || value === ''
+              ? null
+              : (Number.isFinite(Number(value)) ? Number(value) : null);
+            p = {
+              priceUsd: Number(cached.price),
+              marketCap: marketNumber(cached.marketCap),
+              fdv: marketNumber(cached.fdv),
+              priceChange24h: marketNumber(cached.priceChange24h),
+              baseToken: { symbol:'BULLEN' }
+            };
+          }
+        } catch (e) { /* the direct feed below remains a launch-safe fallback */ }
+      }
+      if (!p) {
+        const res = await fetch(`https://api.dexscreener.com/tokens/v1/solana/${addr}`);
+        const arr = await res.json();
+        p = Array.isArray(arr) ? arr[0] : null;
+      }
       if (!p) return;
       // Kept so the supply fetch can recompute mcap when it lands after this.
       window.__LAST_PAIR__ = p;
@@ -1248,7 +1271,9 @@
       }
       checkMcapMilestone(mcapVal);
 
-      const ch = p.priceChange && p.priceChange.h24;
+      const ch = typeof p.priceChange24h === 'number'
+        ? p.priceChange24h
+        : p.priceChange && p.priceChange.h24;
       const el = $('sChange');
       if (CFG.DEMO){
         // Spoofed for the promo screenshot only -- never runs in live mode.
@@ -1785,7 +1810,7 @@
     if (msShowing){ showing = true; deferTimer = setTimeout(next, 600); return; }
     showing = true;
     const piece = queue.shift();
-    const t = tierOf(piece.name);
+    const t = tierOf(piece.name, piece.series);
     const box = $('alert');
     box.className = t.key ? t.key : '';
     $('alertName').textContent = piece.name;
@@ -1862,7 +1887,7 @@
   // RECENT_MAX_CAP rows kept, oldest trimmed off the end) -- see the note in
   // pushRecent() on why this changed from a full re-render.
   function buildRecentRow(piece){
-    const t = tierOf(piece.name);
+    const t = tierOf(piece.name, piece.series);
     const row = document.createElement('div');
     row.className = 'rrow ' + (t.key || '');
     const img = document.createElement('img');
@@ -2041,6 +2066,37 @@
     return out;
   }
 
+  const RECORD_IMAGES = {
+    'promise': 'https://bullensaga.com/assets/collectibles/promise-nft.png',
+    'triad': 'https://bullensaga.com/assets/collectibles/triad-nft.png',
+    'house-object-01-signet': 'https://bullensaga.com/assets/collectibles/house-object-01-signet.png',
+    'house-object-02-cufflinks': 'https://bullensaga.com/assets/collectibles/house-object-02-cufflinks.png'
+  };
+
+  async function fetchPublicRecordActivity(limit){
+    const res = await fetch(CFG.PUBLIC_ACTIVITY, { cache:'no-store' });
+    if (!res.ok) throw new Error(`public activity ${res.status}`);
+    const data = await res.json();
+    return ((data && data.events) || [])
+      .filter(event => event && (event.kind === 'housemint' || event.kind === 'foundingmint'))
+      .map(event => {
+        const cleanName = String(event.collectibleName || '')
+          .replace(/^House Object\s+\d+\s*[—-]\s*/i, '') || 'Collectible';
+        const serial = String(Number(event.serialNumber) || 0).padStart(3, '0');
+        return {
+          id: event.mintAddress || event.eventId,
+          name: `${cleanName} #${serial}`,
+          image: RECORD_IMAGES[event.collectibleId] || '',
+          json_uri: '',
+          series: event.kind === 'housemint' ? 'house-object' : 'bullensaga',
+          createdAt: Date.parse(event.occurredAt || '') || 0
+        };
+      })
+      .filter(event => event.id)
+      .sort((left, right) => right.createdAt - left.createdAt)
+      .slice(0, limit);
+  }
+
   // ------------------------------------------------------- mint watch
   let known = null;   // null until the first successful fetch establishes a baseline
 
@@ -2049,8 +2105,10 @@
     try{
       const herdAssets = await fetchAssets(CFG.COLLECTION, 'herd');
       let houseAssets = [];
+      let bullensagaAssets = [];
       try { houseAssets = await fetchAssets(CFG.HOUSE_OBJECTS_COLLECTION, 'house-object'); } catch (e) { /* collection may not exist until launch */ }
-      const assets = herdAssets.concat(houseAssets);
+      try { bullensagaAssets = await fetchAssets(CFG.BULLENSAGA_COLLECTION, 'bullensaga'); } catch (e) { /* founding records may not exist until launch */ }
+      const assets = herdAssets.concat(houseAssets, bullensagaAssets);
       lastOkMints = Date.now();
       // Not awaited: the endpoint call inside must not hold up the rest of
       // the render, and the local count paints synchronously first anyway.
@@ -2067,9 +2125,15 @@
         try {
           const recent = await Promise.allSettled([
             fetchRecentAssets(CFG.COLLECTION, RECENT_SEED_COUNT, 'herd'),
-            fetchRecentAssets(CFG.HOUSE_OBJECTS_COLLECTION, RECENT_SEED_COUNT, 'house-object')
+            fetchPublicRecordActivity(RECENT_SEED_COUNT),
+            fetchRecentAssets(CFG.HOUSE_OBJECTS_COLLECTION, RECENT_SEED_COUNT, 'house-object'),
+            fetchRecentAssets(CFG.BULLENSAGA_COLLECTION, RECENT_SEED_COUNT, 'bullensaga')
           ]);
-          const seed = recent.flatMap(result => result.status === 'fulfilled' ? result.value : [])
+          const herdRecent = recent[0].status === 'fulfilled' ? recent[0].value : [];
+          const ledgerRecent = recent[1].status === 'fulfilled' ? recent[1].value : [];
+          const recordFallback = recent.slice(2)
+            .flatMap(result => result.status === 'fulfilled' ? result.value : []);
+          const seed = herdRecent.concat(ledgerRecent.length ? ledgerRecent : recordFallback)
             .sort((left, right) => (right.createdAt || 0) - (left.createdAt || 0))
             .slice(0, RECENT_SEED_COUNT);
           // pushRecent() inserts at the top, so walk oldest -> newest to end

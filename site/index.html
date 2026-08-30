@@ -3882,6 +3882,21 @@
 
 
   async function getDexData(address){
+    try {
+      const cached = await fetch('/volume', { cache:'no-store' }).then(res => res.json());
+      if (cached && cached.ok && Number(cached.price) > 0) {
+        const finite = value => value === null || value === undefined || value === ''
+          ? null
+          : (Number.isFinite(Number(value)) ? Number(value) : null);
+        return {
+          priceUsd: Number(cached.price),
+          marketCap: finite(cached.marketCap) ?? finite(cached.fdv),
+          liquidityUsd: finite(cached.liquidityUsd),
+          volume24h: finite(cached.volume24h),
+          priceChange24h: finite(cached.priceChange24h)
+        };
+      }
+    } catch (e) { /* DexScreener below remains a last-resort fallback */ }
     const res = await fetch(`https://api.dexscreener.com/tokens/v1/solana/${address}`);
     const json = await res.json();
     const pairs = Array.isArray(json) ? json : (json.pairs || []);
