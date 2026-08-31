@@ -203,9 +203,11 @@ body.market-surface:not(.transparent) {
     flex: 1 1 0;
     min-height: 56px;
     padding: 12px 14px;
-    font-size: 12px;
+    font-size: clamp(14px, 1vw, 20px);
   }
-  .market-stats:not(.transparent) .trow .th { font-size: 10px; }
+  .market-stats:not(.transparent) .trow .th {
+    font-size: clamp(12px, 0.82vw, 16px);
+  }
 }
 
 .market-stats:not(.transparent) .house-burn-registry--compact {

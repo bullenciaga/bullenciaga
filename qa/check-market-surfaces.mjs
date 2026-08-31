@@ -44,5 +44,9 @@ if (!css.includes('--market-home-burn-shell: 920px')) {
 if (!css.includes('@media (min-width: 981px) and (min-height: 860px)')) {
   throw new Error('Stats must reserve its expanded tier treatment for tall desktop canvases');
 }
+if (!css.includes('font-size: clamp(14px, 1vw, 20px)')
+    || !css.includes('font-size: clamp(12px, 0.82vw, 16px)')) {
+  throw new Error('Expanded Stats tiers must scale their typography with the taller desktop rows');
+}
 
 console.log('market surfaces: shared shell and scoped page hooks verified');
