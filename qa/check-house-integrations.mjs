@@ -23,6 +23,15 @@ assert.deepEqual(phases.map(phase => phase.number), ['01', '02', '03', '04', '05
 assert.equal(phases[3].title, 'THE VAULT EMPTIES');
 assert.match(index, /One portion empties at \$20M cumulative volume; the rest follows at \$50M/);
 assert.match(index, /phases 05 to 08 are not gated on volume and may complete in any order/);
+assert.match(roadmap, /<details class="roadmap-receipts">/);
+assert.match(roadmap, /Open the Receipts/);
+assert.match(roadmap, /Close the Receipts/);
+assert.match(index, /why does the site say “committed” instead of “burned”\?/);
+assert.match(index, /what are House Objects and how are they claimed\?/);
+assert.match(index, /what is BULLENSAGA, and how does it connect to BULLENCIAGA\?/);
+assert.match(index, /why has my trade not appeared on The Tape yet\?/);
+assert.match(index, /a wallet below that balance cannot reserve a number or create a transaction/);
+assert.match(index, /commit 250,000 \$BULLEN to the public burn escrow to claim a random piece/);
 assert.match(index, /<a href="\/whitepaper"/);
 assert.match(index, /async function fetchHouseObjectAssets\(\)/);
 assert.match(index, /series:'house-object'/);
