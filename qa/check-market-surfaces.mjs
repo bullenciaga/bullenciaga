@@ -29,12 +29,20 @@ if (!index.includes('class="market-home"') || !index.includes('href="/market-sur
   throw new Error('index.html burn module is not opted into the shared market language');
 }
 
+const tape = fs.readFileSync(path.join(root, 'site', 'tape.html'), 'utf8');
+if (!tape.includes('flex:1 0 auto')) {
+  throw new Error('Tape market rail must grow to the Live Prints baseline without shrinking on short windows');
+}
+
 const css = fs.readFileSync(path.join(root, 'site', 'market-surfaces.css'), 'utf8');
 for (const selector of ['.market-stats', '.market-tape', '.market-chart', '.market-curve', '.market-home']) {
   if (!css.includes(selector)) throw new Error(`shared stylesheet is missing ${selector}`);
 }
 if (!css.includes('--market-home-burn-shell: 920px')) {
   throw new Error('home burn module must retain its compact 920px main-page rail');
+}
+if (!css.includes('@media (min-width: 981px) and (min-height: 860px)')) {
+  throw new Error('Stats must reserve its expanded tier treatment for tall desktop canvases');
 }
 
 console.log('market surfaces: shared shell and scoped page hooks verified');
