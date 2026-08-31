@@ -408,11 +408,11 @@ body.market-surface:not(.transparent) {
 }
 
 .market-home #roadmap .roadmap-sublabel {
-  margin-top: 64px;
-  margin-bottom: 18px;
-  color: var(--market-ink);
-  font: 600 clamp(32px, 4.2vw, 58px)/1 var(--bullen-font-display);
-  letter-spacing: -0.035em;
+  margin-top: 60px;
+  margin-bottom: 24px;
+  color: rgba(245, 243, 238, 0.4);
+  font: 400 15px/1.5 'Space Mono', monospace;
+  letter-spacing: 0.24em;
 }
 
 .market-home #roadmap #burnTrackerWrapper {
