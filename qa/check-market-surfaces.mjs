@@ -33,5 +33,8 @@ const css = fs.readFileSync(path.join(root, 'site', 'market-surfaces.css'), 'utf
 for (const selector of ['.market-stats', '.market-tape', '.market-chart', '.market-curve', '.market-home']) {
   if (!css.includes(selector)) throw new Error(`shared stylesheet is missing ${selector}`);
 }
+if (!css.includes('--market-home-burn-shell: 920px')) {
+  throw new Error('home burn module must retain its compact 920px main-page rail');
+}
 
 console.log('market surfaces: shared shell and scoped page hooks verified');
