@@ -106,10 +106,18 @@
   }
 
   async function post(path, body) {
-    var response = await fetch(apiBase + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
-    var result = await response.json();
+    var response;
+    try {
+      response = await fetch(apiBase + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    } catch (error) {
+      var networkError = new Error('The House ledger could not be reached. No number was reserved and no transaction was created. Please try again.');
+      networkError.reason = 'NETWORK_UNREACHABLE';
+      throw networkError;
+    }
+    var result = {};
+    try { result = await response.json(); } catch (error) { /* handled by the status below */ }
     if (!response.ok) {
-      var error = new Error(result.error || 'The House ledger refused the request.');
+      var error = new Error(result.error || 'The House ledger could not prepare the claim. No number was reserved and no transaction was created.');
       error.status = response.status;
       error.reason = result.reason || '';
       throw error;
