@@ -13,6 +13,7 @@
 :root {
   --bullen-shell-width: 1440px;
   --market-shell: 1440px;
+  --market-home-burn-shell: 920px;
   --market-bg: #050505;
   --market-panel: rgba(9, 9, 9, 0.86);
   --market-panel-solid: #090909;
@@ -399,9 +400,15 @@ body.market-surface:not(.transparent) {
 /* ---------------------------------------------------------- HOME BURNS */
 .market-home #roadmap .roadmap-sublabel,
 .market-home #roadmap #burnTrackerWrapper,
-.market-home #roadmap .house-burn-registry,
+.market-home #roadmap .house-burn-registry {
+  width: min(var(--market-home-burn-shell), 100%);
+  max-width: none;
+  margin-right: auto;
+  margin-left: auto;
+}
+
 .market-home #roadmap .roadmap-note {
-  width: min(var(--market-shell), 100%);
+  width: min(1180px, 100%);
   max-width: none;
   margin-right: auto;
   margin-left: auto;
@@ -416,14 +423,14 @@ body.market-surface:not(.transparent) {
 }
 
 .market-home #roadmap #burnTrackerWrapper {
-  padding: 18px;
+  padding: 14px;
   border: 1px solid var(--market-line);
   background: var(--market-panel);
 }
 
 .market-home #roadmap .volume-tracker {
   max-width: none;
-  margin: 0 0 18px;
+  margin: 0 0 14px;
 }
 
 .market-home #roadmap .volume-tracker-label {
@@ -434,7 +441,7 @@ body.market-surface:not(.transparent) {
 
 .market-home #roadmap .volume-tracker-value {
   color: var(--market-gold-light);
-  font: 500 clamp(25px, 2.7vw, 42px)/1 var(--bullen-font-display);
+  font: 500 clamp(18px, 2.2vw, 24px)/1 var(--bullen-font-display);
 }
 
 .market-home #roadmap .volume-progress { height: 9px; }
@@ -444,8 +451,8 @@ body.market-surface:not(.transparent) {
   background: var(--market-line);
 }
 .market-home #roadmap .burn-tier {
-  min-height: 142px;
-  padding: 28px 16px;
+  min-height: 82px;
+  padding: 20px 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -453,7 +460,7 @@ body.market-surface:not(.transparent) {
 }
 .market-home #roadmap .burn-tier .tier-value {
   color: var(--market-gold-light);
-  font: 500 clamp(26px, 3vw, 44px)/1 var(--bullen-font-display);
+  font: 500 clamp(18px, 2.4vw, 24px)/1 var(--bullen-font-display);
   letter-spacing: -0.025em;
 }
 .market-home #roadmap .burn-tier .tier-name {
@@ -475,22 +482,22 @@ body.market-surface:not(.transparent) {
 .market-home #roadmap .house-burn-registry__head,
 .market-home #roadmap .house-burn-registry__metric,
 .market-home #roadmap .house-burn-registry__note { background: transparent; }
-.market-home #roadmap .house-burn-registry__head { padding: 16px 18px; }
+.market-home #roadmap .house-burn-registry__head { padding: 13px 15px; }
 .market-home #roadmap .house-burn-registry__title {
   color: var(--market-gold);
   letter-spacing: 0.24em;
 }
 .market-home #roadmap .house-burn-registry__metrics { gap: 0; }
-.market-home #roadmap .house-burn-registry__metric { padding: 18px; }
+.market-home #roadmap .house-burn-registry__metric { padding: 14px 15px; }
 .market-home #roadmap .house-burn-registry__metric + .house-burn-registry__metric {
   border-left: 1px solid var(--market-line);
 }
 .market-home #roadmap .house-burn-registry__metric b {
   color: var(--market-gold-light);
-  font: 500 clamp(22px, 2.5vw, 38px)/1 var(--bullen-font-display);
+  font: 500 clamp(14px, 1.7vw, 21px)/1.2 var(--bullen-font-display);
 }
 .market-home #roadmap .house-burn-registry__note {
-  padding: 15px 18px;
+  padding: 12px 15px;
   color: var(--market-muted);
 }
 .market-home #roadmap .roadmap-note {
@@ -550,10 +557,14 @@ body.market-surface:not(.transparent) {
   }
 
   .market-home #roadmap #burnTrackerWrapper { padding: 12px; }
-  .market-home #roadmap .burn-schedule { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .market-home #roadmap .burn-tier { min-height: 118px; padding: 20px 10px; }
+  .market-home #roadmap .burn-schedule { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .market-home #roadmap .burn-tier { min-height: 82px; padding: 18px 10px; }
   .market-home #roadmap .house-burn-registry__metric + .house-burn-registry__metric { border-left: 0; }
   .market-home #roadmap .house-burn-registry__metric:nth-child(even) { border-left: 1px solid var(--market-line); }
+}
+
+@media (max-width: 420px) {
+  .market-home #roadmap .burn-schedule { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
