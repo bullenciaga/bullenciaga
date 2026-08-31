@@ -19,8 +19,22 @@
   var $ = function (id) { return document.getElementById(id); };
 
   function setStatus(message, isError) {
-    $('claimStatus').textContent = message;
-    $('claimStatus').style.color = isError ? '#e0685f' : '';
+    var status = $('claimStatus');
+    var text = String(message || '');
+    var insufficientPrefix = 'THIS WALLET DOES NOT HOLD THE 100,000 $BULLEN REQUIRED FOR A HOUSE OBJECT CLAIM.';
+    var noReservationSentence = 'NO NUMBER WAS RESERVED AND NO TRANSACTION WAS CREATED.';
+    var breakAt = text.toUpperCase().indexOf(noReservationSentence);
+
+    if (text.toUpperCase().indexOf(insufficientPrefix) === 0 && breakAt > 0) {
+      status.replaceChildren(
+        document.createTextNode(text.slice(0, breakAt).trimEnd()),
+        document.createElement('br'),
+        document.createTextNode(text.slice(breakAt).trimStart())
+      );
+    } else {
+      status.textContent = text;
+    }
+    status.style.color = isError ? '#e0685f' : '';
   }
 
   function activateStep(name, done) {
