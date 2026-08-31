@@ -81,7 +81,11 @@ body.market-surface:not(.transparent) {
 }
 
 .market-stats:not(.transparent) .cols {
-  grid-template-columns: minmax(0, 1.55fr) minmax(310px, 0.75fr);
+  /* Recent Mints is live content, not a narrow utility rail. The previous
+     67/33 split made every collection title fight the image and category
+     badge. A 57/43 split still leaves the schedule comfortably wide while
+     giving the asset names enough room to remain legible in full. */
+  grid-template-columns: minmax(0, 1.32fr) minmax(460px, 1fr);
   gap: 16px;
 }
 
@@ -184,9 +188,67 @@ body.market-surface:not(.transparent) {
 .market-stats:not(.transparent) .burnline .v { font-size: 17px; }
 
 .market-stats:not(.transparent) .rrow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   padding: 7px 10px;
   border-color: var(--market-line);
   background: rgba(5, 5, 5, 0.38);
+}
+
+/* Keep names intact on desktop. The list may show one fewer row when an
+   unusually long title needs a second line; preserving the actual asset
+   identity is more useful than a denser list of clipped labels. */
+@media (min-width: 1181px) {
+  .market-stats:not(.transparent) .rrow .nm {
+    overflow: visible;
+    color: var(--market-ink);
+    font-size: clamp(14px, 1.15vw, 21px);
+    line-height: 1.22;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .market-stats:not(.transparent) .rrow .tg {
+    max-width: 140px;
+    padding-inline: 8px;
+    text-align: center;
+    line-height: 1.25;
+  }
+}
+
+/* A compact desktop window should become one clean vertical dashboard
+   before either column is squeezed back into truncation. This bridge sits
+   above the page's phone layout, so tablets and small laptop windows keep
+   the desktop typography while gaining the full available width. */
+@media (min-width: 901px) and (max-width: 1180px) {
+  body.market-stats:not(.transparent) {
+    overflow: auto;
+  }
+
+  .market-stats:not(.transparent) #stage {
+    height: auto;
+    min-height: calc(100svh - var(--bullen-header-height) - var(--bullen-page-gap));
+  }
+
+  .market-stats:not(.transparent) .cols {
+    flex: none;
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .market-stats:not(.transparent) .col {
+    min-height: auto;
+  }
+
+  .market-stats:not(.transparent) .panel.grow {
+    flex: 0 0 auto;
+    min-height: auto;
+  }
+
+  .market-stats:not(.transparent) .recent {
+    overflow: visible;
+  }
 }
 
 /* On tall desktop canvases the burn panel should use its available height as
