@@ -48,5 +48,12 @@ if (!css.includes('font-size: clamp(14px, 1vw, 20px)')
     || !css.includes('font-size: clamp(12px, 0.82vw, 16px)')) {
   throw new Error('Expanded Stats tiers must scale their typography with the taller desktop rows');
 }
+if (!css.includes('grid-template-columns: minmax(0, 1.32fr) minmax(460px, 1fr)')) {
+  throw new Error('Stats must reserve a readable desktop rail for Recent Mints');
+}
+if (!css.includes('grid-template-columns: auto minmax(0, 1fr) auto')
+    || !css.includes('white-space: normal')) {
+  throw new Error('Recent Mint rows must preserve full NFT names between the image and category badge');
+}
 
 console.log('market surfaces: shared shell and scoped page hooks verified');
