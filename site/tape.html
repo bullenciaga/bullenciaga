@@ -132,8 +132,13 @@
 
   @media(min-width:981px){
     .layout{height:clamp(500px,calc(100svh - 510px),700px)}
-    .side-stack{height:100%;min-height:0}
-    .side-stack>.panel:last-child{flex:1;min-height:0;display:flex;flex-direction:column}
+    /* The rail can be taller than the available dashboard frame on short
+       desktop windows. Keep that overflow inside the rail, like Live Prints,
+       and never let the Market Now panel collapse around full-height content. */
+    .side-stack{height:100%;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+      scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+    .side-stack>.panel{flex-shrink:0}
+    .side-stack>.panel:last-child{flex:none;min-height:0;display:flex;flex-direction:column}
     .side-stack>.panel:last-child>.module:last-child{flex:1;display:flex;flex-direction:column}
     .side-stack>.panel:last-child>.module:last-child>.actions{margin-top:auto;padding-top:13px}
   }
