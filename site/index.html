@@ -650,21 +650,26 @@
      widget arrives with its own typeface, its own blues and greens, its own
      branding and a pile of numbers this page already shows. This is one
      series in gold on black, in the site's own type. */
-  /* The two stat actions share one class so they cannot drift apart. Equal
+  /* The stat actions share one class so they cannot drift apart. Equal
      widths come from flex:1 on a shared max-width row rather than from a
-     hand-set px value, so the pair stays balanced at any text length. */
+     hand-set px value, so the row stays balanced at any text length. */
   .stats-actions{
     display:flex;
     gap:10px;
-    max-width:400px;
+    max-width:720px;
     margin:26px auto 0;
   }
   .stats-btn{
     flex:1 1 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     text-align:center;
     font-family:'Space Mono', monospace;
     font-size:10px;
+    line-height:1.2;
     letter-spacing:0.13em;
+    white-space:nowrap;
     text-transform:uppercase;
     color:var(--gold);
     background:transparent;
@@ -684,6 +689,11 @@
   }
   @media (max-width:600px){
     .stats-grid{ grid-template-columns:repeat(2, 1fr); }
+    .stats-actions{
+      flex-direction:column;
+      max-width:320px;
+    }
+    .stats-btn{ min-height:42px; }
   }
 
   @media (max-width:480px){
@@ -3146,9 +3156,9 @@
     </div>
   </div>
   <div class="stats-actions">
-    <a class="stats-btn" href="/chart" target="_blank" rel="noopener">Open Chart &#8599;</a>
-    <a class="stats-btn" href="/tape" target="_blank" rel="noopener">Open The Tape &#8599;</a>
-    <a href="stats.html" target="_blank" rel="noopener noreferrer" class="stats-btn">Live Dashboard &#8599;</a>
+    <a class="stats-btn" href="/chart" target="_blank" rel="noopener">Open Chart</a>
+    <a class="stats-btn" href="/tape" target="_blank" rel="noopener">Open The Tape</a>
+    <a href="stats.html" target="_blank" rel="noopener noreferrer" class="stats-btn">Live Dashboard</a>
   </div>
   <div class="stats-note" id="statsNote">contract not live yet — stats will populate automatically once it's added.</div>
 </section>
@@ -3531,7 +3541,7 @@
   © 2026 BULLENCIAGA.
 </footer>
 
-<div class="version-tag" id="versionTag">build 2026-08-28.1 — silent</div>
+<div class="version-tag" id="versionTag">build 2026-08-31.1 — centered controls</div>
 
 <div class="vault-modal" id="vaultModal">
   <button class="vault-modal-close" id="vaultModalClose" type="button">&times;</button>
