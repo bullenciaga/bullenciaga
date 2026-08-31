@@ -2601,6 +2601,14 @@
     max-width:1180px;
     margin:22px auto 0;
   }
+  .roadmap-note p,
+  .wallet-verify-text p{
+    margin:0;
+  }
+  .roadmap-note p + p,
+  .wallet-verify-text p + p{
+    margin-top:18px;
+  }
   /* The burn figure doubles as its own receipt: the number links straight to
      the escrow account's Solscan history, where every burn transaction is
      listed. Deliberately understated -- a dotted underline rather than a
@@ -2617,7 +2625,9 @@
   }
   /* ===== SECTION: WALLET VERIFY ===== */
   .wallet-verify{
-    margin-top:40px;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
     text-align:center;
   }
   .verify-actions{
@@ -2628,11 +2638,63 @@
   }
   .wallet-verify-text{
     max-width:920px;
-    margin:0 auto 50px;
+    margin:0 auto 28px;
+  }
+  .roadmap-receipts{
+    max-width:1180px;
+    margin:22px auto 0;
+  }
+  .roadmap-receipts-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    width:fit-content;
+    max-width:100%;
+    margin:0 auto;
+    padding:13px 18px;
+    border:1px solid var(--gold);
+    color:var(--gold);
+    background:transparent;
+    font-family:'Space Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    list-style:none;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease;
+  }
+  .roadmap-receipts-toggle::-webkit-details-marker{ display:none; }
+  .roadmap-receipts-toggle:hover,
+  .roadmap-receipts-toggle:focus-visible{
+    background:var(--gold);
+    color:var(--black);
+    outline:none;
+  }
+  .roadmap-receipts-label--open{ display:none; }
+  .roadmap-receipts[open] .roadmap-receipts-label--closed{ display:none; }
+  .roadmap-receipts[open] .roadmap-receipts-label--open{ display:inline; }
+  .roadmap-receipts-chevron{
+    width:11px;
+    height:11px;
+    flex:0 0 auto;
+    transition:transform .25s ease;
+  }
+  .roadmap-receipts[open] .roadmap-receipts-chevron{ transform:rotate(180deg); }
+  .roadmap-receipts-body{
+    margin-top:18px;
+    padding:24px clamp(18px, 4vw, 52px) 28px;
+    border:1px solid var(--line);
+    background:rgba(245,243,238,0.012);
+  }
+  .roadmap-receipts .roadmap-note{
+    margin:0 auto;
   }
   @media (max-width:700px){
     .burn-schedule{ grid-template-columns:repeat(3, 1fr); }
     .staking-filler{ display:block; }
+    .roadmap-receipts-toggle{ width:100%; }
+    .roadmap-receipts-body{ padding:20px 14px 22px; }
   }
   @media (max-width:420px){
     .burn-schedule{ grid-template-columns:repeat(2, 1fr); }
@@ -3467,16 +3529,31 @@
     </div>
     <p class="house-burn-registry__note">A public claim moves exactly 100,000 Token-2022 $BULLEN to the public burn escrow. The commitment appears here immediately; the supply pages count it as destroyed only after the scheduled escrow burn lands on-chain. <a href="objects.html">Open House Objects.</a></p>
   </div>
-  <div class="roadmap-note">live from geckoterminal · updates every 5 min<br>cumulative trading volume, all-time. each completed burn is permanent and verifiable on-chain.<br>phases 05 to 08 are not gated on volume and may complete in any order.<br>the fixed schedule and a complete 1,000-piece Herd remove 500M combined.<br><br>the first 200 House Objects can commit up to another 20M through public burn claims;<br>preorder and manual awards consume the same numbered inventory without inventing a burn.</div>
+  <details class="roadmap-receipts">
+    <summary class="roadmap-receipts-toggle">
+      <span class="roadmap-receipts-label--closed">Open the Receipts</span>
+      <span class="roadmap-receipts-label--open">Close the Receipts</span>
+      <svg class="roadmap-receipts-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg>
+    </summary>
+    <div class="roadmap-receipts-body">
+      <div class="roadmap-note">
+        <p>live from geckoterminal · updates every 5 min<br>cumulative trading volume, all-time. each completed burn is permanent and verifiable on-chain.<br>phases 05 to 08 are not gated on volume and may complete in any order.<br>the fixed schedule and a complete 1,000-piece Herd remove 500M combined.</p>
+        <p>the first 200 House Objects can commit up to another 20M through public burn claims;<br>preorder and manual awards consume the same numbered inventory without inventing a burn.</p>
+      </div>
 
-  <div class="wallet-verify">
-    <p class="wallet-verify-text">dev wallet is also used to pay for listings,<br>dex updates, promotions, trending, and other services.<br>every transaction is verifiable on-chain, just like the burns.<br><br>mint payments land in a public burn escrow<br>and are destroyed from it on a recurring schedule.<br>nothing is held back. check it yourself.</p>
-    <div class="verify-actions">
-      <a href="https://solscan.io/account/GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd" target="_blank" rel="noopener noreferrer" class="btn btn-wide">Verify the Dev Wallet</a>
-      <a href="https://solscan.io/account/FUtAEk1TAVf2WZ3wqXeHYttqfpTftEf6qrprue5x6mLy" target="_blank" rel="noopener noreferrer" class="btn btn-wide">Verify the Burns</a>
-      <a href="/whitepaper" target="_blank" rel="noopener noreferrer" class="btn btn-wide">Read the Whitepaper</a>
+      <div class="wallet-verify">
+        <div class="wallet-verify-text">
+          <p>dev wallet is also used to pay for listings,<br>dex updates, promotions, trending, and other services.<br>every transaction is verifiable on-chain, just like the burns.</p>
+          <p>mint payments land in a public burn escrow<br>and are destroyed from it on a recurring schedule.<br>nothing is held back. check it yourself.</p>
+        </div>
+        <div class="verify-actions">
+          <a href="https://solscan.io/account/GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd" target="_blank" rel="noopener noreferrer" class="btn btn-wide">Verify the Dev Wallet</a>
+          <a href="https://solscan.io/account/FUtAEk1TAVf2WZ3wqXeHYttqfpTftEf6qrprue5x6mLy" target="_blank" rel="noopener noreferrer" class="btn btn-wide">Verify the Burns</a>
+          <a href="/whitepaper" target="_blank" rel="noopener noreferrer" class="btn btn-wide">Read the Whitepaper</a>
+        </div>
+      </div>
     </div>
-  </div>
+  </details>
 </section>
 
 <!-- ===== SECTION: FAQ ===== -->
@@ -3496,12 +3573,28 @@
       <p>there are three transparent paths. volume milestones release and destroy the locked 250M schedule; Herd claims commit 250,000 $BULLEN each to public burn escrow; public House Object claims commit 100,000 each to that escrow. escrow deposits are labelled committed, not destroyed, until a scheduled Token-2022 burn reduces supply on-chain. preorder and manual awards consume numbered inventory but do not fabricate a token burn.</p>
     </details>
     <details class="faq-item">
+      <summary>why does the site say “committed” instead of “burned”?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
+      <p>a claim is shown as committed as soon as its $BULLEN reaches the public burn escrow. circulating supply changes only when the separate Token-2022 burn instruction lands on-chain. the registry shows the commitment immediately; the supply pages wait for the completed burn.</p>
+    </details>
+    <details class="faq-item">
+      <summary>what are House Objects and how are they claimed?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
+      <p>The Signet and The Cufflinks begin the collection with 100 numbered editions of each. verified holders enter first for 48 hours; a public claim requires exactly 100,000 $BULLEN and commits it to the public burn escrow. a wallet below that balance cannot reserve a number or create a transaction. preorders and manual awards use the same numbered inventory without inventing a burn.</p>
+    </details>
+    <details class="faq-item">
+      <summary>what is BULLENSAGA, and how does it connect to BULLENCIAGA?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
+      <p>BULLENSAGA is a separate game and lore universe built around Count, Record and Measure. its founding records connect back to the House through the Promise, the Triad and shared numbered House Object inventory, but the two worlds keep distinct characters, rules and visual identities.</p>
+    </details>
+    <details class="faq-item">
       <summary>what is the dev wallet used for?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
-      <p>the scheduled burns above, plus listings, dex updates, promotions, trending, and other services. every payment out of it is checkable on Solscan, same as the burns.</p>
+      <p>it holds the remaining scheduled dev allocation and also pays for listings, dex updates, promotions, trending and other services. the public burn escrow is a separate account. every payment and completed burn is independently checkable on Solscan.</p>
     </details>
     <details class="faq-item">
       <summary>where can i verify any of this myself?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
-      <p>the "verify on solscan" button in the roadmap section links directly to the dev wallet. every burn, every payment, every balance change is public.</p>
+      <p>open “the receipts” beneath the roadmap. the dev-wallet and burn buttons lead to their separate Solscan accounts; the House Object registry links to the shared ledger, and the whitepaper explains how those records reconcile.</p>
+    </details>
+    <details class="faq-item">
+      <summary>why has my trade not appeared on The Tape yet?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
+      <p>The Tape follows the primary $BULLEN / SOL pool through public upstream data that is normalized and cached before display. indexing can lag, so a confirmed swap may take time to appear. your wallet and the Solscan transaction remain the source of truth while the public feed catches up.</p>
     </details>
     <details class="faq-item">
       <summary>how do i actually buy it?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
@@ -3509,7 +3602,7 @@
     </details>
     <details class="faq-item">
       <summary>how do i mint one of the herd nfts?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
-      <p>there is no sol price. connect your wallet and burn 250,000 $BULLEN to claim a random piece from the collection — you pay only the solana network fee. every burn is permanent, same as the token burns above.</p>
+      <p>there is no sol price. connect your wallet and commit 250,000 $BULLEN to the public burn escrow to claim a random piece from the collection — you pay only the solana network fee. the supply changes when the scheduled Token-2022 burn lands on-chain.</p>
     </details>
     <details class="faq-item">
       <summary>can i see the whole collection before minting?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
@@ -3542,7 +3635,7 @@
   © 2026 BULLENCIAGA.
 </footer>
 
-<div class="version-tag" id="versionTag">build 2026-08-31.1 — centered controls</div>
+<div class="version-tag" id="versionTag">build 2026-08-31.2 — open the receipts</div>
 
 <div class="vault-modal" id="vaultModal">
   <button class="vault-modal-close" id="vaultModalClose" type="button">&times;</button>
