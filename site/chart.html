@@ -331,9 +331,12 @@
   }
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
+<link rel="stylesheet" href="/market-surfaces.css">
 <script defer src="/bullen-ui.js"></script>
 </head>
-<body>
+<body class="market-surface market-chart">
+
+<main class="market-chart-shell" id="main-content">
 
 <div class="head">
   <div class="head-left">
@@ -372,6 +375,8 @@
 <div class="note" id="note"></div>
 <div class="foot">data: <a href="https://www.geckoterminal.com/solana/pools/9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ" target="_blank" rel="noopener">geckoterminal</a> &middot; pumpswap pool &middot; supply from <a href="/supply/history" target="_blank" rel="noopener">/supply/history</a> &middot; collection and preorder events from the public BULLENSAGA ledger</div>
 <div class="foot" style="opacity:.45;">predeploy 2026-08-29 — only confirmed burns change the supply line</div>
+
+</main>
 
 <script>
 (function fullChart(){
