@@ -11,7 +11,7 @@ const pages = {
 
 for (const [name, className] of Object.entries(pages)) {
   const html = fs.readFileSync(path.join(root, 'site', name), 'utf8');
-  if (!html.includes('href="/market-surfaces.css"')) {
+  if (!html.includes('href="/market-surfaces.css')) {
     throw new Error(`${name} is missing the shared market stylesheet`);
   }
   if (!html.match(new RegExp(`<body[^>]*\\b${className}\\b`))) {
@@ -25,7 +25,7 @@ if (!chart.includes('class="market-chart-shell"')) {
 }
 
 const index = fs.readFileSync(path.join(root, 'site', 'index.html'), 'utf8');
-if (!index.includes('class="market-home"') || !index.includes('href="/market-surfaces.css"')) {
+if (!index.includes('class="market-home"') || !index.includes('href="/market-surfaces.css')) {
   throw new Error('index.html burn module is not opted into the shared market language');
 }
 
@@ -51,6 +51,15 @@ if (!css.includes('font-size: clamp(14px, 1vw, 20px)')
 if (!css.includes('grid-template-columns: minmax(0, 1.32fr) minmax(460px, 1fr)')) {
   throw new Error('Stats must reserve a readable desktop rail for Recent Mints');
 }
+if (!css.includes('--market-stats-shell: 1760px')
+    || !css.includes('container-type: inline-size')
+    || !css.includes('3.65cqi')) {
+  throw new Error('Stats headline values must gain space and scale from their own rail on wide screens');
+}
+if (!css.includes('minmax(0, 1.15fr)')
+    || !css.includes('minmax(0, 1.10fr)')) {
+  throw new Error('Stats must prioritize the longer Price and Circulating values');
+}
 if (!css.includes('grid-template-columns: auto minmax(0, 1fr) auto')
     || !css.includes('white-space: normal')) {
   throw new Error('Recent Mint rows must preserve full NFT names between the image and category badge');
@@ -58,6 +67,12 @@ if (!css.includes('grid-template-columns: auto minmax(0, 1fr) auto')
 if (!css.includes('min-width: max-content')
     || !css.includes('max-width: none')) {
   throw new Error('Recent Mint category badges must contain their full one-line labels without shrinking');
+}
+
+const stats = fs.readFileSync(path.join(root, 'site', 'stats.html'), 'utf8');
+if (!stats.includes('if (zeros < 3)')
+    || !stats.includes("'$0.0<sub class=\"price-sub\">' + zeros")) {
+  throw new Error('Stats must compact three-or-more leading price zeros into subscript notation');
 }
 
 console.log('market surfaces: shared shell and scoped page hooks verified');

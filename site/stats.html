@@ -658,7 +658,7 @@
   }
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
-<link rel="stylesheet" href="/market-surfaces.css">
+<link rel="stylesheet" href="/market-surfaces.css?v=20260901-stats-precision">
 <script defer src="/bullen-ui.js"></script>
 <script defer src="/house-burn-registry.js"></script>
 </head>
@@ -920,7 +920,7 @@
   }
 
   // ------------------------------------------------------------ helpers
-  // Subscript notation for sub-penny prices: $0.0(4)6506 means $0.00006506,
+  // Subscript notation for sub-penny prices: $0.0₃46506 means $0.00046506,
   // the small number being the count of zeros after the decimal. Same
   // convention the DEX aggregators use. Returns HTML -- callers must use
   // innerHTML, not textContent.
@@ -933,22 +933,17 @@
     const m = frac.match(/^(0*)([1-9]\d*)/);
     if (!m) return '--';
     const zeros = m[1].length;
-    if (zeros < 4) return '$' + n.toFixed(8).replace(/0+$/,'').replace(/\.$/,'');
-    // Three significant digits, not four. At this scale the fourth digit
-    // changes on almost every tick and adds nothing a reader can use -- it
-    // just makes the tile wider and harder to compare against the one next
-    // to it. Rounded rather than truncated so the last digit is honest.
+    if (zeros < 3) return '$' + n.toFixed(8).replace(/0+$/,'').replace(/\.$/,'');
+    // Five significant digits retain the precision of the former eight-place
+    // decimal while the zero-count notation removes the repetitive width.
+    // Rounded rather than truncated so the last displayed digit is honest.
     const sig = Number('0.' + m[2]);
-    let digits = String(Math.round(sig * 1000)).padStart(3, '0');
-    if (digits.length > 3) {           // rounded up past the boundary, e.g. .999 -> 1000
-      return '$.0<sub class="price-sub">' + (zeros - 1) + '</sub>1';
+    let digits = String(Math.round(sig * 100000)).padStart(5, '0');
+    if (digits.length > 5) {         // rounded up past the boundary, e.g. .99999 -> 100000
+      return '$0.0<sub class="price-sub">' + (zeros - 1) + '</sub>1';
     }
     digits = digits.replace(/0+$/, '') || '0';
-    // Leading integer zero dropped -- it carries no information and this
-    // number sits next to a nine-figure supply figure that needs the width.
-    // The "0.0(n)" convention itself is kept: it's what the aggregators use,
-    // so the zero count reads the same way people already expect.
-    return '$.0<sub class="price-sub">' + zeros + '</sub>' + digits;
+    return '$0.0<sub class="price-sub">' + zeros + '</sub>' + digits;
   };
 
   const fmtUsd = n => {
