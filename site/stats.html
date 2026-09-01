@@ -399,7 +399,7 @@
   }
   .rrow img.image-ready{ opacity:1; }
   .rrow .nm{ font-size:clamp(15px,1.35vw,26px); font-weight:700; letter-spacing:0.06em; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .rrow .tg{ font-size:clamp(10px,0.78vw,15px); letter-spacing:0.18em; text-transform:uppercase; padding:clamp(3px,0.26vw,5px) clamp(7px,0.57vw,11px); border:1px solid var(--line); color:var(--dim); flex:0 0 auto; }
+  .rrow .tg{ font-size:clamp(10px,0.78vw,15px); letter-spacing:0.18em; text-transform:uppercase; white-space:nowrap; padding:clamp(3px,0.26vw,5px) clamp(7px,0.57vw,11px); border:1px solid var(--line); color:var(--dim); flex:0 0 auto; }
   .rrow.gold{ border-color:var(--gold); } .rrow.gold .tg{ border-color:var(--gold); color:var(--gold); }
   .rrow.silver{ border-color:var(--silver); } .rrow.silver .tg{ border-color:var(--silver); color:var(--silver); }
   .rrow.pink{ border-color:var(--pink); } .rrow.pink .tg{ border-color:var(--pink); color:var(--pink); }
@@ -1046,7 +1046,7 @@
   // special border colour.
   function tierOf(name, series){
     if (series === 'bullensaga' || /^(THE )?(PROMISE|TRIAD)(\s*#|$)/i.test(String(name || ''))) return { key:'gold', label:'BULLENSAGA' };
-    if (series === 'house-object' || /^(THE )?(SIGNET|CUFFLINKS)(\s*#|$)/i.test(String(name || '')) || /HOUSE OBJECT/i.test(String(name || ''))) return { key:'gold', label:'Object' };
+    if (series === 'house-object' || /^(THE )?(SIGNET|CUFFLINKS)(\s*#|$)/i.test(String(name || '')) || /HOUSE OBJECT/i.test(String(name || ''))) return { key:'gold', label:'House Object' };
     if (matchesSpecial(name,'relic')) return { key:'gold', label:'Relic' };
     if (matchesSpecial(name,'grail')) return { key:'gold', label:'Grail' };
     if (matchesSpecial(name,'legendary')) return { key:'silver', label:'Legendary' };
