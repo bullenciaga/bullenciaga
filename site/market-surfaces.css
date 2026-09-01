@@ -210,10 +210,12 @@ body.market-surface:not(.transparent) {
   }
 
   .market-stats:not(.transparent) .rrow .tg {
-    max-width: 140px;
+    width: max-content;
+    min-width: max-content;
+    max-width: none;
     padding-inline: 8px;
     text-align: center;
-    line-height: 1.25;
+    line-height: 1;
   }
 }
 

@@ -55,5 +55,9 @@ if (!css.includes('grid-template-columns: auto minmax(0, 1fr) auto')
     || !css.includes('white-space: normal')) {
   throw new Error('Recent Mint rows must preserve full NFT names between the image and category badge');
 }
+if (!css.includes('min-width: max-content')
+    || !css.includes('max-width: none')) {
+  throw new Error('Recent Mint category badges must contain their full one-line labels without shrinking');
+}
 
 console.log('market surfaces: shared shell and scoped page hooks verified');
