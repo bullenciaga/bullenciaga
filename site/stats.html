@@ -1046,7 +1046,7 @@
   // special border colour.
   function tierOf(name, series){
     if (series === 'bullensaga' || /^(THE )?(PROMISE|TRIAD)(\s*#|$)/i.test(String(name || ''))) return { key:'gold', label:'BULLENSAGA' };
-    if (series === 'house-object' || /^(THE )?(SIGNET|CUFFLINKS)(\s*#|$)/i.test(String(name || '')) || /HOUSE OBJECT/i.test(String(name || ''))) return { key:'gold', label:'House Object' };
+    if (series === 'house-object' || /^(THE )?(SIGNET|CUFFLINKS)(\s*#|$)/i.test(String(name || '')) || /HOUSE OBJECT/i.test(String(name || ''))) return { key:'gold', label:'Object' };
     if (matchesSpecial(name,'relic')) return { key:'gold', label:'Relic' };
     if (matchesSpecial(name,'grail')) return { key:'gold', label:'Grail' };
     if (matchesSpecial(name,'legendary')) return { key:'silver', label:'Legendary' };
