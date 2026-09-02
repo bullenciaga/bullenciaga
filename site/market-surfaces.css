@@ -13,6 +13,7 @@
 :root {
   --bullen-shell-width: 1440px;
   --market-shell: 1440px;
+  --market-stats-shell: 1760px;
   --market-home-burn-shell: 920px;
   --market-bg: #050505;
   --market-panel: rgba(9, 9, 9, 0.86);
@@ -53,7 +54,10 @@ body.market-surface:not(.transparent) {
 
 /* ---------------------------------------------------------------- STATS */
 .market-stats:not(.transparent) #stage {
-  width: min(var(--market-shell), calc(100% - 40px));
+  /* Stats carries more parallel data than the other market pages. Let it
+     use genuinely wide monitors instead of freezing at the shared 1440px
+     rail, where viewport-sized type kept growing inside a capped shell. */
+  width: min(var(--market-stats-shell), calc(100% - 40px));
   height: calc(100svh - var(--bullen-header-height) - var(--bullen-page-gap));
   margin: 0 auto;
   padding: 10px 0 28px;
@@ -102,8 +106,16 @@ body.market-surface:not(.transparent) {
 }
 
 .market-stats:not(.transparent) .stats {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Price and circulating are the two longest values. Giving those cells a
+     little more room makes the hierarchy reflect the information instead of
+     forcing all four values through identical slots. */
+  grid-template-columns:
+    minmax(0, 1.15fr)
+    minmax(0, 1.10fr)
+    minmax(0, 0.85fr)
+    minmax(0, 0.90fr);
   gap: 0;
+  container-type: inline-size;
 }
 
 .market-stats:not(.transparent) .stat {
@@ -126,11 +138,16 @@ body.market-surface:not(.transparent) {
 
 .market-stats:not(.transparent) .stat .val {
   margin-top: 10px;
-  overflow: hidden;
+  overflow: visible;
   color: var(--market-ink);
-  font: 500 clamp(24px, 2.25vw, 42px)/1 var(--bullen-font-display);
+  /* cqi is relative to this four-card rail, not the browser window. The
+     previous vw rule hit 42px on ultra-wide screens even though the panel
+     had already stopped growing, which is why wide desktop hid more digits
+     than a narrower window. */
+  font: 500 clamp(24px, 3.65cqi, 36px)/1 var(--bullen-font-display);
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.025em;
-  text-overflow: ellipsis;
+  text-overflow: clip;
 }
 
 .market-stats:not(.transparent) .stat .val.pos { color: var(--market-buy); }
@@ -593,7 +610,7 @@ body.market-surface:not(.transparent) {
 /* ------------------------------------------------------------ NARROW */
 @media (max-width: 980px) {
   .market-stats:not(.transparent) #stage {
-    width: min(var(--market-shell), calc(100% - 24px));
+    width: min(var(--market-stats-shell), calc(100% - 24px));
     height: auto;
     padding-top: 6px;
   }
