@@ -60,8 +60,23 @@ if (!mobileBuy.includes("'https://solflare.com/ul/v1/browse/'")
 if (!mobileBuy.includes("'https://pump.fun/coin/'") || !mobileBuy.includes('Copy contract')) {
   failures.push('mobile wallet handoff is missing its Pump.fun or contract-copy fallback');
 }
+for (const icon of ['assets/wallets/phantom.png', 'assets/wallets/solflare.png']) {
+  if (!fs.existsSync(path.join(site, icon)) || !mobileBuy.includes(`/${icon}`)) {
+    failures.push(`mobile wallet handoff is missing canonical ${icon}`);
+  }
+}
+if (!mobileBuy.includes('bullen-mobile-buy__connected-icon')) {
+  failures.push('mobile wallet handoff is missing its already-connected wallet mark');
+}
 if (!mobileBuyCss.includes('env(safe-area-inset-bottom, 0px)') || !mobileBuyCss.includes('100dvh')) {
   failures.push('mobile wallet handoff does not respect mobile safe areas and dynamic viewport height');
+}
+if (!mobileBuyCss.includes('place-items: center;') || !mobileBuyCss.includes('border-radius: 24px;')
+    || mobileBuyCss.includes('border-bottom: 0;')) {
+  failures.push('mobile wallet handoff must remain a fully enclosed, viewport-centered House panel');
+}
+if (!mobileBuyCss.includes('justify-content: center;') || !mobileBuyCss.includes('align-items: center;')) {
+  failures.push('mobile wallet utility labels are no longer optically centered');
 }
 
 const authority = JSON.parse(fs.readFileSync(path.join(site, 'giveaways.json'), 'utf8'));
