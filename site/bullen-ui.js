@@ -28,6 +28,7 @@
     ['curve', '/curve.html'],
     ['refer', '/refer.html'],
     ['thedrop', '/thedrop.html'],
+    ['patchnotes', '/patchnotes.html'],
     ['lock', '/lock.html'],
     ['bullensaga', 'https://bullensaga.com/'],
   ];
