@@ -3,6 +3,8 @@
 
   const PHANTOM_SWAP_BASE = 'https://phantom.app/ul/v1/swap/';
   const SOLFLARE_BROWSE_BASE = 'https://solflare.com/ul/v1/browse/';
+  const PHANTOM_ICON = '/assets/wallets/phantom.png';
+  const SOLFLARE_ICON = '/assets/wallets/solflare.png';
   const SITE_URL = 'https://bullenciaga.com';
   let overlay = null;
   let returnFocus = null;
@@ -57,12 +59,22 @@
     }, 190);
   }
 
-  function makeChoice(className, mark, title, detail, handler) {
+  function walletLogo(src) {
+    return '<img src="' + src + '" alt="" loading="eager" decoding="async">';
+  }
+
+  function connectedWalletIcon() {
+    return '<svg class="bullen-mobile-buy__connected-icon" viewBox="0 0 24 24" aria-hidden="true">' +
+      '<path d="M4 7.5h13.5A2.5 2.5 0 0 1 20 10v6.5A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-11A2.5 2.5 0 0 1 6.5 3h9">' +
+      '</path><path d="M4 7.5h12"></path><path d="m13.5 13 2 2 4-4"></path></svg>';
+  }
+
+  function makeChoice(className, markClassName, mark, title, detail, handler) {
     const choice = document.createElement('button');
     choice.type = 'button';
     choice.className = 'bullen-mobile-buy__choice ' + className;
     choice.innerHTML =
-      '<span class="bullen-mobile-buy__mark" aria-hidden="true">' + mark + '</span>' +
+      '<span class="bullen-mobile-buy__mark ' + markClassName + '" aria-hidden="true">' + mark + '</span>' +
       '<span class="bullen-mobile-buy__choice-copy"><strong>' + title + '</strong><small>' + detail + '</small></span>' +
       '<span class="bullen-mobile-buy__arrow" aria-hidden="true">↗</span>';
     choice.addEventListener('click', handler);
@@ -120,13 +132,13 @@
       : null;
 
     choices.append(
-      makeChoice('bullen-mobile-buy__choice--phantom', 'P', 'Phantom', 'Open a native swap with $BULLEN selected', () => {
+      makeChoice('bullen-mobile-buy__choice--phantom', '', walletLogo(PHANTOM_ICON), 'Phantom', 'Open a native swap with $BULLEN selected', () => {
         window.location.assign(phantomSwapUrl(options.mint));
       }),
-      makeChoice('bullen-mobile-buy__choice--solflare', 'S', 'Solflare', 'Open the Jupiter trade inside Solflare', () => {
+      makeChoice('bullen-mobile-buy__choice--solflare', '', walletLogo(SOLFLARE_ICON), 'Solflare', 'Open the Jupiter trade inside Solflare', () => {
         window.location.assign(solflareBrowseUrl(options.jupiterUrl));
       }),
-      makeChoice('bullen-mobile-buy__choice--jupiter', 'J', 'Already inside a wallet', 'Use the embedded Jupiter swap here', () => {
+      makeChoice('bullen-mobile-buy__choice--jupiter', 'bullen-mobile-buy__mark--connected', connectedWalletIcon(), 'Already inside a wallet', 'Use the embedded Jupiter swap here', () => {
         close();
         window.setTimeout(() => {
           if (continueWithJupiter) continueWithJupiter();
