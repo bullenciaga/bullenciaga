@@ -27,9 +27,10 @@ const pageChecks = [
   ['/thedrop', /<title>BULLENCIAGA — The Drop/i],
   ['/giveaways', /<title>BULLENCIAGA — Giveaways/i],
   ['/tape', /<title>THE TAPE — Live \$BULLEN Market/i],
+  ['/patchnotes', /<title>BULLENCIAGA — House Record/i],
 ];
 const effectivePageChecks = smokePhase === 'preflight'
-  ? pageChecks.filter(([path]) => !['/giveaways', '/tape'].includes(path))
+  ? pageChecks.filter(([path]) => !['/giveaways', '/tape', '/patchnotes'].includes(path))
   : pageChecks;
 
 const apiChecks = [

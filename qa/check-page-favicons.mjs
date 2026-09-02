@@ -15,6 +15,7 @@ const pages = new Map([
   ['thedrop.html', 'thedrop.svg'],
   ['objects.html', 'objects.svg'],
   ['tape.html', 'tape.svg'],
+  ['patchnotes.html', 'patchnotes.svg'],
 ]);
 
 const references = new Set();
