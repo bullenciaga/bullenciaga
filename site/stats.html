@@ -9,6 +9,7 @@
      OBS: a Browser Source is desktop-class, so width=device-width simply
      resolves to the source width it already renders at. -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document,location.pathname);</script>
 <title>BULLENCIAGA — Live Dashboard</title>
 <meta name="description" content="Live $BULLEN supply, scheduled burns, Herd mints and House Object burn commitments.">
 <meta name="robots" content="index, follow">
@@ -27,7 +28,7 @@
 <meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-13">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <!--
   BULLENCIAGA — LIVE STATS DASHBOARD  (v10)
   =========================================
@@ -668,7 +669,7 @@
   <h1 class="bullen-sr-only">$BULLEN live market and burn dashboard</h1>
 
   <div class="top">
-    <div class="ticker" id="tickerLabel">$██████</div>
+    <div class="ticker" id="tickerLabel">$BULLEN</div>
     <div class="live"><span class="dot" id="statusDot"></span><span id="statusText">live</span></div>
   </div>
 
@@ -781,7 +782,7 @@
   <div class="tp-kicker" id="tpKicker">Burn Schedule</div>
   <div class="tp-title" id="tpTitle">Tier 1 Complete</div>
   <div class="tp-rule"></div>
-  <div class="tp-amount" id="tpAmountRow"><span id="tpAmount">12,500,000</span> <span class="tp-unit" id="tpUnit">$██████</span></div>
+  <div class="tp-amount" id="tpAmountRow"><span id="tpAmount">12,500,000</span> <span class="tp-unit" id="tpUnit">$BULLEN</span></div>
   <div class="tp-sub" id="tpSub">will be burned as soon as the <b>48-hour</b> lock window ends</div>
 </div>
 
@@ -2407,6 +2408,11 @@
   // ------------------------------------------------------------- boot
   async function boot(){
     console.log('[obs] stats.html build ' + BUILD);
+    // Reserve the completed five-row schedule before the first network await.
+    // Previously this table did not exist until index.html and the manifest
+    // had both resolved, so the whole lower dashboard jumped down on a cold
+    // mobile load even though the schedule itself is static.
+    paintVolume(0);
     if (!CFG.DEMO){
       const tok = await resolveToken();
       CFG.TOKEN = tok.addr;
@@ -2431,7 +2437,6 @@
       );
     }
 
-    paintVolume(0);
     window.addEventListener('resize', fitRecentRows);
     window.addEventListener('resize', fitTierTable);
 

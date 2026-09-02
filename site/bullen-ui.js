@@ -1,8 +1,9 @@
 (function () {
   'use strict';
 
+  const root = document.documentElement;
   const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const page = file.replace(/\.html$/, '') || 'index';
+  const page = root.dataset.bullenPage || file.replace(/\.html$/, '') || 'index';
   const labels = {
     index: 'Home',
     stats: 'Stats',
@@ -33,6 +34,7 @@
     ['bullensaga', 'https://bullensaga.com/'],
   ];
 
+  root.dataset.bullenPage = page;
   document.body.dataset.bullenPage = page;
 
   const mainTarget = document.querySelector('main, #stage, .wrap, h1');
@@ -153,4 +155,43 @@
   for (const button of document.querySelectorAll('button:not([type])')) {
     button.type = 'button';
   }
+
+  /* Warm same-origin page navigations as soon as a person indicates intent.
+     Browsers that do not support document prefetch simply ignore the hint. */
+  const prefetched = new Set();
+  const prefetchPage = (event) => {
+    const anchor = event.target.closest && event.target.closest('a[href]');
+    if (!anchor || anchor.hasAttribute('download')) return;
+    let url;
+    try { url = new URL(anchor.href, location.href); } catch (_) { return; }
+    if (url.origin !== location.origin || url.href === location.href || prefetched.has(url.href)) return;
+    if (!/^\/$|\.html$|^\/(?:objects|giveaways|stats|tape|chart|curve|refer|thedrop|patchnotes|lock)\/?$/i.test(url.pathname)) return;
+    prefetched.add(url.href);
+    const hint = document.createElement('link');
+    hint.rel = 'prefetch';
+    hint.as = 'document';
+    hint.href = url.href;
+    document.head.append(hint);
+  };
+  document.addEventListener('pointerover', prefetchPage, { passive: true });
+  document.addEventListener('touchstart', prefetchPage, { passive: true });
+  document.addEventListener('focusin', prefetchPage);
+
+  /* Build the complete shell while the page is still held at opacity zero,
+     then reveal only after the House fonts settle (or a short safety cap).
+     The inline boot timer remains an independent fail-open path. */
+  const reveal = () => {
+    clearTimeout(window.__BULLEN_BOOT_TIMER);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      root.classList.remove('bullen-booting');
+      root.classList.add('bullen-ready');
+    }));
+  };
+  const fontGate = document.fonts && document.fonts.ready
+    ? document.fonts.ready.catch(() => undefined)
+    : Promise.resolve();
+  Promise.race([
+    fontGate,
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(reveal, reveal);
 })();
