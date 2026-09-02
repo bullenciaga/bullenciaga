@@ -2995,6 +2995,8 @@
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
 <link rel="stylesheet" href="/market-surfaces.css">
+<link rel="stylesheet" href="/mobile-buy.css">
+<script src="/mobile-buy.js"></script>
 <script defer src="/bullen-ui.js"></script>
 <script defer src="/house-burn-registry.js"></script>
 </head>
@@ -3248,7 +3250,7 @@
     <div class="htb-step">
       <span class="num">04</span>
       <h3>SWAP FOR $BULLEN</h3>
-      <p>paste the address into pump.fun or Jupiter, connect your wallet, and swap SOL for $BULLEN.</p>
+      <p>tap Buy $BULLEN. on mobile, choose your wallet and we will open a prefilled trade inside it. on desktop, connect through Jupiter and swap SOL for $BULLEN.</p>
     </div>
   </div>
 </section>
@@ -4112,11 +4114,7 @@
     els.note.textContent = 'live from dexscreener + on-chain data · updates every 30s';
     if (els.contractValue) els.contractValue.textContent = CONFIG.TOKEN_ADDRESS;
     if (els.buyBtn) {
-      // Keep a real Jupiter href for keyboard/no-script fallback, then replace
-      // the old pump.fun jump with the same branded modal used on The Tape.
-      els.buyBtn.href = JUPITER_FALLBACK;
-      els.buyBtn.addEventListener('click', event => {
-        event.preventDefault();
+      const openJupiterSwap = () => {
         if (!window.Jupiter || typeof window.Jupiter.init !== 'function') {
           window.open(JUPITER_FALLBACK, '_blank', 'noopener,noreferrer');
           return;
@@ -4135,6 +4133,21 @@
             name:'BULLENCIAGA'
           }
         });
+      };
+
+      // Keep a real Jupiter href for keyboard/no-script fallback. Mobile taps
+      // first hand the trade to a wallet app; desktop keeps the Jupiter modal.
+      els.buyBtn.href = JUPITER_FALLBACK;
+      els.buyBtn.addEventListener('click', event => {
+        event.preventDefault();
+        if (window.BullenMobileBuy && window.BullenMobileBuy.request({
+          mint:CONFIG.TOKEN_ADDRESS,
+          jupiterUrl:JUPITER_FALLBACK,
+          continueWithJupiter:openJupiterSwap
+        })) {
+          return;
+        }
+        openJupiterSwap();
       });
     }
 
@@ -4250,7 +4263,9 @@
   }
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', (e) => {
-      const targetEl = document.querySelector(link.getAttribute('href'));
+      const targetSelector = link.getAttribute('href');
+      if (!targetSelector || targetSelector === '#' || !targetSelector.startsWith('#')) return;
+      const targetEl = document.querySelector(targetSelector);
       if (!targetEl) return;
       e.preventDefault();
       const targetY = targetEl.getBoundingClientRect().top + window.scrollY;
