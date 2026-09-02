@@ -344,6 +344,18 @@
   background: rgba(199, 168, 105, 0.035);
 }
 
+/* Selected hybrid: preserve the House geometry while keeping the two wallet
+   identities immediately recognizable through their restrained brand tints. */
+.bullen-mobile-buy__choice--phantom {
+  background: linear-gradient(90deg, rgba(171, 159, 242, 0.17), rgba(199, 168, 105, 0.025));
+  border-color: rgba(171, 159, 242, 0.38);
+}
+
+.bullen-mobile-buy__choice--solflare {
+  background: linear-gradient(90deg, rgba(252, 105, 37, 0.16), rgba(199, 168, 105, 0.025));
+  border-color: rgba(252, 105, 37, 0.34);
+}
+
 .bullen-mobile-buy__choice::before {
   content: '';
   position: absolute;
