@@ -67,7 +67,7 @@
     const brand = document.createElement('a');
     brand.className = 'bullen-site-brand';
     brand.href = '/';
-    brand.innerHTML = `BULLENCIAGA <span>${labels[page] || 'Public record'} · REVIEW B</span>`;
+    brand.innerHTML = `BULLENCIAGA <span>${labels[page] || 'Public record'}</span>`;
     if (page === 'index') brand.setAttribute('aria-current', 'page');
     return brand;
   };
