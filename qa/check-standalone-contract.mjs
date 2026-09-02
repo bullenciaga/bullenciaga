@@ -22,6 +22,10 @@ for (const name of [...publicPages, 'referrals.html']) {
 
 const shell = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
 const shellCss = fs.readFileSync(path.join(site, 'bullen-ui.css'), 'utf8');
+const homeSource = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
+const tapeSource = fs.readFileSync(path.join(site, 'tape.html'), 'utf8');
+const mobileBuy = fs.readFileSync(path.join(site, 'mobile-buy.js'), 'utf8');
+const mobileBuyCss = fs.readFileSync(path.join(site, 'mobile-buy.css'), 'utf8');
 if (!shell.includes("page === 'referrals'")) failures.push('admin page classification missing');
 if (!shell.includes("page === 'index' ? ' bullen-home-shell'")) failures.push('homepage top-shell navigation missing');
 if (!shell.includes("bar.className = 'bullen-site-bar'")) failures.push('shared fixed-width header interior missing');
@@ -40,6 +44,25 @@ if (!shellCss.includes('background: var(--bullen-bg) !important;')) failures.pus
 if (!shellCss.includes('body[data-bullen-page="index"] .hero-mast { display: none !important; }')) failures.push('mobile homepage duplicate masthead remains visible');
 if (!shellCss.includes('top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + 1px)')) failures.push('Jump To panel is not anchored below the fixed header');
 if (!shellCss.includes('height: 34px;') || !shellCss.includes('.bullen-home-shell .jumpto-menu')) failures.push('mobile Jump To does not share the hamburger control and panel geometry');
+for (const [name, source] of [['index.html', homeSource], ['tape.html', tapeSource]]) {
+  if (!source.includes('href="/mobile-buy.css"')) failures.push(`${name}: mobile wallet handoff styles missing`);
+  if (!source.includes('src="/mobile-buy.js"')) failures.push(`${name}: mobile wallet handoff helper missing`);
+  if (!source.includes('BullenMobileBuy.request')) failures.push(`${name}: buy action does not invoke the mobile wallet handoff`);
+}
+if (!mobileBuy.includes("'solana:101/address:' + mint")
+    || !mobileBuy.includes("'https://phantom.app/ul/v1/swap/'")) {
+  failures.push('mobile wallet handoff is missing the Phantom CAIP-19 direct swap');
+}
+if (!mobileBuy.includes("'https://solflare.com/ul/v1/browse/'")
+    || !mobileBuy.includes('encodeURIComponent(jupiterUrl)')) {
+  failures.push('mobile wallet handoff is missing the Solflare in-wallet Jupiter route');
+}
+if (!mobileBuy.includes("'https://pump.fun/coin/'") || !mobileBuy.includes('Copy contract')) {
+  failures.push('mobile wallet handoff is missing its Pump.fun or contract-copy fallback');
+}
+if (!mobileBuyCss.includes('env(safe-area-inset-bottom, 0px)') || !mobileBuyCss.includes('100dvh')) {
+  failures.push('mobile wallet handoff does not respect mobile safe areas and dynamic viewport height');
+}
 
 const authority = JSON.parse(fs.readFileSync(path.join(site, 'giveaways.json'), 'utf8'));
 if (authority.schema !== 'bullenciaga.giveaways.v1') failures.push('giveaway authority schema mismatch');
@@ -123,6 +146,7 @@ for (const name of ['chart.html', 'refer.html', 'thedrop.html']) {
 const home = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
 if (!home.includes("{ id: 'giveaway', label: 'Giveaway' }")) failures.push('homepage Jump To menu omits the live giveaway');
 if (home.includes('data-bullen-home-nav')) failures.push('homepage retains the redundant mid-hero navigation strip');
+if (!home.includes("targetSelector === '#' || !targetSelector.startsWith('#')")) failures.push('homepage smooth scrolling can intercept the external mobile buy fallback');
 for (const duplicate of ["giveaways.html', label: 'All Giveaways", "proof', label: 'Proof", "refer.html', label: 'Referrals", "thedrop', label: 'The Drop", "stats.html', label: 'Live Dashboard"]) {
   if (home.includes(duplicate)) failures.push(`homepage Jump To duplicates shared navigation: ${duplicate}`);
 }

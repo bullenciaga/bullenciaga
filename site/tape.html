@@ -20,6 +20,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/bullen-ui.css">
 <link rel="stylesheet" href="/market-surfaces.css">
+<link rel="stylesheet" href="/mobile-buy.css">
 <script src="https://plugin.jup.ag/plugin-v1.js" data-preload defer></script>
 <style>
   :root{
@@ -236,6 +237,7 @@
   </section>
 </main>
 <script defer src="/bullen-ui.js"></script>
+<script src="/mobile-buy.js"></script>
 <script>
 (() => {
   'use strict';
@@ -258,7 +260,7 @@
   let lastPriceFallback = null;
   let largeBuyTimer = null;
 
-  function openBullenSwap(){
+  function openJupiterSwap(){
     if(!window.Jupiter || typeof window.Jupiter.init !== 'function'){
       window.open(JUPITER_FALLBACK,'_blank','noopener,noreferrer');
       return;
@@ -277,6 +279,17 @@
         name:'BULLENCIAGA'
       }
     });
+  }
+
+  function openBullenSwap(){
+    if(window.BullenMobileBuy && window.BullenMobileBuy.request({
+      mint:BULLEN_MINT,
+      jupiterUrl:JUPITER_FALLBACK,
+      continueWithJupiter:openJupiterSwap
+    })){
+      return;
+    }
+    openJupiterSwap();
   }
 
   $('buyBullen').addEventListener('click',openBullenSwap);
