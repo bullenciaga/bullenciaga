@@ -31,7 +31,10 @@ const pageChecks = [
   ['/lock', /<title>BULLENCIAGA — Burn Reserve/i],
 ];
 const effectivePageChecks = smokePhase === 'preflight'
-  ? pageChecks.filter(([path]) => !['/giveaways', '/tape', '/patchnotes'].includes(path))
+  // Preflight proves the currently deployed release. Pages introduced by the
+  // candidate cannot exist until after promotion, so require them only in the
+  // post-release smoke test.
+  ? pageChecks.filter(([path]) => !['/giveaways', '/tape', '/patchnotes', '/lock'].includes(path))
   : pageChecks;
 
 const apiChecks = [
