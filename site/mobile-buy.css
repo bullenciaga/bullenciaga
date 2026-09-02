@@ -274,3 +274,134 @@
     transition: none;
   }
 }
+
+/* REVIEW BUILD B — the handoff adopts the public House system: flat ink,
+   precise rules, square records and one restrained gold hierarchy. */
+.bullen-mobile-buy {
+  padding:
+    max(14px, env(safe-area-inset-top, 0px))
+    14px
+    max(14px, env(safe-area-inset-bottom, 0px));
+  background: rgba(0, 0, 0, 0.86);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.bullen-mobile-buy__sheet {
+  width: min(100%, 560px);
+  padding: clamp(18px, 4vw, 26px);
+  border: 1px solid rgba(199, 168, 105, 0.36);
+  border-radius: 0;
+  background: #050505;
+  box-shadow: 18px 18px 0 rgba(199, 168, 105, 0.055), 0 30px 90px rgba(0, 0, 0, 0.78);
+  transform: translateY(8px);
+}
+
+.bullen-mobile-buy.is-open .bullen-mobile-buy__sheet { transform: translateY(0); }
+
+.bullen-mobile-buy__head {
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(199, 168, 105, 0.22);
+}
+
+.bullen-mobile-buy__eyebrow,
+.bullen-mobile-buy__section-title {
+  font-size: 9px;
+  letter-spacing: 0.24em;
+}
+
+.bullen-mobile-buy__title {
+  margin-top: 9px;
+  font-size: clamp(22px, 6.8vw, 30px);
+  letter-spacing: 0.015em;
+}
+
+.bullen-mobile-buy__close {
+  width: 40px;
+  height: 40px;
+  border-color: rgba(199, 168, 105, 0.24);
+  border-radius: 0;
+  color: var(--mobile-buy-gold-bright);
+  background: transparent;
+}
+
+.bullen-mobile-buy__intro {
+  margin: 16px 0 18px;
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.bullen-mobile-buy__choices { gap: 8px; }
+
+.bullen-mobile-buy__choice,
+.bullen-mobile-buy__choice--phantom,
+.bullen-mobile-buy__choice--solflare,
+.bullen-mobile-buy__choice--jupiter {
+  min-height: 68px;
+  border-color: rgba(199, 168, 105, 0.22);
+  border-radius: 0;
+  background: rgba(199, 168, 105, 0.035);
+}
+
+/* Selected hybrid: preserve the House geometry while keeping the two wallet
+   identities immediately recognizable through their restrained brand tints. */
+.bullen-mobile-buy__choice--phantom {
+  background: linear-gradient(90deg, rgba(171, 159, 242, 0.17), rgba(199, 168, 105, 0.025));
+  border-color: rgba(171, 159, 242, 0.38);
+}
+
+.bullen-mobile-buy__choice--solflare {
+  background: linear-gradient(90deg, rgba(252, 105, 37, 0.16), rgba(199, 168, 105, 0.025));
+  border-color: rgba(252, 105, 37, 0.34);
+}
+
+.bullen-mobile-buy__choice::before {
+  content: '';
+  position: absolute;
+  inset: -1px auto -1px -1px;
+  width: 2px;
+  background: var(--mobile-buy-gold);
+  opacity: 0.66;
+}
+
+.bullen-mobile-buy__mark,
+.bullen-mobile-buy__mark--connected {
+  border: 1px solid rgba(199, 168, 105, 0.18);
+  border-radius: 0;
+  background: #090909;
+}
+
+.bullen-mobile-buy__choice strong {
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.bullen-mobile-buy__choice small {
+  color: rgba(245, 243, 238, 0.44);
+  font-size: 8.5px;
+  letter-spacing: 0.01em;
+}
+
+.bullen-mobile-buy__section-title {
+  margin: 20px 0 10px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(199, 168, 105, 0.18);
+}
+
+.bullen-mobile-buy__utility {
+  min-height: 48px;
+  border-color: rgba(199, 168, 105, 0.24);
+  border-radius: 0;
+  background: transparent;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.bullen-mobile-buy__note {
+  margin-top: 15px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(199, 168, 105, 0.14);
+}
