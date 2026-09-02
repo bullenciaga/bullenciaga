@@ -17,6 +17,15 @@
     )).filter(element => !element.hidden && element.getClientRects().length > 0);
   }
 
+  function focusWithoutRecommendation(element) {
+    if (!element) return;
+    element.classList.add('bullen-auto-focus-neutral');
+    element.addEventListener('blur', () => {
+      element.classList.remove('bullen-auto-focus-neutral');
+    }, { once: true });
+    element.focus({ preventScroll: true });
+  }
+
   function isMobileDevice() {
     const ua = navigator.userAgent || '';
     const touchMac = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
@@ -185,7 +194,7 @@
     root.hidden = false;
     window.requestAnimationFrame(() => {
       root.classList.add('is-open');
-      root.querySelector('.bullen-mobile-buy__choice').focus();
+      focusWithoutRecommendation(root.querySelector('.bullen-mobile-buy__choice'));
     });
     return true;
   }

@@ -269,6 +269,14 @@ body[data-bullen-page="stats"]:not(.transparent) #stage {
   outline-offset: 3px !important;
 }
 
+/* Programmatic focus can establish an accessible starting point without making
+   the focused action look preselected. The class is removed on first blur, so
+   subsequent keyboard focus keeps the standard visible House focus ring. */
+:where(a, button, input, select, textarea, [tabindex]).bullen-auto-focus-neutral:focus {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+
 [data-bullen-main]:focus { outline: none; }
 
 @media (max-width: 820px) {

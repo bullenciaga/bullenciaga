@@ -73,6 +73,13 @@ if (!mobileBuy.includes("overlay.setAttribute('aria-describedby', 'bullen-mobile
     || !mobileBuy.includes('focusableElements()')) {
   failures.push('mobile wallet handoff does not keep keyboard focus inside its modal');
 }
+if (!mobileBuy.includes('focusWithoutRecommendation')
+    || !mobileBuy.includes("classList.add('bullen-auto-focus-neutral')")
+    || !mobileBuy.includes("classList.remove('bullen-auto-focus-neutral')")
+    || !shellCss.includes('.bullen-auto-focus-neutral:focus')
+    || !mobileBuyCss.includes('.bullen-auto-focus-neutral:focus')) {
+  failures.push('automatic modal focus can look like an endorsed or preselected action');
+}
 if (!mobileBuyCss.includes('env(safe-area-inset-bottom, 0px)') || !mobileBuyCss.includes('100dvh')) {
   failures.push('mobile wallet handoff does not respect mobile safe areas and dynamic viewport height');
 }
