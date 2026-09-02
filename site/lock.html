@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>BULLENCIAGA — Burn Reserve</title>
+<meta name="description" content="Verify the 237.5M BULLEN volume-burn reserve across two public, non-cancellable Jupiter Lock escrows.">
+<link rel="canonical" href="https://bullenciaga.com/lock">
+<meta name="theme-color" content="#050505">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bullenciaga.com/lock">
+<meta property="og:title" content="237.5M BULLEN · two hard cliffs · public proof">
+<meta property="og:description" content="The next-burn tranche and future reserve are locked, public and independently verifiable on Jupiter.">
+<meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-09-02-lock">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BULLENCIAGA — Burn Reserve">
+<meta name="twitter:description" content="237.5M BULLEN in two public, non-cancellable hard-cliff locks.">
+<meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-09-02-lock">
+<link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/lock.svg">
+<link rel="stylesheet" href="/bullen-ui.css">
+<style>
+  :root{--lock-bg:#050505;--lock-panel:#090909;--lock-panel-2:#0d0c09;--lock-ink:#f5f3ee;
+    --lock-muted:rgba(245,243,238,.53);--lock-ghost:rgba(245,243,238,.29);--lock-gold:#c7a869;
+    --lock-gold-light:#ead9aa;--lock-line:rgba(199,168,105,.21);--lock-live:#5fd39a}
+  *{box-sizing:border-box}
+  html{background:var(--lock-bg);scroll-behavior:smooth}
+  body{margin:0;min-height:100vh;background:
+    radial-gradient(circle at 78% 2%,rgba(199,168,105,.11),transparent 30rem),
+    radial-gradient(circle at 8% 50%,rgba(199,168,105,.055),transparent 34rem),var(--lock-bg);
+    color:var(--lock-ink);font-family:'Space Mono',monospace}
+  a{color:inherit}
+  .reserve{width:min(1160px,calc(100% - 40px));margin:0 auto;padding:16px 0 80px}
+  .hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.7fr);gap:50px;align-items:end;
+    padding:48px 0 40px;border-bottom:1px solid var(--lock-line)}
+  .eyebrow,.section-label,.card-kicker{color:var(--lock-gold);font-size:10px;line-height:1.4;
+    letter-spacing:.24em;text-transform:uppercase}
+  h1{max-width:820px;margin:18px 0 0;font-family:Poppins,sans-serif;font-size:clamp(52px,8vw,96px);
+    font-weight:600;line-height:.91;letter-spacing:-.055em;text-wrap:balance}
+  .lede{max-width:800px;margin:28px 0 0;color:var(--lock-muted);font-size:clamp(14px,1.45vw,18px);
+    line-height:1.75;text-wrap:pretty}.lede strong{color:var(--lock-gold-light);font-weight:400}
+  .total{border:1px solid var(--lock-line);padding:24px;background:rgba(9,9,9,.78)}
+  .total b{display:block;margin-top:10px;color:var(--lock-gold-light);font-family:Poppins,sans-serif;
+    font-size:clamp(38px,5vw,58px);font-weight:500;line-height:1;letter-spacing:-.04em}
+  .total span{display:block;margin-top:11px;color:var(--lock-muted);font-size:10px;line-height:1.65}
+  .proof-strip{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--lock-line);border-top:0}
+  .proof-stat{padding:19px 22px;background:rgba(9,9,9,.72)}.proof-stat+.proof-stat{border-left:1px solid var(--lock-line)}
+  .proof-stat b{display:block;color:var(--lock-gold-light);font-family:Poppins,sans-serif;font-size:26px;font-weight:500}
+  .proof-stat span{display:block;margin-top:7px;color:var(--lock-muted);font-size:8px;letter-spacing:.14em;text-transform:uppercase}
+  .locks{padding-top:54px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:24px;padding-bottom:19px}
+  .section-head h2{margin:8px 0 0;font-family:Poppins,sans-serif;font-size:clamp(30px,4vw,46px);font-weight:500;
+    letter-spacing:-.04em}.verified{display:inline-flex;align-items:center;gap:8px;color:var(--lock-live);font-size:9px;
+    letter-spacing:.16em;text-transform:uppercase}.verified::before{content:'';width:7px;height:7px;border-radius:50%;
+    background:currentColor;box-shadow:0 0 13px currentColor}
+  .lock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--lock-line);
+    border-left:1px solid var(--lock-line)}
+  .lock-card{min-width:0;padding:30px;border-right:1px solid var(--lock-line);border-bottom:1px solid var(--lock-line);
+    background:linear-gradient(145deg,rgba(199,168,105,.055),transparent 46%),rgba(9,9,9,.76)}
+  .lock-card h3{margin:13px 0 0;font-family:Poppins,sans-serif;font-size:clamp(25px,3vw,34px);font-weight:500;
+    line-height:1.1;letter-spacing:-.035em}.amount{margin-top:26px;color:var(--lock-gold-light);font-family:Poppins,sans-serif;
+    font-size:clamp(36px,5vw,54px);font-weight:500;line-height:1;letter-spacing:-.045em}.amount small{font:400 11px/1 'Space Mono',monospace;letter-spacing:.14em}
+  .facts{margin:26px 0 0;border-top:1px solid var(--lock-line)}.fact{display:flex;justify-content:space-between;gap:22px;
+    padding:12px 0;border-bottom:1px solid var(--lock-line);font-size:10px;line-height:1.55}.fact dt{color:var(--lock-muted)}
+  .fact dd{margin:0;color:var(--lock-ink);text-align:right}.fact dd.good{color:var(--lock-live)}
+  .countdown{margin-top:20px;padding:14px 15px;border:1px solid var(--lock-line);color:var(--lock-gold-light);
+    font-size:10px;line-height:1.5;letter-spacing:.1em;text-transform:uppercase}
+  .verify-link{min-height:58px;display:flex;align-items:center;justify-content:center;margin-top:12px;padding:13px 18px;
+    border:1px solid var(--lock-gold);background:var(--lock-gold);color:#050505;font:700 10px/1.2 'Space Mono',monospace;
+    letter-spacing:.15em;text-align:center;text-decoration:none;text-transform:uppercase}
+  .verify-link:hover{background:var(--lock-gold-light);border-color:var(--lock-gold-light)}
+  .address{margin:15px 0 0;color:var(--lock-ghost);font-size:8px;line-height:1.6;overflow-wrap:anywhere}
+  .logic{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:48px;margin-top:56px;padding:clamp(30px,5vw,56px);
+    border:1px solid var(--lock-line);background:linear-gradient(120deg,rgba(199,168,105,.09),transparent 50%),var(--lock-panel)}
+  .logic h2{margin:13px 0 0;font-family:Poppins,sans-serif;font-size:clamp(32px,4.5vw,52px);font-weight:500;
+    line-height:1.04;letter-spacing:-.045em}.logic p{margin:19px 0 0;color:var(--lock-muted);font-size:12px;line-height:1.8}
+  .logic ol{margin:0;padding:0;list-style:none;counter-reset:logic}.logic li{counter-increment:logic;padding:17px 0 17px 54px;
+    position:relative;border-bottom:1px solid var(--lock-line);font-size:12px;line-height:1.7}.logic li:first-child{border-top:1px solid var(--lock-line)}
+  .logic li::before{content:'0' counter(logic);position:absolute;left:0;color:var(--lock-gold)}
+  .future{margin-top:50px;padding-top:26px;border-top:1px solid var(--lock-line)}.future h2{margin:11px 0 0;font-family:Poppins,sans-serif;
+    font-size:clamp(28px,4vw,43px);font-weight:500;letter-spacing:-.035em}.future p{max-width:850px;margin:19px 0 0;color:var(--lock-muted);
+    font-size:12px;line-height:1.8}.future strong{color:var(--lock-gold-light);font-weight:400}
+  .actions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}.action{min-height:56px;display:flex;
+    align-items:center;justify-content:center;padding:12px 18px;border:1px solid var(--lock-line);color:var(--lock-gold-light);
+    font:700 9px/1.2 'Space Mono',monospace;letter-spacing:.15em;text-align:center;text-decoration:none;text-transform:uppercase}
+  .action:hover{border-color:var(--lock-gold-light);background:var(--lock-gold-light);color:#050505}
+  .foot{display:flex;justify-content:space-between;gap:24px;margin-top:34px;padding-top:22px;border-top:1px solid var(--lock-line);
+    color:var(--lock-ghost);font-size:8px;line-height:1.7;letter-spacing:.1em;text-transform:uppercase}
+  @media(max-width:760px){.reserve{width:min(100% - 24px,1160px);padding-top:5px}.hero{grid-template-columns:1fr;gap:28px;padding:29px 0 31px}
+    h1{font-size:clamp(47px,14vw,70px)}.total{padding:19px}.proof-strip{grid-template-columns:1fr}.proof-stat+.proof-stat{border-left:0;border-top:1px solid var(--lock-line)}
+    .locks{padding-top:40px}.section-head{align-items:start;flex-direction:column;gap:14px}.lock-grid{grid-template-columns:1fr}.lock-card{padding:24px 20px}
+    .logic{grid-template-columns:1fr;gap:28px;margin-top:40px;padding:26px 20px}.actions{grid-template-columns:1fr}.foot{flex-direction:column}}
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="reserve" id="main-content">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Public reserve record · 02 September 2026</div>
+      <h1>Locked for the next burn.</h1>
+      <p class="lede"><strong>237,500,000 $BULLEN. Two hard cliffs. Zero drip.</strong>
+        The volume-burn reserve is separated by purpose, excluded from circulating supply and independently verifiable on Jupiter.</p>
+    </div>
+    <aside class="total" aria-label="Total locked reserve">
+      <div class="card-kicker">Locked now</div>
+      <b>237.5M</b>
+      <span>100% of the post-tier-one volume-burn reserve across two public escrows.</span>
+    </aside>
+  </section>
+
+  <section class="proof-strip" aria-label="Lock guarantees">
+    <div class="proof-stat"><b>0</b><span>tokens currently claimable</span></div>
+    <div class="proof-stat"><b>0</b><span>cancellable contracts</span></div>
+    <div class="proof-stat"><b>2</b><span>finalized Token-2022 escrow accounts</span></div>
+  </section>
+
+  <section class="locks" id="locks">
+    <header class="section-head">
+      <div><div class="section-label">The live locks</div><h2>Proof, not promises.</h2></div>
+      <div class="verified">Verified on-chain</div>
+    </header>
+    <div class="lock-grid">
+      <article class="lock-card">
+        <div class="card-kicker">01 / Next volume burn · 7D</div>
+        <h3>The next-burn tranche</h3>
+        <div class="amount">25,000,000 <small>BULLEN</small></div>
+        <dl class="facts">
+          <div class="fact"><dt>Hard cliff</dt><dd><time datetime="2026-09-09T17:00:00Z">09 Sep 2026 · 19:00 CEST</time></dd></div>
+          <div class="fact"><dt>Unlocked before cliff</dt><dd class="good">0</dd></div>
+          <div class="fact"><dt>Vesting rate</dt><dd>0 per week</dd></div>
+          <div class="fact"><dt>Can cancel</dt><dd>None</dd></div>
+          <div class="fact"><dt>Can change recipient</dt><dd>None</dd></div>
+        </dl>
+        <div class="countdown" data-cliff="2026-09-09T17:00:00Z">Calculating cliff…</div>
+        <a class="verify-link" href="https://lock.jup.ag/escrow/643KD1Zus2FEKV5ZKkMtW58tv4dfAAgLQHkXhWbs8295" target="_blank" rel="noopener noreferrer">Verify 25M on Jupiter ↗</a>
+        <p class="address">Escrow 643KD1Zus2FEKV5ZKkMtW58tv4dfAAgLQHkXhWbs8295<br>Token account 2125652ZzkUVShQFwwuTMCtKeEdeEC6LbSJsRBgh4vHQ</p>
+      </article>
+
+      <article class="lock-card">
+        <div class="card-kicker">02 / Future burn reserve · 30D</div>
+        <h3>The longer reserve</h3>
+        <div class="amount">212,500,000 <small>BULLEN</small></div>
+        <dl class="facts">
+          <div class="fact"><dt>Hard cliff</dt><dd><time datetime="2026-10-02T17:00:00Z">02 Oct 2026 · 19:00 CEST</time></dd></div>
+          <div class="fact"><dt>Unlocked before cliff</dt><dd class="good">0</dd></div>
+          <div class="fact"><dt>Vesting rate</dt><dd>0 per month</dd></div>
+          <div class="fact"><dt>Can cancel</dt><dd>None</dd></div>
+          <div class="fact"><dt>Can change recipient</dt><dd>None</dd></div>
+        </dl>
+        <div class="countdown" data-cliff="2026-10-02T17:00:00Z">Calculating cliff…</div>
+        <a class="verify-link" href="https://lock.jup.ag/escrow/A6TLCJ8Kasy53pqzKwt2TtJ68JqCZgCi8p6Jo5g7VkuM" target="_blank" rel="noopener noreferrer">Verify 212.5M on Jupiter ↗</a>
+        <p class="address">Escrow A6TLCJ8Kasy53pqzKwt2TtJ68JqCZgCi8p6Jo5g7VkuM<br>Token account 84iH6gSnokn6eWLqQyZsa7otgurf8g76dvxVNQQjBeoW</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="logic">
+    <div>
+      <div class="section-label">Why two locks</div>
+      <h2>Ready to burn. Not free to move.</h2>
+      <p>The next scheduled tier destroys 25M $BULLEN. Isolating that exact tranche keeps the larger reserve locked while the burn remains operationally possible.</p>
+    </div>
+    <ol>
+      <li>If the $1M cumulative-volume tier arrives inside the seven-day window, the 25M tranche can be claimed after its cliff and burned in one curated transaction.</li>
+      <li>If the tier has not arrived, only the 25M tranche needs a new public lock. The separate 212.5M reserve does not move with it.</li>
+      <li>Every relock creates a new escrow account. The House publishes it here and updates circulating-supply accounting against the exact Token-2022 account.</li>
+    </ol>
+  </section>
+
+  <section class="future">
+    <div class="section-label">The permanent design</div>
+    <h2>A burn-only vault comes next.</h2>
+    <p><strong>The present Jupiter locks are an interim custody layer, not the final automation.</strong> The intended replacement is a reviewed, program-controlled vault that can destroy an exact tier tranche but cannot withdraw, transfer, cancel or redirect it. Until that system is ready, the House will keep using visible hard cliffs and publishing each new escrow.</p>
+    <div class="actions">
+      <a class="action" href="/curve">Open the burn ledger</a>
+      <a class="action" href="/stats">See live supply</a>
+      <a class="action" href="/patchnotes">Read the House Record</a>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>BULLENCIAGA · Public burn reserve</span>
+    <span>Verified 02 September 2026 · Solana mainnet</span>
+  </footer>
+</main>
+<script defer src="/bullen-ui.js"></script>
+<script>
+(() => {
+  'use strict';
+  const units = [[86400000,'d'],[3600000,'h'],[60000,'m']];
+  function render(){
+    document.querySelectorAll('[data-cliff]').forEach((node) => {
+      let remaining = Date.parse(node.dataset.cliff) - Date.now();
+      if(!Number.isFinite(remaining)) return;
+      if(remaining <= 0){ node.textContent = 'Cliff reached · verify current state on Jupiter'; return; }
+      const parts=[];
+      for(const [size,label] of units){const value=Math.floor(remaining/size);remaining-=value*size;if(value||parts.length)parts.push(value+label)}
+      node.textContent='Hard cliff in '+parts.join(' ');
+    });
+  }
+  render(); setInterval(render,60000);
+})();
+</script>
+</body>
+</html>

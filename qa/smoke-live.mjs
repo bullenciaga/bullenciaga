@@ -28,6 +28,7 @@ const pageChecks = [
   ['/giveaways', /<title>BULLENCIAGA — Giveaways/i],
   ['/tape', /<title>THE TAPE — Live \$BULLEN Market/i],
   ['/patchnotes', /<title>BULLENCIAGA — House Record/i],
+  ['/lock', /<title>BULLENCIAGA — Burn Reserve/i],
 ];
 const effectivePageChecks = smokePhase === 'preflight'
   ? pageChecks.filter(([path]) => !['/giveaways', '/tape', '/patchnotes'].includes(path))

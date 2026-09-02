@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>BULLENCIAGA — House Record</title>
-<meta name="description" content="The BULLENCIAGA House Record: two days of quieter systems, cleaner paths and shipped improvements across the site, market, bots and BULLENSAGA.">
+<meta name="description" content="The BULLENCIAGA House Record: two days of quieter systems, cleaner paths, and 237.5M BULLEN placed into two public hard-cliff locks.">
 <link rel="canonical" href="https://bullenciaga.com/patchnotes">
 <meta name="theme-color" content="#050505">
 <meta property="og:type" content="article">
@@ -59,7 +59,7 @@
   .edition strong{display:block;margin-top:10px;color:var(--record-gold-light);font-family:Poppins,sans-serif;
     font-size:26px;font-weight:500;letter-spacing:-.02em}
   .edition span{display:block;margin-top:9px;color:var(--record-muted);font-size:11px;line-height:1.7}
-  .summary{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--record-line);border-top:0}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--record-line);border-top:0}
   .summary-item{padding:19px 22px;background:rgba(9,9,9,.72)}
   .summary-item+.summary-item{border-left:1px solid var(--record-line)}
   .summary-item b{display:block;color:var(--record-gold-light);font-family:Poppins,sans-serif;
@@ -94,7 +94,7 @@
   .principle blockquote{max-width:900px;margin:18px 0 0;font-family:Poppins,sans-serif;
     font-size:clamp(27px,4.7vw,55px);font-weight:500;line-height:1.12;letter-spacing:-.04em}
   .principle p{max-width:760px;margin:21px 0 0;color:var(--record-muted);font-size:13px;line-height:1.8}
-  .actions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+  .actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
   .action{min-height:58px;display:flex;align-items:center;justify-content:center;padding:12px 18px;border:1px solid var(--record-line);
     background:transparent;color:var(--record-gold-light);font:700 10px/1.2 'Space Mono',monospace;
     letter-spacing:.15em;text-align:center;text-decoration:none;text-transform:uppercase;cursor:pointer}
@@ -133,6 +133,7 @@
     <div class="summary-item"><b>02</b><span>production bots brought into one control language</span></div>
     <div class="summary-item"><b>03</b><span>mobile wallet paths before the fallback routes</span></div>
     <div class="summary-item"><b>01</b><span>private control room tying the House together</span></div>
+    <div class="summary-item"><b>237.5M</b><span>BULLEN in two public hard-cliff locks</span></div>
   </section>
 
   <article class="release">
@@ -210,6 +211,23 @@
         <p>Preorders can recover verified Solana payments safely, USDC instructions are clearer, fulfillment avoids duplicates, and related mint events carry the right artwork into the right bot. The public story stays clean because the machinery underneath is less fragile.</p>
         <span class="status">Flow hardened</span>
       </section>
+
+      <section class="entry entry--wide">
+        <div>
+          <div class="entry-number">08 / RESERVE CUSTODY</div>
+          <h3>The volume-burn reserve is public again—and split by purpose.</h3>
+          <span class="status">Verified on-chain</span>
+        </div>
+        <div>
+          <p>All 237,500,000 reserve tokens now sit in two non-cancellable Jupiter Lock escrows. The entire balance of each lock remains unavailable until its hard cliff; neither lock drips tokens over time.</p>
+          <ul>
+            <li>25,000,000 $BULLEN is isolated for the next volume-tier burn and locked for seven days.</li>
+            <li>212,500,000 $BULLEN is held in the longer reserve lock for thirty days.</li>
+            <li>Both escrow token accounts are included in the live circulating-supply calculation.</li>
+            <li>A permanent burn-only vault is the next design step; until then, each public relock remains verifiable.</li>
+          </ul>
+        </div>
+      </section>
     </div>
   </article>
 
@@ -219,6 +237,7 @@
     <p>That is the work: fewer dead ends, fewer ambiguous alarms, fewer moments where someone has to understand the machinery before they can use the House.</p>
     <div class="actions">
       <button class="action primary" id="buyBullen" type="button">Buy $BULLEN</button>
+      <a class="action" href="/lock">Verify the locks</a>
       <a class="action" href="/tape">Open the Tape</a>
       <a class="action" href="https://bullensaga.com/">Enter BULLENSAGA</a>
     </div>
