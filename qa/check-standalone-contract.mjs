@@ -190,6 +190,7 @@ if (!curve.includes('class="sig"') || !curve.includes('burned, evidenced') || !c
 if (curve.includes('<br class="wide">') || curve.includes('br.wide')) failures.push('curve.html: forced desktop prose breaks remain');
 
 const redirects = fs.readFileSync(path.join(site, '_redirects'), 'utf8');
+if (/^\/lock\s/m.test(redirects)) failures.push('_redirects: /lock must use Cloudflare clean-URL asset routing, not a competing redirect');
 if (!/^\/proof\s+\/curve\s+301$/m.test(redirects) || !/^\/proof\.html\s+\/curve\s+301$/m.test(redirects)) failures.push('Proof URLs do not permanently redirect to Curve');
 if (fs.existsSync(path.join(site, 'proof.html'))) failures.push('retired standalone Proof asset still exists');
 
