@@ -10,6 +10,13 @@
   let returnFocus = null;
   let continueWithJupiter = null;
 
+  function focusableElements() {
+    if (!overlay || overlay.hidden) return [];
+    return Array.from(overlay.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter(element => !element.hidden && element.getClientRects().length > 0);
+  }
+
   function isMobileDevice() {
     const ua = navigator.userAgent || '';
     const touchMac = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
@@ -89,6 +96,7 @@
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('aria-labelledby', 'bullen-mobile-buy-title');
+    overlay.setAttribute('aria-describedby', 'bullen-mobile-buy-description');
     overlay.innerHTML =
       '<section class="bullen-mobile-buy__sheet">' +
         '<header class="bullen-mobile-buy__head">' +
@@ -96,7 +104,7 @@
           '<h2 class="bullen-mobile-buy__title" id="bullen-mobile-buy-title">Choose where to buy</h2></div>' +
           '<button class="bullen-mobile-buy__close" type="button" aria-label="Close">×</button>' +
         '</header>' +
-        '<p class="bullen-mobile-buy__intro">We will open the trade inside your wallet so it can sign the swap. The $BULLEN contract is already filled in.</p>' +
+        '<p class="bullen-mobile-buy__intro" id="bullen-mobile-buy-description">We will open the trade inside your wallet so it can sign the swap. The $BULLEN contract is already filled in.</p>' +
         '<div class="bullen-mobile-buy__choices"></div>' +
         '<p class="bullen-mobile-buy__section-title">Other routes</p>' +
         '<div class="bullen-mobile-buy__utilities">' +
@@ -116,6 +124,18 @@
     });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && overlay && !overlay.hidden) close();
+      if (event.key !== 'Tab' || !overlay || overlay.hidden) return;
+      const focusable = focusableElements();
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     });
     return overlay;
   }

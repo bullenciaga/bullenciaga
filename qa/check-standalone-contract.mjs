@@ -68,6 +68,11 @@ for (const icon of ['assets/wallets/phantom.png', 'assets/wallets/solflare.png']
 if (!mobileBuy.includes('bullen-mobile-buy__connected-icon')) {
   failures.push('mobile wallet handoff is missing its already-connected wallet mark');
 }
+if (!mobileBuy.includes("overlay.setAttribute('aria-describedby', 'bullen-mobile-buy-description')")
+    || !mobileBuy.includes("event.key !== 'Tab'")
+    || !mobileBuy.includes('focusableElements()')) {
+  failures.push('mobile wallet handoff does not keep keyboard focus inside its modal');
+}
 if (!mobileBuyCss.includes('env(safe-area-inset-bottom, 0px)') || !mobileBuyCss.includes('100dvh')) {
   failures.push('mobile wallet handoff does not respect mobile safe areas and dynamic viewport height');
 }
