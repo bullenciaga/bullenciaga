@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">House Record</title>
+  <desc id="desc">A gold record sheet with three black lines.</desc>
+  <rect width="64" height="64" fill="#050505"/>
+  <path d="M14 7h27l9 9v41H14z" fill="#c7a869"/>
+  <path d="M41 7v11h9" fill="#050505"/>
+  <path d="M21 27h22v4H21zM21 37h22v4H21zM21 47h15v4H21z" fill="#050505"/>
+</svg>

@@ -15,6 +15,7 @@
     thedrop: 'The Drop',
     giveaways: 'Giveaways',
     objects: 'House Objects',
+    patchnotes: 'House Record',
     bullensaga: 'BULLENSAGA',
   };
   const destinations = [

@@ -12,6 +12,7 @@ const required = [
   'bullen-ui.css', 'bullen-ui.js', 'giveaways.html', 'giveaways.json',
   'objects.html', 'objects.css', 'objects.js', 'bullen-wallet-chooser.js',
   'tape.html', 'favicons/tape.svg',
+  'patchnotes.html', 'favicons/patchnotes.svg',
   'house-burn-registry.js', 'market-surfaces.css', 'mobile-buy.css', 'mobile-buy.js',
   'giveaway-snapshot-2.json', 'giveaway-result-2.json',
 ];

@@ -6,6 +6,7 @@ const site = path.join(root, 'site');
 const publicPages = [
   'index.html', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html', 'tape.html',
+  'patchnotes.html',
 ];
 const failures = [];
 
@@ -26,6 +27,7 @@ const homeSource = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
 const tapeSource = fs.readFileSync(path.join(site, 'tape.html'), 'utf8');
 const mobileBuy = fs.readFileSync(path.join(site, 'mobile-buy.js'), 'utf8');
 const mobileBuyCss = fs.readFileSync(path.join(site, 'mobile-buy.css'), 'utf8');
+const patchnotesSource = fs.readFileSync(path.join(site, 'patchnotes.html'), 'utf8');
 if (!shell.includes("page === 'referrals'")) failures.push('admin page classification missing');
 if (!shell.includes("page === 'index' ? ' bullen-home-shell'")) failures.push('homepage top-shell navigation missing');
 if (!shell.includes("bar.className = 'bullen-site-bar'")) failures.push('shared fixed-width header interior missing');
@@ -48,6 +50,14 @@ for (const [name, source] of [['index.html', homeSource], ['tape.html', tapeSour
   if (!source.includes('href="/mobile-buy.css"')) failures.push(`${name}: mobile wallet handoff styles missing`);
   if (!source.includes('src="/mobile-buy.js"')) failures.push(`${name}: mobile wallet handoff helper missing`);
   if (!source.includes('BullenMobileBuy.request')) failures.push(`${name}: buy action does not invoke the mobile wallet handoff`);
+}
+if (!patchnotesSource.includes('BullenMobileBuy.request')
+    || !patchnotesSource.includes('href="/mobile-buy.css"')
+    || !patchnotesSource.includes('src="/mobile-buy.js"')) {
+  failures.push('patchnotes.html: public release CTA does not preserve the mobile wallet handoff');
+}
+for (const section of ['MOBILE BUYING', 'ONE HOUSE', 'THE TAPE', 'HOUSE DESK', 'TWO BOTS', 'CONTROL ROOM', 'BULLENSAGA']) {
+  if (!patchnotesSource.includes(section)) failures.push(`patchnotes.html: public release record omits ${section}`);
 }
 if (!mobileBuy.includes("'solana:101/address:' + mint")
     || !mobileBuy.includes("'https://phantom.app/ul/v1/swap/'")) {
