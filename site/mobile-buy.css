@@ -258,6 +258,11 @@
   outline-offset: 3px;
 }
 
+.bullen-mobile-buy .bullen-auto-focus-neutral:focus {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+
 @media (min-width: 640px) {
   .bullen-mobile-buy {
     padding: 20px;
