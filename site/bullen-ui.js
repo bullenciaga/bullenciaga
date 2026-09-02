@@ -16,6 +16,7 @@
     giveaways: 'Giveaways',
     objects: 'House Objects',
     patchnotes: 'House Record',
+    lock: 'Burn Reserve',
     bullensaga: 'BULLENSAGA',
   };
   const destinations = [
@@ -27,6 +28,7 @@
     ['curve', '/curve.html'],
     ['refer', '/refer.html'],
     ['thedrop', '/thedrop.html'],
+    ['lock', '/lock.html'],
     ['bullensaga', 'https://bullensaga.com/'],
   ];
 

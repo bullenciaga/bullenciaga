@@ -6,7 +6,7 @@ const site = path.join(root, 'site');
 const publicPages = [
   'index.html', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html', 'tape.html',
-  'patchnotes.html',
+  'patchnotes.html', 'lock.html',
 ];
 const failures = [];
 
@@ -29,6 +29,7 @@ const tapeSource = fs.readFileSync(path.join(site, 'tape.html'), 'utf8');
 const mobileBuy = fs.readFileSync(path.join(site, 'mobile-buy.js'), 'utf8');
 const mobileBuyCss = fs.readFileSync(path.join(site, 'mobile-buy.css'), 'utf8');
 const patchnotesSource = fs.readFileSync(path.join(site, 'patchnotes.html'), 'utf8');
+const lockSource = fs.readFileSync(path.join(site, 'lock.html'), 'utf8');
 if (!shell.includes("page === 'referrals'")) failures.push('admin page classification missing');
 if (!shell.includes("page === 'index' ? ' bullen-home-shell'")) failures.push('homepage top-shell navigation missing');
 if (!shell.includes("bar.className = 'bullen-site-bar'")) failures.push('shared fixed-width header interior missing');
@@ -66,8 +67,15 @@ if (!patchnotesSource.includes('BullenMobileBuy.request')
     || !patchnotesSource.includes('src="/mobile-buy.js"')) {
   failures.push('patchnotes.html: public release CTA does not preserve the mobile wallet handoff');
 }
-for (const section of ['MOBILE BUYING', 'ONE HOUSE', 'THE TAPE', 'HOUSE DESK', 'TWO BOTS', 'CONTROL ROOM', 'BULLENSAGA']) {
+for (const section of ['MOBILE BUYING', 'ONE HOUSE', 'THE TAPE', 'HOUSE DESK', 'TWO BOTS', 'CONTROL ROOM', 'BULLENSAGA', 'RESERVE CUSTODY']) {
   if (!patchnotesSource.includes(section)) failures.push(`patchnotes.html: public release record omits ${section}`);
+}
+for (const proof of [
+  'https://lock.jup.ag/escrow/643KD1Zus2FEKV5ZKkMtW58tv4dfAAgLQHkXhWbs8295',
+  'https://lock.jup.ag/escrow/A6TLCJ8Kasy53pqzKwt2TtJ68JqCZgCi8p6Jo5g7VkuM',
+  '25,000,000', '212,500,000', 'Vesting rate', 'Can cancel',
+]) {
+  if (!lockSource.includes(proof)) failures.push(`lock.html: public reserve record omits ${proof}`);
 }
 if (!mobileBuy.includes("'solana:101/address:' + mint")
     || !mobileBuy.includes("'https://phantom.app/ul/v1/swap/'")) {
