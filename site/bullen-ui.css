@@ -17,10 +17,21 @@
   --bullen-font-data: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --bullen-gutter: clamp(16px, 3vw, 36px);
   --bullen-shell-width: 1120px;
+  /* The public header is one House-wide rail. Page content can choose its own
+     shell width without moving the brand or changing navigation spacing. */
+  --bullen-header-shell-width: 1440px;
   --bullen-header-height: 64px;
   --bullen-page-gap: clamp(26px, 3vw, 44px);
   --bullen-motion-fast: 120ms;
   --bullen-motion-normal: 220ms;
+  /* Jupiter's modal reads these custom properties from the page root. Keeping
+     them here prevents a new public page from falling back to Jupiter blue. */
+  --jupiter-plugin-primary: 199, 168, 105;
+  --jupiter-plugin-background: 5, 5, 5;
+  --jupiter-plugin-primaryText: 245, 243, 238;
+  --jupiter-plugin-warning: 224, 104, 95;
+  --jupiter-plugin-interactive: 31, 27, 18;
+  --jupiter-plugin-module: 13, 13, 13;
 }
 
 html {
@@ -103,11 +114,14 @@ body[data-bullen-page="stats"]:not(.transparent) #stage {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   isolation: isolate;
+  box-sizing: border-box;
 }
+
+.bullen-site-shell * { box-sizing: border-box; }
 
 .bullen-site-bar {
   position: relative;
-  width: min(100%, var(--bullen-shell-width));
+  width: min(100%, var(--bullen-header-shell-width));
   height: 100%;
   margin: 0 auto;
   display: flex;
@@ -228,7 +242,7 @@ body[data-bullen-page="stats"]:not(.transparent) #stage {
   position: fixed;
   z-index: 3;
   top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + 1px);
-  right: max(var(--bullen-gutter), calc((100vw - var(--bullen-shell-width)) / 2));
+  right: max(var(--bullen-gutter), calc((100vw - var(--bullen-header-shell-width)) / 2));
 }
 
 .bullen-nav-toggle {

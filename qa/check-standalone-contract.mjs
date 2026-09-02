@@ -23,6 +23,7 @@ for (const name of [...publicPages, 'referrals.html']) {
 
 const shell = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
 const shellCss = fs.readFileSync(path.join(site, 'bullen-ui.css'), 'utf8');
+const marketCss = fs.readFileSync(path.join(site, 'market-surfaces.css'), 'utf8');
 const homeSource = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
 const tapeSource = fs.readFileSync(path.join(site, 'tape.html'), 'utf8');
 const mobileBuy = fs.readFileSync(path.join(site, 'mobile-buy.js'), 'utf8');
@@ -42,7 +43,16 @@ if (shell.includes("['transparency', '/transparency.html']")) failures.push('Tel
 if (shell.includes("['proof', '/proof.html']") || shell.includes("proof: 'Proof'")) failures.push('retired Proof page remains in public navigation');
 if (!shell.includes('skip.after(buildShell())')) failures.push('standalone pages do not mount the same outward navigation shell');
 if (!shellCss.includes('position: fixed;') || !shellCss.includes('backdrop-filter: blur(20px)')) failures.push('shared header is not fixed dark glass');
+if (!shellCss.includes('--bullen-header-shell-width: 1440px')
+    || !shellCss.includes('width: min(100%, var(--bullen-header-shell-width))')
+    || !shellCss.includes('calc((100vw - var(--bullen-header-shell-width)) / 2)')) {
+  failures.push('desktop header geometry can drift with page-specific content widths');
+}
+for (const variable of ['--jupiter-plugin-primary', '--jupiter-plugin-background', '--jupiter-plugin-primaryText', '--jupiter-plugin-warning', '--jupiter-plugin-interactive', '--jupiter-plugin-module']) {
+  if (!shellCss.includes(variable)) failures.push(`shared Jupiter modal theme is missing ${variable}`);
+}
 if (!shellCss.includes('background: var(--bullen-bg) !important;')) failures.push('standalone background color is not centrally unified');
+if (marketCss.includes('.market-curve header {')) failures.push('Curve page-level header rule can override the shared House navigation header');
 if (!shellCss.includes('body[data-bullen-page="index"] .hero-mast { display: none !important; }')) failures.push('mobile homepage duplicate masthead remains visible');
 if (!shellCss.includes('top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + 1px)')) failures.push('Jump To panel is not anchored below the fixed header');
 if (!shellCss.includes('height: 34px;') || !shellCss.includes('.bullen-home-shell .jumpto-menu')) failures.push('mobile Jump To does not share the hamburger control and panel geometry');

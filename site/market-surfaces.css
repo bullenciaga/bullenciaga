@@ -394,7 +394,7 @@ body.market-surface:not(.transparent) {
   padding: 10px 0 64px;
 }
 
-.market-curve header {
+.market-curve .wrap > header {
   padding: 16px 0 14px;
   border-color: var(--market-line);
 }
