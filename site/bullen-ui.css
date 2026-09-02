@@ -40,6 +40,18 @@ textarea { -webkit-tap-highlight-color: transparent; }
 button,
 [role="button"] { touch-action: manipulation; }
 
+.bullen-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 body[data-bullen-page]:not([data-bullen-page="index"]):not(.transparent) {
   padding-top: calc(var(--bullen-header-height) + var(--bullen-page-gap)) !important;
   background: var(--bullen-bg) !important;
