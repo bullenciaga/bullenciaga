@@ -2,7 +2,7 @@
   "schema": "bullenciaga.giveaways.v1",
   "project": "BULLENCIAGA",
   "token": "$BULLEN",
-  "updatedAt": "2026-08-30T13:18:37Z",
+  "updatedAt": "2026-09-02T16:27:32Z",
   "finalCarryover": {
     "rounds": [0, 1, 2],
     "wallets": 32,
@@ -92,14 +92,14 @@
       "id": "herd-buy-hold-680-625-308",
       "title": "The Herd Buy + Hold Draw",
       "kind": "buy-hold",
-      "status": "active",
+      "status": "completed",
       "displayOrder": 0,
       "featured": true,
       "trigger": {
-        "label": "72-hour window · closes 2 Sep 2026 at 13:18 UTC",
+        "label": "72-hour window closed · result publicly reproducible",
         "target": null,
         "current": null,
-        "source": "/giveaway-buy-hold-open.json"
+        "source": "/giveaway-buy-hold-close-20260902.json"
       },
       "eligibility": [
         "Every 25,000 $BULLEN bought from the official pool and still held at close earns one entry",
@@ -150,12 +150,12 @@
       "draw": {
         "method": "future-finalized-solana-blockhash",
         "random": true,
-        "activation": "active",
+        "activation": "drawn",
         "openedAt": "2026-08-30T13:18:37.000Z",
         "closesAt": "2026-09-02T13:18:37.000Z"
       },
-      "snapshot": "/giveaway-buy-hold-open.json",
-      "result": null
+      "snapshot": "/giveaway-buy-hold-close-20260902.json",
+      "result": "/giveaway-buy-hold-result-20260902.json"
     },
     {
       "id": "mint-round-0",
