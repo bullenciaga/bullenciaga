@@ -14,6 +14,9 @@ const objects = read('objects.html');
 const objectsCss = read('objects.css');
 const objectsJs = read('objects.js');
 const refer = read('refer.html');
+const passport = read('passport.html');
+const walletPassport = read('wallet-passport.js');
+const ledger = read('ledger.html');
 const redirects = read('_redirects');
 
 const roadmap = index.slice(index.indexOf('<section id="roadmap">'), index.indexOf('<section id="faq">'));
@@ -95,5 +98,12 @@ assert.match(objectsJs, /TRANSACTION_NOT_CONFIRMED/);
 assert.match(objectsJs, /The House ledger could not be reached\. No number was reserved and no transaction was created\./);
 assert.match(objectsJs, /THIS WALLET DOES NOT HOLD THE 100,000 \$BULLEN REQUIRED FOR A HOUSE OBJECT CLAIM\./);
 assert.match(objectsJs, /document\.createElement\('br'\)/);
+
+assert.match(passport, /id="passport-state">Live<\/div>/);
+assert.doesNotMatch(passport, /predeploy|passport-example/i);
+assert.doesNotMatch(walletPassport, /predeploy|passport-preview|passport-example/i);
+assert.equal(fs.existsSync(path.join(site, 'passport-preview.json')), false);
+assert.match(ledger, /Ledger protocol · public 01/);
+assert.match(ledger, /id="ledger-state">Live record<\/div>/);
 
 console.log('House integrations: ok (roadmap, accounting, events, assets, wallets)');
