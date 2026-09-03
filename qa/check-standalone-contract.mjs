@@ -6,7 +6,7 @@ const site = path.join(root, 'site');
 const publicPages = [
   'index.html', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html', 'tape.html',
-  'patchnotes.html', 'lock.html',
+  'patchnotes.html', 'lock.html', 'ledger.html', 'passport.html',
 ];
 const failures = [];
 
@@ -39,6 +39,7 @@ if (!shell.includes('if (open) closeExtraControl();')) failures.push('hamburger 
 if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
 if (!shell.includes("['bullensaga', 'https://bullensaga.com/']")) failures.push('BULLENSAGA sister-site navigation missing');
 if (!shell.includes("['tape', '/tape.html']")) failures.push('live market tape navigation missing');
+if (!shell.includes("['ledger', '/ledger.html']") || !shell.includes("['passport', '/passport.html']")) failures.push('House intelligence pages are missing from public navigation');
 if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
 if (shell.includes("['transparency', '/transparency.html']")) failures.push('Telegram-only moderation page is exposed in public navigation');
 if (shell.includes("['proof', '/proof.html']") || shell.includes("proof: 'Proof'")) failures.push('retired Proof page remains in public navigation');

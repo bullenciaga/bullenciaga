@@ -18,6 +18,8 @@
     objects: 'House Objects',
     patchnotes: 'House Record',
     lock: 'Burn Reserve',
+    ledger: 'Living Ledger',
+    passport: 'Wallet Passport',
     bullensaga: 'BULLENSAGA',
   };
   const destinations = [
@@ -31,6 +33,8 @@
     ['thedrop', '/thedrop.html'],
     ['patchnotes', '/patchnotes.html'],
     ['lock', '/lock.html'],
+    ['ledger', '/ledger.html'],
+    ['passport', '/passport.html'],
     ['bullensaga', 'https://bullensaga.com/'],
   ];
 
@@ -165,7 +169,7 @@
     let url;
     try { url = new URL(anchor.href, location.href); } catch (_) { return; }
     if (url.origin !== location.origin || url.href === location.href || prefetched.has(url.href)) return;
-    if (!/^\/$|\.html$|^\/(?:objects|giveaways|stats|tape|chart|curve|refer|thedrop|patchnotes|lock)\/?$/i.test(url.pathname)) return;
+    if (!/^\/$|\.html$|^\/(?:objects|giveaways|stats|tape|chart|curve|refer|thedrop|patchnotes|lock|ledger|passport)\/?$/i.test(url.pathname)) return;
     prefetched.add(url.href);
     const hint = document.createElement('link');
     hint.rel = 'prefetch';

@@ -29,12 +29,14 @@ const pageChecks = [
   ['/tape', /<title>THE TAPE — Live \$BULLEN Market/i],
   ['/patchnotes', /<title>BULLENCIAGA — House Record/i],
   ['/lock', /<title>BULLENCIAGA — Burn Reserve/i],
+  ['/ledger', /<title>BULLENCIAGA — Living Ledger/i],
+  ['/passport', /<title>BULLENCIAGA — Wallet Passport/i],
 ];
 const effectivePageChecks = smokePhase === 'preflight'
   // Preflight proves the currently deployed release. Pages introduced by the
   // candidate cannot exist until after promotion, so require them only in the
   // post-release smoke test.
-  ? pageChecks.filter(([path]) => !['/giveaways', '/tape', '/patchnotes', '/lock'].includes(path))
+  ? pageChecks.filter(([path]) => !['/giveaways', '/tape', '/patchnotes', '/lock', '/ledger', '/passport'].includes(path))
   : pageChecks;
 
 const apiChecks = [
@@ -43,6 +45,7 @@ const apiChecks = [
   ['/supply/history', (body) => body.ok === true && Number(body.count) > 0 && Array.isArray(body.events)],
   ['/supply/proof', (body) => body.ok === true && Array.isArray(body.burns) && 'burnedActual' in body && 'unaccounted' in body],
   ['/volume/tape', (body) => body.ok === true && Array.isArray(body.trades) && typeof body.summary === 'object'],
+  ['/volume/ledger', (body) => body.ok === true && Array.isArray(body.events) && typeof body.generatedAt === 'string'],
 ];
 
 async function fetchChecked(path) {

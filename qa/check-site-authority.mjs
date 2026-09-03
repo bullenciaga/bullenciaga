@@ -13,6 +13,8 @@ const required = [
   'objects.html', 'objects.css', 'objects.js', 'bullen-wallet-chooser.js',
   'tape.html', 'favicons/tape.svg',
   'patchnotes.html', 'favicons/patchnotes.svg', 'lock.html', 'favicons/lock.svg',
+  'ledger.html', 'favicons/ledger.svg', 'house-ledger.js', 'ledger-preview.json',
+  'passport.html', 'favicons/passport.svg', 'wallet-passport.js', 'passport-preview.json', 'house-intelligence.css',
   'house-burn-registry.js', 'market-surfaces.css', 'mobile-buy.css', 'mobile-buy.js',
   'giveaway-snapshot-2.json', 'giveaway-result-2.json',
 ];
