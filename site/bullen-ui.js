@@ -89,6 +89,12 @@
       group.append(summary, menu);
       nav.append(group);
     }
+    const mobileDirectory = document.createElement('div');
+    mobileDirectory.className = 'bullen-mobile-nav-directory';
+    for (const [, keys] of navigationGroups) {
+      for (const key of keys) mobileDirectory.append(buildLink(key));
+    }
+    nav.append(mobileDirectory);
     nav.append(buildLink('bullensaga'));
     return nav;
   };
@@ -111,7 +117,7 @@
     button.className = 'jumpto-btn';
     button.setAttribute('aria-haspopup', 'true');
     button.setAttribute('aria-expanded', 'false');
-    button.innerHTML = 'Jump To <svg class="jumpto-chevron" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l5 5-5 5"/></svg>';
+    button.innerHTML = 'JUMP TO <svg class="jumpto-chevron" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l5 5-5 5"/></svg>';
 
     const menu = document.createElement('div');
     menu.className = 'jumpto-menu';
@@ -119,42 +125,67 @@
     menu.id = menuId;
     button.setAttribute('aria-controls', menuId);
 
-    const sectionLabel = (section) => {
-      const labelledBy = section.getAttribute('aria-labelledby');
-      const labelled = labelledBy && document.getElementById(labelledBy);
-      const heading = labelled || section.querySelector('h1, h2, h3');
-      return (section.getAttribute('aria-label') || (heading && heading.textContent) || '').replace(/\s+/g, ' ').trim();
-    };
+    const homeSections = [
+      ['/#giveaway', 'Giveaway'],
+      ['/#stats', 'Live Stats'],
+      ['/#how-to-buy', 'How To Buy'],
+      ['/#nft', 'The Herd Collection'],
+      ['/#gallery', 'Browse The Herd'],
+      ['/#roadmap', 'Roadmap'],
+      ['/#faq', 'FAQ'],
+    ];
+    const elsewhere = [
+      ['https://bullenciaga.com/jupiter_vrfd', 'Jupiter Verification'],
+      ['https://x.com/bullenciagax', 'X Profile'],
+      ['https://bullenciaga.com/chat', 'X Chat'],
+      ['https://t.me/bullenciaga', 'Telegram'],
+      ['https://pump.fun/profile/bullenciagax', 'pump.fun'],
+      ['https://www.tensor.trade/trade/bullenciaga', 'Tensor'],
+      ['https://magiceden.io/marketplace/bullenciaga', 'Magic Eden'],
+      ['https://gravemarket.io/collection/bullenciaga', 'GraveMarket'],
+      ['/whitepaper', 'Whitepaper'],
+    ];
+    const listings = [
+      ['https://www.coingecko.com/coins/bullen', 'CoinGecko'],
+      ['https://www.geckoterminal.com/solana/pools/9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ', 'GeckoTerminal'],
+      ['https://dexscreener.com/solana/9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ', 'DexScreener'],
+      ['https://www.dextools.io/app/token/bullenciaga', 'DEXTools'],
+      ['https://coinpaprika.com/coin/bullen-bullenciaga/', 'CoinPaprika'],
+      ['https://dexpaprika.com/solana/token/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN', 'DexPaprika'],
+      ['https://blockspot.io/coin/bullenciaga-bullen/', 'Blockspot'],
+    ];
 
     const rebuild = () => {
-      const content = document.querySelector('[data-bullen-main]');
-      const candidates = content ? [...content.querySelectorAll('section')] : [];
-      const topLevel = candidates.filter((section) => {
-        if (section.id || section.hasAttribute('aria-labelledby') || section.hasAttribute('aria-label')) return true;
-        return !candidates.some((other) => other !== section && other.contains(section));
-      });
-      const records = [{ target: content, label: labels[page] || 'Overview' }];
-      for (const section of topLevel) {
-        const label = sectionLabel(section);
-        if (!label || records.some((record) => record.target === section)) continue;
-        if (!section.id) section.id = `bullen-section-${page}-${records.length}`;
-        records.push({ target: section, label });
-        if (records.length === 12) break;
-      }
       menu.replaceChildren();
-      const groupLabel = document.createElement('div');
-      groupLabel.className = 'jumpto-group-label';
-      groupLabel.textContent = 'On this page';
-      menu.append(groupLabel);
-      for (const record of records) {
-        if (!record.target) continue;
-        if (!record.target.id) record.target.id = 'main-content';
-        const link = document.createElement('a');
-        link.className = 'jumpto-item';
-        link.href = `#${record.target.id}`;
-        link.textContent = record.label;
-        menu.append(link);
-      }
+      const appendGroup = (label, items, external = false) => {
+        if (menu.children.length) {
+          const divider = document.createElement('div');
+          divider.className = 'jumpto-divider';
+          menu.append(divider);
+        }
+        const groupLabel = document.createElement('div');
+        groupLabel.className = 'jumpto-group-label';
+        groupLabel.textContent = label;
+        menu.append(groupLabel);
+        for (const [href, text] of items) {
+          const link = document.createElement('a');
+          link.className = 'jumpto-item';
+          link.href = href;
+          link.textContent = text;
+          if (external) {
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            const mark = document.createElement('span');
+            mark.className = 'jumpto-item-ext';
+            mark.textContent = '↗';
+            link.append(mark);
+          }
+          menu.append(link);
+        }
+      };
+      appendGroup('On BULLENCIAGA', homeSections);
+      appendGroup('Elsewhere', elsewhere, true);
+      appendGroup('Listings & Data', listings, true);
     };
 
     const close = () => {
