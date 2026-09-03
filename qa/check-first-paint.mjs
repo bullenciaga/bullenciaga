@@ -26,16 +26,19 @@ for (const name of htmlFiles) {
 const css = fs.readFileSync(path.join(site, 'bullen-ui.css'), 'utf8');
 if (css.includes('@import')) failures.push('bullen-ui.css must not defer font discovery through @import');
 for (const required of [
-  'html.bullen-booting body',
-  'html.bullen-ready body',
+  'html.bullen-booting body > :not(.bullen-site-shell):not(.bullen-skip)',
+  'html.bullen-ready body > :not(.bullen-site-shell):not(.bullen-skip)',
   'html[data-bullen-page]:not([data-bullen-page="index"]) body:not(.transparent)',
   '.bullen-site-aux:empty { display: none; }',
 ]) {
   if (!css.includes(required)) failures.push(`bullen-ui.css is missing ${required}`);
 }
+if (/html\.bullen-(?:booting|ready) body\s*\{/.test(css)) {
+  failures.push('bullen-ui.css must transition page content without fading the fixed navigation shell');
+}
 
 const js = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
-for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", "root.classList.add('bullen-ready')"]) {
+for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", "root.classList.add('bullen-ready')", 'const navigationGroups']) {
   if (!js.includes(required)) failures.push(`bullen-ui.js is missing ${required}`);
 }
 

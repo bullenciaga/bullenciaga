@@ -8,7 +8,6 @@ img { display:block; max-width:100%; }
 button, a { font:inherit; }
 .objects-page { overflow:hidden; }
 .objects-hero { position:relative; width:min(1440px, calc(100vw - 64px)); min-height:calc(100svh - 92px); margin:0 auto; display:grid; grid-template-columns:.76fr 1.24fr; gap:clamp(46px,7vw,120px); align-items:center; padding:90px 0 70px; }
-.objects-hero::before { content:""; position:absolute; z-index:-1; width:760px; height:760px; right:-280px; top:0; border:1px solid rgba(199,168,105,.09); border-radius:50%; box-shadow:0 0 0 110px rgba(199,168,105,.018),0 0 0 240px rgba(199,168,105,.012); }
 .objects-kicker, .objects-section-heading span, .claim-intro>span, .objects-rollover>span { color:var(--object-gold); font-size:9px; letter-spacing:.24em; }
 .objects-hero h1 { margin:18px 0 28px; font:300 clamp(56px,6.1vw,100px)/.91 var(--object-display); letter-spacing:-.055em; }
 .objects-lede { max-width:640px; margin:0; color:rgba(245,243,238,.8); font:300 17px/1.72 var(--object-display); }
