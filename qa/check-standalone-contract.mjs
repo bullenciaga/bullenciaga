@@ -63,6 +63,7 @@ if (marketCss.includes('.market-curve header {')) failures.push('Curve page-leve
 if (!shellCss.includes('html[data-bullen-page="index"] body .hero-mast { display: none !important; }')) failures.push('mobile homepage duplicate masthead remains visible');
 if (!shellCss.includes('top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + 1px)')) failures.push('Jump To panel is not anchored below the fixed header');
 if (!shellCss.includes('height: 34px;') || !shellCss.includes('.bullen-home-shell .jumpto-menu')) failures.push('mobile Jump To does not share the hamburger control and panel geometry');
+if (!shellCss.includes('top: calc(var(--bullen-header-height) + 2px)')) failures.push('desktop navigation menus can overlap the fixed House rail');
 for (const [name, source] of [['index.html', homeSource], ['tape.html', tapeSource]]) {
   if (!source.includes('href="/mobile-buy.css"')) failures.push(`${name}: mobile wallet handoff styles missing`);
   if (!source.includes('src="/mobile-buy.js"')) failures.push(`${name}: mobile wallet handoff helper missing`);

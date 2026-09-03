@@ -242,7 +242,7 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
 .bullen-nav-group-menu {
   position: absolute;
   z-index: 5;
-  top: calc(100% + 1px);
+  top: calc(var(--bullen-header-height) + 2px);
   left: 50%;
   display: grid;
   width: max-content;
