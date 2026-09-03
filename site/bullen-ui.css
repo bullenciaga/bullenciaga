@@ -41,12 +41,14 @@ html {
 /* Page identity is written by the tiny inline boot script before the first
    stylesheet is evaluated. This lets the browser reserve the finished shell
    geometry before it can paint an older page-specific layout. */
-html.bullen-booting body {
+/* Keep the House rail fixed in place between documents. Only the page payload
+   waits for fonts and fades in; the shared navigation itself never blinks. */
+html.bullen-booting body > :not(.bullen-site-shell):not(.bullen-skip) {
   opacity: 0;
   visibility: hidden;
 }
 
-html.bullen-ready body {
+html.bullen-ready body > :not(.bullen-site-shell):not(.bullen-skip) {
   opacity: 1;
   visibility: visible;
   transition: opacity 150ms ease-out;
@@ -175,18 +177,18 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   align-items: center;
   justify-content: flex-end;
   gap: clamp(10px, 1.6vw, 20px);
-  overflow-x: auto;
-  scrollbar-width: none;
+  overflow: visible;
 }
 
-.bullen-site-nav::-webkit-scrollbar { display: none; }
-.bullen-site-nav a {
+.bullen-site-nav > a,
+.bullen-nav-group > summary {
   position: relative;
   padding: 23px 1px 22px;
   white-space: nowrap;
 }
 
-.bullen-site-nav a::after {
+.bullen-site-nav > a::after,
+.bullen-nav-group > summary::before {
   content: '';
   position: absolute;
   right: 0;
@@ -199,8 +201,64 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   transition: transform var(--bullen-motion-fast) ease;
 }
 
-.bullen-site-nav a:hover::after,
-.bullen-site-nav a[aria-current="page"]::after { transform: scaleX(1); }
+.bullen-site-nav > a:hover::after,
+.bullen-site-nav > a[aria-current="page"]::after,
+.bullen-nav-group:hover > summary::before,
+.bullen-nav-group[open] > summary::before,
+.bullen-nav-group.is-active > summary::before { transform: scaleX(1); }
+
+.bullen-nav-group {
+  position: relative;
+  height: 100%;
+}
+
+.bullen-nav-group > summary {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  gap: 7px;
+  color: var(--bullen-muted);
+  cursor: pointer;
+  list-style: none;
+  transition: color var(--bullen-motion-fast) ease;
+}
+
+.bullen-nav-group > summary::-webkit-details-marker { display: none; }
+.bullen-nav-group > summary::after {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform var(--bullen-motion-fast) ease;
+}
+
+.bullen-nav-group:hover > summary,
+.bullen-nav-group[open] > summary,
+.bullen-nav-group.is-active > summary { color: var(--bullen-brand-light); }
+.bullen-nav-group[open] > summary::after { transform: translateY(1px) rotate(225deg); }
+
+.bullen-nav-group-menu {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 1px);
+  left: 50%;
+  display: grid;
+  width: max-content;
+  min-width: 188px;
+  padding: 8px;
+  border: 1px solid var(--bullen-border);
+  background: rgba(5, 5, 5, 0.98);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  transform: translateX(-50%);
+}
+
+.bullen-nav-group-menu a {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--bullen-border);
+}
+.bullen-nav-group-menu a:last-child { border-bottom: 0; }
 
 .bullen-site-nav a.bullen-site-sister {
   color: var(--bullen-brand);
@@ -297,7 +355,7 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   white-space: nowrap;
 }
 
-:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
   outline: 2px solid var(--bullen-focus) !important;
   outline-offset: 3px !important;
 }
@@ -349,9 +407,12 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   }
 
   .bullen-site-shell.nav-open .bullen-site-nav { display: flex; }
+  .bullen-nav-group { display: contents; }
+  .bullen-nav-group > summary { display: none; }
+  .bullen-nav-group-menu { display: contents; }
   .bullen-site-nav a { padding: 12px 10px; border-bottom: 1px solid var(--bullen-border); }
   .bullen-site-nav a::after { display: none; }
-  .bullen-site-nav a:last-child { border-bottom: 0; }
+  .bullen-site-nav > :last-child { border-bottom: 0; }
   .bullen-nav-toggle { display: block; }
   .bullen-site-aux { flex-basis: auto; min-width: 0; }
 }
@@ -405,9 +466,12 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   }
 
   .bullen-site-shell.nav-open .bullen-site-nav { display: flex; }
+  .bullen-nav-group { display: contents; }
+  .bullen-nav-group > summary { display: none; }
+  .bullen-nav-group-menu { display: contents; }
   .bullen-site-nav a { padding: 12px 10px; border-bottom: 1px solid var(--bullen-border); }
   .bullen-site-nav a::after { display: none; }
-  .bullen-site-nav a:last-child { border-bottom: 0; }
+  .bullen-site-nav > :last-child { border-bottom: 0; }
   .bullen-nav-toggle { display: block; }
 
   .bullen-site-aux { flex-basis: auto; min-width: 0; }
@@ -450,7 +514,7 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html.bullen-ready body { transition: none; }
+  html.bullen-ready body > :not(.bullen-site-shell):not(.bullen-skip) { transition: none; }
   *, *::before, *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;

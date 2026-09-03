@@ -37,6 +37,12 @@
     ['passport', '/passport.html'],
     ['bullensaga', 'https://bullensaga.com/'],
   ];
+  const navigationGroups = [
+    ['House', ['objects', 'giveaways', 'patchnotes', 'lock']],
+    ['Market', ['stats', 'tape', 'chart', 'curve', 'thedrop']],
+    ['Explore', ['refer', 'ledger', 'passport']],
+  ];
+  const destinationByKey = new Map(destinations);
 
   root.dataset.bullenPage = page;
   document.body.dataset.bullenPage = page;
@@ -59,7 +65,8 @@
     const nav = document.createElement('nav');
     nav.className = 'bullen-site-nav';
     nav.setAttribute('aria-label', 'BULLENCIAGA public pages');
-    for (const [key, href] of destinations) {
+    const buildLink = (key) => {
+      const href = destinationByKey.get(key);
       const link = document.createElement('a');
       link.href = href;
       link.textContent = labels[key];
@@ -68,8 +75,21 @@
         link.setAttribute('aria-label', 'Visit BULLENSAGA');
       }
       if (key === page) link.setAttribute('aria-current', 'page');
-      nav.append(link);
+      return link;
+    };
+    for (const [label, keys] of navigationGroups) {
+      const group = document.createElement('details');
+      group.className = `bullen-nav-group${keys.includes(page) ? ' is-active' : ''}`;
+      const summary = document.createElement('summary');
+      summary.textContent = label;
+      summary.setAttribute('aria-label', `${label} pages`);
+      const menu = document.createElement('div');
+      menu.className = 'bullen-nav-group-menu';
+      for (const key of keys) menu.append(buildLink(key));
+      group.append(summary, menu);
+      nav.append(group);
     }
+    nav.append(buildLink('bullensaga'));
     return nav;
   };
 
@@ -126,13 +146,28 @@
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? 'Close page navigation' : 'Open page navigation');
     });
-    nav.addEventListener('click', closeNav);
+    nav.addEventListener('click', (event) => {
+      if (event.target.closest('a')) closeNav();
+    });
+    nav.addEventListener('toggle', (event) => {
+      const opened = event.target;
+      if (!opened.matches('.bullen-nav-group[open]')) return;
+      for (const group of nav.querySelectorAll('.bullen-nav-group[open]')) {
+        if (group !== opened) group.removeAttribute('open');
+      }
+    }, true);
     if (extraButton) extraButton.addEventListener('click', closeNav);
     document.addEventListener('click', (event) => {
       if (shell.classList.contains('nav-open') && !shell.contains(event.target)) closeNav();
+      if (!nav.contains(event.target)) {
+        for (const group of nav.querySelectorAll('.bullen-nav-group[open]')) group.removeAttribute('open');
+      }
     });
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') closeNav();
+      if (event.key === 'Escape') {
+        closeNav();
+        for (const group of nav.querySelectorAll('.bullen-nav-group[open]')) group.removeAttribute('open');
+      }
     });
   };
 
@@ -181,8 +216,8 @@
   document.addEventListener('touchstart', prefetchPage, { passive: true });
   document.addEventListener('focusin', prefetchPage);
 
-  /* Build the complete shell while the page is still held at opacity zero,
-     then reveal only after the House fonts settle (or a short safety cap).
+  /* Build the complete shell while only the page content is held at opacity
+     zero, then reveal that content after the House fonts settle (or a short safety cap).
      The inline boot timer remains an independent fail-open path. */
   const reveal = () => {
     clearTimeout(window.__BULLEN_BOOT_TIMER);

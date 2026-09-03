@@ -37,6 +37,11 @@ if (!shell.includes("toggle.className = 'bullen-nav-toggle'")) failures.push('re
 if (!shell.includes("document.getElementById('jumpToWidget')")) failures.push('homepage Jump To is not incorporated into the top shell');
 if (!shell.includes('if (open) closeExtraControl();')) failures.push('hamburger does not close an already-open homepage Jump To panel');
 if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
+if (!shell.includes('const navigationGroups') || !shell.includes("['House', ['objects', 'giveaways', 'patchnotes', 'lock']]")
+    || !shell.includes("['Market', ['stats', 'tape', 'chart', 'curve', 'thedrop']]")
+    || !shell.includes("['Explore', ['refer', 'ledger', 'passport']]")) {
+  failures.push('desktop public navigation is not grouped into stable House, Market and Explore menus');
+}
 if (!shell.includes("['bullensaga', 'https://bullensaga.com/']")) failures.push('BULLENSAGA sister-site navigation missing');
 if (!shell.includes("['tape', '/tape.html']")) failures.push('live market tape navigation missing');
 if (!shell.includes("['ledger', '/ledger.html']") || !shell.includes("['passport', '/passport.html']")) failures.push('House intelligence pages are missing from public navigation');
@@ -218,8 +223,12 @@ if (curve.includes('<br class="wide">') || curve.includes('br.wide')) failures.p
 
 const redirects = fs.readFileSync(path.join(site, '_redirects'), 'utf8');
 if (/^\/lock\s/m.test(redirects)) failures.push('_redirects: /lock must use Cloudflare clean-URL asset routing, not a competing redirect');
+if (/^\/(?:ledger|passport)\s/m.test(redirects)) failures.push('_redirects: clean House intelligence URLs must not compete with Cloudflare asset routing');
 if (!/^\/proof\s+\/curve\s+301$/m.test(redirects) || !/^\/proof\.html\s+\/curve\s+301$/m.test(redirects)) failures.push('Proof URLs do not permanently redirect to Curve');
 if (fs.existsSync(path.join(site, 'proof.html'))) failures.push('retired standalone Proof asset still exists');
+
+const objectsCss = fs.readFileSync(path.join(site, 'objects.css'), 'utf8');
+if (objectsCss.includes('.objects-hero::before')) failures.push('House Objects retains the transient decorative ring behind its hero');
 
 for (const name of ['chart.html', 'refer.html', 'thedrop.html']) {
   const source = fs.readFileSync(path.join(site, name), 'utf8');
