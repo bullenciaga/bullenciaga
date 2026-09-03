@@ -34,8 +34,9 @@ if (!shell.includes("page === 'referrals'")) failures.push('admin page classific
 if (!shell.includes("page === 'index' ? ' bullen-home-shell'")) failures.push('homepage top-shell navigation missing');
 if (!shell.includes("bar.className = 'bullen-site-bar'")) failures.push('shared fixed-width header interior missing');
 if (!shell.includes("toggle.className = 'bullen-nav-toggle'")) failures.push('responsive navigation toggle missing');
-if (!shell.includes("document.getElementById('jumpToWidget')")) failures.push('homepage Jump To is not incorporated into the top shell');
+if (!shell.includes("page === 'index' ? document.getElementById('jumpToWidget') : buildPageJumpTo()")) failures.push('sitewide page-local Jump To is not incorporated into the top shell');
 if (!shell.includes('if (open) closeExtraControl();')) failures.push('hamburger does not close an already-open homepage Jump To panel');
+if (!shell.includes('const buildPageJumpTo') || !shell.includes("closeExtraControl();\n      for (const group")) failures.push('Jump To and grouped navigation do not enforce one open menu at a time');
 if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
 if (!shell.includes('const navigationGroups') || !shell.includes("['House', ['objects', 'giveaways', 'patchnotes', 'lock']]")
     || !shell.includes("['Market', ['stats', 'tape', 'chart', 'curve', 'thedrop']]")
@@ -48,7 +49,7 @@ if (!shell.includes("['ledger', '/ledger.html']") || !shell.includes("['passport
 if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
 if (shell.includes("['transparency', '/transparency.html']")) failures.push('Telegram-only moderation page is exposed in public navigation');
 if (shell.includes("['proof', '/proof.html']") || shell.includes("proof: 'Proof'")) failures.push('retired Proof page remains in public navigation');
-if (!shell.includes('skip.after(buildShell())')) failures.push('standalone pages do not mount the same outward navigation shell');
+if (!shell.includes('skip.after(buildShell(jumpTo))')) failures.push('standalone pages do not mount the same outward navigation shell and page-local control');
 if (!shellCss.includes('position: fixed;') || !shellCss.includes('backdrop-filter: blur(20px)')) failures.push('shared header is not fixed dark glass');
 if (!shellCss.includes('--bullen-header-shell-width: 1440px')
     || !shellCss.includes('width: min(100%, var(--bullen-header-shell-width))')
@@ -62,7 +63,15 @@ if (!shellCss.includes('background: var(--bullen-bg) !important;')) failures.pus
 if (marketCss.includes('.market-curve header {')) failures.push('Curve page-level header rule can override the shared House navigation header');
 if (!shellCss.includes('html[data-bullen-page="index"] body .hero-mast { display: none !important; }')) failures.push('mobile homepage duplicate masthead remains visible');
 if (!shellCss.includes('top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + 1px)')) failures.push('Jump To panel is not anchored below the fixed header');
-if (!shellCss.includes('height: 34px;') || !shellCss.includes('.bullen-home-shell .jumpto-menu')) failures.push('mobile Jump To does not share the hamburger control and panel geometry');
+if (!shellCss.includes('height: 34px;') || !shellCss.includes('.bullen-site-shell .jumpto-menu')) failures.push('mobile Jump To does not share the hamburger control and panel geometry');
+if (!shellCss.includes('top: calc(var(--bullen-header-height) + 2px)')) failures.push('desktop navigation menus can overlap the fixed House rail');
+if (!shellCss.includes('min-width: 44px;\n    height: 44px;')) failures.push('mobile hamburger can deform under the shared touch-target minimum');
+if (!shellCss.includes('.bullen-nav-group-menu a,\n.bullen-site-shell .jumpto-item')
+    || !shellCss.includes('font: 400 12px/1.35 var(--bullen-font-data)')
+    || !shellCss.includes('.bullen-site-shell .jumpto-menu')
+    || !shellCss.includes('border: 0;')) {
+  failures.push('desktop dropdowns do not share the approved unframed editorial interior');
+}
 for (const [name, source] of [['index.html', homeSource], ['tape.html', tapeSource]]) {
   if (!source.includes('href="/mobile-buy.css"')) failures.push(`${name}: mobile wallet handoff styles missing`);
   if (!source.includes('src="/mobile-buy.js"')) failures.push(`${name}: mobile wallet handoff helper missing`);

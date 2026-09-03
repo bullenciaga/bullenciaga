@@ -102,6 +102,86 @@
     return brand;
   };
 
+  const buildPageJumpTo = () => {
+    const widget = document.createElement('div');
+    widget.className = 'jumpto-widget bullen-page-jumpto';
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'jumpto-btn';
+    button.setAttribute('aria-haspopup', 'true');
+    button.setAttribute('aria-expanded', 'false');
+    button.innerHTML = 'Jump To <svg class="jumpto-chevron" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l5 5-5 5"/></svg>';
+
+    const menu = document.createElement('div');
+    menu.className = 'jumpto-menu';
+    const menuId = `bullen-page-jumpto-${page}`;
+    menu.id = menuId;
+    button.setAttribute('aria-controls', menuId);
+
+    const sectionLabel = (section) => {
+      const labelledBy = section.getAttribute('aria-labelledby');
+      const labelled = labelledBy && document.getElementById(labelledBy);
+      const heading = labelled || section.querySelector('h1, h2, h3');
+      return (section.getAttribute('aria-label') || (heading && heading.textContent) || '').replace(/\s+/g, ' ').trim();
+    };
+
+    const rebuild = () => {
+      const content = document.querySelector('[data-bullen-main]');
+      const candidates = content ? [...content.querySelectorAll('section')] : [];
+      const topLevel = candidates.filter((section) => {
+        if (section.id || section.hasAttribute('aria-labelledby') || section.hasAttribute('aria-label')) return true;
+        return !candidates.some((other) => other !== section && other.contains(section));
+      });
+      const records = [{ target: content, label: labels[page] || 'Overview' }];
+      for (const section of topLevel) {
+        const label = sectionLabel(section);
+        if (!label || records.some((record) => record.target === section)) continue;
+        if (!section.id) section.id = `bullen-section-${page}-${records.length}`;
+        records.push({ target: section, label });
+        if (records.length === 12) break;
+      }
+      menu.replaceChildren();
+      const groupLabel = document.createElement('div');
+      groupLabel.className = 'jumpto-group-label';
+      groupLabel.textContent = 'On this page';
+      menu.append(groupLabel);
+      for (const record of records) {
+        if (!record.target) continue;
+        if (!record.target.id) record.target.id = 'main-content';
+        const link = document.createElement('a');
+        link.className = 'jumpto-item';
+        link.href = `#${record.target.id}`;
+        link.textContent = record.label;
+        menu.append(link);
+      }
+    };
+
+    const close = () => {
+      widget.classList.remove('open');
+      button.setAttribute('aria-expanded', 'false');
+    };
+    button.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const open = !widget.classList.contains('open');
+      if (open) rebuild();
+      widget.classList.toggle('open', open);
+      button.setAttribute('aria-expanded', String(open));
+    });
+    menu.addEventListener('click', (event) => {
+      if (event.target.closest('a')) close();
+    });
+    document.addEventListener('click', (event) => {
+      if (widget.classList.contains('open') && !widget.contains(event.target)) close();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') close();
+    });
+    rebuild();
+    widget.append(button, menu);
+    return widget;
+  };
+
   const mountResponsiveNav = (shell, bar, nav, extraControl) => {
     const actions = document.createElement('div');
     actions.className = 'bullen-site-actions';
@@ -152,11 +232,15 @@
     nav.addEventListener('toggle', (event) => {
       const opened = event.target;
       if (!opened.matches('.bullen-nav-group[open]')) return;
+      closeExtraControl();
       for (const group of nav.querySelectorAll('.bullen-nav-group[open]')) {
         if (group !== opened) group.removeAttribute('open');
       }
     }, true);
-    if (extraButton) extraButton.addEventListener('click', closeNav);
+    if (extraButton) extraButton.addEventListener('click', () => {
+      closeNav();
+      for (const group of nav.querySelectorAll('.bullen-nav-group[open]')) group.removeAttribute('open');
+    });
     document.addEventListener('click', (event) => {
       if (shell.classList.contains('nav-open') && !shell.contains(event.target)) closeNav();
       if (!nav.contains(event.target)) {
@@ -183,13 +267,9 @@
     return shell;
   };
 
-  if (page === 'index') {
-    const jumpTo = document.getElementById('jumpToWidget');
-    if (jumpTo) jumpTo.setAttribute('aria-label', 'Homepage section navigation');
-    skip.after(buildShell(jumpTo));
-  } else {
-    skip.after(buildShell());
-  }
+  const jumpTo = page === 'index' ? document.getElementById('jumpToWidget') : buildPageJumpTo();
+  if (jumpTo) jumpTo.setAttribute('aria-label', `${labels[page] || 'Page'} section navigation`);
+  skip.after(buildShell(jumpTo));
 
   for (const button of document.querySelectorAll('button:not([type])')) {
     button.type = 'button';
