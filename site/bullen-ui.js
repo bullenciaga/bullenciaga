@@ -38,10 +38,11 @@
     ['bullensaga', 'https://bullensaga.com/'],
   ];
   const navigationGroups = [
-    ['House', ['objects', 'giveaways', 'patchnotes', 'lock']],
-    ['Market', ['stats', 'tape', 'chart', 'curve', 'thedrop']],
-    ['Explore', ['refer', 'ledger', 'passport']],
+    ['House', ['objects', 'lock', 'patchnotes', 'giveaways']],
+    ['Market', ['stats', 'chart', 'tape', 'curve']],
+    ['Explore', ['refer', 'thedrop', 'ledger', 'passport']],
   ];
+  const mobileNavigationKeys = ['objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
   const destinationByKey = new Map(destinations);
 
   root.dataset.bullenPage = page;
@@ -91,9 +92,7 @@
     }
     const mobileDirectory = document.createElement('div');
     mobileDirectory.className = 'bullen-mobile-nav-directory';
-    for (const [, keys] of navigationGroups) {
-      for (const key of keys) mobileDirectory.append(buildLink(key));
-    }
+    for (const key of mobileNavigationKeys) mobileDirectory.append(buildLink(key));
     nav.append(mobileDirectory);
     nav.append(buildLink('bullensaga'));
     return nav;

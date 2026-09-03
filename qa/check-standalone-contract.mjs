@@ -38,10 +38,13 @@ if (!shell.includes("page === 'index' ? document.getElementById('jumpToWidget') 
 if (!shell.includes('if (open) closeExtraControl();')) failures.push('hamburger does not close an already-open homepage Jump To panel');
 if (!shell.includes('const buildPageJumpTo') || !shell.includes("closeExtraControl();\n      for (const group")) failures.push('Jump To and grouped navigation do not enforce one open menu at a time');
 if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
-if (!shell.includes('const navigationGroups') || !shell.includes("['House', ['objects', 'giveaways', 'patchnotes', 'lock']]")
-    || !shell.includes("['Market', ['stats', 'tape', 'chart', 'curve', 'thedrop']]")
-    || !shell.includes("['Explore', ['refer', 'ledger', 'passport']]")) {
+if (!shell.includes('const navigationGroups') || !shell.includes("['House', ['objects', 'lock', 'patchnotes', 'giveaways']]")
+    || !shell.includes("['Market', ['stats', 'chart', 'tape', 'curve']]")
+    || !shell.includes("['Explore', ['refer', 'thedrop', 'ledger', 'passport']]")) {
   failures.push('desktop public navigation is not grouped into stable House, Market and Explore menus');
+}
+if (!shell.includes("const mobileNavigationKeys = ['objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport']")) {
+  failures.push('mobile public navigation is not kept in its approved ungrouped order');
 }
 if (!shell.includes("['bullensaga', 'https://bullensaga.com/']")) failures.push('BULLENSAGA sister-site navigation missing');
 if (!shell.includes("['tape', '/tape.html']")) failures.push('live market tape navigation missing');

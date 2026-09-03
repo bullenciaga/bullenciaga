@@ -85,7 +85,7 @@ body {
 .passport-section-head span { color: var(--intel-gold); font-size: 9px; letter-spacing: .15em; }
 .passport-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1px; border: 1px solid var(--intel-line); background: var(--intel-line); }
 .passport-piece { min-width: 0; background: #080808; }
-.passport-piece img { width: 100%; aspect-ratio: 1.35; display: block; object-fit: cover; background: #101010; }
+.passport-piece img { width: 100%; aspect-ratio: 1; display: block; object-fit: contain; background: #101010; }
 .passport-piece-copy { padding: 17px; }
 .passport-piece small { color: var(--intel-gold); font-size: 7px; letter-spacing: .15em; text-transform: uppercase; }
 .passport-piece strong { display: block; margin-top: 8px; overflow: hidden; font: 500 16px/1.25 Poppins, sans-serif; text-overflow: ellipsis; white-space: nowrap; }

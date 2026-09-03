@@ -12,6 +12,7 @@ const chart = read('chart.html');
 const curve = read('curve.html');
 const objects = read('objects.html');
 const objectsCss = read('objects.css');
+const houseIntelligenceCss = read('house-intelligence.css');
 const objectsJs = read('objects.js');
 const refer = read('refer.html');
 const passport = read('passport.html');
@@ -103,6 +104,7 @@ assert.match(passport, /id="passport-state">Live<\/div>/);
 assert.doesNotMatch(passport, /predeploy|passport-example/i);
 assert.doesNotMatch(walletPassport, /predeploy|passport-preview|passport-example/i);
 assert.equal(fs.existsSync(path.join(site, 'passport-preview.json')), false);
+assert.match(houseIntelligenceCss, /\.passport-piece img \{[^}]*aspect-ratio: 1;[^}]*object-fit: contain;/);
 assert.match(ledger, /Ledger protocol · public 01/);
 assert.match(ledger, /id="ledger-state">Live record<\/div>/);
 
