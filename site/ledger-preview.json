@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "preview": true,
+  "updatedAt": "2026-09-03T03:30:00.000Z",
+  "events": [
+    { "id": "lock-2125", "kind": "custody", "at": "2026-09-02T15:00:00.000Z", "title": "Future burn reserve entered a hard cliff", "detail": "212.5M BULLEN entered its public zero-drip, non-cancellable Jupiter Lock schedule.", "amount": "212.5M BULLEN", "source": "Jupiter Lock", "url": "https://lock.jup.ag/escrow/A6TLCJ8Kasy53pqzKwt2TtJ68JqCZgCi8p6Jo5g7VkuM" },
+    { "id": "lock-25", "kind": "custody", "at": "2026-09-02T15:00:00.000Z", "title": "Next-burn tranche entered a hard cliff", "detail": "25M BULLEN entered the public zero-drip schedule for the next cumulative-volume burn.", "amount": "25M BULLEN", "source": "Jupiter Lock", "url": "https://lock.jup.ag/escrow/643KD1Zus2FEKV5ZKkMtW58tv4dfAAgLQHkXhWbs8295" },
+    { "id": "giveaway-close", "kind": "delivery", "at": "2026-09-02T13:18:37.000Z", "title": "Buy + Hold draw closed at its published boundary", "detail": "The closing snapshot and future finalized seed were recorded before ranking three prize wallets.", "amount": "3 PIECES", "source": "Giveaway result", "url": "/giveaway-buy-hold-result-20260902.json" },
+    { "id": "mint-promise-007", "kind": "collectible", "at": "2026-09-01T18:40:00.000Z", "title": "The Promise #007 entered the record", "detail": "A BULLENSAGA Founding Record was minted and indexed from its verified collection.", "amount": "FOUNDING RECORD", "source": "Solana DAS" },
+    { "id": "burn-tier-1", "kind": "supply", "at": "2026-08-13T11:00:00.000Z", "title": "Cumulative-volume burn tier 1 completed", "detail": "The supply reduction is evidenced by its signed Token-2022 burn transaction.", "amount": "12.5M BULLEN", "source": "Supply proof", "url": "https://bullenciaga.com/tier1burn" },
+    { "id": "market-hour-0300", "kind": "market", "at": "2026-09-03T02:59:59.999Z", "title": "Completed hourly market summary", "detail": "18 public pool trades · $1.14K buys · $820 sells · 58% buy share.", "amount": "+$320 NET", "source": "The Tape", "url": "/tape" }
+  ]
+}

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <script>!function(d){var e=d.documentElement;e.dataset.bullenPage='passport';e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document);</script>
+  <title>BULLENCIAGA — Wallet Passport</title>
+  <meta name="description" content="Read a Solana wallet's public BULLENCIAGA and BULLENSAGA record: BULLEN, The Herd, House Objects and Founding Records.">
+  <link rel="canonical" href="https://bullenciaga.com/passport">
+  <meta name="theme-color" content="#050505">
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/passport.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/bullen-ui.css">
+  <link rel="stylesheet" href="/house-intelligence.css">
+  <link rel="stylesheet" href="/mobile-buy.css">
+  <script src="https://plugin.jup.ag/plugin-v1.js" data-preload defer></script>
+</head>
+<body>
+  <main class="intel-shell" id="main-content">
+    <section class="intel-hero">
+      <div>
+        <div class="intel-eyebrow">Wallet passport · public chain record</div>
+        <h1>What this wallet can prove.</h1>
+        <p>One read-only view of $BULLEN, every HERD piece, House Objects and BULLENSAGA Founding Records held by an address. Connecting requests only the public address. Looking up an address needs no wallet connection at all.</p>
+      </div>
+      <aside class="intel-seal">
+        <div class="intel-kicker">Privacy boundary</div>
+        <strong>No signature.<br>No permissions.</strong>
+        <span>The passport cannot trade, transfer, claim or infer whether several wallets share an owner.</span>
+        <div class="intel-state is-preview" id="passport-state">Predeploy</div>
+      </aside>
+    </section>
+    <form class="passport-form" id="passport-form">
+      <label for="passport-address">Solana wallet address</label>
+      <input id="passport-address" name="wallet" autocomplete="off" spellcheck="false" placeholder="Paste a Solana wallet address">
+      <button class="intel-button primary" id="passport-load" type="submit">Read passport</button>
+      <button class="intel-button" id="passport-connect" type="button">Connect wallet</button>
+    </form>
+    <div class="passport-notice" id="passport-notice">For review, choose “Load predeploy example” below.</div>
+    <button class="intel-button" id="passport-example" type="button">Load predeploy example</button>
+    <section class="passport-record" id="passport-record" hidden>
+      <header class="passport-heading">
+        <div><div class="intel-kicker">House passport</div><h2 id="passport-title">Wallet record</h2></div>
+        <div class="passport-address" id="passport-wallet"></div>
+      </header>
+      <section class="intel-summary" aria-label="Wallet summary">
+        <div class="intel-metric"><strong id="passport-bullen">0</strong><span>$BULLEN</span></div>
+        <div class="intel-metric"><strong id="passport-herd">0</strong><span>The Herd</span></div>
+        <div class="intel-metric"><strong id="passport-objects">0</strong><span>House Objects</span></div>
+        <div class="intel-metric"><strong id="passport-saga">0</strong><span>Founding Records</span></div>
+      </section>
+      <div class="passport-groups" id="passport-groups"></div>
+    </section>
+    <footer class="intel-foot"><span>READ-ONLY · PUBLIC SOLANA DATA</span><span>OWNERSHIP IS NOT IDENTITY</span></footer>
+  </main>
+  <script src="/wallet-passport.js" defer></script>
+  <script src="/bullen-ui.js" defer></script>
+  <script src="/mobile-buy.js" defer></script>
+</body>
+</html>

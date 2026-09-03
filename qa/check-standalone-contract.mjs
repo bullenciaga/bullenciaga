@@ -6,7 +6,7 @@ const site = path.join(root, 'site');
 const publicPages = [
   'index.html', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html', 'tape.html',
-  'patchnotes.html', 'lock.html',
+  'patchnotes.html', 'lock.html', 'ledger.html', 'passport.html',
 ];
 const failures = [];
 
@@ -39,6 +39,7 @@ if (!shell.includes('if (open) closeExtraControl();')) failures.push('hamburger 
 if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
 if (!shell.includes("['bullensaga', 'https://bullensaga.com/']")) failures.push('BULLENSAGA sister-site navigation missing');
 if (!shell.includes("['tape', '/tape.html']")) failures.push('live market tape navigation missing');
+if (!shell.includes("['ledger', '/ledger.html']") || !shell.includes("['passport', '/passport.html']")) failures.push('House intelligence pages are missing from public navigation');
 if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
 if (shell.includes("['transparency', '/transparency.html']")) failures.push('Telegram-only moderation page is exposed in public navigation');
 if (shell.includes("['proof', '/proof.html']") || shell.includes("proof: 'Proof'")) failures.push('retired Proof page remains in public navigation');
@@ -54,7 +55,7 @@ for (const variable of ['--jupiter-plugin-primary', '--jupiter-plugin-background
 }
 if (!shellCss.includes('background: var(--bullen-bg) !important;')) failures.push('standalone background color is not centrally unified');
 if (marketCss.includes('.market-curve header {')) failures.push('Curve page-level header rule can override the shared House navigation header');
-if (!shellCss.includes('body[data-bullen-page="index"] .hero-mast { display: none !important; }')) failures.push('mobile homepage duplicate masthead remains visible');
+if (!shellCss.includes('html[data-bullen-page="index"] body .hero-mast { display: none !important; }')) failures.push('mobile homepage duplicate masthead remains visible');
 if (!shellCss.includes('top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + 1px)')) failures.push('Jump To panel is not anchored below the fixed header');
 if (!shellCss.includes('height: 34px;') || !shellCss.includes('.bullen-home-shell .jumpto-menu')) failures.push('mobile Jump To does not share the hamburger control and panel geometry');
 for (const [name, source] of [['index.html', homeSource], ['tape.html', tapeSource]]) {
@@ -139,15 +140,16 @@ if (round3?.round !== 3 || round3?.trigger?.target !== 650 || round3?.status !==
   failures.push('round 3 must remain visibly gated with no fabricated snapshot or result');
 }
 const buyHold = authority.campaigns.find((campaign) => campaign.id === 'herd-buy-hold-680-625-308');
-if (buyHold?.status !== 'active' || buyHold?.kind !== 'buy-hold'
+if (buyHold?.status !== 'completed' || buyHold?.kind !== 'buy-hold'
     || buyHold?.displayOrder !== 0
     || buyHold?.qualification?.entryUnit !== 25_000 || buyHold?.qualification?.entryCap !== null
     || buyHold?.qualification?.mustHoldAtClose !== true || buyHold?.qualification?.transfersCount !== false
     || buyHold?.qualification?.salesReduceEntries !== true || buyHold?.qualification?.onePrizePerWallet !== true
-    || buyHold?.draw?.activation !== 'active'
+    || buyHold?.draw?.activation !== 'drawn'
     || buyHold?.draw?.openedAt !== '2026-08-30T13:18:37.000Z'
     || buyHold?.draw?.closesAt !== '2026-09-02T13:18:37.000Z'
-    || buyHold?.snapshot !== '/giveaway-buy-hold-open.json' || buyHold?.result
+    || buyHold?.snapshot !== '/giveaway-buy-hold-close-20260902.json'
+    || buyHold?.result !== '/giveaway-buy-hold-result-20260902.json'
     || buyHold?.prizes?.positions?.join(',') !== '680,625,308') {
   failures.push('Buy + Hold draw must remain tied to its public 72-hour opening snapshot and fixed prize order');
 }
@@ -166,6 +168,31 @@ if (buyHoldOpen?.schema !== 'bullenciaga.buy-hold-open.v1'
     || buyHoldOpen?.prizes?.map((prize) => prize.position).join(',') !== '680,625,308'
     || Object.keys(buyHoldOpen?.balancesRaw || {}).length !== buyHoldOpen?.totals?.owners) {
   failures.push('Buy + Hold opening snapshot is missing, incomplete or inconsistent with the campaign authority');
+}
+const buyHoldClose = JSON.parse(fs.readFileSync(path.join(site, 'giveaway-buy-hold-close-20260902.json'), 'utf8'));
+if (buyHoldClose?.schema !== 'bullenciaga.buy-hold-close.v1'
+    || buyHoldClose?.campaign !== buyHold.id || buyHoldClose?.status !== 'closed-awaiting-seed'
+    || buyHoldClose?.closingReference?.publishedClose !== buyHold.draw.closesAt
+    || buyHoldClose?.closingReference?.finalizedSlot !== 443706399
+    || buyHoldClose?.closingReference?.blockTime !== 1788355117
+    || buyHoldClose?.closingReference?.nextBlockTime <= 1788355117
+    || buyHoldClose?.drawContract?.seedStatus !== 'not-requested'
+    || buyHoldClose?.totals?.qualifyingWallets !== buyHoldClose?.entries?.length
+    || buyHoldClose?.totals?.entries !== buyHoldClose?.entries?.reduce((total, row) => total + row.entries, 0)
+    || buyHoldClose?.prizes?.map((prize) => prize.position).join(',') !== '680,625,308') {
+  failures.push('Buy + Hold closing snapshot is missing, seeded too early or inconsistent with the campaign authority');
+}
+const buyHoldResult = JSON.parse(fs.readFileSync(path.join(site, 'giveaway-buy-hold-result-20260902.json'), 'utf8'));
+if (buyHoldResult?.schema !== 'bullenciaga.buy-hold-result.v1'
+    || buyHoldResult?.campaign !== buyHold.id || buyHoldResult?.status !== 'drawn-prizes-pending-transfer'
+    || buyHoldResult?.publication?.snapshotSha256 !== '9c474a48e33a68122e453638cc66f6f29a819c9a8f4bc9ee893b12890d9d368d'
+    || buyHoldResult?.publication?.finalizedSlotObservedAfterConfirmation !== 443742205
+    || buyHoldResult?.seed?.finalizedSlot !== 443742241
+    || buyHoldResult?.seed?.finalizedSlot <= buyHoldResult?.publication?.finalizedSlotObservedAfterConfirmation
+    || buyHoldResult?.winners?.length !== 3
+    || buyHoldResult?.winners?.map((winner) => winner.position).join(',') !== '680,625,308'
+    || new Set(buyHoldResult?.winners?.map((winner) => winner.wallet)).size !== 3) {
+  failures.push('Buy + Hold result is missing, uses a pre-publication seed or violates fixed prize order');
 }
 if (authority.finalCarryover?.wallets !== 32 || authority.finalCarryover?.bankedEntries !== 62) {
   failures.push('giveaway authority carryover is missing or incorrect');

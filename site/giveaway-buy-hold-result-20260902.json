@@ -1,0 +1,75 @@
+{
+  "schema": "bullenciaga.buy-hold-result.v1",
+  "campaign": "herd-buy-hold-680-625-308",
+  "status": "drawn-prizes-pending-transfer",
+  "drawnAt": "2026-09-02T16:27:22.323Z",
+  "publication": {
+    "snapshotUrl": "https://bullenciaga.com/giveaway-buy-hold-close-20260902.json",
+    "snapshotSha256": "9c474a48e33a68122e453638cc66f6f29a819c9a8f4bc9ee893b12890d9d368d",
+    "confirmedAt": "2026-09-02T16:27:10.810Z",
+    "finalizedSlotObservedAfterConfirmation": 443742205
+  },
+  "seed": {
+    "finalizedSlot": 443742241,
+    "blockhash": "66yPudSs8MXCy53Safyz9BhAfCjJcWCASwYbu8zVjB2E",
+    "blockTime": 1788366431,
+    "blockTimeIso": "2026-09-02T16:27:11.000Z",
+    "rule": "first finalized slot observed after the supplied public-publication baseline"
+  },
+  "drawContract": {
+    "seedStatus": "not-requested",
+    "seedSource": "a finalized Solana block strictly later than public publication of this closing snapshot",
+    "ticket": "sha256(seedBlockhash + \":\" + wallet + \":\" + zeroBasedEntryIndex)",
+    "selection": "sort all tickets lexicographically; award fixed-order prizes to the first ticket owned by a wallet that has not already won"
+  },
+  "totals": {
+    "qualifyingWallets": 13,
+    "entries": 127,
+    "prizes": 3
+  },
+  "prizes": [
+    {
+      "position": 680,
+      "assetId": "63CY3tnJ1Cj9J5kqMM9BHwJW81Q3uagRyoH48QSDLhvZ"
+    },
+    {
+      "position": 625,
+      "assetId": "3xLtMAx9yTuZrVxxmB1vmwhXHLTrbDpndxjyYYZQ6SYF"
+    },
+    {
+      "position": 308,
+      "assetId": "FERTknZW1y4wyTuJK3kxZ86SHzvovbfK8oE6Y6UpQ9UW"
+    }
+  ],
+  "winners": [
+    {
+      "draw": 1,
+      "position": 680,
+      "assetId": "63CY3tnJ1Cj9J5kqMM9BHwJW81Q3uagRyoH48QSDLhvZ",
+      "wallet": "C7dm65piongzxVXdVrQ5fRg4NCBGLWXu2R3HbCchU8AE",
+      "entryIndex": 3,
+      "ticket": "00b2d1c1eb99e4622b66fd816c1c3107c8623b26cfbf7a636652261f083db147"
+    },
+    {
+      "draw": 2,
+      "position": 625,
+      "assetId": "3xLtMAx9yTuZrVxxmB1vmwhXHLTrbDpndxjyYYZQ6SYF",
+      "wallet": "At6eLYvJEaC65uBD6wTn4std4mSaEFGxs9tkuyu1wPgn",
+      "entryIndex": 21,
+      "ticket": "00c995af12776f232c1ad22bb89efbf9e69a873ea3b7daeb8bd003526e4b3859"
+    },
+    {
+      "draw": 3,
+      "position": 308,
+      "assetId": "FERTknZW1y4wyTuJK3kxZ86SHzvovbfK8oE6Y6UpQ9UW",
+      "wallet": "AhqNyru7aGdP16HM8ST1DvJhNMUdg1NtxC8KBffsgCUf",
+      "entryIndex": 23,
+      "ticket": "054f5efd83e188a9ab0d4efb2544025deb9dbff42a6b976c9b04de728f523570"
+    }
+  ],
+  "verification": {
+    "ticketCount": 127,
+    "rankingSha256": "790228dd8e65adb91c79342f1c67aa4cf551c54cef4d5b7c27fa3884c31017b7",
+    "recompute": "sha256(seedBlockhash + \":\" + wallet + \":\" + zeroBasedEntryIndex), ascending; skip wallets after their first win"
+  }
+}

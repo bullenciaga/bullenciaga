@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <script>!function(d){var e=d.documentElement;e.dataset.bullenPage='ledger';e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document);</script>
+  <title>BULLENCIAGA — Living Ledger</title>
+  <meta name="description" content="The BULLENCIAGA Living Ledger: one public timeline for market, supply, custody, collectible and delivery events.">
+  <link rel="canonical" href="https://bullenciaga.com/ledger">
+  <meta name="theme-color" content="#050505">
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/ledger.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/bullen-ui.css">
+  <link rel="stylesheet" href="/house-intelligence.css">
+  <link rel="stylesheet" href="/mobile-buy.css">
+  <script src="https://plugin.jup.ag/plugin-v1.js" data-preload defer></script>
+</head>
+<body>
+  <main class="intel-shell" id="main-content">
+    <section class="intel-hero">
+      <div>
+        <div class="intel-eyebrow">Public intelligence · one House record</div>
+        <h1>The House, as it moves.</h1>
+        <p>Market prints, supply changes, custody receipts, collectible records and verified deliveries share one chronology. The ledger reports public events; it does not guess who controls a wallet or why it moved.</p>
+      </div>
+      <aside class="intel-seal">
+        <div class="intel-kicker">Ledger protocol · preview 01</div>
+        <strong>One event.<br>One source.</strong>
+        <span>Every entry keeps its own receipt or source reference. No wallet profiles are published here.</span>
+        <div class="intel-state is-preview" id="ledger-state">Predeploy dataset</div>
+      </aside>
+    </section>
+    <section class="intel-summary" aria-label="Ledger summary">
+      <div class="intel-metric"><strong id="metric-events">—</strong><span>events in this view</span></div>
+      <div class="intel-metric"><strong id="metric-supply">—</strong><span>supply events in view</span></div>
+      <div class="intel-metric"><strong id="metric-collectibles">—</strong><span>collectible events in view</span></div>
+      <div class="intel-metric"><strong id="metric-sources">—</strong><span>source lanes in view</span></div>
+    </section>
+    <section class="intel-toolbar" aria-label="Ledger controls">
+      <div class="intel-tabs" id="ledger-tabs">
+        <button class="intel-tab" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="intel-tab" type="button" data-filter="market" aria-pressed="false">Market</button>
+        <button class="intel-tab" type="button" data-filter="supply" aria-pressed="false">Supply</button>
+        <button class="intel-tab" type="button" data-filter="custody" aria-pressed="false">Custody</button>
+        <button class="intel-tab" type="button" data-filter="collectible" aria-pressed="false">Collectibles</button>
+        <button class="intel-tab" type="button" data-filter="delivery" aria-pressed="false">Delivery</button>
+      </div>
+      <div class="intel-updated" id="ledger-updated">Loading the record…</div>
+    </section>
+    <div class="intel-feed is-loading" id="ledger-feed" aria-live="polite" aria-busy="true">
+      <div class="intel-event intel-event-skeleton" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="intel-event intel-event-skeleton" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="intel-event intel-event-skeleton" aria-hidden="true"><i></i><i></i><i></i></div>
+    </div>
+    <footer class="intel-foot"><span>PUBLIC READ-ONLY RECORD · NO SIGNATURE REQUIRED</span><span>UNKNOWN INTENT REMAINS UNKNOWN</span></footer>
+  </main>
+  <script src="/house-ledger.js" defer></script>
+  <script src="/bullen-ui.js" defer></script>
+  <script src="/mobile-buy.js" defer></script>
+</body>
+</html>
