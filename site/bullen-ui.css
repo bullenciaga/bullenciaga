@@ -254,11 +254,23 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   transform: translateX(-50%);
 }
 
-.bullen-nav-group-menu a {
-  padding: 11px 12px;
-  border-bottom: 1px solid var(--bullen-border);
+.bullen-nav-group-menu a,
+.bullen-site-shell .jumpto-item {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  padding: 11px 16px;
+  border: 0;
+  color: var(--bullen-muted);
+  font: 400 12px/1.35 var(--bullen-font-data);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
-.bullen-nav-group-menu a:last-child { border-bottom: 0; }
+.bullen-nav-group-menu a:hover,
+.bullen-site-shell .jumpto-item:hover {
+  color: var(--bullen-brand-light);
+  background: rgba(199, 168, 105, 0.07);
+}
 
 .bullen-site-nav a.bullen-site-sister {
   color: var(--bullen-brand);
@@ -291,14 +303,14 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   height: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px));
 }
 
-.bullen-home-shell .jumpto-widget {
+.bullen-site-shell .jumpto-widget {
   position: relative;
   inset: auto;
   z-index: 2;
   flex: 0 0 auto;
 }
 
-.bullen-home-shell .jumpto-btn {
+.bullen-site-shell .jumpto-btn {
   gap: 6px;
   padding: 9px 0;
   color: var(--bullen-muted);
@@ -309,17 +321,56 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   transition: color var(--bullen-motion-fast) ease;
 }
 
-.bullen-home-shell .jumpto-btn:hover,
-.bullen-home-shell .jumpto-widget.open .jumpto-btn {
+.bullen-site-shell .jumpto-btn:hover,
+.bullen-site-shell .jumpto-widget.open .jumpto-btn {
   color: var(--bullen-brand-light);
   background: transparent;
 }
 
-.bullen-home-shell .jumpto-menu {
+.bullen-site-shell .jumpto-menu {
   position: fixed;
   z-index: 3;
-  top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + 1px);
+  top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + 2px);
   right: max(var(--bullen-gutter), calc((100vw - var(--bullen-header-shell-width)) / 2));
+  display: block;
+  min-width: 220px;
+  max-height: min(70vh, 560px);
+  padding: 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 0;
+  background: rgba(5, 5, 5, 0.98);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 140ms ease, transform 140ms ease, visibility 0s linear 140ms;
+}
+
+.bullen-site-shell .jumpto-widget.open .jumpto-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.bullen-site-shell .jumpto-group-label {
+  padding: 7px 10px 9px;
+  color: var(--bullen-muted);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+}
+
+.bullen-site-shell .jumpto-item {
+  justify-content: space-between;
+  gap: 10px;
+}
+
+[data-bullen-main],
+[id^="bullen-section-"] {
+  scroll-margin-top: calc(var(--bullen-header-height) + var(--bullen-page-gap));
 }
 
 .bullen-nav-toggle {
@@ -481,7 +532,14 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
     min-height: 44px;
   }
 
-  .bullen-home-shell .jumpto-btn {
+  .bullen-nav-toggle {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 12px;
+  }
+
+  .bullen-site-shell .jumpto-btn {
     box-sizing: border-box;
     height: 34px;
     padding: 8px 9px;
@@ -490,13 +548,13 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
     color: var(--bullen-brand-light);
     font-size: 9px;
   }
-  .bullen-home-shell .jumpto-btn:hover,
-  .bullen-home-shell .jumpto-widget.open .jumpto-btn {
+  .bullen-site-shell .jumpto-btn:hover,
+  .bullen-site-shell .jumpto-widget.open .jumpto-btn {
     color: var(--bullen-brand-light);
     background: rgba(199, 168, 105, 0.08);
   }
 
-  .bullen-home-shell .jumpto-menu {
+  .bullen-site-shell .jumpto-menu {
     top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + 1px);
     right: max(var(--bullen-gutter), env(safe-area-inset-right, 0px));
     width: min(310px, calc(100vw - (var(--bullen-gutter) * 2)));
@@ -510,7 +568,7 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
   }
 
-  .bullen-home-shell .jumpto-item { padding: 12px 10px; }
+  .bullen-site-shell .jumpto-item { padding: 12px 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
