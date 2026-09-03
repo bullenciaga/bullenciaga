@@ -42,7 +42,7 @@ if (/html\.bullen-(?:booting|ready) body\s*\{/.test(css)) {
 }
 
 const js = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
-for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", "root.classList.add('bullen-ready')", 'const navigationGroups']) {
+for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", "root.classList.add('bullen-ready')", 'const navigationGroups', "button.innerHTML = 'JUMP TO ", "appendGroup('On BULLENCIAGA'", "'/#giveaway'"]) {
   if (!js.includes(required)) failures.push(`bullen-ui.js is missing ${required}`);
 }
 

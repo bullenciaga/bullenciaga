@@ -383,11 +383,23 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   color: var(--bullen-muted);
   font-size: 8px;
   letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .bullen-site-shell .jumpto-item {
   justify-content: space-between;
   gap: 10px;
+}
+
+.bullen-site-shell .jumpto-item-ext {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.bullen-site-shell .jumpto-divider {
+  height: 1px;
+  margin: 8px 0;
+  background: var(--bullen-border);
 }
 
 [data-bullen-main],
