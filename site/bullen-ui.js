@@ -89,6 +89,12 @@
       group.append(summary, menu);
       nav.append(group);
     }
+    const mobileDirectory = document.createElement('div');
+    mobileDirectory.className = 'bullen-mobile-nav-directory';
+    for (const [, keys] of navigationGroups) {
+      for (const key of keys) mobileDirectory.append(buildLink(key));
+    }
+    nav.append(mobileDirectory);
     nav.append(buildLink('bullensaga'));
     return nav;
   };
