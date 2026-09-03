@@ -30,6 +30,10 @@ for (const required of [
   'html.bullen-ready body > :not(.bullen-site-shell):not(.bullen-skip)',
   'html[data-bullen-page]:not([data-bullen-page="index"]) body:not(.transparent)',
   '.bullen-site-aux:empty { display: none; }',
+  '.bullen-site-shell .jumpto-chevron',
+  'flex: 0 0 8px;',
+  'width: 8px;',
+  'height: 12px;',
 ]) {
   if (!css.includes(required)) failures.push(`bullen-ui.css is missing ${required}`);
 }
