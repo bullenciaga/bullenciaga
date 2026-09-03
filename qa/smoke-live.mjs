@@ -45,7 +45,7 @@ const apiChecks = [
   ['/supply/history', (body) => body.ok === true && Number(body.count) > 0 && Array.isArray(body.events)],
   ['/supply/proof', (body) => body.ok === true && Array.isArray(body.burns) && 'burnedActual' in body && 'unaccounted' in body],
   ['/volume/tape', (body) => body.ok === true && Array.isArray(body.trades) && typeof body.summary === 'object'],
-  ['/volume/ledger', (body) => body.ok === true && Array.isArray(body.events) && typeof body.generatedAt === 'string'],
+  ['/volume/ledger', (body) => body.ok === true && Array.isArray(body.events) && typeof body.updatedAt === 'string'],
 ];
 
 async function fetchChecked(path) {
