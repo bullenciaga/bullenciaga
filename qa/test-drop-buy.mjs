@@ -12,6 +12,7 @@ for (const asset of ['/mobile-buy.css', '/mobile-buy.js', '/thedrop-buy.js', '/b
 assert(html.indexOf('src="/mobile-buy.js"') < html.indexOf('src="/thedrop-buy.js"'));
 assert.match(html, /id="buyBullen"[\s\S]*?href="https:\/\/jup.ag\/swap\/SOL-BULLENx/);
 assert(read('bullen-ui.css').includes('--jupiter-plugin-primary: 199, 168, 105'));
+assert.match(html, /#jupiter-plugin-instance\{ position:absolute; top:0; left:0; right:0;/, 'modal host must not inherit the centered flex static position');
 
 function setup({ mobile = false, plugin = true, picker = true, button = true } = {}) {
   const swaps = [], opens = [], choices = []; let handler; let prevented = 0;
