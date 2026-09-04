@@ -64,8 +64,8 @@ try {
       const name = route === '/' ? 'home' : route.slice(1);
       await fs.writeFile(path.join(output, `${name}-${width}.json`), JSON.stringify(snapshot, null, 2));
       await page.locator('.bullen-mobile-buy__sheet').screenshot({ path:path.join(output, `${name}-${width}.png`) });
-      const native = page.getByRole('button', { name:/Solflare token page/ });
-      assert.equal(await native.count(), 1, 'native Solflare alternative exists on every page');
+      const native = page.getByRole('button', { name:/Solflare/ });
+      assert.equal(await native.count(), 1, 'exactly one native Solflare choice on every page');
       await context.route('https://www.solflare.com/**', request => request.fulfill({ contentType:'text/plain', body:'Native wallet link intercepted for QA.' }));
       const [request] = await Promise.all([
         page.waitForRequest(req => new URL(req.url()).hostname === 'www.solflare.com'),

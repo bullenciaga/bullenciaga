@@ -2,6 +2,7 @@
 
 Canonical record: `work/bullenciaga-site/docs/MOBILE_POLISH_2026-09-04.md`
 in the active BULLENCIAGA website repository.
+Owning iCloud authority: `/Users/mac/Library/Mobile Documents/com~apple~CloudDocs/CHATGPT/BULLENCIAGA`.
 
 Approval: explicitly requested by the owner in this task. Current authority:
 the reviewed repository source; production authority is the successful GitOps
@@ -20,12 +21,14 @@ merge this website-only PR, then confirm staging and production smoke results.
 - Below 821px, hamburger and Jump To share the same panel surface, borders,
   position, padding, scrolling bounds, type and row spacing. Desktop CSS is
   unchanged. Existing destinations and open/close behavior are preserved.
-- The shared mobile picker adds **Solflare token page** beside the existing
-  Jupiter-in-Solflare route. It opens
+- Owner follow-up supersedes the initial two-option design: the shared mobile
+  picker has exactly one **Solflare** choice. It opens
   `https://www.solflare.com/prices/bullenciaga/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN/`.
   The owner previously confirmed that this opens the native BULLEN page on
   iPhone; manually tapping Buy then selects SOL → BULLEN. The label discloses
   that extra tap. No speculative action, amount or swap parameters are added.
+  The duplicate token-page button and the old Jupiter-in-Solflare handoff are
+  removed. The independent Jupiter web fallback remains unchanged.
 - Home, Tape and Drop use that one shared picker, as do the existing House
   Record buy controls. No copied or independently styled modal was created.
 
@@ -33,7 +36,7 @@ merge this website-only PR, then confirm staging and production smoke results.
 
 - `test-contract-copy.mjs`: exact address, both controls, missing/denied API,
   failed fallback, cleanup, focus restoration, retries and pending writes.
-- `test-mobile-buy-links.mjs`: both Solflare routes, unchanged Phantom and
+- `test-mobile-buy-links.mjs`: exactly one native Solflare route, unchanged Phantom and
   canonical Jupiter pair, no wallet navigation on modal opening.
 - `visual-contract-copy.mjs`: 320/390/430/440/768/1440px; address copying by
   click, Enter and Space; stable feedback geometry; no horizontal overflow.

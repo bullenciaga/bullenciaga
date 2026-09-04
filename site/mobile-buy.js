@@ -2,10 +2,8 @@
   'use strict';
 
   const PHANTOM_SWAP_BASE = 'https://phantom.app/ul/v1/swap/';
-  const SOLFLARE_BROWSE_BASE = 'https://solflare.com/ul/v1/browse/';
   const PHANTOM_ICON = '/assets/wallets/phantom.png';
   const SOLFLARE_ICON = '/assets/wallets/solflare.png';
-  const SITE_URL = 'https://bullenciaga.com';
   const SOL_MINT = 'So11111111111111111111111111111111111111112';
   let overlay = null;
   let returnFocus = null;
@@ -38,11 +36,6 @@
   function phantomSwapUrl(mint) {
     const buy = encodeURIComponent('solana:101/address:' + mint);
     return PHANTOM_SWAP_BASE + '?buy=' + buy + '&sell=';
-  }
-
-  function solflareBrowseUrl(jupiterUrl) {
-    return SOLFLARE_BROWSE_BASE + encodeURIComponent(jupiterUrl) +
-      '?ref=' + encodeURIComponent(SITE_URL);
   }
 
   function jupiterSwapUrl(mint) {
@@ -126,7 +119,7 @@
           '<h2 class="bullen-mobile-buy__title" id="bullen-mobile-buy-title">Choose where to buy</h2></div>' +
           '<button class="bullen-mobile-buy__close" type="button" aria-label="Close">×</button>' +
         '</header>' +
-        '<p class="bullen-mobile-buy__intro" id="bullen-mobile-buy-description">We will open the trade inside your wallet so it can sign the swap. The $BULLEN contract is already filled in.</p>' +
+        '<p class="bullen-mobile-buy__intro" id="bullen-mobile-buy-description">We will open $BULLEN inside your wallet. In Solflare, tap Buy on the token page to start the swap.</p>' +
         '<div class="bullen-mobile-buy__choices"></div>' +
         '<p class="bullen-mobile-buy__section-title">Other routes</p>' +
         '<div class="bullen-mobile-buy__utilities">' +
@@ -167,7 +160,7 @@
     if (!options || !options.mint) return false;
 
     // Derive the destination from the mint, not a caller's potentially cached
-    // legacy URL. Solflare and "Jupiter web" must always open the same pair.
+    // legacy URL. "Jupiter web" must always open the correct pair.
     const jupiterUrl = jupiterSwapUrl(options.mint);
 
     const root = ensureOverlay();
@@ -181,10 +174,7 @@
       makeChoice('bullen-mobile-buy__choice--phantom', '', walletLogo(PHANTOM_ICON), 'Phantom', 'Open a native swap with $BULLEN selected', () => {
         window.location.assign(phantomSwapUrl(options.mint));
       }),
-      makeChoice('bullen-mobile-buy__choice--solflare', '', walletLogo(SOLFLARE_ICON), 'Solflare', 'Open the Jupiter trade inside Solflare', () => {
-        window.location.assign(solflareBrowseUrl(jupiterUrl));
-      }),
-      makeChoice('bullen-mobile-buy__choice--solflare bullen-mobile-buy__choice--native', '', walletLogo(SOLFLARE_ICON), 'Solflare token page', 'Native $BULLEN page · tap Buy to swap', () => {
+      makeChoice('bullen-mobile-buy__choice--solflare', '', walletLogo(SOLFLARE_ICON), 'Solflare', 'Native $BULLEN page · tap Buy to swap', () => {
         window.location.assign(solflareTokenUrl(options.mint));
       }),
       makeChoice('bullen-mobile-buy__choice--jupiter', 'bullen-mobile-buy__mark--connected', connectedWalletIcon(), 'Already inside a wallet', 'Use the embedded Jupiter swap here', () => {

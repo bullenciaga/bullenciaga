@@ -104,9 +104,10 @@ if (!mobileBuy.includes("'solana:101/address:' + mint")
     || !mobileBuy.includes("'https://phantom.app/ul/v1/swap/'")) {
   failures.push('mobile wallet handoff is missing the Phantom CAIP-19 direct swap');
 }
-if (!mobileBuy.includes("'https://solflare.com/ul/v1/browse/'")
-    || !mobileBuy.includes('encodeURIComponent(jupiterUrl)')) {
-  failures.push('mobile wallet handoff is missing the Solflare in-wallet Jupiter route');
+if (!mobileBuy.includes("'https://www.solflare.com/prices/bullenciaga/'")
+    || !mobileBuy.includes('solflareTokenUrl(options.mint)')
+    || mobileBuy.includes('solflare.com/ul/v1/browse/')) {
+  failures.push('mobile wallet handoff must use the confirmed native Solflare token page');
 }
 if (!mobileBuy.includes("'https://pump.fun/coin/'") || !mobileBuy.includes('Copy contract')) {
   failures.push('mobile wallet handoff is missing its Pump.fun or contract-copy fallback');
