@@ -70,6 +70,10 @@ if (!shellCss.includes('top: calc(var(--bullen-header-height) + env(safe-area-in
 if (!shellCss.includes('width: 112px;') || !shellCss.includes('height: 44px;') || !shellCss.includes('.bullen-site-shell .jumpto-menu')) failures.push('mobile Jump To does not share the hamburger control and panel geometry');
 if (!shellCss.includes('top: calc(var(--bullen-header-height) + 2px)')) failures.push('desktop navigation menus can overlap the fixed House rail');
 if (!shellCss.includes('min-width: 44px;\n    height: 44px;')) failures.push('mobile hamburger can deform under the shared touch-target minimum');
+if (!shellCss.includes('.bullen-site-shell .jumpto-menu,\n  .bullen-site-shell .bullen-site-nav')
+    || !shellCss.includes('.bullen-site-shell .jumpto-item,\n  .bullen-site-shell .bullen-site-nav a')) {
+  failures.push('mobile hamburger must share Jump To surface and item styling');
+}
 if (!shellCss.includes('.bullen-nav-group-menu a,\n.bullen-site-shell .jumpto-item')
     || !shellCss.includes('font: 400 12px/1.35 var(--bullen-font-data)')
     || !shellCss.includes('.bullen-site-shell .jumpto-menu')

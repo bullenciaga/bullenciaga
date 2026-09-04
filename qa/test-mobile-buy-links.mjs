@@ -54,6 +54,10 @@ for (const jupiterUrl of [undefined, `https://jup.ag/swap/SOL-${mint}`, 'https:/
   const root = body.children[0];
   assert.equal(root.querySelector('[data-buy-jupiter]').href, expected);
   const choices = root.querySelector('.bullen-mobile-buy__choices').children;
+  assert.equal(choices.length, 4, 'keep both Solflare routes alongside Phantom and the embedded swap');
+  assert(choices[2].innerHTML.includes('tap Buy to swap'), 'native route must disclose the extra tap');
+  choices[2].click();
+  assert.equal(navigations.pop(), `https://www.solflare.com/prices/bullenciaga/${mint}/`);
   choices[1].click();
   const outer = new URL(navigations.pop());
   assert.equal(outer.origin, 'https://solflare.com');

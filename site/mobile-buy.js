@@ -51,6 +51,12 @@
     return 'https://jup.ag/swap?buy=' + encodeURIComponent(mint) + '&sell=' + SOL_MINT;
   }
 
+  function solflareTokenUrl(mint) {
+    // Confirmed on iPhone: native BULLEN page, then the user taps Buy.
+    // Do not append speculative action/amount parameters or claim auto-swap.
+    return 'https://www.solflare.com/prices/bullenciaga/' + encodeURIComponent(mint) + '/';
+  }
+
   function pumpUrl(mint) {
     return 'https://pump.fun/coin/' + encodeURIComponent(mint);
   }
@@ -177,6 +183,9 @@
       }),
       makeChoice('bullen-mobile-buy__choice--solflare', '', walletLogo(SOLFLARE_ICON), 'Solflare', 'Open the Jupiter trade inside Solflare', () => {
         window.location.assign(solflareBrowseUrl(jupiterUrl));
+      }),
+      makeChoice('bullen-mobile-buy__choice--solflare bullen-mobile-buy__choice--native', '', walletLogo(SOLFLARE_ICON), 'Solflare token page', 'Native $BULLEN page · tap Buy to swap', () => {
+        window.location.assign(solflareTokenUrl(options.mint));
       }),
       makeChoice('bullen-mobile-buy__choice--jupiter', 'bullen-mobile-buy__mark--connected', connectedWalletIcon(), 'Already inside a wallet', 'Use the embedded Jupiter swap here', () => {
         close();
