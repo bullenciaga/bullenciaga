@@ -22,7 +22,7 @@ try {
     const context = await browser.newContext({ viewport: { width, height: 1000 }, reducedMotion: 'reduce' });
     await context.route('**/*', route => {
       const url = new URL(route.request().url());
-      if (url.hostname === 'plugin.jup.ag') return route.fulfill({ contentType: 'text/javascript', body: 'window.__swaps=[];window.Jupiter={init:c=>window.__swaps.push(c)};' });
+      if (url.hostname === 'plugin.jup.ag') return route.fulfill({ contentType: 'text/javascript', body: `window.__swaps=[];window.Jupiter={init:c=>{window.__swaps.push(c);if(document.getElementById('jupiter-plugin-instance'))return;const host=document.createElement('div');host.id='jupiter-plugin-instance';document.body.append(host);host.attachShadow({mode:'open'}).innerHTML='<div data-modal-probe style="position:fixed;top:0;width:100%;height:100%;pointer-events:none"></div>';}};` });
       if (url.pathname === '/drop') return route.fulfill({ json: { verified:true,round:1,potSol:.82100202825,targetSol:2.5,pct:32.84008113,wallets:48,tickets:670,txs:[] } });
       if (url.origin === new URL(base).origin || /fonts\.(googleapis|gstatic)\.com/.test(url.hostname)) return route.continue();
       return route.abort();
@@ -52,6 +52,10 @@ try {
       assert.equal(await page.evaluate(() => window.__swaps[0].displayMode), 'modal');
       assert.equal((await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--jupiter-plugin-primary'))).trim(), '199, 168, 105');
     }
+    const modal = await page.locator('[data-modal-probe]').boundingBox();
+    assert.equal(modal.x, 0, 'Jupiter overlay must start at the viewport, not the centered flex column');
+    assert.equal(modal.width, width);
+    assert.equal(modal.height, 1000);
     console.log(`PASS ${width}px: layout, correct buy route, theme, mobile dismissal/continuation`);
     await context.close();
   }
