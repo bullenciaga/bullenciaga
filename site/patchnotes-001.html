@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<script>!function(d,p){var e=d.documentElement,f='patchnotes';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document,location.pathname);</script>
+<script>!function(d,p){var e=d.documentElement,f='patchnotes';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},matchMedia('(max-width: 820px)').matches?3000:1600)}(document,location.pathname);</script>
+<link rel="preload" href="/bullen-ui.css" as="style">
+<script defer src="/bullen-ui.js"></script>
 <title>BULLENCIAGA — House Record · Edition 001 Archive</title>
 <meta name="description" content="The BULLENCIAGA House Record: two days of quieter systems, cleaner paths, and 237.5M BULLEN placed into two public hard-cliff locks.">
 <link rel="canonical" href="https://bullenciaga.com/patchnotes-001">
@@ -254,7 +256,6 @@
     <span>Published 02 September 2026 · Warsaw</span>
   </footer>
 </main>
-<script defer src="/bullen-ui.js"></script>
 <script src="/mobile-buy.js"></script>
 <script>
 (() => {

@@ -9,7 +9,9 @@
      OBS: a Browser Source is desktop-class, so width=device-width simply
      resolves to the source width it already renders at. -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document,location.pathname);</script>
+<script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},matchMedia('(max-width: 820px)').matches?3000:1600)}(document,location.pathname);</script>
+<link rel="preload" href="/bullen-ui.css" as="style">
+<script defer src="/bullen-ui.js"></script>
 <title>BULLENCIAGA — Live Dashboard</title>
 <meta name="description" content="Live $BULLEN supply, scheduled burns, Herd mints and House Object burn commitments.">
 <meta name="robots" content="index, follow">
@@ -660,7 +662,6 @@
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
 <link rel="stylesheet" href="/market-surfaces.css?v=20260901-stats-precision">
-<script defer src="/bullen-ui.js"></script>
 <script defer src="/house-burn-registry.js"></script>
 </head>
 <body class="market-surface market-stats">

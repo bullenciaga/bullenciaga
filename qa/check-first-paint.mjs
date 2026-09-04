@@ -21,6 +21,15 @@ for (const name of htmlFiles) {
   if (!html.includes('src="/bullen-ui.js')) {
     failures.push(`${name} is missing the shared shell script`);
   }
+  const shellAt = html.indexOf('src="/bullen-ui.js');
+  const pluginAt = html.indexOf('src="https://plugin.jup.ag/');
+  if (shellAt > html.indexOf('</head>') || (pluginAt >= 0 && shellAt > pluginAt)) {
+    failures.push(`${name} must discover the navigation before third-party deferred scripts`);
+  }
+  if ((html.match(/src="\/bullen-ui\.js"/g) || []).length !== 1) failures.push(`${name} must mount only one shell`);
+  if (!html.includes("matches?3000:1600") || !html.includes('rel="preload" href="/bullen-ui.css" as="style"')) {
+    failures.push(`${name} must reserve the mobile boot window and preload the rail styles`);
+  }
 }
 
 const css = fs.readFileSync(path.join(site, 'bullen-ui.css'), 'utf8');
@@ -42,6 +51,9 @@ if (/html\.bullen-(?:booting|ready) body\s*\{/.test(css)) {
 }
 
 const js = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
+if (!js.includes('mobilePaint ? 1200 : 500') || !js.includes("document.fonts.load('600 12px Poppins')")) {
+  failures.push('mobile reveal must wait for the real header faces without changing the desktop font budget');
+}
 for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", "root.classList.add('bullen-ready')", 'const navigationGroups', "button.innerHTML = 'JUMP TO ", "appendGroup('On BULLENCIAGA'", "'/#giveaway'", "mobileDirectory.className = 'bullen-mobile-nav-directory'"]) {
   if (!js.includes(required)) failures.push(`bullen-ui.js is missing ${required}`);
 }

@@ -20,7 +20,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document,location.pathname);</script>
+<script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},matchMedia('(max-width: 820px)').matches?3000:1600)}(document,location.pathname);</script>
+<link rel="preload" href="/bullen-ui.css" as="style">
+<script defer src="/bullen-ui.js"></script>
 <title>BULLENCIAGA — The Drop</title>
 <meta name="description" content="A fixed SOL prize to one buyer. The bar fills with fees from buys. No timer.">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/thedrop.svg">
@@ -37,7 +39,7 @@
 <meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-15">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --black:#050505; --panel:#0a0a0a;
@@ -204,7 +206,6 @@
 <link rel="stylesheet" href="/bullen-ui.css">
 <link rel="stylesheet" href="/mobile-buy.css">
 <script src="https://plugin.jup.ag/plugin-v1.js" data-preload defer></script>
-<script defer src="/bullen-ui.js"></script>
 </head>
 <body>
 <div class="wrap">
