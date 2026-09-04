@@ -8,7 +8,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "test": "node qa/check-identity.mjs && node qa/check-secret-boundary.mjs && node qa/check-site-authority.mjs && node qa/check-route-boundary.mjs && node qa/check-standalone-contract.mjs && node qa/check-house-record.mjs && node qa/check-page-favicons.mjs && node qa/check-house-integrations.mjs && node qa/check-market-surfaces.mjs && node qa/check-first-paint.mjs && node qa/check-deployment-control.mjs && node qa/release-fingerprint.mjs",
+    "test": "node qa/check-identity.mjs && node qa/check-secret-boundary.mjs && node qa/check-site-authority.mjs && node qa/check-route-boundary.mjs && node qa/check-standalone-contract.mjs && node qa/check-house-record.mjs && node qa/test-smoke-propagation.mjs && node qa/check-page-favicons.mjs && node qa/check-house-integrations.mjs && node qa/check-market-surfaces.mjs && node qa/check-first-paint.mjs && node qa/check-deployment-control.mjs && node qa/release-fingerprint.mjs",
     "manifest": "node qa/generate-site-manifest.mjs",
     "release:fingerprint": "node qa/release-fingerprint.mjs",
     "smoke:live": "node qa/smoke-live.mjs"

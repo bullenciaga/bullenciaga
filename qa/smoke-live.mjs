@@ -49,7 +49,7 @@ const apiChecks = [
   ['/volume/ledger', (body) => body.ok === true && Array.isArray(body.events) && typeof body.updatedAt === 'string'],
 ];
 
-async function fetchChecked(path) {
+async function fetchChecked(path, validateResponse) {
   const url = new URL(path, baseUrl);
   let lastError;
 
@@ -62,7 +62,13 @@ async function fetchChecked(path) {
         headers: { 'user-agent': 'bullenciaga-release-smoke/1' },
         signal: AbortSignal.timeout(45_000),
       });
-      if (response.status >= 200 && response.status < 300) return { response, url };
+      if (response.status >= 200 && response.status < 300) {
+        // A newly promoted asset version may briefly return the previous HTML
+        // with HTTP 200. Require the expected content inside the same bounded
+        // retry loop; persistent stale/wrong content must still fail the release.
+        if (validateResponse) await validateResponse(response.clone(), url);
+        return { response, url };
+      }
 
       lastError = new Error(`${url} returned HTTP ${response.status}`);
       shouldRetry = retryableStatuses.has(response.status);
@@ -107,24 +113,34 @@ async function fetchRedirectChecked(path) {
 }
 
 for (const [path, marker] of effectivePageChecks) {
-  const { response, url } = await fetchChecked(path);
-  assert.match(response.headers.get('content-type') ?? '', /text\/html/i, `${url} did not return HTML`);
-  const body = await response.text();
-  assert(marker.test(body), `${url} is missing its expected build marker`);
-  if (smokePhase === 'post-release' && path === '/patchnotes') {
-    assert.match(body, /Public edition 002/);
-    assert.match(body, /href="\/patchnotes-001"/);
-    assert.match(body, /More to explore\.<br>More to verify\./);
-  }
-  if (path === '/patchnotes-001') {
-    assert.match(body, /Public edition 001/);
-    assert.match(body, /48 hours inside the House\./);
-    assert.match(body, /href="\/patchnotes"/);
-  }
+  const { url } = await fetchChecked(path, async (response, url) => {
+    assert.match(response.headers.get('content-type') ?? '', /text\/html/i, `${url} did not return HTML`);
+    const body = await response.text();
+    assert(marker.test(body), `${url.pathname} is missing its expected build marker`);
+    if (smokePhase === 'post-release' && path === '/patchnotes') {
+      assert(body.includes('Public edition 002') && body.includes('href="/patchnotes-001"')
+        && body.includes('More to explore.<br>More to verify.'), 'House Record edition 002 has not reached this edge');
+    }
+    if (path === '/patchnotes-001') {
+      assert(body.includes('Public edition 001') && body.includes('48 hours inside the House.')
+        && body.includes('href="/patchnotes"'), 'House Record archive has not reached this edge');
+    }
+  });
   console.log(`page smoke: ok ${url.pathname}`);
 }
 
 if (smokePhase === 'post-release') {
+  for (const [path, markers] of [
+    ['/house-record.css', ['.record-archive-card', '.record-editions']],
+    ['/bullen-ui.css', ['width: 112px;', 'padding: 10px 14px;', 'font-size: 11px;']],
+  ]) {
+    await fetchChecked(path, async response => {
+      assert.match(response.headers.get('content-type') ?? '', /text\/css/i);
+      const css = await response.text();
+      assert(markers.every(marker => css.includes(marker)), `${path} release styles have not reached this edge`);
+    });
+    console.log(`asset smoke: ok ${path}`);
+  }
   for (const path of ['/proof', '/proof.html']) {
     const { response, url } = await fetchRedirectChecked(path);
     const location = response.headers.get('location');

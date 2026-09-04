@@ -65,3 +65,25 @@ are deployed from this repository.
 Next exact action: verify production `/patchnotes` and `/patchnotes-001` after
 promotion, record the release receipt, then let the owner inspect both pages and
 the mobile Jump To control. Do not publish an X announcement without a request.
+
+## First release attempt and bounded propagation correction
+
+- PR #66 merged as `0c554381ed8666175c62423a08cb1d3ecb23a57e`.
+- Staging run `33840099558` passed all 15 pages and two redirects, version
+  `aa5c5254-b9f3-43a0-be74-42b969c8c248`. The 20 browser checks also passed on
+  `https://bullenciaga-staging.bullenciaga-e5c.workers.dev`.
+- Production run `33840750302` uploaded/promoted
+  `452b2f1f-e7fb-4da4-a738-b96bc999d058`. The first post-release `/patchnotes`
+  read, roughly one second after promotion, still returned edition 001 with
+  HTTP 200. The expected-edition assertion failed, and the pipeline successfully
+  restored `e68b5ee7-c938-47b4-82ef-9d65c482db50`.
+- The old smoke loop retried failed HTTP statuses but did not retry HTTP 200 with
+  a stale body. The correction moves content validation inside that same bounded
+  retry loop; persistent mismatches still fail and trigger rollback. It also
+  requires the new House Record CSS and mobile Jump To CSS after promotion.
+- Deterministic tests prove stale HTML/CSS can recover and permanent stale HTML
+  fails after the configured maximum attempts. No expected markers, page/API
+  checks or rollback gates are removed. Public page assets are unchanged.
+- Deployment-tool installation was unusually slow; local npm logs showed an
+  advisory-service request taking 137 seconds. No dependency versions or release
+  workflow permissions were changed to bypass that delay.
