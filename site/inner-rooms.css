@@ -6,6 +6,7 @@ body { margin:0; background:#050505; }
 .rooms-kicker,.rooms-directory header span,.salon-head span { color:#c7a869; font-size:10px; letter-spacing:.24em; }
 .rooms-gate h1 { margin:20px 0 22px; font:600 clamp(58px,8vw,126px)/.86 var(--bullen-font-display); letter-spacing:-.065em; }
 .rooms-lede { width:min(660px,100%); margin:0 0 34px; color:#e8d9ae; font:400 clamp(16px,1.5vw,22px)/1.65 var(--bullen-font-data); }
+.rooms-lede span { display:block; white-space:nowrap; }
 .rooms-rule { display:grid; grid-template-columns:128px 1fr; width:min(650px,100%); border-top:1px solid var(--rooms-line); }
 .rooms-rule span,.rooms-rule strong { min-height:48px; display:flex; align-items:center; border-bottom:1px solid var(--rooms-line); }
 .rooms-rule span { color:var(--rooms-soft); font-size:9px; letter-spacing:.16em; }
