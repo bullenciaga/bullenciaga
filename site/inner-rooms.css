@@ -73,6 +73,7 @@ body { margin:0; background:#050505; }
 .salon-compose label { display:block; margin-bottom:10px; color:#c7a869; font-size:8px; letter-spacing:.16em; }
 .salon-compose > div { display:grid; grid-template-columns:1fr 160px; border:1px solid var(--rooms-line); }
 .salon-compose textarea { width:100%; min-height:82px; resize:none; padding:16px; border:0; border-right:1px solid var(--rooms-line); outline:0; background:#050505; color:#f5f3ee; font:400 11px/1.65 var(--bullen-font-data); }
+.salon-compose textarea:focus-visible { outline:none !important; outline-offset:0 !important; box-shadow:inset 0 0 0 2px var(--bullen-focus); }
 .salon-compose textarea::placeholder { color:rgba(245,243,238,.25); }
 .salon-compose button { border:0; background:#c7a869; color:#080706; font:700 9px/1 var(--bullen-font-data); letter-spacing:.13em; cursor:pointer; }
 .salon-compose button:disabled,.salon-compose textarea:disabled { opacity:.42; cursor:not-allowed; }

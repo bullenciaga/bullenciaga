@@ -45,6 +45,17 @@
     return output;
   }
 
+  function signatureBase58(value) {
+    if (typeof value === 'string') return value;
+    if (value && Array.isArray(value.data)) return base58Encode(Uint8Array.from(value.data));
+    if (Array.isArray(value)) return base58Encode(Uint8Array.from(value));
+    if (value instanceof ArrayBuffer) return base58Encode(new Uint8Array(value));
+    if (ArrayBuffer.isView(value)) {
+      return base58Encode(new Uint8Array(value.buffer, value.byteOffset, value.byteLength));
+    }
+    return base58Encode(value);
+  }
+
   function shortAddress(value) {
     value = String(value || '');
     return value.length > 14 ? value.slice(0, 6) + '…' + value.slice(-6) : value;
@@ -66,7 +77,9 @@
     });
     var payload = null;
     try { payload = await response.json(); } catch (_) {}
-    if (!response.ok) throw new Error(payload && payload.error || 'The House did not answer.');
+    if (!response.ok) {
+      throw new Error(payload && payload.error || 'The House did not answer (HTTP ' + response.status + ').');
+    }
     return payload;
   }
 
@@ -190,7 +203,7 @@
     setStatus('Review the plain-text register entry inside your wallet.', false);
     var signed = await connected.provider.signMessage(new TextEncoder().encode(result.challenge.message), 'utf8');
     var signatureBytes = signed && signed.signature ? signed.signature : signed;
-    var signature = typeof signatureBytes === 'string' ? signatureBytes : base58Encode(signatureBytes);
+    var signature = signatureBase58(signatureBytes);
     var admitted = await api('/rpc/rooms/session', {
       method:'POST', authorized:false,
       body:{ wallet:connected.address, challengeId:result.challenge.id, signature:signature },
