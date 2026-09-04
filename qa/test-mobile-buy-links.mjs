@@ -54,19 +54,11 @@ for (const jupiterUrl of [undefined, `https://jup.ag/swap/SOL-${mint}`, 'https:/
   const root = body.children[0];
   assert.equal(root.querySelector('[data-buy-jupiter]').href, expected);
   const choices = root.querySelector('.bullen-mobile-buy__choices').children;
-  assert.equal(choices.length, 4, 'keep both Solflare routes alongside Phantom and the embedded swap');
-  assert(choices[2].innerHTML.includes('tap Buy to swap'), 'native route must disclose the extra tap');
-  choices[2].click();
-  assert.equal(navigations.pop(), `https://www.solflare.com/prices/bullenciaga/${mint}/`);
+  assert.equal(choices.length, 3, 'one Solflare choice alongside Phantom and the embedded swap');
+  assert.equal(choices.filter(choice => choice.innerHTML.includes('<strong>Solflare</strong>')).length, 1);
+  assert(choices[1].innerHTML.includes('tap Buy to swap'), 'native route must disclose the extra tap');
   choices[1].click();
-  const outer = new URL(navigations.pop());
-  assert.equal(outer.origin, 'https://solflare.com');
-  assert(outer.pathname.startsWith('/ul/v1/browse/'));
-  const destination = decodeURIComponent(outer.pathname.slice('/ul/v1/browse/'.length));
-  assert.equal(destination, expected, 'both mint parameters survive the Solflare wrapper exactly once');
-  assert.deepEqual([...outer.searchParams], [['ref', 'https://bullenciaga.com']]);
-  const inner = new URL(destination);
-  assert.deepEqual([...inner.searchParams], [['buy', mint], ['sell', sol]], 'no amount, slippage, account or transaction is prefilled');
+  assert.equal(navigations.pop(), `https://www.solflare.com/prices/bullenciaga/${mint}/`);
   choices[0].click();
   const phantom = new URL(navigations.pop());
   assert.equal(phantom.origin, 'https://phantom.app');
@@ -87,4 +79,4 @@ assert(read('thedrop.html').includes(`href="${expected.replace('&', '&amp;')}"`)
 for (const name of fs.readdirSync(site).filter(name => /\.(html|js)$/.test(name))) {
   assert(!read(name).includes('https://jup.ag/swap/SOL-'), `${name}: obsolete Jupiter route`);
 }
-console.log('Buy links: all page fallbacks, Solflare nested encoding, stale callers and Phantom unchanged: ok');
+console.log('Buy links: exactly one native Solflare route, all Jupiter fallbacks, stale callers and Phantom unchanged: ok');

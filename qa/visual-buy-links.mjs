@@ -29,7 +29,7 @@ try {
     await context.routeWebSocket('**/*', socket => socket.close());
     await context.route('**/*', request => {
       const url = new URL(request.request().url());
-      if (url.hostname === 'solflare.com') return request.fulfill({ contentType:'text/plain', body:'Wallet handoff intercepted for QA.' });
+      if (url.hostname === 'www.solflare.com') return request.fulfill({ contentType:'text/plain', body:'Wallet handoff intercepted for QA.' });
       if (url.hostname === 'plugin.jup.ag') return request.fulfill({ contentType:'text/javascript', body:'window.__swaps=[];window.Jupiter={init:c=>window.__swaps.push(c)};' });
       if (url.origin === new URL(base).origin && (routes.includes(url.pathname) || /\.(html|css|js|woff2?|png|svg|jpg|webp)$/.test(url.pathname))) return request.continue();
       return request.abort();
@@ -43,15 +43,14 @@ try {
     await dialog.waitFor();
     assert.equal(await page.evaluate(() => window.__swaps.length), 0);
     assert.equal(await dialog.getByRole('link', { name:'Jupiter web' }).getAttribute('href'), expected);
-    assert.equal(await dialog.getByRole('button', { name:/Solflare token page/ }).count(), 1);
+    assert.equal(await dialog.getByRole('button', { name:/Solflare/ }).count(), 1);
+    assert.equal(await dialog.locator('.bullen-mobile-buy__choice--solflare strong').textContent(), 'Solflare');
     const [handoff] = await Promise.all([
-      page.waitForRequest(req => new URL(req.url()).hostname === 'solflare.com'),
-      dialog.locator('.bullen-mobile-buy__choice--solflare:not(.bullen-mobile-buy__choice--native)').click(),
+      page.waitForRequest(req => new URL(req.url()).hostname === 'www.solflare.com'),
+      dialog.getByRole('button', { name:/Solflare/ }).click(),
     ]);
-    const outer = new URL(handoff.url());
-    assert.equal(outer.searchParams.get('ref'), 'https://bullenciaga.com');
-    assert.equal(decodeURIComponent(outer.pathname.slice('/ul/v1/browse/'.length)), expected);
-    console.log(`PASS ${route}: actual Buy → Solflare click preserves SOL → BULLEN; no wallet launched`);
+    assert.equal(handoff.url(), `https://www.solflare.com/prices/bullenciaga/${mint}/`);
+    console.log(`PASS ${route}: one Solflare choice → native BULLEN page; no wallet launched`);
     await context.close();
   }
   // Optional read-only check of Jupiter itself, not a mock of its URL parser.
