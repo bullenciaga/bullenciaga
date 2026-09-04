@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BULLENCIAGA thedrop.html | build 2026-08-15.5 — a way to buy on the page itself
+<!-- BULLENCIAGA thedrop.html | build 2026-09-04.2 — shared desktop/mobile buy flow
 
      NAMED thedrop.html, NOT drop.html. The worker route "drop*" claims every
      path beneath it, so a file called drop.html would never be served by
@@ -14,12 +14,12 @@
      bar, linked to Solscan. That list is not an extra, it is the reason the
      figure can be believed, and it ships with the bar rather than after it.
 
-     Reads /drop. No wallet connection, nothing to sign, nothing to register:
-     buying IS entering. -->
+     Reads /drop without a wallet connection or signature. Buying uses the
+     existing Jupiter / mobile wallet handoff; entry requires no extra action. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document,location.pathname);</script>
 <title>BULLENCIAGA — The Drop</title>
 <meta name="description" content="A fixed SOL prize to one buyer. The bar fills with fees from buys. No timer.">
@@ -198,6 +198,8 @@
   }
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
+<link rel="stylesheet" href="/mobile-buy.css">
+<script src="https://plugin.jup.ag/plugin-v1.js" data-preload defer></script>
 <script defer src="/bullen-ui.js"></script>
 </head>
 <body>
@@ -221,9 +223,9 @@
   <div class="togo" id="togo">reading the chain…</div>
 
   <div class="act">
-    <a class="btn solid"
-       href="https://jup.ag/swap?sell=So11111111111111111111111111111111111111112&amp;buy=BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN"
-       target="_blank" rel="noopener">Buy $BULLEN</a>
+    <a class="btn solid" id="buyBullen"
+       href="https://jup.ag/swap/SOL-BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN"
+       target="_blank" rel="noopener noreferrer">Buy $BULLEN</a>
     <a class="btn" href="/chart">Chart</a>
   </div>
 
@@ -263,6 +265,8 @@
   </div>
 </div>
 
+<script src="/mobile-buy.js"></script>
+<script src="/thedrop-buy.js"></script>
 <script>
 (function(){
   'use strict';
