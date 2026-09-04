@@ -7,6 +7,7 @@ const publicPages = [
   'index.html', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html', 'tape.html',
   'patchnotes.html', 'patchnotes-001.html', 'lock.html', 'ledger.html', 'passport.html',
+  'rooms.html',
 ];
 const failures = [];
 
@@ -50,6 +51,7 @@ if (!shell.includes("const mobileNavigationKeys = ['objects', 'patchnotes', 'loc
 if (!shell.includes("['bullensaga', 'https://bullensaga.com/']")) failures.push('BULLENSAGA sister-site navigation missing');
 if (!shell.includes("['tape', '/tape.html']")) failures.push('live market tape navigation missing');
 if (!shell.includes("['ledger', '/ledger.html']") || !shell.includes("['passport', '/passport.html']")) failures.push('House intelligence pages are missing from public navigation');
+if (!shell.includes("['rooms', '/rooms.html']") || !shell.includes("nav.append(buildLink('rooms'))")) failures.push('The Inner Rooms are not a distinct top-level House destination');
 if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
 if (shell.includes("['transparency', '/transparency.html']")) failures.push('Telegram-only moderation page is exposed in public navigation');
 if (shell.includes("['proof', '/proof.html']") || shell.includes("proof: 'Proof'")) failures.push('retired Proof page remains in public navigation');

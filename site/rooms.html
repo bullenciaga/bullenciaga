@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-rooms-api="https://bullenciaga.com">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},matchMedia('(max-width: 820px)').matches?3000:1600)}(document,location.pathname);</script>
+  <link rel="preload" href="/bullen-ui.css" as="style">
+  <script defer src="/bullen-ui.js"></script>
+  <title>BULLENCIAGA — The Inner Rooms</title>
+  <meta name="description" content="The Inner Rooms are a signed-wallet House space for current bearers of The Key.">
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/rooms.svg">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bullenciaga.com/rooms">
+  <meta property="og:title" content="BULLENCIAGA — The Inner Rooms">
+  <meta property="og:description" content="The door asks what the wallet can prove.">
+  <meta property="og:image" content="https://bullenciaga.com/assets/house-objects/house-object-03-key.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/bullen-ui.css">
+  <link rel="stylesheet" href="/inner-rooms.css?v=20260904a">
+  <script defer src="/vendor/solana-web3-1.98.4.min.js"></script>
+  <script defer src="/bullen-wallet-chooser.js?v=20260829b"></script>
+  <script defer src="/inner-rooms.js?v=20260904a"></script>
+</head>
+<body>
+  <main class="rooms-page" data-room-state="sealed">
+    <section class="rooms-gate" aria-labelledby="rooms-title">
+      <div class="rooms-gate-copy">
+        <p class="rooms-kicker">A PRIVATE REGISTER / CURRENT KEY BEARERS</p>
+        <h1 id="rooms-title">The Inner<br>Rooms.</h1>
+        <p class="rooms-lede">The doors do not ask who you are. They ask what the wallet can prove.</p>
+        <div class="rooms-rule">
+          <span>ADMISSION</span><strong>THE KEY + ONE WALLET SIGNATURE</strong>
+          <span>TRANSACTION</span><strong>NONE</strong>
+          <span>SESSION</span><strong>SHORT-LIVED</strong>
+        </div>
+        <button type="button" class="rooms-enter" id="roomsEnter">SIGN THE REGISTER</button>
+        <p class="rooms-safety">This is a plain-text proof of wallet control. It cannot move an asset, approve a transaction or spend $BULLEN.</p>
+        <p class="rooms-status" id="roomsStatus" role="status" aria-live="polite">The register is waiting.</p>
+      </div>
+      <figure class="rooms-key-art">
+        <img src="/assets/house-objects/house-object-03-key.png" alt="An ornate gold House Key centered inside a square black presentation case on a black velvet pillow">
+        <figcaption><span>HOUSE OBJECT 03</span><strong>THE KEY</strong></figcaption>
+      </figure>
+    </section>
+
+    <section class="rooms-directory" aria-labelledby="directory-title">
+      <header>
+        <div><span>01 / BEYOND THE REGISTER</span><h2 id="directory-title">Choose a room.</h2></div>
+        <p>Rooms reveal their record only after admission. Access can change as the House grows.</p>
+      </header>
+      <div class="rooms-directory-grid">
+        <article class="room-card is-current">
+          <div><span>ROOM 01</span><i>SEALED</i></div>
+          <h3>THE SALON</h3>
+          <p>The first retained conversation inside the House.</p>
+          <small>CURRENT HOUSE KEY</small>
+        </article>
+        <article class="room-card is-future">
+          <div><span>ROOMS 02—</span><i>UNANNOUNCED</i></div>
+          <h3>FURTHER IN.</h3>
+          <p>Later rooms may recognize longer House Object holding records under separately published rules.</p>
+          <small>NO THRESHOLD PUBLISHED</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="rooms-interior" id="roomsInterior" aria-labelledby="salon-title" hidden>
+      <aside class="rooms-sidebar">
+        <div class="bearer-record">
+          <span>ADMITTED AS</span>
+          <strong>KEY BEARER</strong>
+          <code id="bearerWallet">—</code>
+          <small id="bearerKey">THE KEY</small>
+        </div>
+        <nav class="room-selector" aria-label="Inner Room selection">
+          <button type="button" class="is-active" aria-current="page"><span>01</span><strong>THE SALON</strong><i>OPEN</i></button>
+          <button type="button" disabled><span>02</span><strong>UNMARKED</strong><i>SEALED</i></button>
+        </nav>
+        <div class="session-record"><span>REGISTER ENTRY</span><strong id="sessionClock">15:00</strong><button type="button" id="leaveRooms">LEAVE THE ROOMS</button></div>
+      </aside>
+
+      <div class="salon" data-connection="waiting">
+        <header class="salon-head">
+          <div><span>INNER ROOM 01</span><h2 id="salon-title">The Salon.</h2></div>
+          <div class="salon-presence"><i></i><span id="salonPresence">CONNECTING</span></div>
+        </header>
+        <div class="salon-record" id="salonRecord" role="log" aria-live="polite" aria-relevant="additions text">
+          <div class="salon-empty" id="salonEmpty"><span>THE ROOM IS QUIET</span><p>The retained record will appear here once the door opens.</p></div>
+        </div>
+        <form class="salon-compose" id="salonCompose">
+          <label for="salonMessage">WRITE INTO THE RECORD</label>
+          <div><textarea id="salonMessage" maxlength="600" rows="2" placeholder="Say something worth retaining." disabled></textarea><button type="submit" disabled>PLACE IN ROOM</button></div>
+          <small><span id="salonCount">0 / 600</span><span>Signed wallet identity · no usernames</span></small>
+        </form>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
