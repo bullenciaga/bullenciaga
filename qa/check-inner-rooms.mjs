@@ -25,12 +25,16 @@ for (const route of [
 
 assert.match(js, /BullenWalletChooser\.connect\(\)/);
 assert.match(js, /provider\.signMessage\(new TextEncoder\(\)\.encode\(result\.challenge\.message\), 'utf8'\)/);
+assert.match(js, /function signatureBase58\(value\)/);
+assert.match(js, /ArrayBuffer\.isView\(value\)/);
 assert.match(js, /headers\.set\('Authorization', 'Bearer ' \+ session\.token\)/);
 assert.match(js, /text\.textContent = String\(message\.content/);
 assert.match(js, /messageIds = new Set\(\)/);
 assert.match(js, /window\.addEventListener\('pagehide', closeConnection\)/);
 assert.doesNotMatch(js, /localStorage|sessionStorage|innerHTML/);
 assert.match(css, /\.rooms-interior\[hidden\] \{ display:none; \}/);
+assert.match(css, /\.salon-compose textarea:focus-visible/);
+assert.match(css, /box-shadow:inset 0 0 0 2px var\(--bullen-focus\)/);
 assert.match(css, /@media \(max-width:700px\)/);
 assert.match(nav, /rooms: 'Inner Rooms'/);
 assert.match(nav, /\['rooms', '\/rooms\.html'\]/);
