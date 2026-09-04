@@ -39,7 +39,10 @@ try {
       const bounds = await dialog.locator('.bullen-mobile-buy__sheet').boundingBox();
       assert(bounds.x >= 0 && bounds.x + bounds.width <= width);
       assert(bounds.y >= 0 && bounds.y + bounds.height <= 1000);
-      assert((await dialog.getByRole('link', { name: 'Jupiter web' }).getAttribute('href')).endsWith('BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN'));
+      const jupiter = new URL(await dialog.getByRole('link', { name: 'Jupiter web' }).getAttribute('href'));
+      assert.equal(jupiter.pathname, '/swap');
+      assert.equal(jupiter.searchParams.get('buy'), 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN');
+      assert.equal(jupiter.searchParams.get('sell'), 'So11111111111111111111111111111111111111112');
       await page.screenshot({ path:path.join(output, `wallet-picker-${width}.png`) });
       await page.keyboard.press('Escape'); await dialog.waitFor({ state:'hidden' });
       assert.equal(await page.evaluate(() => document.activeElement.id), 'buyBullen');

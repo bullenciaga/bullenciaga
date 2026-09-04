@@ -3662,7 +3662,7 @@
     REFRESH_VOLUME_MS: 30000   // drives the burn tier trigger, so it is polled like a live figure, not a chart
   };
   const SOL_MINT = 'So11111111111111111111111111111111111111112';
-  const JUPITER_FALLBACK = 'https://jup.ag/swap/SOL-' + CONFIG.TOKEN_ADDRESS;
+  const JUPITER_FALLBACK = 'https://jup.ag/swap?buy=' + CONFIG.TOKEN_ADDRESS + '&sell=' + SOL_MINT;
 
   const els = {
     price: document.getElementById('statPrice'),

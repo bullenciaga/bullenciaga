@@ -249,7 +249,7 @@
   const WS_URL = API_ORIGIN.replace(/^http/, 'ws') + '/volume/tape/live';
   const SOL_MINT = 'So11111111111111111111111111111111111111112';
   const BULLEN_MINT = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
-  const JUPITER_FALLBACK = 'https://jup.ag/swap/SOL-' + BULLEN_MINT;
+  const JUPITER_FALLBACK = 'https://jup.ag/swap?buy=' + BULLEN_MINT + '&sell=' + SOL_MINT;
   const MAX_ROWS = 60;
   const BURNS = [250000, 1000000, 5000000, 20000000, 50000000];
   let trades = [];

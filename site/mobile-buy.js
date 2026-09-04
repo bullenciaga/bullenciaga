@@ -6,6 +6,7 @@
   const PHANTOM_ICON = '/assets/wallets/phantom.png';
   const SOLFLARE_ICON = '/assets/wallets/solflare.png';
   const SITE_URL = 'https://bullenciaga.com';
+  const SOL_MINT = 'So11111111111111111111111111111111111111112';
   let overlay = null;
   let returnFocus = null;
   let continueWithJupiter = null;
@@ -42,6 +43,12 @@
   function solflareBrowseUrl(jupiterUrl) {
     return SOLFLARE_BROWSE_BASE + encodeURIComponent(jupiterUrl) +
       '?ref=' + encodeURIComponent(SITE_URL);
+  }
+
+  function jupiterSwapUrl(mint) {
+    // Jupiter's legacy /swap/SOL-<mint> path now falls back to SOL/USDC.
+    // Explicit mint parameters preserve the pair inside wallet browsers too.
+    return 'https://jup.ag/swap?buy=' + encodeURIComponent(mint) + '&sell=' + SOL_MINT;
   }
 
   function pumpUrl(mint) {
@@ -151,7 +158,11 @@
 
   function request(options) {
     if (!isMobileDevice()) return false;
-    if (!options || !options.mint || !options.jupiterUrl) return false;
+    if (!options || !options.mint) return false;
+
+    // Derive the destination from the mint, not a caller's potentially cached
+    // legacy URL. Solflare and "Jupiter web" must always open the same pair.
+    const jupiterUrl = jupiterSwapUrl(options.mint);
 
     const root = ensureOverlay();
     const choices = root.querySelector('.bullen-mobile-buy__choices');
@@ -165,7 +176,7 @@
         window.location.assign(phantomSwapUrl(options.mint));
       }),
       makeChoice('bullen-mobile-buy__choice--solflare', '', walletLogo(SOLFLARE_ICON), 'Solflare', 'Open the Jupiter trade inside Solflare', () => {
-        window.location.assign(solflareBrowseUrl(options.jupiterUrl));
+        window.location.assign(solflareBrowseUrl(jupiterUrl));
       }),
       makeChoice('bullen-mobile-buy__choice--jupiter', 'bullen-mobile-buy__mark--connected', connectedWalletIcon(), 'Already inside a wallet', 'Use the embedded Jupiter swap here', () => {
         close();
@@ -176,7 +187,7 @@
     );
 
     root.querySelector('[data-buy-pump]').href = pumpUrl(options.mint);
-    root.querySelector('[data-buy-jupiter]').href = options.jupiterUrl;
+    root.querySelector('[data-buy-jupiter]').href = jupiterUrl;
     const copy = root.querySelector('[data-buy-copy]');
     copy.textContent = 'Copy contract';
     copy.onclick = () => {
@@ -199,5 +210,5 @@
     return true;
   }
 
-  window.BullenMobileBuy = { close, isMobileDevice, request };
+  window.BullenMobileBuy = { close, isMobileDevice, request, jupiterSwapUrl };
 })();
