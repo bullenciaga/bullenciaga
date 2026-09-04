@@ -1,0 +1,47 @@
+/* Edition navigation is shared with the preserved, full-size 001 archive. */
+.record-editions{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px 0 22px;border-bottom:1px solid var(--record-line)}
+.record-editions>div{display:flex;gap:8px}
+.record-editions a{display:flex;align-items:center;gap:10px;min-height:44px;padding:10px 14px;border:1px solid var(--record-line);color:var(--record-muted);font-size:12px;text-decoration:none}
+.record-editions a span{font-size:9px;letter-spacing:.06em}
+.record-editions a[aria-current]{color:var(--record-gold-light);background:rgba(199,168,105,.08);border-color:var(--record-gold)}
+.record--latest h1{font-size:clamp(44px,6.5vw,76px);line-height:1.02;letter-spacing:-.05em}
+.record--latest .hero{gap:32px}
+.record--latest .summary--three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.record-sections{display:flex;flex-wrap:wrap;gap:6px 24px;padding:14px 0;border-bottom:1px solid var(--record-line)}
+.record-sections a{display:inline-flex;align-items:center;min-height:44px;color:var(--record-muted);font-size:10px;text-decoration:none}
+.record--latest .release,.record-archive{scroll-margin-top:110px}
+.record-link{display:inline-flex;align-items:center;gap:12px;min-height:44px;margin-top:18px;color:var(--record-gold-light);font-size:11px;text-decoration:none}
+.record-link:hover,.record-sections a:hover,.record-collections a:hover{color:var(--record-ink);text-decoration:underline;text-underline-offset:5px}
+.record-links{display:flex;flex-wrap:wrap;gap:0 22px}
+.record-collections{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--record-line);border-top:0;background:rgba(199,168,105,.035)}
+.record-collections section{min-width:0;padding:24px}
+.record-collections section+section{border-left:1px solid var(--record-line)}
+.record-collections p{min-height:38px;margin:14px 0;color:var(--record-muted);font-size:11px;line-height:1.7}
+.record-collections section>div:last-child{display:flex;flex-direction:column}
+.record-collections a{display:flex;align-items:center;min-height:44px;color:var(--record-gold-light);font-size:11px;text-decoration:none}
+.record-intro{max-width:760px;margin:0 0 24px;color:var(--record-muted);font-size:12px;line-height:1.8}
+.record--latest .release-head>.status{margin-top:0}
+.record-archive{margin-top:48px}
+.record-archive-card{display:grid;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:24px;margin-top:18px;padding:28px;border:1px solid var(--record-line);background:var(--record-panel);text-decoration:none}
+.record-archive-card:hover{border-color:var(--record-gold)}
+.record-archive-number{color:var(--record-gold);font:500 32px/1 Poppins,sans-serif}
+.record-archive-card strong{display:block;margin:10px 0;color:var(--record-ink);font:500 clamp(21px,3vw,28px)/1.2 Poppins,sans-serif;letter-spacing:-.03em}
+.record-archive-description{display:block;max-width:650px;color:var(--record-muted);font-size:11px;line-height:1.8}
+.record-archive-open{color:var(--record-gold-light);font-size:11px;white-space:nowrap}
+.record-archive-notice{display:flex;align-items:center;justify-content:space-between;gap:28px;padding:22px;border:1px solid var(--record-line);background:rgba(199,168,105,.06)}
+.record-archive-notice p{max-width:740px;margin:10px 0 0;color:var(--record-muted);font-size:11px;line-height:1.8}
+.record-archive-notice>a{display:flex;align-items:center;gap:12px;min-height:44px;flex-shrink:0;color:var(--record-gold-light);font-size:11px;text-decoration:none}
+.record a:focus-visible{outline:2px solid var(--record-gold-light);outline-offset:5px}
+@media(max-width:760px){
+  .record-editions{align-items:flex-start;flex-direction:column;gap:14px;padding-top:10px}
+  .record-editions>div{width:100%}.record-editions a{flex:1;justify-content:center;padding:10px}
+  .record--latest .hero{gap:24px}.record--latest h1{font-size:clamp(40px,10.8vw,68px)}
+  .record--latest .summary--three{grid-template-columns:1fr}
+  .record-sections{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+  .record-collections{grid-template-columns:1fr}
+  .record-collections section+section{border-left:0;border-top:1px solid var(--record-line)}
+  .record-collections p{min-height:0}
+  .record-archive-card{grid-template-columns:1fr;gap:16px;padding:24px 20px}
+  .record-archive-notice{align-items:flex-start;flex-direction:column;gap:12px;padding:20px}
+}
+@media(prefers-reduced-motion:reduce){.record{scroll-behavior:auto}}

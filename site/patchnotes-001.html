@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>!function(d,p){var e=d.documentElement,f='patchnotes';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document,location.pathname);</script>
+<title>BULLENCIAGA — House Record · Edition 001 Archive</title>
+<meta name="description" content="The BULLENCIAGA House Record: two days of quieter systems, cleaner paths, and 237.5M BULLEN placed into two public hard-cliff locks.">
+<link rel="canonical" href="https://bullenciaga.com/patchnotes-001">
+<meta name="theme-color" content="#050505">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://bullenciaga.com/patchnotes-001">
+<meta property="og:title" content="48 hours inside the House">
+<meta property="og:description" content="The biggest improvements are often the ones people never have to notice. Here is what changed across BULLENCIAGA in two days.">
+<meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-09-02">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="48 hours inside the House">
+<meta name="twitter:description" content="The biggest improvements are often the ones people never have to notice. Here is what changed across BULLENCIAGA in two days.">
+<meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-09-02">
+<link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/patchnotes.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/bullen-ui.css">
+<link rel="stylesheet" href="/mobile-buy.css">
+<link rel="stylesheet" href="/house-record.css">
+<script src="https://plugin.jup.ag/plugin-v1.js" data-preload defer></script>
+<style>
+  :root{
+    --record-bg:#050505;
+    --record-panel:#090909;
+    --record-panel-raised:#0d0c09;
+    --record-ink:#f5f3ee;
+    --record-muted:rgba(245,243,238,.52);
+    --record-ghost:rgba(245,243,238,.27);
+    --record-gold:#c7a869;
+    --record-gold-light:#ead9aa;
+    --record-line:rgba(199,168,105,.2);
+    --record-live:#5fd39a;
+    --record-private:#b6a7ff;
+  }
+  *{box-sizing:border-box}
+  html{background:var(--record-bg);scroll-behavior:smooth}
+  body{margin:0;min-height:100vh;background:
+    radial-gradient(circle at 50% -15%,rgba(199,168,105,.12),transparent 38rem),
+    var(--record-bg);color:var(--record-ink);font-family:'Space Mono',monospace}
+  a{color:inherit}
+  .record{width:min(1120px,calc(100% - 40px));margin:0 auto;padding:16px 0 80px}
+  .hero{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,.7fr);gap:48px;
+    align-items:end;padding:44px 0 38px;border-bottom:1px solid var(--record-line)}
+  .eyebrow,.section-label,.release-tag{color:var(--record-gold);font-size:11px;line-height:1.4;
+    letter-spacing:.24em;text-transform:uppercase}
+  h1{max-width:850px;margin:17px 0 0;font-family:Poppins,sans-serif;font-size:clamp(48px,8vw,94px);
+    font-weight:600;line-height:.92;letter-spacing:-.055em;text-wrap:balance}
+  .lede{max-width:790px;margin:27px 0 0;color:var(--record-muted);font-size:clamp(14px,1.4vw,18px);
+    line-height:1.75;text-wrap:pretty}
+  .lede strong{color:var(--record-gold-light);font-weight:400}
+  .edition{border:1px solid var(--record-line);background:rgba(9,9,9,.78);padding:22px}
+  .edition strong{display:block;margin-top:10px;color:var(--record-gold-light);font-family:Poppins,sans-serif;
+    font-size:26px;font-weight:500;letter-spacing:-.02em}
+  .edition span{display:block;margin-top:9px;color:var(--record-muted);font-size:11px;line-height:1.7}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--record-line);border-top:0}
+  .summary-item{padding:19px 22px;background:rgba(9,9,9,.72)}
+  .summary-item+.summary-item{border-left:1px solid var(--record-line)}
+  .summary-item b{display:block;color:var(--record-gold-light);font-family:Poppins,sans-serif;
+    font-size:clamp(22px,3vw,34px);font-weight:500;line-height:1}
+  .summary-item span{display:block;margin-top:8px;color:var(--record-muted);font-size:9px;
+    line-height:1.5;letter-spacing:.14em;text-transform:uppercase}
+  .release{padding-top:48px}
+  .release-head{display:flex;align-items:end;justify-content:space-between;gap:24px;padding-bottom:20px}
+  .release-head h2{margin:8px 0 0;font-family:Poppins,sans-serif;font-size:clamp(27px,4vw,44px);
+    font-weight:500;letter-spacing:-.035em}
+  .release-state{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid rgba(95,211,154,.28);
+    color:var(--record-live);font-size:9px;letter-spacing:.17em;text-transform:uppercase;white-space:nowrap}
+  .release-state::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;
+    box-shadow:0 0 13px currentColor}
+  .entries{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--record-line);
+    border-left:1px solid var(--record-line)}
+  .entry{min-width:0;padding:28px;border-right:1px solid var(--record-line);border-bottom:1px solid var(--record-line);
+    background:rgba(9,9,9,.72)}
+  .entry--wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(220px,.68fr) minmax(0,1.32fr);gap:36px}
+  .entry-number{color:var(--record-ghost);font-size:10px;letter-spacing:.18em}
+  .entry h3{margin:12px 0 0;font-family:Poppins,sans-serif;font-size:clamp(21px,2.5vw,30px);
+    font-weight:500;line-height:1.15;letter-spacing:-.025em}
+  .entry p{margin:17px 0 0;color:var(--record-muted);font-size:13px;line-height:1.8;text-wrap:pretty}
+  .entry ul{margin:20px 0 0;padding:0;list-style:none}
+  .entry li{position:relative;margin-top:11px;padding-left:19px;color:var(--record-ink);font-size:12px;line-height:1.65}
+  .entry li::before{content:'—';position:absolute;left:0;color:var(--record-gold)}
+  .status{display:inline-flex;margin-top:19px;padding:7px 9px;border:1px solid var(--record-line);
+    color:var(--record-gold);font-size:8px;letter-spacing:.16em;text-transform:uppercase}
+  .status.private{border-color:rgba(182,167,255,.25);color:var(--record-private)}
+  .principle{margin-top:48px;padding:clamp(28px,5vw,56px);border:1px solid var(--record-line);
+    background:linear-gradient(120deg,rgba(199,168,105,.09),transparent 52%),var(--record-panel)}
+  .principle blockquote{max-width:900px;margin:18px 0 0;font-family:Poppins,sans-serif;
+    font-size:clamp(27px,4.7vw,55px);font-weight:500;line-height:1.12;letter-spacing:-.04em}
+  .principle p{max-width:760px;margin:21px 0 0;color:var(--record-muted);font-size:13px;line-height:1.8}
+  .actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
+  .action{min-height:58px;display:flex;align-items:center;justify-content:center;padding:12px 18px;border:1px solid var(--record-line);
+    background:transparent;color:var(--record-gold-light);font:700 10px/1.2 'Space Mono',monospace;
+    letter-spacing:.15em;text-align:center;text-decoration:none;text-transform:uppercase;cursor:pointer}
+  .action.primary{border-color:var(--record-gold);background:var(--record-gold);color:#050505}
+  .action:hover{border-color:var(--record-gold-light);background:var(--record-gold-light);color:#050505}
+  .foot{display:flex;justify-content:space-between;gap:24px;margin-top:34px;padding-top:22px;border-top:1px solid var(--record-line);
+    color:var(--record-ghost);font-size:9px;line-height:1.7;letter-spacing:.1em;text-transform:uppercase}
+  @media(max-width:760px){
+    .record{width:min(100% - 24px,1120px);padding-top:5px}.hero{grid-template-columns:1fr;gap:26px;padding:28px 0 30px}
+    h1{font-size:clamp(45px,14.5vw,70px)}.edition{padding:18px}.summary{grid-template-columns:1fr}
+    .summary-item+.summary-item{border-left:0;border-top:1px solid var(--record-line)}
+    .release{padding-top:38px}.release-head{align-items:start;flex-direction:column;gap:15px}.entries{grid-template-columns:1fr}
+    .entry{padding:24px 20px}.entry--wide{grid-column:auto;display:block}.entry--wide>div+div{margin-top:17px}
+    .actions{grid-template-columns:1fr}.action{min-height:56px}.foot{flex-direction:column}
+  }
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="record" id="main-content">
+  <aside class="record-archive-notice" aria-label="Archived edition">
+    <div><span class="section-label">Archive · edition 001</span><p>Published 02 September 2026. The original release text is preserved below; time-sensitive statements describe that edition, not the current state.</p></div>
+    <a href="/patchnotes">Read edition 002 <span aria-hidden="true">↗</span></a>
+  </aside>
+  <section class="hero">
+    <div>
+      <div class="eyebrow">House Record · 01—02 September 2026</div>
+      <h1>48 hours inside the House.</h1>
+      <p class="lede"><strong>The biggest improvements are often the ones people never have to notice.</strong>
+        Over two days, we rebuilt the paths between the site, the market, the desk, the bots and BULLENSAGA—so more of the House simply works when someone reaches for it.</p>
+    </div>
+    <aside class="edition" aria-label="Release edition">
+      <div class="release-tag">Public edition 001</div>
+      <strong>Quieter systems.<br>Cleaner paths.</strong>
+      <span>A public record of shipped work. Operational details that would weaken security stay private.</span>
+    </aside>
+  </section>
+
+  <section class="summary" aria-label="Release summary">
+    <div class="summary-item"><b>02</b><span>production bots brought into one control language</span></div>
+    <div class="summary-item"><b>03</b><span>mobile wallet paths before the fallback routes</span></div>
+    <div class="summary-item"><b>01</b><span>private control room tying the House together</span></div>
+    <div class="summary-item"><b>237.5M</b><span>BULLEN in two public hard-cliff locks</span></div>
+  </section>
+
+  <article class="release">
+    <header class="release-head">
+      <div><div class="section-label">Release 2026.09.02</div><h2>What changed</h2></div>
+      <div class="release-state">Shipped</div>
+    </header>
+
+    <div class="entries">
+      <section class="entry entry--wide">
+        <div>
+          <div class="entry-number">01 / MOBILE BUYING</div>
+          <h3>A prepared trade now opens where a mobile wallet can actually use it.</h3>
+          <span class="status">Live on the site</span>
+        </div>
+        <div>
+          <p>The same BUY $BULLEN button now understands the difference between a desktop browser and a phone. Desktop keeps the fast Jupiter path. Mobile hands the trade into the wallet that can sign it.</p>
+          <ul>
+            <li>Phantom opens a native swap with $BULLEN already selected.</li>
+            <li>Solflare opens the prepared Jupiter trade inside its own browser.</li>
+            <li>Visitors already inside a wallet can keep using the embedded swap.</li>
+            <li>Pump.fun, Jupiter Web and copy-contract routes remain available.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="entry">
+        <div class="entry-number">02 / ONE HOUSE</div>
+        <h3>The public surfaces now speak the same visual language.</h3>
+        <p>Navigation, spacing, buttons, mobile safe areas and focus behaviour were brought into one House system. Stats, Tape, Chart and Curve read as connected rooms rather than unrelated tools.</p>
+        <ul>
+          <li>The mobile BUY panel remains fully visible as browser chrome moves.</li>
+          <li>Keyboard focus stays accessible without looking like a wallet endorsement.</li>
+          <li>Burn proof now sits beside the Curve record instead of living on a duplicate page.</li>
+        </ul>
+        <span class="status">Public polish</span>
+      </section>
+
+      <section class="entry">
+        <div class="entry-number">03 / THE TAPE</div>
+        <h3>Market activity is easier to read without turning wallets into content.</h3>
+        <p>The Tape follows completed pool trades, preserves its history through upstream interruptions and keeps wallet identities private. Large buys, live flow and the path toward the next burn are visible without manufactured narrative.</p>
+        <span class="status">Live market record</span>
+      </section>
+
+      <section class="entry">
+        <div class="entry-number">04 / HOUSE DESK</div>
+        <h3>Approval and publication are no longer confused.</h3>
+        <p>Approving a draft does not create a raid. The desk waits until the edited post or reply actually appears on X, then gives Telegram the real link. Buried cards can be recovered, and scanning can be paused when the desk should stay open without spending API credits.</p>
+        <span class="status private">Private operations</span>
+      </section>
+
+      <section class="entry">
+        <div class="entry-number">05 / TWO BOTS</div>
+        <h3>BULLENBOT and SAGABOT can be inspected and recovered separately.</h3>
+        <p>Each bot now has its own live state, delivery checks and controlled recovery actions. Mint and preorder media reach the correct announcement lane. A redundant Telegram edit is treated as “already current,” while a real failure shows the action required.</p>
+        <span class="status private">Private operations</span>
+      </section>
+
+      <section class="entry">
+        <div class="entry-number">06 / CONTROL ROOM</div>
+        <h3>The House can be managed from an iPhone without shrinking the job.</h3>
+        <p>A private, Face ID-protected Control Room now brings together orders, payments, NFT distributions, custom mints, referral obligations, House Desk controls, both bots and on-the-go post preparation.</p>
+        <ul>
+          <li>Owed and paid obligations are separated instead of flattened into one total.</li>
+          <li>Failed or delayed events have explicit recovery controls.</li>
+          <li>Health messages say whether to act, inspect or do nothing.</li>
+        </ul>
+        <span class="status private">Private operations</span>
+      </section>
+
+      <section class="entry">
+        <div class="entry-number">07 / BULLENSAGA</div>
+        <h3>The story-facing flows received the same operational discipline.</h3>
+        <p>Preorders can recover verified Solana payments safely, USDC instructions are clearer, fulfillment avoids duplicates, and related mint events carry the right artwork into the right bot. The public story stays clean because the machinery underneath is less fragile.</p>
+        <span class="status">Flow hardened</span>
+      </section>
+
+      <section class="entry entry--wide">
+        <div>
+          <div class="entry-number">08 / RESERVE CUSTODY</div>
+          <h3>The volume-burn reserve is public again—and split by purpose.</h3>
+          <span class="status">Verified on-chain</span>
+        </div>
+        <div>
+          <p>All 237,500,000 reserve tokens now sit in two non-cancellable Jupiter Lock escrows. The entire balance of each lock remains unavailable until its hard cliff; neither lock drips tokens over time.</p>
+          <ul>
+            <li>25,000,000 $BULLEN is isolated for the next volume-tier burn and locked for seven days.</li>
+            <li>212,500,000 $BULLEN is held in the longer reserve lock for thirty days.</li>
+            <li>Both escrow token accounts are included in the live circulating-supply calculation.</li>
+            <li>A permanent burn-only vault is the next design step; until then, each public relock remains verifiable.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </article>
+
+  <section class="principle">
+    <div class="section-label">The operating principle</div>
+    <blockquote>We cannot force real activity—and we will not fake it. We can keep making the real thing easier to enter, verify and operate.</blockquote>
+    <p>That is the work: fewer dead ends, fewer ambiguous alarms, fewer moments where someone has to understand the machinery before they can use the House.</p>
+    <div class="actions">
+      <button class="action primary" id="buyBullen" type="button">Buy $BULLEN</button>
+      <a class="action" href="/lock">Verify the locks</a>
+      <a class="action" href="/tape">Open the Tape</a>
+      <a class="action" href="https://bullensaga.com/">Enter BULLENSAGA</a>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <a href="/patchnotes">BULLENCIAGA · Latest House Record ↗</a>
+    <span>Published 02 September 2026 · Warsaw</span>
+  </footer>
+</main>
+<script defer src="/bullen-ui.js"></script>
+<script src="/mobile-buy.js"></script>
+<script>
+(() => {
+  'use strict';
+  const SOL_MINT = 'So11111111111111111111111111111111111111112';
+  const BULLEN_MINT = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
+  const JUPITER_FALLBACK = 'https://jup.ag/swap/SOL-' + BULLEN_MINT;
+
+  function openJupiterSwap(){
+    if(!window.Jupiter || typeof window.Jupiter.init !== 'function'){
+      window.open(JUPITER_FALLBACK,'_blank','noopener,noreferrer');
+      return;
+    }
+    window.Jupiter.init({
+      displayMode:'modal',
+      formProps:{initialInputMint:SOL_MINT,initialOutputMint:BULLEN_MINT,fixedMint:BULLEN_MINT,fixedAmount:false,swapMode:'ExactIn'},
+      branding:{logoUri:'https://bullenciaga.com/logo-200.png',name:'BULLENCIAGA'}
+    });
+  }
+
+  document.getElementById('buyBullen').addEventListener('click',() => {
+    if(window.BullenMobileBuy && window.BullenMobileBuy.request({
+      mint:BULLEN_MINT,jupiterUrl:JUPITER_FALLBACK,continueWithJupiter:openJupiterSwap
+    })) return;
+    openJupiterSwap();
+  });
+})();
+</script>
+</body>
+</html>
