@@ -336,11 +336,21 @@
       root.classList.add('bullen-ready');
     }));
   };
+  const mobilePaint = matchMedia('(max-width: 820px)').matches;
   const fontGate = document.fonts && document.fonts.ready
-    ? document.fonts.ready.catch(() => undefined)
+    ? Promise.all([
+      document.fonts.ready.catch(() => undefined),
+      // Request the rail's actual faces explicitly: a cold mobile load must
+      // not reveal between font discovery and the first real font paint.
+      ...(mobilePaint ? [
+        document.fonts.load('600 12px Poppins'),
+        document.fonts.load('400 11px "Space Mono"'),
+        document.fonts.load('700 11px "Space Mono"'),
+      ].map(promise => promise.catch(() => undefined)) : []),
+    ])
     : Promise.resolve();
   Promise.race([
     fontGate,
-    new Promise((resolve) => setTimeout(resolve, 500)),
+    new Promise((resolve) => setTimeout(resolve, mobilePaint ? 1200 : 500)),
   ]).then(reveal, reveal);
 })();

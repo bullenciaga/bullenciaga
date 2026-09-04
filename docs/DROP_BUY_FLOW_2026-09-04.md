@@ -21,4 +21,10 @@ Initial release PR 69 merged as `e4be7d8769f55e4f581e8b395c0938198c698fdf`; stag
 
 The real Jupiter plugin revealed an integration detail hidden by a configuration-only stub: its fixed shadow overlay leaves `left` automatic, so The Drop's centered flex body placed it 720px off-screen at a 1440px viewport. A page-scoped absolute host anchored at left/right/top zero fixes this without changing the page column or other pages. The empty host has no height and cannot intercept the page after close. Browser regressions now model that shadow-overlay geometry at all four widths.
 
-The actual Jupiter modal was opened in a fresh isolated browser with the scoped fix: overlay bounds `(0,0,1440,1000)`, centered gold/black SOL-to-BULLEN form. Screenshot `.visual/drop-buy/desktop-real-jupiter-centered.png` was inspected. No wallet connection, amount entry, signature, warning bypass or trade was performed. Next exact action: release the scoped host correction and verify production geometry again.
+The actual Jupiter modal was opened in a fresh isolated browser with the scoped fix: overlay bounds `(0,0,1440,1000)`, centered gold/black SOL-to-BULLEN form. Screenshot `.visual/drop-buy/desktop-real-jupiter-centered.png` was inspected. No wallet connection, amount entry, signature, warning bypass or trade was performed.
+
+## Final release acceptance
+
+PR 70 merged as `9ee44159acf69a8b333458d8f1407cf56db1622a`. Staging run `33874052237` and production run `33874100555` succeeded. Live `/thedrop` HTML matches the corrected source exactly. A fresh production browser opened the real Jupiter plugin with no injected layout CSS: overlay bounds exactly `(0,0,1440,1000)`. Dismissing it restored interaction with the buy button; no invisible host intercepted the page. Screenshot `.visual/drop-buy/production-real-jupiter.png` records this final state.
+
+Next exact action: owner can use Buy $BULLEN on `/thedrop`; no accounting or backend follow-up is required for this frontend release. Preserve the scoped host positioning and shared mobile chooser on future refactors.

@@ -512,9 +512,26 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   html[data-bullen-page="index"] body .hero-mast { display: none !important; }
 
   .bullen-site-shell {
+    /* Home and standalone pages share the same iPhone safe-area rail. */
+    padding-top: env(safe-area-inset-top, 0px);
+    height: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px));
     padding-right: max(var(--bullen-gutter), env(safe-area-inset-right, 0px));
     padding-left: max(var(--bullen-gutter), env(safe-area-inset-left, 0px));
     background: rgba(5, 5, 5, 0.9);
+  }
+
+  html[data-bullen-page]:not([data-bullen-page="index"]) body:not(.transparent) {
+    padding-top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + var(--bullen-page-gap)) !important;
+  }
+
+  /* Safari's browser bars opening/closing must not resize the hero or stage
+     underneath a finger. Small viewport units remain stable while scrolling. */
+  @supports (height: 100svh) {
+    html[data-bullen-page] body { min-height: 100svh; }
+    html[data-bullen-page="index"] .hero { min-height: 100svh; padding-top: 6svh; padding-bottom: 7svh; }
+    html[data-bullen-page="stats"] body:not(.transparent) #stage {
+      height: calc(100svh - var(--bullen-header-height) - env(safe-area-inset-top, 0px) - var(--bullen-page-gap));
+    }
   }
 
   .bullen-site-bar { gap: 10px; }

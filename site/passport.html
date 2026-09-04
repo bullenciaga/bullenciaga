@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <script>!function(d){var e=d.documentElement;e.dataset.bullenPage='passport';e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document);</script>
+  <script>!function(d){var e=d.documentElement;e.dataset.bullenPage='passport';e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},matchMedia('(max-width: 820px)').matches?3000:1600)}(document);</script>
+  <link rel="preload" href="/bullen-ui.css" as="style">
+  <script defer src="/bullen-ui.js"></script>
   <title>BULLENCIAGA — Wallet Passport</title>
   <meta name="description" content="Read a Solana wallet's public BULLENCIAGA and BULLENSAGA record: BULLEN, The Herd, House Objects and Founding Records.">
   <link rel="canonical" href="https://bullenciaga.com/passport">
@@ -55,7 +57,6 @@
     <footer class="intel-foot"><span>READ-ONLY · PUBLIC SOLANA DATA</span><span>OWNERSHIP IS NOT IDENTITY</span></footer>
   </main>
   <script src="/wallet-passport.js" defer></script>
-  <script src="/bullen-ui.js" defer></script>
   <script src="/mobile-buy.js" defer></script>
 </body>
 </html>

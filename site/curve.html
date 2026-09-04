@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document,location.pathname);</script>
+<script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},matchMedia('(max-width: 820px)').matches?3000:1600)}(document,location.pathname);</script>
+<link rel="preload" href="/bullen-ui.css" as="style">
+<script defer src="/bullen-ui.js"></script>
 <title>BULLENCIAGA — the curve</title>
 <meta name="description" content="The live $BULLEN supply curve and its complete public ledger of confirmed Token-2022 burns.">
 <meta name="theme-color" content="#0a0a0a">
@@ -117,7 +119,6 @@
 </style>
 <link rel="stylesheet" href="/bullen-ui.css">
 <link rel="stylesheet" href="/market-surfaces.css">
-<script defer src="/bullen-ui.js"></script>
 </head>
 <body class="market-surface market-curve">
 

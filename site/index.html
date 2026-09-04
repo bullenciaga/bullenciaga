@@ -21,7 +21,9 @@
 ===== END SECTION MAP ===================================== -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document,location.pathname);</script>
+<script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},matchMedia('(max-width: 820px)').matches?3000:1600)}(document,location.pathname);</script>
+<link rel="preload" href="/bullen-ui.css" as="style">
+<script defer src="/bullen-ui.js"></script>
 <title>BULLENCIAGA — A token with horns. Burn to mint The Herd.</title>
 <meta name="description" content="BULLENCIAGA pairs a Solana token, $BULLEN, with The Herd - a 1,000-piece generative NFT collection. Minting a piece burns $BULLEN, so supply falls permanently.">
 <link rel="canonical" href="https://bullenciaga.com/">
@@ -2999,7 +3001,6 @@
 <link rel="stylesheet" href="/market-surfaces.css">
 <link rel="stylesheet" href="/mobile-buy.css">
 <script src="/mobile-buy.js"></script>
-<script defer src="/bullen-ui.js"></script>
 <script defer src="/house-burn-registry.js"></script>
 </head>
 <body class="market-home">

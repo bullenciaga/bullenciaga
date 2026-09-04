@@ -13,6 +13,14 @@ assert(html.indexOf('src="/mobile-buy.js"') < html.indexOf('src="/thedrop-buy.js
 assert.match(html, /id="buyBullen"[\s\S]*?href="https:\/\/jup.ag\/swap\/SOL-BULLENx/);
 assert(read('bullen-ui.css').includes('--jupiter-plugin-primary: 199, 168, 105'));
 assert.match(html, /#jupiter-plugin-instance\{ position:absolute; top:0; left:0; right:0;/, 'modal host must not inherit the centered flex static position');
+const pickerCss = read('mobile-buy.css');
+const titleCss = pickerCss.match(/\.bullen-mobile-buy__title\s*\{([^}]+)\}/)[1];
+for (const rule of ['color: var(--mobile-buy-ink)', 'font-weight: 700', 'text-transform: none']) {
+  assert(titleCss.includes(rule), `picker title must preserve the home-page ${rule}`);
+}
+for (const page of ['index.html', 'tape.html', 'thedrop.html']) {
+  assert.match(read(page), /Poppins:wght@[^&"]*700/, `${page} must load the canonical bold picker font`);
+}
 
 function setup({ mobile = false, plugin = true, picker = true, button = true } = {}) {
   const swaps = [], opens = [], choices = []; let handler; let prevented = 0;

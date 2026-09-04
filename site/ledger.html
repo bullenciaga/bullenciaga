@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <script>!function(d){var e=d.documentElement;e.dataset.bullenPage='ledger';e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},1600)}(document);</script>
+  <script>!function(d){var e=d.documentElement;e.dataset.bullenPage='ledger';e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},matchMedia('(max-width: 820px)').matches?3000:1600)}(document);</script>
+  <link rel="preload" href="/bullen-ui.css" as="style">
+  <script defer src="/bullen-ui.js"></script>
   <title>BULLENCIAGA — Living Ledger</title>
   <meta name="description" content="The BULLENCIAGA Living Ledger: one public timeline for market, supply, custody, collectible and delivery events.">
   <link rel="canonical" href="https://bullenciaga.com/ledger">
@@ -57,7 +59,6 @@
     <footer class="intel-foot"><span>PUBLIC READ-ONLY RECORD · NO SIGNATURE REQUIRED</span><span>UNKNOWN INTENT REMAINS UNKNOWN</span></footer>
   </main>
   <script src="/house-ledger.js" defer></script>
-  <script src="/bullen-ui.js" defer></script>
   <script src="/mobile-buy.js" defer></script>
 </body>
 </html>
