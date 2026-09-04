@@ -241,21 +241,24 @@
   <h2>How it works</h2>
   <ul class="rules">
     <li><b>buying is entering.</b> nothing to connect, nothing to sign, nothing to register.</li>
-    <li><b>one entry per <span id="unit">0.25</span> SOL bought.</b> no cap. entries stack.</li>
+    <li><b>one entry per <span id="unit">0.25</span> SOL of qualifying buys.</b> small buys add up. no cap. the amount is the SOL swap input at the House pool, including pool fees but excluding network and wallet/router fees.</li>
     <li><b>only buys count.</b> a sell earns nothing and fills nothing.</li>
     <li><b>the bar is fees, not volume.</b> how much buying it takes depends on what those buys pay, and that rate moves.</li>
-    <li><b>hold until it fires.</b> sell before the draw and this round's entries go with it.</li>
+    <li><b>entries follow purchase batches, newest first.</b> each completed 0.25 SOL batch records the tokens it actually bought. selling any of those tokens removes that batch's entry. selling more from the same batch does not remove another entry; the next entry goes only when the sale reaches the next older batch.</li>
+    <li><b>later buys can earn fresh entries.</b> they do not restore a broken batch. an unfinished newest batch is used first on a sale, and its partial progress is discarded if touched. selling does not subtract fees already contributed to the pot.</li>
+    <li><b>finalized records, in chain order.</b> the tracker checks buys and sells through the House pool. transfers do not earn entries. figures may briefly show “syncing” while new chain records are checked.</li>
     <li><b>the dev wallet and the pool are excluded</b>, by address.</li>
     <li><b>the snapshot is published before the seed exists.</b> then the result. every time.</li>
   </ul>
 
   <h2>What filled the bar</h2>
+  <p class="lede" id="receipt-note">recent contributions below. the complete transaction ledger is available as <a href="/drop/history" target="_blank" rel="noopener">paginated JSON receipts</a>.</p>
   <ul class="feed" id="feed">
     <li class="empty">reading…</li>
   </ul>
 
   <div class="foot">
-    every figure here is a sum of the transactions listed above.<br>
+    the pot is the sum of all qualifying fee contributions, not just the recent rows shown above.<br>
     open any of them. <a href="/">bullenciaga.com</a>
   </div>
 </div>
@@ -325,9 +328,10 @@
   }
 
   function paint(d){
-    var pct = Math.max(0, Math.min(100, Number(d.pct) || 0));
+    var verified = d.verified === true;
+    var pct = verified ? Math.max(0, Math.min(100, Number(d.pct) || 0)) : 0;
     var lit = Math.floor((pct / 100) * SEGMENTS);
-    var done = pct >= 100;
+    var done = verified && d.unlocked === true;
 
     for (var i = 0; i < SEGMENTS; i++){
       var on = i < lit;
@@ -337,17 +341,22 @@
     }
     bar.setAttribute('aria-valuenow', Math.round(pct));
 
-    $('pot').textContent = amtFmt(d.potSol);
+    $('pot').textContent = verified ? amtFmt(d.potSol) : '—';
     $('target').textContent = fmt(d.targetSol, 2);
-    $('pct').textContent = pctText(pct);
+    $('pct').textContent = verified ? pct.toFixed(2) + '%' : 'checking';
     $('round').textContent = d.round;
-    $('wallets').textContent = d.wallets;
-    $('tickets').textContent = d.tickets;
+    $('wallets').textContent = verified ? d.wallets : '—';
+    $('tickets').textContent = verified ? d.tickets : '—';
     $('unit').textContent = fmt(d.entrySol, 2);
     $('ledeprize').textContent = fmt(d.targetSol, 2) + ' SOL';
 
     var togo = $('togo');
-    if (done){
+    if (!verified) {
+      togo.className = 'togo';
+      togo.textContent = d.accountingStatus === 'syncing'
+        ? 'syncing finalized buys and sells. entry totals return after the records reconcile.'
+        : 'rebuilding this round from finalized chain receipts. pot and entry totals will appear once verified.';
+    } else if (done){
       togo.className = 'togo done';
       togo.innerHTML = '<b>the bar is full.</b> the snapshot goes up next, then the seed, then the winner.';
     } else {
@@ -365,7 +374,7 @@
     if (!rows.length){
       var li = document.createElement('li');
       li.className = 'empty';
-      li.textContent = 'nothing yet this round. the first buy starts it.';
+      li.textContent = verified ? 'no qualifying fee contributions yet this round.' : 'receipt reconciliation in progress.';
       feed.appendChild(li);
       return;
     }
@@ -387,6 +396,9 @@
   }
 
   function fail(msg){
+    ['pot', 'pct', 'wallets', 'tickets'].forEach(function(id){ $(id).textContent = '—'; });
+    bar.removeAttribute('aria-valuenow');
+    segs.forEach(function(seg){ seg.className = 'seg'; });
     $('togo').className = 'togo';
     $('togo').textContent = msg;
   }
