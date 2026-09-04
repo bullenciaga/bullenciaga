@@ -43,9 +43,10 @@ try {
     await dialog.waitFor();
     assert.equal(await page.evaluate(() => window.__swaps.length), 0);
     assert.equal(await dialog.getByRole('link', { name:'Jupiter web' }).getAttribute('href'), expected);
+    assert.equal(await dialog.getByRole('button', { name:/Solflare token page/ }).count(), 1);
     const [handoff] = await Promise.all([
       page.waitForRequest(req => new URL(req.url()).hostname === 'solflare.com'),
-      dialog.getByRole('button', { name:/Solflare/ }).click(),
+      dialog.locator('.bullen-mobile-buy__choice--solflare:not(.bullen-mobile-buy__choice--native)').click(),
     ]);
     const outer = new URL(handoff.url());
     assert.equal(outer.searchParams.get('ref'), 'https://bullenciaga.com');

@@ -35,7 +35,7 @@ try {
       const dialog = page.getByRole('dialog'); await dialog.waitFor();
       assert.equal(await page.evaluate(() => window.__swaps.length), 0);
       assert.equal(await dialog.getByRole('button', { name: /Phantom/ }).count(), 1);
-      assert.equal(await dialog.getByRole('button', { name: /Solflare/ }).count(), 1);
+      assert.equal(await dialog.getByRole('button', { name: /Solflare/ }).count(), 2);
       const bounds = await dialog.locator('.bullen-mobile-buy__sheet').boundingBox();
       assert(bounds.x >= 0 && bounds.x + bounds.width <= width);
       assert(bounds.y >= 0 && bounds.y + bounds.height <= 1000);

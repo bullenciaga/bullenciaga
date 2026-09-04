@@ -402,6 +402,12 @@
   letter-spacing: 0.01em;
 }
 
+.bullen-mobile-buy__choice--native small {
+  /* Keep the extra native Buy step readable even on narrow phones. */
+  white-space: normal;
+  overflow: visible;
+}
+
 .bullen-mobile-buy__section-title {
   margin: 20px 0 10px;
   padding-top: 15px;

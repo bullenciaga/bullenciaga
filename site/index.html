@@ -464,7 +464,7 @@
   .badge.safe .dot{ background:#8fae6a; }
   .badge.warn .dot{ background:#b1483f; }
 
-  /* ===== SECTION: CONTRACT ROW =====  address and copy button */
+  /* ===== SECTION: CONTRACT ROW =====  tap-to-copy address */
   .contract-row{
     margin-top:40px;
     display:flex;
@@ -491,6 +491,29 @@
        stays uppercase; the address must not. */
     text-transform:none;
   }
+  .contract-copy{
+    appearance:none;
+    background:transparent;
+    border:0;
+    padding:0;
+    color:inherit;
+    font:inherit;
+    letter-spacing:inherit;
+    text-transform:inherit;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:8px 10px;
+    min-width:0;
+    max-width:100%;
+    cursor:pointer;
+  }
+  .contract-copy:disabled{ cursor:default; }
+  .contract-label{ position:relative; }
+  .contract-feedback{ position:absolute; inset:0; white-space:nowrap; color:var(--gold-light); }
+  .contract-copy.has-feedback .contract-label-text{ visibility:hidden; }
+  .contract-copy:focus-visible{ outline:1px solid var(--gold); outline-offset:5px; }
   .copy-btn{
     background:transparent;
     border:1px solid var(--line);
@@ -505,6 +528,11 @@
   .copy-btn svg{ width:12px; height:12px; display:block; }
   .copy-btn:disabled{ opacity:0.3; cursor:default; }
   .copy-btn:disabled:hover{ border-color:var(--line); color:rgba(245,243,238,0.5); }
+  @media (max-width:820px){
+    /* Keep the 44px touch target in the address itself, not on a third row. */
+    .contract-row .copy-btn{ display:none; }
+    .contract-copy{ min-height:44px; }
+  }
 
   /* ===== SECTION: FOOTER ===== */
   footer{
@@ -706,6 +734,7 @@
       gap:8px;
       font-size:10px;
     }
+    .contract-copy{ flex-direction:column; flex-wrap:nowrap; }
     .contract-row b{
       letter-spacing:0.02em;
       font-size:10.5px;
@@ -3109,7 +3138,10 @@
 
 
     <div class="contract-row">
-      Contract Address — <b id="contractValue">Coming Soon</b>
+      <button class="contract-copy" id="contractCopy" type="button" aria-label="Copy contract address" title="Copy contract address" disabled>
+        <span class="contract-label"><span class="contract-label-text">Contract Address —</span><span class="contract-feedback" id="contractCopyStatus" role="status" aria-live="polite" aria-atomic="true"></span></span>
+        <b id="contractValue">Coming Soon</b>
+      </button>
       <button class="copy-btn" id="copyBtn" type="button" aria-label="Copy contract address" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
           <rect x="9" y="9" width="12" height="12" rx="1.5"/>
@@ -3248,7 +3280,7 @@
     <div class="htb-step">
       <span class="num">03</span>
       <h3>COPY THE CA</h3>
-      <p>use the copy button next to the contract address above so you have the correct token displayed.</p>
+      <p>tap or click the contract address above to copy the exact token address.</p>
     </div>
     <div class="htb-step">
       <span class="num">04</span>
@@ -4110,6 +4142,66 @@
     }).catch(() => {});
   }
 
+  function initContractCopy(address){
+    const addressButton = document.getElementById('contractCopy');
+    const iconButton = document.getElementById('copyBtn');
+    const status = document.getElementById('contractCopyStatus');
+    if (!addressButton || !status || !address) return;
+    const originalIcon = iconButton?.innerHTML;
+    const checkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><path d="M4 12l5 5L20 6"/></svg>';
+    let feedbackTimer;
+    let copying = false;
+
+    function fallbackCopy(){
+      // Older/in-app browsers may lack Clipboard API access. A readonly,
+      // off-screen field keeps the keyboard shut and preserves exact case.
+      const focused = document.activeElement;
+      const field = document.createElement('textarea');
+      field.value = address;
+      field.readOnly = true;
+      field.style.cssText = 'position:fixed;left:-9999px;top:0;font-size:16px;opacity:0;';
+      document.body.appendChild(field);
+      try {
+        field.select();
+        field.setSelectionRange(0, address.length);
+        return document.execCommand('copy');
+      } finally {
+        field.remove();
+        focused?.focus({ preventScroll:true });
+      }
+    }
+
+    async function copy(){
+      if (copying) return;
+      copying = true;
+      clearTimeout(feedbackTimer);
+      let copied = false;
+      try {
+        if (navigator.clipboard?.writeText) {
+          try {
+            await navigator.clipboard.writeText(address);
+            copied = true;
+          } catch { copied = fallbackCopy(); }
+        } else copied = fallbackCopy();
+      } catch { /* Report failure, never claim an unsuccessful copy. */ }
+      copying = false;
+      addressButton.classList.add('has-feedback');
+      status.textContent = copied ? 'Contract copied ✓' : 'Copy failed — retry';
+      if (iconButton) iconButton.innerHTML = copied ? checkIcon : originalIcon;
+      // Feedback overlays the label; neither the address nor geometry changes.
+      feedbackTimer = setTimeout(() => {
+        status.textContent = '';
+        addressButton.classList.remove('has-feedback');
+        if (iconButton) iconButton.innerHTML = originalIcon;
+      }, 2000);
+    }
+    for (const button of [addressButton, iconButton]) {
+      if (!button) continue;
+      button.disabled = false;
+      button.addEventListener('click', copy);
+    }
+  }
+
   function init(){
     if (!CONFIG.TOKEN_ADDRESS){
       return; // boxes stay on "--", note stays on "Contract not live yet"
@@ -4154,17 +4246,7 @@
       });
     }
 
-    if (els.copyBtn) {
-      els.copyBtn.disabled = false;
-      const originalIcon = els.copyBtn.innerHTML;
-      const checkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><path d="M4 12l5 5L20 6"/></svg>';
-      els.copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(CONFIG.TOKEN_ADDRESS).then(() => {
-          els.copyBtn.innerHTML = checkIcon;
-          setTimeout(() => { els.copyBtn.innerHTML = originalIcon; }, 1500);
-        }).catch(() => {});
-      });
-    }
+    initContractCopy(CONFIG.TOKEN_ADDRESS);
 
     getMintFreezeAuthority(CONFIG.TOKEN_ADDRESS).then(auth => {
       setBadge(els.badgeMint, els.badgeMintText, 'Mint Authority', auth.mintAuthority === null);
