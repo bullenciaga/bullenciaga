@@ -6,7 +6,7 @@ const site = path.join(root, 'site');
 const publicPages = [
   'index.html', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html', 'tape.html',
-  'patchnotes.html', 'lock.html', 'ledger.html', 'passport.html',
+  'patchnotes.html', 'patchnotes-001.html', 'lock.html', 'ledger.html', 'passport.html',
 ];
 const failures = [];
 
@@ -29,6 +29,7 @@ const tapeSource = fs.readFileSync(path.join(site, 'tape.html'), 'utf8');
 const mobileBuy = fs.readFileSync(path.join(site, 'mobile-buy.js'), 'utf8');
 const mobileBuyCss = fs.readFileSync(path.join(site, 'mobile-buy.css'), 'utf8');
 const patchnotesSource = fs.readFileSync(path.join(site, 'patchnotes.html'), 'utf8');
+const archiveSource = fs.readFileSync(path.join(site, 'patchnotes-001.html'), 'utf8');
 const lockSource = fs.readFileSync(path.join(site, 'lock.html'), 'utf8');
 if (!shell.includes("page === 'referrals'")) failures.push('admin page classification missing');
 if (!shell.includes("page === 'index' ? ' bullen-home-shell'")) failures.push('homepage top-shell navigation missing');
@@ -66,7 +67,7 @@ if (!shellCss.includes('background: var(--bullen-bg) !important;')) failures.pus
 if (marketCss.includes('.market-curve header {')) failures.push('Curve page-level header rule can override the shared House navigation header');
 if (!shellCss.includes('html[data-bullen-page="index"] body .hero-mast { display: none !important; }')) failures.push('mobile homepage duplicate masthead remains visible');
 if (!shellCss.includes('top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + 1px)')) failures.push('Jump To panel is not anchored below the fixed header');
-if (!shellCss.includes('height: 34px;') || !shellCss.includes('.bullen-site-shell .jumpto-menu')) failures.push('mobile Jump To does not share the hamburger control and panel geometry');
+if (!shellCss.includes('width: 112px;') || !shellCss.includes('height: 44px;') || !shellCss.includes('.bullen-site-shell .jumpto-menu')) failures.push('mobile Jump To does not share the hamburger control and panel geometry');
 if (!shellCss.includes('top: calc(var(--bullen-header-height) + 2px)')) failures.push('desktop navigation menus can overlap the fixed House rail');
 if (!shellCss.includes('min-width: 44px;\n    height: 44px;')) failures.push('mobile hamburger can deform under the shared touch-target minimum');
 if (!shellCss.includes('.bullen-nav-group-menu a,\n.bullen-site-shell .jumpto-item')
@@ -86,7 +87,7 @@ if (!patchnotesSource.includes('BullenMobileBuy.request')
   failures.push('patchnotes.html: public release CTA does not preserve the mobile wallet handoff');
 }
 for (const section of ['MOBILE BUYING', 'ONE HOUSE', 'THE TAPE', 'HOUSE DESK', 'TWO BOTS', 'CONTROL ROOM', 'BULLENSAGA', 'RESERVE CUSTODY']) {
-  if (!patchnotesSource.includes(section)) failures.push(`patchnotes.html: public release record omits ${section}`);
+  if (!archiveSource.includes(section)) failures.push(`patchnotes-001.html: archived public release record omits ${section}`);
 }
 for (const proof of [
   'https://lock.jup.ag/escrow/643KD1Zus2FEKV5ZKkMtW58tv4dfAAgLQHkXhWbs8295',

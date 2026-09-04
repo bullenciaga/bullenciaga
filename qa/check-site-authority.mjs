@@ -12,7 +12,7 @@ const required = [
   'bullen-ui.css', 'bullen-ui.js', 'giveaways.html', 'giveaways.json',
   'objects.html', 'objects.css', 'objects.js', 'bullen-wallet-chooser.js',
   'tape.html', 'favicons/tape.svg',
-  'patchnotes.html', 'favicons/patchnotes.svg', 'lock.html', 'favicons/lock.svg',
+  'patchnotes.html', 'patchnotes-001.html', 'house-record.css', 'favicons/patchnotes.svg', 'lock.html', 'favicons/lock.svg',
   'ledger.html', 'favicons/ledger.svg', 'house-ledger.js', 'ledger-preview.json',
   'passport.html', 'favicons/passport.svg', 'wallet-passport.js', 'house-intelligence.css',
   'house-burn-registry.js', 'market-surfaces.css', 'mobile-buy.css', 'mobile-buy.js',

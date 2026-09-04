@@ -28,6 +28,7 @@ const pageChecks = [
   ['/giveaways', /<title>BULLENCIAGA — Giveaways/i],
   ['/tape', /<title>THE TAPE — Live \$BULLEN Market/i],
   ['/patchnotes', /<title>BULLENCIAGA — House Record/i],
+  ['/patchnotes-001', /<title>BULLENCIAGA — House Record · Edition 001 Archive/i],
   ['/lock', /<title>BULLENCIAGA — Burn Reserve/i],
   ['/ledger', /<title>BULLENCIAGA — Living Ledger/i],
   ['/passport', /<title>BULLENCIAGA — Wallet Passport/i],
@@ -36,7 +37,7 @@ const effectivePageChecks = smokePhase === 'preflight'
   // Preflight proves the currently deployed release. Pages introduced by the
   // candidate cannot exist until after promotion, so require them only in the
   // post-release smoke test.
-  ? pageChecks.filter(([path]) => !['/giveaways', '/tape', '/patchnotes', '/lock', '/ledger', '/passport'].includes(path))
+  ? pageChecks.filter(([path]) => !['/giveaways', '/tape', '/patchnotes', '/patchnotes-001', '/lock', '/ledger', '/passport'].includes(path))
   : pageChecks;
 
 const apiChecks = [
@@ -110,6 +111,16 @@ for (const [path, marker] of effectivePageChecks) {
   assert.match(response.headers.get('content-type') ?? '', /text\/html/i, `${url} did not return HTML`);
   const body = await response.text();
   assert(marker.test(body), `${url} is missing its expected build marker`);
+  if (smokePhase === 'post-release' && path === '/patchnotes') {
+    assert.match(body, /Public edition 002/);
+    assert.match(body, /href="\/patchnotes-001"/);
+    assert.match(body, /More to explore\.<br>More to verify\./);
+  }
+  if (path === '/patchnotes-001') {
+    assert.match(body, /Public edition 001/);
+    assert.match(body, /48 hours inside the House\./);
+    assert.match(body, /href="\/patchnotes"/);
+  }
   console.log(`page smoke: ok ${url.pathname}`);
 }
 
