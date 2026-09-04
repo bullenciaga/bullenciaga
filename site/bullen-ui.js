@@ -20,6 +20,7 @@
     lock: 'Burn Reserve',
     ledger: 'Living Ledger',
     passport: 'Wallet Passport',
+    rooms: 'Inner Rooms',
     bullensaga: 'BULLENSAGA',
   };
   const destinations = [
@@ -35,6 +36,7 @@
     ['lock', '/lock.html'],
     ['ledger', '/ledger.html'],
     ['passport', '/passport.html'],
+    ['rooms', '/rooms.html'],
     ['bullensaga', 'https://bullensaga.com/'],
   ];
   const navigationGroups = [
@@ -94,6 +96,7 @@
     mobileDirectory.className = 'bullen-mobile-nav-directory';
     for (const key of mobileNavigationKeys) mobileDirectory.append(buildLink(key));
     nav.append(mobileDirectory);
+    nav.append(buildLink('rooms'));
     nav.append(buildLink('bullensaga'));
     return nav;
   };
@@ -314,7 +317,7 @@
     let url;
     try { url = new URL(anchor.href, location.href); } catch (_) { return; }
     if (url.origin !== location.origin || url.href === location.href || prefetched.has(url.href)) return;
-    if (!/^\/$|\.html$|^\/(?:objects|giveaways|stats|tape|chart|curve|refer|thedrop|patchnotes|lock|ledger|passport)\/?$/i.test(url.pathname)) return;
+    if (!/^\/$|\.html$|^\/(?:objects|giveaways|stats|tape|chart|curve|refer|thedrop|patchnotes|lock|ledger|passport|rooms)\/?$/i.test(url.pathname)) return;
     prefetched.add(url.href);
     const hint = document.createElement('link');
     hint.rel = 'prefetch';
