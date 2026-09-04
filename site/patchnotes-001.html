@@ -262,7 +262,7 @@
   'use strict';
   const SOL_MINT = 'So11111111111111111111111111111111111111112';
   const BULLEN_MINT = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
-  const JUPITER_FALLBACK = 'https://jup.ag/swap/SOL-' + BULLEN_MINT;
+  const JUPITER_FALLBACK = 'https://jup.ag/swap?buy=' + BULLEN_MINT + '&sell=' + SOL_MINT;
 
   function openJupiterSwap(){
     if(!window.Jupiter || typeof window.Jupiter.init !== 'function'){

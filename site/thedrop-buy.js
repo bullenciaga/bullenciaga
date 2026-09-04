@@ -5,7 +5,7 @@
   if (!button) return;
   const SOL_MINT = 'So11111111111111111111111111111111111111112';
   const BULLEN_MINT = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
-  const JUPITER_FALLBACK = 'https://jup.ag/swap/SOL-' + BULLEN_MINT;
+  const JUPITER_FALLBACK = 'https://jup.ag/swap?buy=' + BULLEN_MINT + '&sell=' + SOL_MINT;
 
   // Same swap configuration as the home page and The Tape. The shared House
   // stylesheet supplies Jupiter's palette; mobile-buy owns wallet selection.
