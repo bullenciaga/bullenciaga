@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+<title>Shares · BULLENCIAGA</title>
+<link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/home.svg">
+<link rel="stylesheet" href="/shares.css">
+<script src="/shares.js" defer></script>
+</head>
+<body>
+<header><a href="/" class="brand">BULLENCIAGA</a><span class="eyebrow">PRIVATE / OWNER RECORD</span></header>
+<main>
+<section id="gate" class="gate">
+<p class="eyebrow">THE HOUSE / SHARES</p><h1>For your eyes.</h1>
+<p class="muted">Unlock the private creator-fee share record.</p>
+<form id="login"><label for="password">SECRET PHRASE</label><input id="password" type="password" autocomplete="current-password" required maxlength="200" placeholder="Enter your secret phrase"><button class="gold" type="submit">UNLOCK SHARES <span aria-hidden="true">↗</span></button></form>
+<p id="login-status" role="status" aria-live="polite"></p>
+</section>
+<div id="dashboard" hidden>
+<div class="heading"><div><p class="eyebrow">THE HOUSE / CREATOR FEES</p><h1>Shares.</h1><p class="muted">Who receives what percentage of net creator fees, after fees.</p></div><div class="actions"><button id="refresh">REFRESH OWNERS</button><button id="export">EXPORT TOTALS</button><button id="lock">LOCK</button></div></div>
+<p id="status" role="status" aria-live="polite"></p>
+<div class="summary"><div><span>FIXED CONTRIBUTORS</span><strong id="marketing-total">—</strong></div><div><span>OWNED NFT SHARES</span><strong id="nft-total">—</strong></div><div><span>TOTAL ALLOCATED</span><strong id="all-total">—</strong></div><div><span>UNALLOCATED NFT SHARES</span><strong id="unallocated-total">—</strong></div></div>
+<div class="section-head"><div><h2>Wallet totals</h2><p class="muted">One total per wallet. Use your own net-fee amount to calculate payments.</p></div><label class="search-label">FIND A WALLET OR NAME<input id="search" type="search" placeholder="Search the record…"></label></div>
+<div class="table-wrap"><table><thead><tr><th>NAME</th><th>WALLET</th><th class="number">MARKETING</th><th class="number">NFTs</th><th class="number">TOTAL OWED</th></tr></thead><tbody id="totals"></tbody></table></div>
+<div class="section-head"><div><h2>Paying pieces</h2><p class="muted">Ownership refreshes on opening and on request. Edit holder names here; labels stay with the wallet.</p></div><span id="owned-count" class="eyebrow"></span></div>
+<div id="pieces" class="pieces"></div>
+<details class="contributors"><summary>FIXED MARKETING CONTRIBUTORS <span id="contributor-count"></span></summary><p class="muted">Imported totals only. Contributor names, wallets and percentages are fixed.</p><div class="table-wrap"><table><thead><tr><th>CONTRIBUTOR</th><th>WALLET</th><th class="number">TOTAL OWED</th></tr></thead><tbody id="contributors"></tbody></table></div></details>
+<footer><p id="verification"></p><p>Snapshot display only. No payments or transactions are executed here. Unminted, house-held and unverified pieces are excluded from wallet totals.</p></footer>
+</div>
+</main>
+</body></html>

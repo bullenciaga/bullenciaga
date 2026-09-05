@@ -1,0 +1,12 @@
+/shares
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Cache-Control: private, no-store
+  Referrer-Policy: no-referrer
+  X-Frame-Options: DENY
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' https://bullenciaga-img-proxy.bullenciaga-e5c.workers.dev; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'
+/shares.html
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Cache-Control: private, no-store
+  Referrer-Policy: no-referrer
+  X-Frame-Options: DENY
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' https://bullenciaga-img-proxy.bullenciaga-e5c.workers.dev; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'
