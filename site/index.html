@@ -7149,6 +7149,7 @@
   const COLLECTIBLE_PREVIEWS = {
     signet: '/assets/collection-previews/house-object-01-signet.webp',
     cufflinks: '/assets/collection-previews/house-object-02-cufflinks.webp',
+    key: '/assets/collection-previews/house-object-03-key.webp',
     promise: '/assets/collection-previews/promise-nft.webp',
     triad: '/assets/collection-previews/triad-nft.webp',
   };
@@ -7156,6 +7157,7 @@
   function collectiblePreview(name, fallback){
     if (/SIGNET/i.test(name)) return COLLECTIBLE_PREVIEWS.signet;
     if (/CUFFLINK/i.test(name)) return COLLECTIBLE_PREVIEWS.cufflinks;
+    if (/^(?:THE )?KEY(?:\s*#|$)/i.test(name)) return COLLECTIBLE_PREVIEWS.key;
     if (/PROMISE/i.test(name)) return COLLECTIBLE_PREVIEWS.promise;
     if (/TRIAD/i.test(name)) return COLLECTIBLE_PREVIEWS.triad;
     return fallback;
@@ -7215,15 +7217,18 @@
     const allItems = [];
     let page = 1;
     while (page <= 2) {
-      const res = await fetch(NFT_CONFIG.HELIUS_PROXY_URL, {
+      const res = await fetch('/rpc', {
         method: 'POST',
+        signal: AbortSignal.timeout(15000),
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           jsonrpc: '2.0', id: 'house-object-assets', method: 'getAssetsByGroup',
           params: { groupKey: 'collection', groupValue: NFT_CONFIG.HOUSE_OBJECTS_COLLECTION_ADDRESS, page, limit: 1000 }
         })
       });
+      if (!res.ok) throw new Error('Collection request failed: ' + res.status);
       const data = await res.json();
+      if (data.error || !Array.isArray(data.result?.items)) throw new Error('Collection data unavailable');
       const items = (data && data.result && data.result.items) || [];
       items.forEach(item => {
         if (item.burnt) return;
@@ -7249,15 +7254,18 @@
     const allItems = [];
     let page = 1;
     while (page <= 2) {
-      const res = await fetch(NFT_CONFIG.HELIUS_PROXY_URL, {
+      const res = await fetch('/rpc', {
         method: 'POST',
+        signal: AbortSignal.timeout(15000),
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           jsonrpc: '2.0', id: 'bullensaga-assets', method: 'getAssetsByGroup',
           params: { groupKey: 'collection', groupValue: NFT_CONFIG.BULLENSAGA_COLLECTION_ADDRESS, page, limit: 1000 }
         })
       });
+      if (!res.ok) throw new Error('Collection request failed: ' + res.status);
       const data = await res.json();
+      if (data.error || !Array.isArray(data.result?.items)) throw new Error('Collection data unavailable');
       const items = (data && data.result && data.result.items) || [];
       items.forEach(item => {
         if (item.burnt) return;
@@ -7278,8 +7286,12 @@
 
   function houseStatusLine(entry){
     if (entry && entry.series === 'bullensaga') return '';
-    const hasSignet = Array.from(ownedHouseObjectNames).some(name => /SIGNET/i.test(name));
-    const hasCufflinks = Array.from(ownedHouseObjectNames).some(name => /CUFFLINK/i.test(name));
+    const owner = entry?.owner || mintedOwnerByName.get(entry?.name);
+    const names = cachedHouseObjectAssets
+      ? cachedHouseObjectAssets.filter(asset => asset.owner === owner).map(asset => asset.name)
+      : owner === connectedWalletAddress ? Array.from(ownedHouseObjectNames) : [];
+    const hasSignet = names.some(name => /SIGNET/i.test(name));
+    const hasCufflinks = names.some(name => /CUFFLINK/i.test(name));
     if (entry && entry.series === 'house-object') {
       if (hasSignet && hasCufflinks) return 'House Pair I complete · paired status follows this wallet';
       return 'House Object held · add the matching object to complete House Pair I';
@@ -7906,6 +7918,8 @@
   async function renderGallery(){
     if (!galleryEls.grid) return;
 
+    const renderToken = ++galleryRenderToken;
+
     if (galleryMode === 'mine' && !connectedWalletAddress) {
       galleryEls.grid.style.display = 'none';
       galleryEls.controls.style.display = 'none';
@@ -7915,34 +7929,25 @@
       return;
     }
 
-    const renderToken = ++galleryRenderToken;
-
-    let sourceList;
-    if (gallerySpecialTier) {
-      // Grail and Legendary pieces are part of the static 1,000-piece
-      // manifest (not custom mints), so in "All 1,000" mode they must be
-      // found there -- fetchAllCollectionAssets() only returns assets
-      // already minted on-chain, and none of the 1,000 are mintable yet.
-      const base = galleryMode === 'all' ? galleryManifest : await loadMyAssets();
-      sourceList = base.filter(e => matchesSpecial(e.name, gallerySpecialTier));
-    } else {
-      sourceList = galleryMode === 'all' ? galleryManifest : await loadMyAssets();
-    }
-    // Everything below this point writes to the DOM. If a newer render began
-    // while we were awaiting, this one's sourceList is already wrong -- drop
-    // it rather than let it overwrite what the newer render painted.
-    if (renderToken !== galleryRenderToken) return;
-
     const rawTerm = gallerySearchTerm.trim();
     const term = rawTerm.toLowerCase();
-
-    // A pasted wallet address searches by OWNER instead of by name. Base58
-    // Solana addresses are 32-44 chars from a fixed alphabet, which no piece
-    // name comes close to, so detection is unambiguous -- no mode switch or
-    // prefix for the user to learn. Matches the current owner OR the seller
-    // of a live listing, so a holder's listed pieces stay in their results
-    // rather than vanishing into a marketplace escrow.
+    // Exact base58 owner lookup, including marketplace sellers. Ordinary
+    // name searches continue to browse only the original 1,000-piece list.
     const looksLikeWallet = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(rawTerm);
+    let sourceList = galleryMode === 'all' ? galleryManifest : await loadMyAssets();
+    if (renderToken !== galleryRenderToken) return;
+    let companionsUnavailable = false;
+    if (galleryMode === 'all' && looksLikeWallet) {
+      galleryEls.grid.style.display = 'none';
+      galleryEls.pagination.style.display = 'none';
+      galleryEls.empty.style.display = 'block';
+      galleryEls.empty.textContent = 'loading this wallet’s collection…';
+      const results = await Promise.allSettled([fetchHouseObjectAssets(), fetchBullensagaAssets()]);
+      companionsUnavailable = results.some(result => result.status === 'rejected');
+      sourceList = [...galleryManifest, ...results.flatMap(result => result.status === 'fulfilled' ? result.value : [])];
+    }
+    if (renderToken !== galleryRenderToken) return;
+    if (gallerySpecialTier) sourceList = sourceList.filter(e => matchesSpecial(e.name, gallerySpecialTier));
 
     let filtered;
     if (looksLikeWallet) {
@@ -8047,13 +8052,19 @@
     }
 
     currentFilteredList = filtered;
+    let publicClaimedCount = 0;
+    mintedNames.forEach(name => { if (manifestNameSet.has(name)) publicClaimedCount++; });
+    galleryEls.count.textContent = looksLikeWallet
+      ? `${filtered.length} piece${filtered.length === 1 ? '' : 's'} found in this wallet${companionsUnavailable ? ' · some collectibles unavailable — try again' : ''}`
+      : galleryMode === 'all' ? `${publicClaimedCount}/${galleryManifest.length} claimed`
+      : `${filtered.length} piece${filtered.length === 1 ? '' : 's'} owned`;
 
     if (filtered.length === 0) {
       galleryEls.grid.style.display = 'none';
       galleryEls.controls.style.display = 'flex';
       galleryEls.pagination.style.display = 'none';
       galleryEls.empty.style.display = 'block';
-      galleryEls.empty.textContent = galleryMode === 'mine'
+      galleryEls.empty.textContent = companionsUnavailable ? 'some collectibles could not be loaded. please try again.' : galleryMode === 'mine'
         ? 'no pieces found in this wallet yet.'
         : 'no pieces match that search.';
       return;
@@ -8072,11 +8083,6 @@
     galleryEls.grid.innerHTML = '';
     pageItems.forEach(entry => galleryEls.grid.appendChild(renderGalleryCard(entry)));
 
-    let publicClaimedCount = 0;
-    mintedNames.forEach(name => { if (manifestNameSet.has(name)) publicClaimedCount++; });
-    galleryEls.count.textContent = galleryMode === 'all'
-      ? `${publicClaimedCount}/${galleryManifest.length} claimed`
-      : `${filtered.length} piece${filtered.length === 1 ? '' : 's'} owned`;
     galleryEls.pageLabel.textContent = `Page ${galleryPage + 1} of ${totalPages}`;
     galleryEls.prevBtn.disabled = galleryPage === 0;
     galleryEls.nextBtn.disabled = galleryPage >= totalPages - 1;
