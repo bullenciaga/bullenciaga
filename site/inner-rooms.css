@@ -68,13 +68,32 @@ body { margin:0; background:#050505; }
 .salon-message p { margin:0; color:#f5f3ee; font:400 11px/1.8 var(--bullen-font-data); white-space:pre-wrap; overflow-wrap:anywhere; }
 .salon-compose { padding:22px 32px 26px; border-top:1px solid var(--rooms-line); }
 .salon-compose label { display:block; margin-bottom:10px; color:#c7a869; font-size:8px; letter-spacing:.16em; }
-.salon-compose > div { display:grid; grid-template-columns:1fr 160px; border:1px solid var(--rooms-line); }
+.salon-compose-line { display:grid; grid-template-columns:1fr 160px; border:1px solid var(--rooms-line); }
 .salon-compose textarea { width:100%; min-height:82px; resize:none; padding:16px; border:0; border-right:1px solid var(--rooms-line); outline:0; background:#050505; color:#f5f3ee; font:400 11px/1.65 var(--bullen-font-data); }
 .salon-compose textarea:focus-visible { outline:none !important; outline-offset:0 !important; box-shadow:inset 0 0 0 2px var(--bullen-focus); }
 .salon-compose textarea::placeholder { color:rgba(245,243,238,.25); }
 .salon-compose button { border:0; background:#c7a869; color:#080706; font:700 9px/1 var(--bullen-font-data); letter-spacing:.13em; cursor:pointer; }
 .salon-compose button:disabled,.salon-compose textarea:disabled { opacity:.42; cursor:not-allowed; }
 .salon-compose small { display:flex; justify-content:space-between; gap:20px; margin-top:9px; color:rgba(245,243,238,.28); font-size:7px; letter-spacing:.04em; }
+.salon-message-body { min-width:0; }
+.salon-message-image { display:block; width:min(280px,100%); margin:12px 0 0; padding:0; border:1px solid var(--rooms-line); background:#0d0c09; color:#c7a869; cursor:zoom-in; text-align:left; }
+.salon-message-image img { display:block; width:100%; height:auto; max-height:210px; object-fit:contain; }
+.salon-message-image span { display:block; padding:9px 10px; font:400 8px/1.5 var(--bullen-font-data); letter-spacing:.08em; }
+.salon-message-image:focus-visible,.salon-attachment-tools button:focus-visible,.salon-attachment-draft button:focus-visible { outline:2px solid var(--bullen-focus); outline-offset:3px; }
+.salon-attachment-tools { display:flex; align-items:center; flex-wrap:wrap; gap:14px; margin-top:12px; }
+.salon-attachment-tools button { min-height:36px; padding:0 12px; border:1px solid var(--rooms-line); background:transparent; color:#c7a869; font-size:9px; }
+.salon-attachment-tools > span { color:var(--rooms-soft); font-size:8px; line-height:1.5; }
+.salon-attachment-draft { display:flex; align-items:center; gap:14px; margin:12px 0 0; }
+.salon-attachment-draft[hidden] { display:none; }
+.salon-attachment-draft img { display:block; width:90px; height:64px; object-fit:contain; border:1px solid var(--rooms-line); background:#050505; }
+.salon-attachment-draft figcaption { display:grid; gap:10px; color:var(--rooms-soft); font-size:9px; }
+.salon-attachment-draft button { width:max-content; min-height:28px; padding:0 8px; background:transparent; color:#c7a869; border:1px solid var(--rooms-line); font-size:8px; }
+.salon-compose-status { margin:8px 0 0; color:#c7a869; font-size:10px; line-height:1.6; }
+.salon-compose-status:empty { display:none; }
+.salon-image-viewer { width:max-content; max-width:calc(100vw - 32px); max-height:calc(100svh - 32px); padding:14px; border:1px solid var(--rooms-line); background:#070706; color:#e8d9ae; }
+.salon-image-viewer::backdrop { background:rgba(0,0,0,.88); }
+.salon-image-viewer button { display:block; margin:0 0 12px auto; min-height:36px; padding:0 10px; border:1px solid var(--rooms-line); background:transparent; color:#c7a869; font:400 10px/1 var(--bullen-font-data); cursor:pointer; }
+.salon-image-viewer img { display:block; max-width:100%; max-height:calc(100svh - 112px); width:auto; height:auto; object-fit:contain; }
 @media (max-width:900px) {
   .rooms-gate { grid-template-columns:1fr .72fr; gap:32px; }
   .rooms-interior { grid-template-columns:220px minmax(0,1fr); }
@@ -112,7 +131,7 @@ body { margin:0; background:#050505; }
   .salon-message-meta { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:8px; }
   .salon-message-meta code { margin:0; }
   .salon-message-meta time { margin:0; text-align:right; }
-  .salon-compose > div { grid-template-columns:1fr; }
+  .salon-compose-line { grid-template-columns:1fr; }
   .salon-compose textarea { border-right:0; border-bottom:1px solid var(--rooms-line); }
   .salon-compose button { min-height:52px; }
   .salon-compose small span:last-child { display:none; }

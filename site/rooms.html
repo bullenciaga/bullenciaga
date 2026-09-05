@@ -18,10 +18,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/bullen-ui.css">
-  <link rel="stylesheet" href="/inner-rooms.css?v=20260905b">
+  <link rel="stylesheet" href="/inner-rooms.css?v=20260905c">
   <script defer src="/vendor/solana-web3-1.98.4.min.js"></script>
   <script defer src="/bullen-wallet-chooser.js?v=20260829b"></script>
-  <script defer src="/inner-rooms.js?v=20260905b"></script>
+  <script defer src="/inner-rooms.js?v=20260905c"></script>
 </head>
 <body>
   <main class="rooms-page" data-room-state="sealed">
@@ -90,11 +90,25 @@
         </div>
         <form class="salon-compose" id="salonCompose">
           <label for="salonMessage">WRITE INTO THE RECORD</label>
-          <div><textarea id="salonMessage" maxlength="600" rows="2" placeholder="Say something worth retaining." disabled></textarea><button type="submit" disabled>PLACE IN ROOM</button></div>
+          <div class="salon-compose-line"><textarea id="salonMessage" maxlength="600" rows="2" placeholder="Say something worth retaining." disabled></textarea><button type="submit" disabled>PLACE IN ROOM</button></div>
+          <div class="salon-attachment-tools">
+            <input id="salonImageFile" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+            <button id="salonAttach" type="button" disabled>+ ATTACH IMAGE</button>
+            <span>JPG, PNG, WEBP · resized automatically</span>
+          </div>
+          <figure class="salon-attachment-draft" id="salonImageDraft" hidden>
+            <img id="salonImagePreview" alt="Image ready to attach">
+            <figcaption><span id="salonImageDetails"></span><button id="salonRemoveImage" type="button">REMOVE</button></figcaption>
+          </figure>
+          <p class="salon-compose-status" id="salonComposeStatus" role="status" aria-live="polite"></p>
           <small><span id="salonCount">0 / 600</span><span>Signed wallet identity · no usernames</span></small>
         </form>
       </div>
     </section>
+    <dialog class="salon-image-viewer" id="salonImageViewer" aria-label="Room image">
+      <button type="button" id="salonCloseImage" aria-label="Close image">CLOSE ×</button>
+      <img id="salonFullImage" alt="Image shared in The Salon">
+    </dialog>
   </main>
 </body>
 </html>

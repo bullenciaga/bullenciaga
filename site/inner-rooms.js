@@ -18,6 +18,29 @@
   var input = document.getElementById('salonMessage');
   var submit = form.querySelector('button[type="submit"]');
   var count = document.getElementById('salonCount');
+  var attach = document.getElementById('salonAttach');
+  var imageFile = document.getElementById('salonImageFile');
+  var imageDraft = document.getElementById('salonImageDraft');
+  var imagePreview = document.getElementById('salonImagePreview');
+  var imageDetails = document.getElementById('salonImageDetails');
+  var removeImage = document.getElementById('salonRemoveImage');
+  var composeStatus = document.getElementById('salonComposeStatus');
+  var imageViewer = document.getElementById('salonImageViewer');
+  var fullImage = document.getElementById('salonFullImage');
+  var pendingImage = null;
+  var pendingSend = null;
+  var preparingImage = false;
+  var sending = false;
+  var imageGeneration = 0;
+  var imageUrls = new Set();
+  var imageRequests = new Set();
+  var imageQueue = [];
+  var imageLoads = 0;
+  var imageObserver = typeof IntersectionObserver === 'function' ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) { imageObserver.unobserve(entry.target); queueImage(entry.target); }
+    });
+  }, { root:record, rootMargin:'100px' }) : null;
   var session = null;
   var connection = null;
   var timer = null;
@@ -87,6 +110,128 @@
     status.style.color = isError ? '#e0685f' : '';
   }
 
+  function setComposeStatus(message, isError) {
+    composeStatus.textContent = message;
+    composeStatus.style.color = isError ? '#e0685f' : '';
+  }
+
+  function updateCompose() {
+    var unavailable = !session || !connection || connection.readyState !== WebSocket.OPEN || salon.dataset.connection !== 'live';
+    input.disabled = unavailable || sending;
+    attach.disabled = unavailable || sending || preparingImage;
+    removeImage.disabled = sending;
+    submit.disabled = unavailable || sending || preparingImage;
+    submit.textContent = sending ? 'PLACING…' : 'PLACE IN ROOM';
+  }
+
+  function clearImage() {
+    imageGeneration += 1;
+    preparingImage = false;
+    if (pendingImage) URL.revokeObjectURL(pendingImage.url);
+    pendingImage = null;
+    pendingSend = null;
+    imagePreview.removeAttribute('src');
+    imageDraft.hidden = true;
+    imageFile.value = '';
+    updateCompose();
+  }
+
+  function closeImageViewer() {
+    if (imageViewer.open) imageViewer.close();
+    fullImage.removeAttribute('src');
+  }
+
+  async function prepareImage(file) {
+    if (!file || !session || sending) return;
+    clearImage();
+    var generation = imageGeneration;
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 12 * 1024 * 1024) {
+      setComposeStatus('Choose a JPG, PNG or WebP image under 12 MB.', true);
+      return;
+    }
+    preparingImage = true;
+    updateCompose();
+    setComposeStatus('Preparing your image…', false);
+    var sourceUrl = URL.createObjectURL(file);
+    try {
+      var source = new Image();
+      source.src = sourceUrl;
+      await source.decode();
+      if (generation !== imageGeneration || !session) return;
+      if (source.naturalWidth * source.naturalHeight > 40_000_000) throw new Error('This image is too large to resize here. Export a smaller copy.');
+      var scale = Math.min(1, 1600 / Math.max(source.naturalWidth, source.naturalHeight));
+      var canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(source.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(source.naturalHeight * scale));
+      var context = canvas.getContext('2d');
+      context.fillStyle = '#070706';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(source, 0, 0, canvas.width, canvas.height);
+      var blob;
+      for (var quality = 0.9; quality >= 0.4; quality -= 0.1) {
+        blob = await new Promise(function (resolve) { canvas.toBlob(resolve, 'image/jpeg', quality); });
+        if (blob && blob.size <= 320 * 1024) break;
+      }
+      if (generation !== imageGeneration || !session) return;
+      if (!blob || blob.size > 320 * 1024) throw new Error('This image is still too detailed. Crop it or choose a smaller copy.');
+      var dataUrl = await new Promise(function (resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function () { resolve(reader.result); };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+      if (generation !== imageGeneration || !session) return;
+      pendingImage = { data:String(dataUrl).split(',')[1], url:URL.createObjectURL(blob) };
+      imagePreview.src = pendingImage.url;
+      imageDetails.textContent = canvas.width + ' × ' + canvas.height + ' · ' + Math.ceil(blob.size / 1024) + ' KB';
+      imageDraft.hidden = false;
+      setComposeStatus('Image ready. Add a message if you like.', false);
+    } catch (error) {
+      if (generation === imageGeneration) setComposeStatus(error && error.message || 'That image could not be opened. Try a JPG or PNG.', true);
+    } finally {
+      URL.revokeObjectURL(sourceUrl);
+      if (generation === imageGeneration) { preparingImage = false; updateCompose(); }
+    }
+  }
+
+  function queueImage(button) {
+    if (!session || button.dataset.loading === 'true' || button.dataset.loaded === 'true') return;
+    button.dataset.loading = 'true';
+    imageQueue.push({ button:button, session:session });
+    pumpImages();
+  }
+
+  function pumpImages() {
+    while (imageLoads < 2 && imageQueue.length) {
+      var job = imageQueue.shift();
+      if (job.session !== session) continue;
+      imageLoads += 1;
+      loadImage(job).finally(function () { imageLoads -= 1; pumpImages(); });
+    }
+  }
+
+  async function loadImage(job) {
+    var button = job.button;
+    var controller = new AbortController();
+    imageRequests.add(controller);
+    try {
+      var response = await fetch(apiUrl('/rpc/rooms/image?room=salon&id=' + encodeURIComponent(button.dataset.imageId)), {
+        headers:{ Authorization:'Bearer ' + job.session.token }, cache:'no-store', signal:controller.signal,
+      });
+      if (!response.ok) throw new Error('Image unavailable · tap to retry');
+      var blob = await response.blob();
+      if (session !== job.session) return;
+      if (blob.type !== 'image/jpeg' || blob.size > 320 * 1024) throw new Error('Image unavailable');
+      var url = URL.createObjectURL(blob);
+      imageUrls.add(url);
+      button.querySelector('img').src = url;
+      button.dataset.loaded = 'true';
+      button.querySelector('span').textContent = 'OPEN IMAGE ↗';
+    } catch (error) {
+      if (session === job.session && error.name !== 'AbortError') button.querySelector('span').textContent = error.message || 'Image unavailable · tap to retry';
+    } finally { button.dataset.loading = 'false'; imageRequests.delete(controller); }
+  }
+
   function closeConnection() {
     if (connection) {
       connection.onclose = null;
@@ -97,11 +242,23 @@
     presence.textContent = 'DISCONNECTED';
     input.disabled = true;
     submit.disabled = true;
+    attach.disabled = true;
   }
 
   function lockRooms(message) {
     closeConnection();
     session = null;
+    sending = false;
+    clearImage();
+    closeImageViewer();
+    if (imageObserver) imageObserver.disconnect();
+    imageQueue = [];
+    imageRequests.forEach(function (request) { request.abort(); });
+    imageUrls.forEach(function (url) { URL.revokeObjectURL(url); });
+    imageUrls.clear();
+    input.value = '';
+    count.textContent = '0 / 600';
+    setComposeStatus('', false);
     clearInterval(timer);
     timer = null;
     root.dataset.roomState = 'sealed';
@@ -141,7 +298,33 @@
     var text = document.createElement('p');
     text.textContent = String(message.content || '');
     meta.append(key, wallet, time);
-    article.append(meta, text);
+    var body = document.createElement('div');
+    body.className = 'salon-message-body';
+    body.append(text);
+    if (message.image && /^[0-9a-f-]{36}$/i.test(String(message.image.id || ''))) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'salon-message-image';
+      button.dataset.imageId = message.image.id;
+      button.setAttribute('aria-label', 'Open image shared by ' + (message.keyName || 'Key bearer'));
+      var image = document.createElement('img');
+      image.alt = 'Image shared in The Salon';
+      image.width = Math.max(1, Math.min(1600, Number(message.image.width) || 280));
+      image.height = Math.max(1, Math.min(1600, Number(message.image.height) || 210));
+      var hint = document.createElement('span');
+      hint.textContent = 'LOADING IMAGE…';
+      button.append(image, hint);
+      button.addEventListener('click', function () {
+        if (!session) return;
+        if (button.dataset.loaded !== 'true') { queueImage(button); return; }
+        fullImage.src = image.src;
+        imageViewer.showModal();
+      });
+      body.append(button);
+      if (imageObserver) imageObserver.observe(button);
+      else queueImage(button);
+    }
+    article.append(meta, body);
     record.append(article);
     record.scrollTop = record.scrollHeight;
   }
@@ -167,6 +350,7 @@
         presence.textContent = String(payload.connected || 1) + ' PRESENT';
         input.disabled = false;
         submit.disabled = false;
+        updateCompose();
       } else if (payload.type === 'presence') {
         presence.textContent = String(payload.connected || 0) + ' PRESENT';
       } else if (payload.type === 'message') {
@@ -181,6 +365,7 @@
       presence.textContent = event.code === 4401 ? 'SIGNATURE EXPIRED' : 'DISCONNECTED';
       input.disabled = true;
       submit.disabled = true;
+      attach.disabled = true;
       if (event.code === 4401) lockRooms('The register entry expired. Sign again to return.');
     };
     connection.onerror = function () { setStatus('The Salon could not be reached.', true); };
@@ -238,14 +423,41 @@
   });
 
   leave.addEventListener('click', function () { lockRooms('You left the Inner Rooms.'); });
-  input.addEventListener('input', function () { count.textContent = String(Array.from(input.value).length) + ' / 600'; });
-  form.addEventListener('submit', function (event) {
+  input.addEventListener('input', function () { pendingSend = null; count.textContent = String(Array.from(input.value).length) + ' / 600'; });
+  attach.addEventListener('click', function () { imageFile.click(); });
+  imageFile.addEventListener('change', function () { void prepareImage(imageFile.files[0]); });
+  removeImage.addEventListener('click', function () { clearImage(); setComposeStatus('', false); });
+  input.addEventListener('paste', function (event) {
+    var file = Array.from(event.clipboardData && event.clipboardData.files || []).find(function (item) { return item.type.indexOf('image/') === 0; });
+    if (file) { event.preventDefault(); void prepareImage(file); }
+  });
+  document.getElementById('salonCloseImage').addEventListener('click', closeImageViewer);
+  imageViewer.addEventListener('click', function (event) { if (event.target === imageViewer) closeImageViewer(); });
+  imageViewer.addEventListener('close', function () { fullImage.removeAttribute('src'); });
+  form.addEventListener('submit', async function (event) {
     event.preventDefault();
     var content = input.value.trim();
-    if (!content || !connection || connection.readyState !== WebSocket.OPEN) return;
-    connection.send(JSON.stringify({ type:'message', content:content }));
-    input.value = '';
-    count.textContent = '0 / 600';
+    if ((!content && !pendingImage) || !session || !connection || connection.readyState !== WebSocket.OPEN || sending || preparingImage) return;
+    var sendingSession = session;
+    if (!pendingSend) pendingSend = { id:crypto.randomUUID(), content:content,
+      ...(pendingImage ? { image:{ type:'image/jpeg', data:pendingImage.data } } : {}) };
+    sending = true;
+    updateCompose();
+    setComposeStatus('Placing your message…', false);
+    try {
+      var result = await api('/rpc/rooms/message?room=salon', { method:'POST', body:pendingSend });
+      if (session !== sendingSession) return;
+      appendMessage(result.message);
+      input.value = '';
+      count.textContent = '0 / 600';
+      clearImage();
+      setComposeStatus('', false);
+    } catch (error) {
+      if (session === sendingSession) setComposeStatus(error.message || 'The message was not confirmed. Your draft is kept; try again.', true);
+    } finally {
+      if (session === sendingSession) { sending = false; updateCompose(); }
+    }
   });
   window.addEventListener('pagehide', closeConnection);
+  window.addEventListener('pagehide', function () { lockRooms(); });
 }());
