@@ -59,9 +59,6 @@ body { margin:0; background:#050505; }
 .salon-presence i { width:6px; height:6px; border-radius:50%; background:#e7b85c; box-shadow:0 0 12px currentColor; }
 .salon[data-connection="live"] .salon-presence i { background:#5fd39a; }
 .salon-record { min-height:0; max-height:580px; overflow:auto; padding:20px 32px; overscroll-behavior:contain; }
-.salon-empty { height:100%; min-height:360px; display:grid; place-content:center; justify-items:center; color:rgba(245,243,238,.24); text-align:center; }
-.salon-empty span { font-size:10px; letter-spacing:.2em; }
-.salon-empty p { margin:12px 0 0; font-size:9px; }
 .salon-message { display:grid; grid-template-columns:150px 1fr; gap:22px; padding:18px 0; border-bottom:1px solid rgba(199,168,105,.1); }
 .salon-message-meta { min-width:0; }
 .salon-message-meta strong,.salon-message-meta code,.salon-message-meta time { display:block; }

@@ -14,7 +14,6 @@
   var salon = document.querySelector('.salon');
   var presence = document.getElementById('salonPresence');
   var record = document.getElementById('salonRecord');
-  var empty = document.getElementById('salonEmpty');
   var form = document.getElementById('salonCompose');
   var input = document.getElementById('salonMessage');
   var submit = form.querySelector('button[type="submit"]');
@@ -110,8 +109,7 @@
     enter.disabled = false;
     enter.textContent = 'SIGN THE REGISTER';
     messageIds.clear();
-    record.replaceChildren(empty);
-    empty.hidden = false;
+    record.replaceChildren();
     if (message) setStatus(message, false);
   }
 
@@ -126,7 +124,6 @@
   function appendMessage(message) {
     if (!message || !message.id || messageIds.has(message.id)) return;
     messageIds.add(message.id);
-    empty.hidden = true;
     var article = document.createElement('article');
     article.className = 'salon-message';
     article.dataset.messageId = message.id;
