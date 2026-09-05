@@ -67,6 +67,8 @@
   }
   .lede{ color:var(--dim); font-size:12px; margin:0 0 38px; line-height:1.85; }
   .lede b{ color:var(--gold-light); font-weight:400; }
+  #receipt-note a{ color:var(--gold); text-underline-offset:3px; }
+  #receipt-note a:hover{ color:var(--gold-light); }
 
   /* ---------------------------------------------------------------- THE BAR
      The signature element, and the only place this page spends any boldness.
@@ -259,7 +261,7 @@
   </ul>
 
   <h2>What filled the bar</h2>
-  <p class="lede" id="receipt-note">recent contributions below. the complete transaction ledger is available as <a href="/drop/history" target="_blank" rel="noopener">paginated JSON receipts</a>.</p>
+  <p class="lede" id="receipt-note">recent contributions below. the complete transaction ledger is available as <a href="/drop/history" target="_blank" rel="noopener">receipts</a>.</p>
   <ul class="feed" id="feed">
     <li class="empty">reading…</li>
   </ul>
