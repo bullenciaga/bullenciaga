@@ -84,7 +84,7 @@ jobs:
         id: release
         env:
           RELEASE_SHA: ${{ steps.fingerprint.outputs.commit_sha }}
-        run: echo "tag=gh-${RELEASE_SHA:0:12}-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+        run: echo "tag=gh-${RELEASE_SHA:0:12}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
 
       - name: Upload production version without changing traffic
         uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
