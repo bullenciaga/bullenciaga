@@ -2987,24 +2987,22 @@
   .gv-field{ display:flex; flex-direction:column; gap:10px; }
   .gv-field[hidden]{ display:none; }
   .gv-label{
-    font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.12em;
+    font-family:'Space Mono',monospace; font-size:clamp(12px,0.95vw,15px); letter-spacing:0.12em;
     text-transform:uppercase; color:rgba(245,243,238,0.5);
   }
-  /* The one other text input on this page lives in the send panel. This is
-     that input, with an @ prefix -- same background, same border weight,
-     same focus behaviour, so the two cannot drift apart visually. */
+  /* Match the adjacent buttons' height while keeping typed handles legible. */
   .gv-input-row{
-    display:flex; align-items:center; gap:6px;
+    display:flex; align-items:center; gap:8px;
     border:1px solid rgba(245,243,238,0.22); border-radius:2px;
-    padding:9px 10px;
+    min-height:var(--btn-h); padding:0 16px;
     background:rgba(0,0,0,0.5);
   }
   .gv-input-row:focus-within{ border-color:var(--gold); }
-  .gv-at{ font-family:'Space Mono',monospace; color:rgba(245,243,238,0.4); font-size:11px; }
+  .gv-at{ font-family:'Space Mono',monospace; color:rgba(245,243,238,0.4); font-size:16px; line-height:1.5; }
   .gv-input{
     flex:1; background:transparent; border:0; outline:0; color:var(--white);
-    font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.02em;
-    min-width:0;
+    font-family:'Space Mono',monospace; font-size:16px; line-height:1.5; letter-spacing:0.02em;
+    min-width:0; padding:var(--btn-pad-y,14px) 0;
   }
   .gv-input::placeholder{ color:rgba(245,243,238,0.25); }
   .gv-msg{
