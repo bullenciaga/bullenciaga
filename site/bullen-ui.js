@@ -141,6 +141,7 @@
       ['https://x.com/bullenciagax', 'X Profile'],
       ['https://bullenciaga.com/chat', 'X Chat'],
       ['https://t.me/bullenciaga', 'Telegram'],
+      ['https://discord.gg/xQmz3qss7V', 'Discord'],
       ['https://pump.fun/profile/bullenciagax', 'pump.fun'],
       ['https://www.tensor.trade/trade/bullenciaga', 'Tensor'],
       ['https://magiceden.io/marketplace/bullenciaga', 'Magic Eden'],
