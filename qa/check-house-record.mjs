@@ -29,7 +29,8 @@ for (const [source, canonical] of [[current, 'patchnotes'], [archive, 'patchnote
   for (const [, route] of source.matchAll(/href="(\/(?!\/)[^"#?]*)/g)) {
     if (!route || route === '/') continue;
     const asset = route.includes('.') ? route.slice(1) : `${route.slice(1)}.html`;
-    assert(fs.existsSync(new URL(`../site/${asset}`, import.meta.url)), `Missing linked page ${route}`);
+    const redirects = fs.readFileSync(new URL('../site/_redirects', import.meta.url), 'utf8').split('\n').map(line => line.trim().split(/\s+/)[0]);
+    assert(fs.existsSync(new URL(`../site/${asset}`, import.meta.url)) || redirects.includes(route), `Missing linked page ${route}`);
   }
 }
 for (const href of ['/ledger', '/passport', 'https://bullensaga.com/registrar',

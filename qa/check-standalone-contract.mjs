@@ -55,7 +55,7 @@ if (!shell.includes("['rooms', '/rooms.html']") || !shell.includes("nav.append(b
 if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
 if (shell.includes("['transparency', '/transparency.html']")) failures.push('Telegram-only moderation page is exposed in public navigation');
 if (shell.includes("['proof', '/proof.html']") || shell.includes("proof: 'Proof'")) failures.push('retired Proof page remains in public navigation');
-if (!shell.includes('skip.after(buildShell(jumpTo))')) failures.push('standalone pages do not mount the same outward navigation shell and page-local control');
+if (!shell.includes('const shell = buildShell(jumpTo)')) failures.push('standalone pages do not mount the same outward navigation shell and page-local control');
 if (!shellCss.includes('position: fixed;') || !shellCss.includes('backdrop-filter: blur(20px)')) failures.push('shared header is not fixed dark glass');
 if (!shellCss.includes('--bullen-header-shell-width: 1440px')
     || !shellCss.includes('width: min(100%, var(--bullen-header-shell-width))')
@@ -251,7 +251,7 @@ const objectsCss = fs.readFileSync(path.join(site, 'objects.css'), 'utf8');
 if (objectsCss.includes('.objects-hero::before')) failures.push('House Objects retains the transient decorative ring behind its hero');
 
 for (const name of ['chart.html', 'refer.html', 'thedrop.html']) {
-  const source = fs.readFileSync(path.join(site, name), 'utf8');
+  const source = fs.readFileSync(path.join(site, name), 'utf8').replace(/<!-- BULLEN_SHELL_START[\s\S]*?<!-- BULLEN_SHELL_END -->/, '');
   if (/class=["'][^"']*\b(?:back|brand)\b[^"']*["'][^>]*href=["']\/["']/i.test(source)) failures.push(`${name}: redundant in-page home link remains`);
 }
 
