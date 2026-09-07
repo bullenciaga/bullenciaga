@@ -45,15 +45,42 @@ html {
    geometry before it can paint an older page-specific layout. */
 /* Keep the House rail fixed in place between documents. Only the page payload
    waits for fonts and fades in; the shared navigation itself never blinks. */
-html.bullen-booting body > :not(.bullen-site-shell):not(.bullen-skip) {
+html.bullen-booting:not(.bullen-crios) body > :not(.bullen-site-shell):not(.bullen-skip) {
   opacity: 0;
   visibility: hidden;
 }
 
-html.bullen-ready body > :not(.bullen-site-shell):not(.bullen-skip) {
+html.bullen-ready:not(.bullen-crios) body > :not(.bullen-site-shell):not(.bullen-skip) {
   opacity: 1;
   visibility: visible;
   transition: opacity 150ms ease-out;
+}
+
+/* iPhone Chrome gets one viewport-sized fade, rather than opacity layers for
+   every page section. Keep the content in its normal paint/stacking state;
+   the House navigation (z-index 1200) stays above this temporary cover. */
+html.bullen-crios.bullen-booting::after,
+html.bullen-crios.bullen-ready::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: #050505;
+  z-index: 1100;
+}
+html.bullen-crios.bullen-ready::after {
+  pointer-events: none;
+  animation: bullen-crios-reveal 280ms ease-out both;
+}
+@keyframes bullen-crios-reveal {
+  from { opacity: 1; visibility: visible; }
+  to { opacity: 0; visibility: hidden; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.bullen-crios.bullen-ready::after {
+    animation: none;
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 body {
@@ -666,7 +693,7 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html.bullen-ready body > :not(.bullen-site-shell):not(.bullen-skip) { transition: none; }
+  html.bullen-ready:not(.bullen-crios) body > :not(.bullen-site-shell):not(.bullen-skip) { transition: none; }
   *, *::before, *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;

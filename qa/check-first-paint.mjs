@@ -49,6 +49,8 @@ for (const name of htmlFiles) {
     assert.equal(bytes.subarray(0, 4).toString(), 'wOF2');
     assert(crypto.createHash('sha256').update(bytes).digest('hex').startsWith(digest));
   }
+  assert(html.includes('html.bullen-crios.bullen-booting::after'), `${name}: Chrome needs the cover before external styles`);
+  for (const userAgent of ['Safari', 'CriOS/140.0 Mobile Safari', 'Chrome/140.0 Mobile Safari']) {
   for (const mobile of [true, false]) {
     for (const outcome of ['ready', 'timeout', 'parsing']) {
       const classes = new Set(), fontLink = { disabled: false }, events = new Map();
@@ -62,9 +64,10 @@ for (const name of htmlFiles) {
         addEventListener: (event, handler) => events.set(event, handler),
       };
       const window = {};
-      vm.runInNewContext(boot, {document, window, location: {pathname: '/' + name},
+      vm.runInNewContext(boot, {document, window, navigator: {userAgent}, location: {pathname: '/' + name},
         matchMedia: () => ({matches: mobile}), setTimeout: fn => { timeout = fn; return 1; }, clearTimeout: () => {}});
       assert(classes.has('bullen-booting'));
+      assert.equal(classes.has('bullen-crios'), mobile && userAgent.includes('CriOS/'), 'only iPhone Chrome changes reveal path');
       if (outcome === 'ready') window.__BULLEN_REVEAL(true);
       else {
         timeout();
@@ -79,6 +82,7 @@ for (const name of htmlFiles) {
       assert.equal(fontLink.disabled, mobile && outcome !== 'ready', 'late completion cannot change the chosen font set');
     }
   }
+  }
 }
 for (const license of ['Poppins-OFL.txt', 'SpaceMono-OFL.txt']) {
   assert(fs.readFileSync(path.join(site, 'fonts', license), 'utf8').includes('SIL OPEN FONT LICENSE'));
@@ -87,8 +91,8 @@ for (const license of ['Poppins-OFL.txt', 'SpaceMono-OFL.txt']) {
 const css = fs.readFileSync(path.join(site, 'bullen-ui.css'), 'utf8');
 if (css.includes('@import')) failures.push('bullen-ui.css must not defer font discovery through @import');
 for (const required of [
-  'html.bullen-booting body > :not(.bullen-site-shell):not(.bullen-skip)',
-  'html.bullen-ready body > :not(.bullen-site-shell):not(.bullen-skip)',
+  'html.bullen-booting:not(.bullen-crios) body > :not(.bullen-site-shell):not(.bullen-skip)',
+  'html.bullen-ready:not(.bullen-crios) body > :not(.bullen-site-shell):not(.bullen-skip)',
   'html[data-bullen-page]:not([data-bullen-page="index"]) body:not(.transparent)',
   '.bullen-site-aux:empty { display: none; }',
   '.bullen-site-shell .jumpto-chevron',
