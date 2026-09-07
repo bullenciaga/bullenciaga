@@ -36,7 +36,9 @@ assert.deepEqual(productionConfig.routes, [
   { pattern: 'bullenciaga.com', custom_domain: true },
   { pattern: 'www.bullenciaga.com', custom_domain: true },
   { pattern: '*.bullenciaga.com/*', zone_name: 'bullenciaga.com' },
-], 'production routes must remain byte-for-byte equivalent in meaning');
+  { pattern: 'bullen.app', custom_domain: true },
+  { pattern: 'www.bullen.app', custom_domain: true },
+], 'production routes must match the authorized website and alias domains');
 
 assert.match(staging, /^\s+push:/m, 'staging must run automatically after main changes');
 assert.match(staging, /paths:[\s\S]*site\/\*\*/, 'staging must run when website files change');
@@ -73,3 +75,13 @@ assert.match(rollbackParser, /versions\.length, 1/, 'rollback parser must reject
 assert.match(rollbackParser, /percentage\), 100/, 'rollback parser must require one version at 100%');
 
 console.log('deployment controls: ok');
+
+for (const config of [productionConfig, stagingConfig]) {
+  assert.equal(config.main, 'src/website.mjs');
+  assert.equal(config.assets.binding, 'ASSETS');
+  assert.equal(config.assets.run_worker_first, true, 'aliases must redirect before assets or short links');
+}
+assert(production.indexOf('Apply versioned website domain bindings') > production.indexOf('Smoke-test production pages and APIs'));
+assert.match(production, /triggers deploy --config wrangler.production.jsonc/);
+assert.match(production, /node qa\/smoke-domain-aliases.mjs/);
+assert(staging.includes('"src/**"'));

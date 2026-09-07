@@ -10,16 +10,19 @@ const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8'
 
 const commitSha = git('rev-parse', 'HEAD');
 const siteTreeSha = git('rev-parse', 'HEAD:site');
-const [manifest, productionConfig] = await Promise.all([
+const [manifest, productionConfig, workerSource] = await Promise.all([
   read('site/SHA256SUMS.txt'),
   read('wrangler.production.jsonc'),
+  read('src/website.mjs'),
 ]);
 const siteManifestSha256 = sha256(manifest);
 const productionConfigSha256 = sha256(productionConfig);
+const workerSourceSha256 = sha256(workerSource);
 const releaseFingerprint = sha256([
   `site-tree=${siteTreeSha}`,
   `site-manifest=${siteManifestSha256}`,
   `production-config=${productionConfigSha256}`,
+  `worker-source=${workerSourceSha256}`,
   '',
 ].join('\n'));
 
@@ -47,6 +50,7 @@ const outputs = {
   site_tree_sha: siteTreeSha,
   site_manifest_sha256: siteManifestSha256,
   production_config_sha256: productionConfigSha256,
+  worker_source_sha256: workerSourceSha256,
   release_fingerprint: releaseFingerprint,
 };
 

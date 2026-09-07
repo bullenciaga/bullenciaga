@@ -5,6 +5,9 @@
   "workers_dev": true,
   "preview_urls": true,
   "assets": {
-    "directory": "./site"
-  }
+    "directory": "./site",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "main": "src/website.mjs"
 }

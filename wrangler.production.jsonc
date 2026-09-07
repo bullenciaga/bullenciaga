@@ -3,11 +3,31 @@
   "name": "bullenciaga",
   "compatibility_date": "2026-08-23",
   "routes": [
-    { "pattern": "bullenciaga.com", "custom_domain": true },
-    { "pattern": "www.bullenciaga.com", "custom_domain": true },
-    { "pattern": "*.bullenciaga.com/*", "zone_name": "bullenciaga.com" }
+    {
+      "pattern": "bullenciaga.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.bullenciaga.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "*.bullenciaga.com/*",
+      "zone_name": "bullenciaga.com"
+    },
+    {
+      "pattern": "bullen.app",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.bullen.app",
+      "custom_domain": true
+    }
   ],
   "assets": {
-    "directory": "./site"
-  }
+    "directory": "./site",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "main": "src/website.mjs"
 }
