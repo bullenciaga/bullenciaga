@@ -344,6 +344,7 @@
   const reveal = (fontsReady) => {
     clearTimeout(window.__BULLEN_BOOT_TIMER);
     requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (window.__BULLEN_RESTORE_SCROLL) window.__BULLEN_RESTORE_SCROLL();
       window.__BULLEN_REVEAL(fontsReady);
     }));
   };

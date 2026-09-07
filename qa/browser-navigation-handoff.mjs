@@ -29,10 +29,6 @@ for (const engine of (process.env.CHECK_ENGINES || 'chromium,webkit').split(',')
         for (const name of ['pageswap','pagehide','pagereveal','pageshow']) addEventListener(name, event => {
           const data={event:name,transition:!!event.viewTransition,persisted:event.persisted,...window.handoffGeometry()};
           window.recordHandoff(data);
-          if (name==='pagereveal' && event.viewTransition) event.viewTransition.ready.then(() => {
-            const style=getComputedStyle(document.documentElement,'::view-transition-new(bullen-header)');
-            window.recordHandoff({event:'transition-ready',animation:style.animationName,opacity:style.opacity,...window.handoffGeometry()});
-          }).catch(error => window.recordHandoff({event:'transition-error',error:String(error)}));
         });
       });
       let pauseNext=false, requested, resume;
@@ -47,7 +43,32 @@ for (const engine of (process.env.CHECK_ENGINES || 'chromium,webkit').split(',')
       });
       const page=await context.newPage();
       const settled=async () => {await page.waitForFunction(()=>document.documentElement.classList.contains('bullen-ready'));await page.waitForTimeout(300);};
+      const scrollChecks=[];
+      const checkScrollSurface=async (stage) => {
+        if(mode!=='chrome') return;
+        const before=await page.evaluate(() => ({...window.handoffGeometry(),
+          rootHeight:document.documentElement.clientHeight,rootExtent:document.documentElement.scrollHeight,
+          bodyHeight:document.body.clientHeight,bodyExtent:document.body.scrollHeight,
+          rootY:window.scrollY,bodyY:document.body.scrollTop,position:getComputedStyle(document.querySelector('[data-bullen-shell]')).position}));
+        assert(before.rootExtent<=before.rootHeight+1,`${engine}: root must fit its viewport after ${stage}`);
+        assert.equal(before.rootY,0,`${engine}: native root must remain at zero after ${stage}`);
+        assert.equal(before.position,'fixed');assert.equal(before.y,0);assert.equal(before.name,'none');
+        assert(before.bodyExtent>before.bodyHeight+100,`${engine}: ${stage} needs scrollable content`);
+        await page.evaluate(() => {
+          window.scrollTo({top:120,behavior:'instant'});
+          document.body.scrollTo({top:320,behavior:'instant'});
+        });
+        await page.waitForFunction(()=>document.body.scrollTop>100);
+        const after=await page.evaluate(() => ({...window.handoffGeometry(),rootY:window.scrollY,bodyY:document.body.scrollTop}));
+        assert.equal(after.rootY,0,`${engine}: content scrolling must not move the native root`);
+        assert(after.bodyY>100);assert.equal(after.y,before.y);assert.equal(after.height,before.height);
+        assert.equal(after.opacity,'1');assert.equal(after.visibility,'visible');
+        scrollChecks.push({stage,before,after});
+        await page.evaluate(()=>document.body.scrollTo({top:0,behavior:'instant'}));
+        await page.waitForFunction(()=>document.body.scrollTop===0);
+      };
       await page.goto(base+'/buy',{waitUntil:'domcontentloaded'});await settled();
+      await checkScrollSurface('initial arrival');
       for (const destination of ['/', '/patchnotes']) {
         // Use real, existing links; pause only the destination document.
         if (destination==='/patchnotes' && mode!=='desktop') await page.locator('.bullen-nav-toggle').click();
@@ -56,9 +77,8 @@ for (const engine of (process.env.CHECK_ENGINES || 'chromium,webkit').split(',')
         const before=await page.evaluate(()=>window.handoffGeometry());
         const pending=new Promise(resolve=>{requested=resolve;});pauseNext=true;
         const click=link.click({noWaitAfter:true});await pending;
-        // During a native view-transition capture the old document's JS can
-        // be suspended. Record its last geometry in pageswap instead of waiting
-        // for a requestAnimationFrame that the browser intentionally freezes.
+        // Keep the request pending, then compare the last outgoing geometry
+        // recorded by pageswap with the settled source document.
         await new Promise(resolve=>setTimeout(resolve,500));
         resume();await click;await page.waitForURL(url=>url.pathname===destination);await settled();
         events.splice(0,events.length,...await page.evaluate(()=>JSON.parse(sessionStorage.getItem('bullen-navigation-qa')||'[]')));
@@ -68,21 +88,23 @@ for (const engine of (process.env.CHECK_ENGINES || 'chromium,webkit').split(',')
         assert(departure.header);assert.equal(departure.opacity,'1');assert.equal(departure.visibility,'visible');
         for(const key of ['y','height','contentY','padding']) assert.equal(departure[key],before[key],key+' moved on departure');
         const after=await page.evaluate(()=>window.handoffGeometry());assert(after.header);assert.equal(after.y,0);assert.equal(after.opacity,'1');
+        await checkScrollSurface('arrival '+destination);
         results.push({engine,mode,destination,before,after,departure});
       }
       await page.reload({waitUntil:'domcontentloaded'});await settled();
       assert.equal(await page.locator('.bullen-site-shell').count(),1);
+      await checkScrollSurface('reload');
       await page.goBack({waitUntil:'domcontentloaded'});await settled();
+      await checkScrollSurface('back');
       await page.goForward({waitUntil:'domcontentloaded'});await settled();
+      await checkScrollSurface('forward');
       if(mode!=='desktop'){await page.locator('.bullen-nav-toggle').click();assert.equal(await page.locator('.bullen-nav-toggle').getAttribute('aria-expanded'),'true');await page.keyboard.press('Escape');}
       events.splice(0,events.length,...await page.evaluate(()=>JSON.parse(sessionStorage.getItem('bullen-navigation-qa')||'[]')));
       const swaps=events.filter(e=>e.event==='pageswap');
       if(mode==='chrome') {
-        assert(swaps.some(e=>e.transition),`${engine}: Chrome must capture the outgoing header`);
-        const ready=events.filter(e=>e.event==='transition-ready');assert(ready.length,`${engine}: destination must receive the header snapshot`);
-        assert(ready.every(e=>e.animation==='none' && e.opacity==='1'),'header snapshots must never fade or move');
+        assert(swaps.every(e=>!e.transition),`${engine}: Chrome must not use cross-document header snapshots`);
       } else assert(swaps.every(e=>!e.transition),'other browsers must retain their existing handoff');
-      results.push({engine,mode,events});console.log('PASS',engine,mode,'departure, arrival, reload, back/forward and controls');
+      results.push({engine,mode,events,scrollChecks});console.log('PASS',engine,mode,'departure, arrival, reload, back/forward, controls and scroll surface');
       await fs.writeFile(evidence,JSON.stringify({base,nativeIPhoneVerified:false,results},null,2));
       await context.close();
     }
