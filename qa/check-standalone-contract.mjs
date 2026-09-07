@@ -4,7 +4,7 @@ import path from 'node:path';
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
 const publicPages = [
-  'index.html', 'stats.html', 'chart.html', 'curve.html',
+  'index.html', 'buy.html', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html', 'tape.html',
   'patchnotes.html', 'patchnotes-001.html', 'patchnotes-002.html', 'lock.html', 'ledger.html', 'passport.html',
   'rooms.html',
@@ -41,11 +41,11 @@ if (!shell.includes('if (open) closeExtraControl();')) failures.push('hamburger 
 if (!shell.includes('const buildPageJumpTo') || !shell.includes("closeExtraControl();\n      for (const group")) failures.push('Jump To and grouped navigation do not enforce one open menu at a time');
 if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
 if (!shell.includes('const navigationGroups') || !shell.includes("['House', ['objects', 'lock', 'patchnotes', 'giveaways']]")
-    || !shell.includes("['Market', ['stats', 'chart', 'tape', 'curve']]")
+    || !shell.includes("['Market', ['buy', 'stats', 'chart', 'tape', 'curve']]")
     || !shell.includes("['Explore', ['refer', 'thedrop', 'ledger', 'passport']]")) {
   failures.push('desktop public navigation is not grouped into stable House, Market and Explore menus');
 }
-if (!shell.includes("const mobileNavigationKeys = ['objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport']")) {
+if (!shell.includes("const mobileNavigationKeys = ['buy', 'objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport']")) {
   failures.push('mobile public navigation is not kept in its approved ungrouped order');
 }
 if (!shell.includes("['bullensaga', 'https://bullensaga.com/']")) failures.push('BULLENSAGA sister-site navigation missing');

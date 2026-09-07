@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-bullen-page="buy">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},matchMedia('(max-width: 820px)').matches?3000:1600)}(document,location.pathname);</script>
+<link rel="preload" href="/bullen-ui.css" as="style">
+<script defer src="/bullen-ui.js"></script>
+<title>BULLENCIAGA — Buy $BULLEN</title>
+<meta name="description" content="Your route to $BULLEN. Swap with Jupiter, open your wallet or trade on Pump.fun. Official contract, live market context and all the buying options in one place.">
+<link rel="canonical" href="https://bullenciaga.com/buy">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bullenciaga.com/buy">
+<meta property="og:title" content="Buy $BULLEN · Choose your route">
+<meta property="og:description" content="Jupiter swap, wallet shortcuts, Pump.fun and the official contract. One link. Your choice.">
+<meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-08-30">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/buy.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/bullen-ui.css">
+<link rel="stylesheet" href="/buy-page.css">
+<script defer src="/mobile-buy.js"></script>
+<script defer src="/bullen-wallet-chooser.js"></script>
+<script defer src="/buy-page.js"></script>
+</head>
+<body>
+<main class="buy-desk" id="buy-desk">
+  <header class="buy-heading">
+    <div><p class="eyebrow">BULLENCIAGA · ON SOLANA</p><h1>Buy <span>$BULLEN.</span></h1><p class="buy-intro">Choose your route. Make it yours. <a class="wallet-jump" href="#routes-heading">WALLET OPTIONS ↓</a></p></div>
+    <button type="button" class="text-action" id="share-buy">Share this page <span aria-hidden="true">↗</span></button>
+  </header>
+  <div class="buy-grid">
+    <section class="swap-panel" aria-labelledby="swap-heading">
+      <header class="panel-head"><div class="provider-heading"><img src="/assets/markets/jupiter.png" width="32" height="32" alt=""><div><p class="eyebrow">SWAP HERE</p><h2 id="swap-heading">Powered by Jupiter</h2></div></div><span class="network-label">SOLANA</span></header>
+      <div id="jupiter-buy" aria-label="Jupiter swap"><div id="swap-loading" class="swap-loading"><span class="loading-mark" aria-hidden="true">↔</span><p id="swap-status" role="status">Loading the swap…</p><a data-route="jupiter" href="https://jup.ag/swap?buy=BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN&amp;sell=So11111111111111111111111111111111111111112" target="_blank" rel="noopener noreferrer">Open Jupiter web ↗</a><button type="button" class="text-action" id="retry-swap" hidden>Try loading again</button></div></div>
+      <p class="swap-note">Choose an amount and connect your wallet to review a quote.<br>You approve the swap in your wallet. <a class="swap-web-fallback" data-route="jupiter" href="https://jup.ag/swap?buy=BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN&amp;sell=So11111111111111111111111111111111111111112" target="_blank" rel="noopener noreferrer">Open Jupiter web ↗</a></p>
+      <noscript><p class="swap-note">The embedded swap needs JavaScript. The wallet and market links below still work.</p></noscript>
+    </section>
+    <div class="buy-context">
+      <section class="market-panel" aria-labelledby="market-heading">
+        <header class="market-head"><h2 id="market-heading">The market, now.</h2><a href="/chart">Full chart ↗</a></header>
+        <div class="price-line"><strong id="market-price">—</strong><span id="market-change">—</span></div>
+        <div class="chart-head"><span>PRICE · USD</span><div role="group" aria-label="Chart range"><button type="button" data-range="24h" aria-pressed="true">24H</button><button type="button" data-range="7d" aria-pressed="false">7D</button></div></div>
+        <figure class="mini-chart"><svg id="price-chart" viewBox="0 0 640 170" role="img" aria-labelledby="chart-title chart-description" hidden><title id="chart-title">$BULLEN price history</title><desc id="chart-description">Historical USD closing prices.</desc><defs><linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#c7a869" stop-opacity=".2"/><stop offset="1" stop-color="#c7a869" stop-opacity="0"/></linearGradient></defs><path class="chart-grid" d="M0 35H640M0 85H640M0 135H640"/><path id="chart-area" fill="url(#chart-fill)"/><path id="chart-line" fill="none" stroke="#c7a869" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><p id="chart-empty" role="status">Loading price history…</p><figcaption><span id="chart-start">—</span><span id="chart-end">—</span></figcaption></figure>
+        <dl class="market-stats"><div><dt>24h volume</dt><dd id="market-volume">—</dd></div><div><dt>Pool liquidity</dt><dd id="market-liquidity">—</dd></div><div><dt>Circulating cap</dt><dd id="market-cap">—</dd></div><div><dt>FDV</dt><dd id="market-fdv">—</dd></div></dl>
+        <p class="data-note" id="market-status" role="status">Fetching market data…</p>
+        <p class="data-note">Market data: <a href="https://www.coingecko.com/" target="_blank" rel="noopener noreferrer">CoinGecko</a> / GeckoTerminal. Supply: <a href="/supply">on-chain record</a>. Indicative prices; your swap quote may differ.</p>
+      </section>
+      <section class="contract-panel" aria-labelledby="contract-heading"><div class="contract-top"><h2 id="contract-heading">The official contract.</h2><span>SPL · SOLANA</span></div><code id="bullen-contract">BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN</code><div class="contract-actions"><button type="button" id="copy-contract">Copy contract <span aria-hidden="true">⧉</span></button><a href="https://solscan.io/token/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN" target="_blank" rel="noopener noreferrer">View on Solscan ↗</a></div></section>
+    </div>
+  </div>
+  <section class="routes-section" aria-labelledby="routes-heading">
+    <header class="section-head"><div><p class="eyebrow">YOUR WALLET. YOUR WAY.</p><h2 id="routes-heading">Take it to your wallet.</h2></div><p id="wallet-guidance">Open a wallet app, or use the swap above with your browser wallet.</p></header>
+    <div class="route-grid" id="primary-wallets">
+      <a class="route-card" data-wallet="phantom" href="https://phantom.app/ul/v1/swap/?buy=solana%3A101%2Faddress%3ABULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN&amp;sell="><img src="/assets/wallets/phantom.png" width="32" height="32" alt=""><span><strong>Phantom</strong><small>Open a native $BULLEN swap</small></span><span aria-hidden="true">↗</span></a>
+      <a class="route-card" data-wallet="solflare" href="https://www.solflare.com/prices/bullenciaga/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN/"><img src="/assets/wallets/solflare.png" width="32" height="32" alt=""><span><strong>Solflare</strong><small>Open $BULLEN, then tap Buy</small></span><span aria-hidden="true">↗</span></a>
+      <a class="route-card" data-wallet="backpack" href="https://backpack.app/ul/v1/browse/https%3A%2F%2Fbullenciaga.com%2Fbuy?ref=https%3A%2F%2Fbullenciaga.com"><img src="/assets/wallets/backpack.png" width="32" height="32" alt=""><span><strong>Backpack</strong><small>Open this swap in the app</small></span><span aria-hidden="true">↗</span></a>
+      <a class="route-card" data-wallet="coinbase" href="https://go.cb-w.com/dapp?cb_url=https%3A%2F%2Fbullenciaga.com%2Fbuy"><img src="/assets/wallets/coinbase.png" width="32" height="32" alt=""><span><strong>Coinbase Wallet</strong><small>Open this swap in the app</small></span><span aria-hidden="true">↗</span></a>
+    </div>
+    <details class="other-wallets"><summary>More wallets <span>Trust Wallet · OKX · Glow</span></summary><div class="route-grid" id="other-wallets"></div><p>Use the wallet’s Solana account. If an app cannot open the link, open <strong>bullenciaga.com/buy</strong> in its browser.</p></details>
+  </section>
+  <section class="markets-section" aria-labelledby="markets-heading"><header class="section-head"><div><p class="eyebrow">DIRECT TO THE MARKET</p><h2 id="markets-heading">Prefer another route?</h2></div></header><div class="market-routes">
+    <a class="route-card" data-route="pump" href="https://pump.fun/coin/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN" target="_blank" rel="noopener noreferrer"><img src="/assets/markets/pump.svg" width="32" height="32" alt=""><span><strong>Pump.fun</strong><small>Open the $BULLEN market</small></span><span aria-hidden="true">↗</span></a>
+    <a class="route-card" data-route="jupiter" href="https://jup.ag/swap?buy=BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN&amp;sell=So11111111111111111111111111111111111111112" target="_blank" rel="noopener noreferrer"><img src="/assets/markets/jupiter.png" width="32" height="32" alt=""><span><strong>Jupiter web</strong><small>SOL → $BULLEN, already selected</small></span><span aria-hidden="true">↗</span></a>
+  </div></section>
+  <footer class="buy-footer"><span>BULLENCIAGA · A TOKEN WITH HORNS.</span><nav aria-label="More market context"><a href="/tape">The Tape ↗</a><a href="/stats">All stats ↗</a><a href="/thedrop">The Drop ↗</a></nav></footer>
+  <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+</main>
+</body></html>
