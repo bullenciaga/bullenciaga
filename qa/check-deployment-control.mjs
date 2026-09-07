@@ -36,8 +36,8 @@ assert.deepEqual(productionConfig.routes, [
   { pattern: 'bullenciaga.com', custom_domain: true },
   { pattern: 'www.bullenciaga.com', custom_domain: true },
   { pattern: '*.bullenciaga.com/*', zone_name: 'bullenciaga.com' },
-  { pattern: 'bullen.app', custom_domain: true },
-  { pattern: 'www.bullen.app', custom_domain: true },
+  { pattern: 'bullen.app/*', zone_name: 'bullen.app' },
+  { pattern: 'www.bullen.app/*', zone_name: 'bullen.app' },
 ], 'production routes must match the authorized website and alias domains');
 
 assert.match(staging, /^\s+push:/m, 'staging must run automatically after main changes');
@@ -81,7 +81,7 @@ for (const config of [productionConfig, stagingConfig]) {
   assert.equal(config.assets.binding, 'ASSETS');
   assert.equal(config.assets.run_worker_first, true, 'aliases must redirect before assets or short links');
 }
-assert(production.indexOf('Apply versioned website domain bindings') > production.indexOf('Smoke-test production pages and APIs'));
-assert.match(production, /triggers deploy --config wrangler.production.jsonc/);
+assert(production.indexOf('Smoke-test short-domain redirects') > production.indexOf('Smoke-test production pages and APIs'));
+assert(!production.includes('triggers deploy'), 'code-release token must not require zone route writes');
 assert.match(production, /node qa\/smoke-domain-aliases.mjs/);
 assert(staging.includes('"src/**"'));

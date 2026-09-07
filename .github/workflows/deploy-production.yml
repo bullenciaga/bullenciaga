@@ -119,15 +119,6 @@ jobs:
           SMOKE_PHASE: post-release
         run: node qa/smoke-live.mjs
 
-      - name: Apply versioned website domain bindings
-        id: domains
-        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: "4.125.0"
-          command: triggers deploy --config wrangler.production.jsonc
-
       - name: Smoke-test short-domain redirects
         run: node qa/smoke-domain-aliases.mjs
 
