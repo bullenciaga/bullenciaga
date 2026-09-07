@@ -332,31 +332,26 @@
   document.addEventListener('touchstart', prefetchPage, { passive: true });
   document.addEventListener('focusin', prefetchPage);
 
-  /* Build the complete shell while only the page content is held at opacity
-     zero, then reveal that content after the House fonts settle (or a short safety cap).
-     The inline boot timer remains an independent fail-open path. */
-  const reveal = () => {
+  /* Settle fonts before revealing the payload. If mobile font delivery times
+     out, the inline reveal helper disables the font sheet for this document:
+     a late face must never replace a fallback after content is visible.
+     The independent boot deadline uses the same fallback if this script stalls. */
+  const reveal = (fontsReady) => {
     clearTimeout(window.__BULLEN_BOOT_TIMER);
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      root.classList.remove('bullen-booting');
-      root.classList.add('bullen-ready');
+      window.__BULLEN_REVEAL(fontsReady);
     }));
   };
   const mobilePaint = matchMedia('(max-width: 820px)').matches;
   const fontGate = document.fonts && document.fonts.ready
-    ? Promise.all([
-      document.fonts.ready.catch(() => undefined),
-      // Request the rail's actual faces explicitly: a cold mobile load must
-      // not reveal between font discovery and the first real font paint.
-      ...(mobilePaint ? [
-        document.fonts.load('600 12px Poppins'),
-        document.fonts.load('400 11px "Space Mono"'),
-        document.fonts.load('700 11px "Space Mono"'),
-      ].map(promise => promise.catch(() => undefined)) : []),
-    ])
-    : Promise.resolve();
+    ? Promise.all(mobilePaint ? [
+      document.fonts.load('600 12px Poppins'),
+      document.fonts.load('400 11px "Space Mono"'),
+      document.fonts.load('700 11px "Space Mono"'),
+    ] : []).then(() => document.fonts.ready).then(() => true, () => false)
+    : Promise.resolve(false);
   Promise.race([
     fontGate,
-    new Promise((resolve) => setTimeout(resolve, mobilePaint ? 2500 : 500)),
-  ]).then(reveal, reveal);
+    new Promise((resolve) => setTimeout(() => resolve(false), mobilePaint ? 2500 : 500)),
+  ]).then(reveal, () => reveal(false));
 })();
