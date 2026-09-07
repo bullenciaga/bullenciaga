@@ -113,17 +113,17 @@
   };
 
   const buildPageJumpTo = () => {
-    const widget = document.createElement('div');
+    const widget = document.querySelector('header[data-bullen-shell] .bullen-page-jumpto') || document.createElement('div');
     widget.className = 'jumpto-widget bullen-page-jumpto';
 
-    const button = document.createElement('button');
+    const button = widget.querySelector('.jumpto-btn') || document.createElement('button');
     button.type = 'button';
     button.className = 'jumpto-btn';
     button.setAttribute('aria-haspopup', 'true');
     button.setAttribute('aria-expanded', 'false');
     button.innerHTML = 'JUMP TO <svg class="jumpto-chevron" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l5 5-5 5"/></svg>';
 
-    const menu = document.createElement('div');
+    const menu = widget.querySelector('.jumpto-menu') || document.createElement('div');
     menu.className = 'jumpto-menu';
     const menuId = `bullen-page-jumpto-${page}`;
     menu.id = menuId;
@@ -219,27 +219,27 @@
   };
 
   const mountResponsiveNav = (shell, bar, nav, extraControl) => {
-    const actions = document.createElement('div');
+    const actions = bar.querySelector('.bullen-site-actions') || document.createElement('div');
     actions.className = 'bullen-site-actions';
 
     const navId = `bullen-public-nav-${page}`;
     nav.id = navId;
-    actions.append(nav);
+    if (nav.parentElement !== actions) actions.append(nav);
 
-    const auxiliary = document.createElement('div');
+    const auxiliary = actions.querySelector('.bullen-site-aux') || document.createElement('div');
     auxiliary.className = 'bullen-site-aux';
-    if (extraControl) auxiliary.append(extraControl);
-    actions.append(auxiliary);
+    if (extraControl && extraControl.parentElement !== auxiliary) auxiliary.append(extraControl);
+    if (auxiliary.parentElement !== actions) actions.append(auxiliary);
 
-    const toggle = document.createElement('button');
+    const toggle = actions.querySelector('.bullen-nav-toggle') || document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'bullen-nav-toggle';
     toggle.setAttribute('aria-label', 'Open page navigation');
     toggle.setAttribute('aria-controls', navId);
     toggle.setAttribute('aria-expanded', 'false');
     toggle.innerHTML = '<span></span><span></span><span></span>';
-    actions.append(toggle);
-    bar.append(actions);
+    if (toggle.parentElement !== actions) actions.append(toggle);
+    if (actions.parentElement !== bar) bar.append(actions);
 
     const extraButton = extraControl ? extraControl.querySelector('button') : null;
     const closeExtraControl = () => {
@@ -292,20 +292,25 @@
   };
 
   const buildShell = (extraControl) => {
-    const shell = document.createElement('header');
+    // The production HTML already contains the finished header. Bind its
+    // existing controls in place; never insert a late rail over visible content.
+    const shell = document.querySelector('header[data-bullen-shell]') || document.createElement('header');
+    shell.setAttribute('data-bullen-shell', '');
     shell.className = `bullen-site-shell${page === 'index' ? ' bullen-home-shell' : ''}${page === 'referrals' ? ' is-admin' : ''}`;
 
-    const bar = document.createElement('div');
+    const bar = shell.querySelector('.bullen-site-bar') || document.createElement('div');
     bar.className = 'bullen-site-bar';
-    bar.append(buildBrand());
-    shell.append(bar);
-    mountResponsiveNav(shell, bar, buildPublicNav(), extraControl);
+    if (!bar.querySelector('.bullen-site-brand')) bar.append(buildBrand());
+    if (bar.parentElement !== shell) shell.append(bar);
+    mountResponsiveNav(shell, bar, bar.querySelector('.bullen-site-nav') || buildPublicNav(), extraControl);
     return shell;
   };
 
   const jumpTo = page === 'index' ? document.getElementById('jumpToWidget') : buildPageJumpTo();
   if (jumpTo) jumpTo.setAttribute('aria-label', `${labels[page] || 'Page'} section navigation`);
-  skip.after(buildShell(jumpTo));
+  const shell = buildShell(jumpTo);
+  if (skip.nextElementSibling !== shell) skip.after(shell);
+  shell.dataset.bullenHydrated = 'true';
 
   for (const button of document.querySelectorAll('button:not([type])')) {
     button.type = 'button';
