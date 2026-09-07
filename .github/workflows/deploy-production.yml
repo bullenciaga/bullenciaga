@@ -119,6 +119,9 @@ jobs:
           SMOKE_PHASE: post-release
         run: node qa/smoke-live.mjs
 
+      - name: Verify iPhone Chrome initial viewport
+        run: node qa/smoke-iphone-viewport.mjs
+
       - name: Smoke-test short-domain redirects
         run: node qa/smoke-domain-aliases.mjs
 
