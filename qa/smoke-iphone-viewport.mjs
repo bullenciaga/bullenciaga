@@ -6,26 +6,16 @@ assert(base.protocol === 'https:' || ['127.0.0.1', 'localhost'].includes(base.ho
 const iphone = 'Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) ';
 const safari = iphone + 'Version/26.0 Mobile/15E148 Safari/604.1';
 const chrome = iphone + 'CriOS/140.0.7339.39 Mobile/15E148 Safari/604.1';
-async function get(path, ua, extra = {}, waitForNativeRender = false) {
-  // A version can be available before every edge serves it. Retry only a
-  // missing release marker; persistent absence and all content checks fail.
-  for(let attempt=0; attempt<9; attempt++) {
-    const response = await fetch(new URL(path, base), {redirect:'manual', headers:{'User-Agent':ua, ...extra}, signal:AbortSignal.timeout(20_000)});
-    assert.equal(response.status, 200, path);
-    const html = await response.text();
-    if(waitForNativeRender && !html.includes('<style data-bullen-native-render>') && attempt<8) {
-      console.warn(path + ': waiting for native rendering response propagation');
-      await new Promise(resolve => setTimeout(resolve,5000));
-      continue;
-    }
-    return {response, html};
-  }
+async function get(path, ua, extra = {}) {
+  const response = await fetch(new URL(path, base), {redirect:'manual', headers:{'User-Agent':ua, ...extra}, signal:AbortSignal.timeout(20_000)});
+  assert.equal(response.status, 200, path);
+  return {response, html:await response.text()};
 }
 const pages = fs.readdirSync(new URL('../site/', import.meta.url)).filter(name => name.endsWith('.html') && fs.readFileSync(new URL('../site/' + name, import.meta.url), 'utf8').includes('data-bullen-shell-source'));
 for (const name of pages) {
   const path = name === 'index.html' ? '/' : '/' + name.replace(/\.html$/, '');
   const a = await get(path, safari);
-  const b = await get(path, chrome, {'If-None-Match':a.response.headers.get('ETag') || 'old', 'If-Modified-Since':'Mon, 07 Sep 2026 00:00:00 GMT'}, true);
+  const b = await get(path, chrome, {'If-None-Match':a.response.headers.get('ETag') || 'old', 'If-Modified-Since':'Mon, 07 Sep 2026 00:00:00 GMT'});
   assert(/<meta name="viewport"/.test(a.html));
   assert(!a.html.includes('data-bullen-native-render'), 'Safari must retain original typography');
   const rendering = b.html.match(/<style data-bullen-native-render>[\s\S]*?<\/style>/g) || [];
