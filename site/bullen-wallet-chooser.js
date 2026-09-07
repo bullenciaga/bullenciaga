@@ -17,7 +17,6 @@
   var otherWallets = [
     { id:'trust', name:'Trust Wallet', icon:'/assets/wallets/trust.png', provider:function(){ return window.trustwallet && window.trustwallet.solana || (window.solana && window.solana.isTrust ? window.solana : null); }, link:function(){ return 'https://link.trustwallet.com/open_url?coin_id=501&url=' + encodedUrl(); }, install:'https://trustwallet.com/' },
     { id:'okx', name:'OKX Wallet', icon:'/assets/wallets/okx.png', provider:function(){ return window.okxwallet && window.okxwallet.solana || null; }, link:function(){ return 'https://web3.okx.com/download?deeplink=' + encodeURIComponent('okx://wallet/dapp/url?dappUrl=' + encodedUrl()); }, install:'https://www.okx.com/web3' },
-    { id:'glow', name:'Glow', icon:'/assets/wallets/glow.svg', provider:function(){ return window.glow || window.glowSolana || null; }, link:function(){ return 'https://glow.app/link/browse/' + encodedUrl(); }, install:'https://glow.app/' }
   ];
   var wallets = primaryWallets.concat(otherWallets);
 

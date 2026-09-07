@@ -39,8 +39,8 @@ try {
    if(wallet==='phantom')assert.equal(u.searchParams.get('buy'),'solana:101/address:'+MINT);
    else assert.equal(u.href,`https://www.solflare.com/prices/bullenciaga/${MINT}/`);
   }
-  await page.locator('.other-wallets summary').click();assert.equal(await page.locator('[data-wallet]').count(),7);
-  for(const wallet of ['backpack','coinbase','trust','okx','glow'])assert(decodeURIComponent(decodeURIComponent(await page.locator(`[data-wallet=${wallet}]`).getAttribute('href'))).includes('https://bullenciaga.com/buy'));
+  await page.locator('.other-wallets summary').click();assert.equal(await page.locator('[data-wallet]').count(),6);
+  for(const wallet of ['backpack','coinbase','trust','okx'])assert(decodeURIComponent(decodeURIComponent(await page.locator(`[data-wallet=${wallet}]`).getAttribute('href'))).includes('https://bullenciaga.com/buy'));
   for(const link of await page.locator('[data-route=jupiter]').all()){const u=new URL(await link.getAttribute('href'));assert.equal(u.searchParams.get('buy'),MINT);assert.equal(u.searchParams.get('sell'),SOL);}
   await page.locator('[data-range="7d"]').click();await page.waitForFunction(()=>!document.querySelector('#price-chart').hasAttribute('hidden'));assert.equal(await page.locator('[data-range="7d"]').getAttribute('aria-pressed'),'true');
   await page.evaluate(()=>{window.phantom={solana:{connect(){throw new Error('Must not connect automatically');}}};window.dispatchEvent(new Event('focus'));});
@@ -60,5 +60,5 @@ try {
  await context.close();
  const nojs=await browser.newContext({javaScriptEnabled:false});const np=await nojs.newPage();await np.goto(base+'/buy');assert.equal(await np.locator('[data-wallet=phantom]').isVisible(),true);assert.equal(await np.locator('[data-route=pump]').isVisible(),true);checks++;await nojs.close();
  assert(!/^\/buy\s/m.test(await fs.readFile(new URL('../site/_redirects',import.meta.url),'utf8')));
- console.log(`Buy page: ${checks} scenarios passed; six widths, mint/amount configuration, copy, seven wallet destinations, in-wallet continuation, chart, market cap/FDV, failure recovery and no-JS routes.`);
+ console.log(`Buy page: ${checks} scenarios passed; six widths, mint/amount configuration, copy, six wallet destinations, in-wallet continuation, chart, market cap/FDV, failure recovery and no-JS routes.`);
 }finally{await browser.close();server.close();}
