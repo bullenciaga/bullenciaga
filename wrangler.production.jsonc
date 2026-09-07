@@ -16,12 +16,12 @@
       "zone_name": "bullenciaga.com"
     },
     {
-      "pattern": "bullen.app",
-      "custom_domain": true
+      "pattern": "bullen.app/*",
+      "zone_name": "bullen.app"
     },
     {
-      "pattern": "www.bullen.app",
-      "custom_domain": true
+      "pattern": "www.bullen.app/*",
+      "zone_name": "bullen.app"
     }
   ],
   "assets": {
