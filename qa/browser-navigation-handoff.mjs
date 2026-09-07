@@ -14,6 +14,8 @@ for (const engine of (process.env.CHECK_ENGINES || 'chromium,webkit').split(',')
       const events = [];
       const context = await browser.newContext({viewport:{width:mode==='desktop'?1440:440,height:850},isMobile:mode!=='desktop',
         userAgent:mode==='desktop'?'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36':iphone+(mode==='chrome'?'CriOS/140.0':'Version/26.0')+' Mobile/15E148 Safari/604.1'});
+      const fontRequests = [];
+      context.on('request', request => { if(request.resourceType()==='font') fontRequests.push(request.url()); });
       await context.addInitScript(() => {
         window.recordHandoff = data => {
           const events=JSON.parse(sessionStorage.getItem('bullen-navigation-qa')||'[]');events.push(data);
@@ -77,11 +79,12 @@ for (const engine of (process.env.CHECK_ENGINES || 'chromium,webkit').split(',')
       if(mode!=='desktop'){await page.locator('.bullen-nav-toggle').click();assert.equal(await page.locator('.bullen-nav-toggle').getAttribute('aria-expanded'),'true');await page.keyboard.press('Escape');}
       events.splice(0,events.length,...await page.evaluate(()=>JSON.parse(sessionStorage.getItem('bullen-navigation-qa')||'[]')));
       const swaps=events.filter(e=>e.event==='pageswap');
+      assert(swaps.every(e=>!e.transition),'document snapshots must not replace the persistent header');
       if(mode==='chrome') {
-        assert(swaps.some(e=>e.transition),`${engine}: Chrome must capture the outgoing header`);
-        const ready=events.filter(e=>e.event==='transition-ready');assert(ready.length,`${engine}: destination must receive the header snapshot`);
-        assert(ready.every(e=>e.animation==='none' && e.opacity==='1'),'header snapshots must never fade or move');
-      } else assert(swaps.every(e=>!e.transition),'other browsers must retain their existing handoff');
+        assert.equal(await page.locator('.bullen-site-brand').evaluate(e=>getComputedStyle(e).fontFamily),'Arial, sans-serif');
+        assert.equal(await page.locator('link[data-bullen-fonts],link[as="font"]').count(),0);
+        assert.deepEqual(fontRequests,[], 'native typography must not download fonts during navigation');
+      }
       results.push({engine,mode,events});console.log('PASS',engine,mode,'departure, arrival, reload, back/forward and controls');
       await fs.writeFile(evidence,JSON.stringify({base,nativeIPhoneVerified:false,results},null,2));
       await context.close();
