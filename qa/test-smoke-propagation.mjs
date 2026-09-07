@@ -26,7 +26,7 @@ const fixture = `
   try { await import(${JSON.stringify(new URL('./smoke-live.mjs', import.meta.url).href)}); } catch(error) { failure = error; }
   if(mode === 'permanent') {
     assert(failure, 'Persistent stale HTML must fail and leave rollback available');
-    assert.match(failure.message, /edition 002 has not reached/);
+    assert.match(failure.message, /edition 003 has not reached/);
     assert.equal(recordCalls, 3, 'Failure must be bounded by max attempts');
   } else {
     assert.equal(failure, undefined, failure?.message);
