@@ -17,16 +17,23 @@ for (const name of pages) {
   const a = await get(path, safari);
   const b = await get(path, chrome, {'If-None-Match':a.response.headers.get('ETag') || 'old', 'If-Modified-Since':'Mon, 07 Sep 2026 00:00:00 GMT'});
   assert(/<meta name="viewport"/.test(a.html));
-  assert.equal(b.html, a.html.replace('viewport-fit=cover', 'viewport-fit=auto'), path + ': only the initial viewport setting may differ');
+  assert(!a.html.includes('data-bullen-navigation'), 'Safari must keep its original handoff');
+  const navigation = b.html.match(/<style data-bullen-navigation>[\s\S]*?<\/style>/g) || [];
+  assert.equal(navigation.length, 1, path + ': one early header handoff style');
+  assert(navigation[0].includes('@view-transition { navigation: auto; }'));
+  assert(navigation[0].includes('view-transition-name: bullen-header;'));
+  assert(navigation[0].includes('animation: none;'));
+  assert(navigation[0].includes('backdrop-filter: none !important;'));
+  assert.equal(b.html.replace(navigation[0], ''), a.html.replace('viewport-fit=cover', 'viewport-fit=auto'), path + ': only initial viewport and header handoff styles may differ');
   assert.match(b.response.headers.get('Cache-Control'), /no-store/);
   assert.equal(b.response.headers.get('ETag'), null);
   assert.equal(b.response.headers.get('Last-Modified'), null);
   assert.match(a.response.headers.get('Vary'), /User-Agent/i);
   assert.match(b.response.headers.get('Vary'), /User-Agent/i);
-  console.log('PASS',path,'initial auto viewport; entire remaining document unchanged');
+  console.log('PASS',path,'initial viewport and header handoff; remaining document unchanged');
 }
 for (const ua of ['Mozilla/5.0 (Linux; Android 16) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/140.0 Safari/537.36', 'Mozilla/5.0 (iPad; CPU OS 26_0 like Mac OS X) AppleWebKit/605.1.15 CriOS/140.0 Mobile/15E148 Safari/604.1']) {
-  const {html} = await get('/buy',ua);assert(html.includes('viewport-fit=cover'),'non-iPhone Chrome must be unchanged');
+  const {html} = await get('/buy',ua);assert(html.includes('viewport-fit=cover'),'non-iPhone Chrome must be unchanged');assert(!html.includes('data-bullen-navigation'));
 }
 for (const path of ['/bullen-ui.css','/bullen-ui.js','/fonts/house-fonts-full.css']) {
   const [a,b] = await Promise.all([get(path,safari),get(path,chrome)]);
