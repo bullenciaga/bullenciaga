@@ -4,26 +4,6 @@
   const root = document.documentElement;
   const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   const page = root.dataset.bullenPage || file.replace(/\.html$/, '') || 'index';
-  // Some iOS browsers change even their small viewport while hiding toolbars.
-  // Capture it once per width; scrolling/keyboard height changes keep the crop.
-  if (page === 'index') {
-    let width = 0;
-    const stabilizeHero = () => {
-      const nextWidth = document.documentElement.clientWidth;
-      if (nextWidth === width) return;
-      width = nextWidth;
-      root.style.removeProperty('--bullen-mobile-height');
-      if (!matchMedia('(max-width: 820px)').matches) return;
-      const probe = document.createElement('div');
-      probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;height:100svh';
-      if (!CSS.supports('height', '100svh')) probe.style.height = window.innerHeight + 'px';
-      document.body.append(probe);
-      root.style.setProperty('--bullen-mobile-height', probe.getBoundingClientRect().height + 'px');
-      probe.remove();
-    };
-    stabilizeHero();
-    window.addEventListener('resize', stabilizeHero, { passive: true });
-  }
   const labels = {
     index: 'Home',
     buy: 'Buy $BULLEN',
