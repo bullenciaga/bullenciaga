@@ -36,6 +36,8 @@ html {
   background: var(--bullen-bg);
   color-scheme: dark;
   scrollbar-gutter: stable;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Page identity is written by the tiny inline boot script before the first
@@ -528,11 +530,18 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
      underneath a finger. Small viewport units remain stable while scrolling. */
   @supports (height: 100svh) {
     html[data-bullen-page] body { min-height: 100svh; }
-    html[data-bullen-page="index"] .hero { min-height: 100svh; padding-top: 6svh; padding-bottom: 7svh; }
+
     html[data-bullen-page="stats"] body:not(.transparent) #stage {
       height: calc(100svh - var(--bullen-header-height) - env(safe-area-inset-top, 0px) - var(--bullen-page-gap));
     }
   }
+
+  html[data-bullen-page="index"] .hero {
+    min-height: var(--bullen-mobile-height, 100svh);
+    padding-top: calc(var(--bullen-mobile-height, 100svh) * .06);
+    padding-bottom: 24px;
+  }
+  html[data-bullen-page="index"] .hero .scroll-cue { display: none; }
 
   .bullen-site-bar { gap: 10px; }
 
