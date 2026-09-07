@@ -8,11 +8,22 @@ const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
 const htmlFiles = fs.readdirSync(site).filter(name => name.endsWith('.html'));
 const failures = [];
+const shellSource = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8').split('  /* Warm same-origin page navigations')[0];
+const shellHash = crypto.createHash('sha256').update(shellSource).digest('hex');
 
 for (const name of htmlFiles) {
   const html = fs.readFileSync(path.join(site, name), 'utf8');
   if (!html.includes('href="/bullen-ui.css')) continue;
 
+  if (!html.includes(`data-bullen-shell-source="${shellHash}"`)) failures.push(`${name}: regenerate initial headers after changing the navigation builder`);
+  const bodyAt = html.indexOf('<body', html.indexOf('</head>'));
+  if (bodyAt < 0) failures.push(`${name}: missing actual document body`);
+  const staticShell = html.match(/<!-- BULLEN_SHELL_START[\s\S]*?<!-- BULLEN_SHELL_END -->/g) || [];
+  if (staticShell.length !== 1 || !staticShell[0].includes('data-bullen-shell') || !staticShell[0].includes('jumpto-btn')) failures.push(`${name}: finished navigation must be in the initial HTML`);
+  const shellAtFirstPaint = html.indexOf('<!-- BULLEN_SHELL_START');
+  const firstContent = html.slice(bodyAt).search(/<(?:main|section|article)\b/);
+  if (shellAtFirstPaint < bodyAt || (firstContent >= 0 && shellAtFirstPaint > bodyAt + firstContent)) failures.push(`${name}: navigation must precede the page payload`);
+  if (html.includes('bullen-crios')) failures.push(`${name}: Chrome must use the approved common reveal speed`);
   if (!html.includes('<style data-bullen-boot>')) failures.push(`${name} must hide the unfinished payload before external CSS arrives`);
   const bootAt = html.indexOf('__BULLEN_BOOT_TIMER');
   const sharedCssAt = html.indexOf('href="/bullen-ui.css');
@@ -49,8 +60,6 @@ for (const name of htmlFiles) {
     assert.equal(bytes.subarray(0, 4).toString(), 'wOF2');
     assert(crypto.createHash('sha256').update(bytes).digest('hex').startsWith(digest));
   }
-  assert(html.includes('html.bullen-crios.bullen-booting::after'), `${name}: Chrome needs the cover before external styles`);
-  for (const userAgent of ['Safari', 'CriOS/140.0 Mobile Safari', 'Chrome/140.0 Mobile Safari']) {
   for (const mobile of [true, false]) {
     for (const outcome of ['ready', 'timeout', 'parsing']) {
       const classes = new Set(), fontLink = { disabled: false }, events = new Map();
@@ -64,10 +73,9 @@ for (const name of htmlFiles) {
         addEventListener: (event, handler) => events.set(event, handler),
       };
       const window = {};
-      vm.runInNewContext(boot, {document, window, navigator: {userAgent}, location: {pathname: '/' + name},
+      vm.runInNewContext(boot, {document, window, location: {pathname: '/' + name},
         matchMedia: () => ({matches: mobile}), setTimeout: fn => { timeout = fn; return 1; }, clearTimeout: () => {}});
       assert(classes.has('bullen-booting'));
-      assert.equal(classes.has('bullen-crios'), mobile && userAgent.includes('CriOS/'), 'only iPhone Chrome changes reveal path');
       if (outcome === 'ready') window.__BULLEN_REVEAL(true);
       else {
         timeout();
@@ -82,7 +90,6 @@ for (const name of htmlFiles) {
       assert.equal(fontLink.disabled, mobile && outcome !== 'ready', 'late completion cannot change the chosen font set');
     }
   }
-  }
 }
 for (const license of ['Poppins-OFL.txt', 'SpaceMono-OFL.txt']) {
   assert(fs.readFileSync(path.join(site, 'fonts', license), 'utf8').includes('SIL OPEN FONT LICENSE'));
@@ -91,8 +98,8 @@ for (const license of ['Poppins-OFL.txt', 'SpaceMono-OFL.txt']) {
 const css = fs.readFileSync(path.join(site, 'bullen-ui.css'), 'utf8');
 if (css.includes('@import')) failures.push('bullen-ui.css must not defer font discovery through @import');
 for (const required of [
-  'html.bullen-booting:not(.bullen-crios) body > :not(.bullen-site-shell):not(.bullen-skip)',
-  'html.bullen-ready:not(.bullen-crios) body > :not(.bullen-site-shell):not(.bullen-skip)',
+  'html.bullen-booting body > :not(.bullen-site-shell):not(.bullen-skip)',
+  'html.bullen-ready body > :not(.bullen-site-shell):not(.bullen-skip)',
   'html[data-bullen-page]:not([data-bullen-page="index"]) body:not(.transparent)',
   '.bullen-site-aux:empty { display: none; }',
   '.bullen-site-shell .jumpto-chevron',
