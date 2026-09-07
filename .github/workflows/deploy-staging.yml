@@ -10,6 +10,7 @@ on:
       - "package*.json"
       - "qa/**"
       - "site/**"
+      - "src/**"
       - "wrangler.production.jsonc"
       - "wrangler.staging.jsonc"
   workflow_dispatch:
