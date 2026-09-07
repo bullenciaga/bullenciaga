@@ -26,6 +26,8 @@ try {
   const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base+'/buy');await page.locator('[data-swap-stub]').waitFor();await page.waitForFunction(()=>document.querySelector('#market-cap').textContent!=='—');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${width}: no horizontal overflow`);
+  assert.equal(await page.locator('.wallet-jump').textContent(),'WALLET OPTIONS ↓');
+  if(width>760){const edges=await page.evaluate(()=>['.swap-panel','.contract-panel'].map(s=>document.querySelector(s).getBoundingClientRect().bottom));assert(Math.abs(edges[0]-edges[1])<1,`${width}: panel bottoms align ${edges}`);}
   const config=await page.evaluate(()=>window.__config);
   assert.equal(config.displayMode,'integrated');assert.equal(config.autoConnect,false);assert.equal(config.formProps.initialOutputMint,MINT);assert.equal(config.formProps.initialInputMint,SOL);assert.equal(config.formProps.fixedMint,MINT);assert.equal(config.formProps.initialAmount,undefined);assert.equal(config.formProps.referralFee,undefined);
   assert.equal(await page.locator('#market-cap').textContent(),'$139,200');assert.equal(await page.locator('#market-fdv').textContent(),'$196,800');
