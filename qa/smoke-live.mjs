@@ -28,6 +28,7 @@ const pageChecks = [
   ['/giveaways', /<title>BULLENCIAGA — Giveaways/i],
   ['/tape', /<title>THE TAPE — Live \$BULLEN Market/i],
   ['/patchnotes', /<title>BULLENCIAGA — House Record/i],
+  ['/patchnotes-002', /<title>BULLENCIAGA — House Record · Edition 002 Archive/i],
   ['/patchnotes-001', /<title>BULLENCIAGA — House Record · Edition 001 Archive/i],
   ['/lock', /<title>BULLENCIAGA — Burn Reserve/i],
   ['/ledger', /<title>BULLENCIAGA — Living Ledger/i],
@@ -37,7 +38,7 @@ const effectivePageChecks = smokePhase === 'preflight'
   // Preflight proves the currently deployed release. Pages introduced by the
   // candidate cannot exist until after promotion, so require them only in the
   // post-release smoke test.
-  ? pageChecks.filter(([path]) => !['/giveaways', '/tape', '/patchnotes', '/patchnotes-001', '/lock', '/ledger', '/passport'].includes(path))
+  ? pageChecks.filter(([path]) => !['/giveaways', '/tape', '/patchnotes', '/patchnotes-001', '/patchnotes-002', '/lock', '/ledger', '/passport'].includes(path))
   : pageChecks;
 
 const apiChecks = [
@@ -118,8 +119,11 @@ for (const [path, marker] of effectivePageChecks) {
     const body = await response.text();
     assert(marker.test(body), `${url.pathname} is missing its expected build marker`);
     if (smokePhase === 'post-release' && path === '/patchnotes') {
-      assert(body.includes('Public edition 002') && body.includes('href="/patchnotes-001"')
-        && body.includes('More to explore.<br>More to verify.'), 'House Record edition 002 has not reached this edge');
+      assert(body.includes('Public edition 003') && body.includes('href="/patchnotes-002"')
+        && body.includes('The House opens<br>its doors.'), 'House Record edition 003 has not reached this edge');
+    }
+    if (path === '/patchnotes-002') {
+      assert(body.includes('Public edition 002') && body.includes('record-archive-notice') && body.includes('href="/patchnotes"'), 'Edition 002 archive has not reached this edge');
     }
     if (path === '/patchnotes-001') {
       assert(body.includes('Public edition 001') && body.includes('48 hours inside the House.')

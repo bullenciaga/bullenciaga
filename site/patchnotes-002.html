@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';f='patchnotes';e.dataset.bullenPage=f;e.classList.add('bullen-booting');window.__BULLEN_BOOT_TIMER=setTimeout(function(){e.classList.remove('bullen-booting');e.classList.add('bullen-ready')},matchMedia('(max-width: 820px)').matches?3000:1600)}(document,location.pathname);</script>
+<link rel="preload" href="/bullen-ui.css" as="style">
+<script defer src="/bullen-ui.js"></script>
+<title>BULLENCIAGA — House Record · Edition 002 Archive</title>
+<meta name="description" content="House Record edition 002: Living Ledger, Wallet Passport, the BULLENSAGA Registrar, three verified GraveMarket collections, and the work behind the scenes.">
+<link rel="canonical" href="https://bullenciaga.com/patchnotes-002">
+<meta name="theme-color" content="#050505">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://bullenciaga.com/patchnotes-002">
+<meta property="og:title" content="More to explore. More to verify.">
+<meta property="og:description" content="House Record 002: new public tools, three verified GraveMarket collections, and a clearer record of what has shipped.">
+<meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=house-record-002">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="More to explore. More to verify.">
+<meta name="twitter:description" content="House Record 002: new public tools, three verified GraveMarket collections, and a clearer record of what has shipped.">
+<meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=house-record-002">
+<link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/patchnotes.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/bullen-ui.css">
+<link rel="stylesheet" href="/mobile-buy.css">
+<link rel="stylesheet" href="/house-record.css">
+<script src="https://plugin.jup.ag/plugin-v1.js" data-preload defer></script>
+<style>
+  :root{
+    --record-bg:#050505;
+    --record-panel:#090909;
+    --record-panel-raised:#0d0c09;
+    --record-ink:#f5f3ee;
+    --record-muted:rgba(245,243,238,.52);
+    --record-ghost:rgba(245,243,238,.27);
+    --record-gold:#c7a869;
+    --record-gold-light:#ead9aa;
+    --record-line:rgba(199,168,105,.2);
+    --record-live:#5fd39a;
+    --record-private:#b6a7ff;
+  }
+  *{box-sizing:border-box}
+  html{background:var(--record-bg);scroll-behavior:smooth}
+  body{margin:0;min-height:100vh;background:
+    radial-gradient(circle at 50% -15%,rgba(199,168,105,.12),transparent 38rem),
+    var(--record-bg);color:var(--record-ink);font-family:'Space Mono',monospace}
+  a{color:inherit}
+  .record{width:min(1120px,calc(100% - 40px));margin:0 auto;padding:16px 0 80px}
+  .hero{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,.7fr);gap:48px;
+    align-items:end;padding:44px 0 38px;border-bottom:1px solid var(--record-line)}
+  .eyebrow,.section-label,.release-tag{color:var(--record-gold);font-size:11px;line-height:1.4;
+    letter-spacing:.24em;text-transform:uppercase}
+  h1{max-width:850px;margin:17px 0 0;font-family:Poppins,sans-serif;font-size:clamp(48px,8vw,94px);
+    font-weight:600;line-height:.92;letter-spacing:-.055em;text-wrap:balance}
+  .lede{max-width:790px;margin:27px 0 0;color:var(--record-muted);font-size:clamp(14px,1.4vw,18px);
+    line-height:1.75;text-wrap:pretty}
+  .lede strong{color:var(--record-gold-light);font-weight:400}
+  .edition{border:1px solid var(--record-line);background:rgba(9,9,9,.78);padding:22px}
+  .edition strong{display:block;margin-top:10px;color:var(--record-gold-light);font-family:Poppins,sans-serif;
+    font-size:26px;font-weight:500;letter-spacing:-.02em}
+  .edition span{display:block;margin-top:9px;color:var(--record-muted);font-size:11px;line-height:1.7}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--record-line);border-top:0}
+  .summary-item{padding:19px 22px;background:rgba(9,9,9,.72)}
+  .summary-item+.summary-item{border-left:1px solid var(--record-line)}
+  .summary-item b{display:block;color:var(--record-gold-light);font-family:Poppins,sans-serif;
+    font-size:clamp(22px,3vw,34px);font-weight:500;line-height:1}
+  .summary-item span{display:block;margin-top:8px;color:var(--record-muted);font-size:9px;
+    line-height:1.5;letter-spacing:.14em;text-transform:uppercase}
+  .release{padding-top:48px}
+  .release-head{display:flex;align-items:end;justify-content:space-between;gap:24px;padding-bottom:20px}
+  .release-head h2{margin:8px 0 0;font-family:Poppins,sans-serif;font-size:clamp(27px,4vw,44px);
+    font-weight:500;letter-spacing:-.035em}
+  .release-state{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid rgba(95,211,154,.28);
+    color:var(--record-live);font-size:9px;letter-spacing:.17em;text-transform:uppercase;white-space:nowrap}
+  .release-state::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;
+    box-shadow:0 0 13px currentColor}
+  .entries{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--record-line);
+    border-left:1px solid var(--record-line)}
+  .entry{min-width:0;padding:28px;border-right:1px solid var(--record-line);border-bottom:1px solid var(--record-line);
+    background:rgba(9,9,9,.72)}
+  .entry--wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(220px,.68fr) minmax(0,1.32fr);gap:36px}
+  .entry-number{color:var(--record-ghost);font-size:10px;letter-spacing:.18em}
+  .entry h3{margin:12px 0 0;font-family:Poppins,sans-serif;font-size:clamp(21px,2.5vw,30px);
+    font-weight:500;line-height:1.15;letter-spacing:-.025em}
+  .entry p{margin:17px 0 0;color:var(--record-muted);font-size:13px;line-height:1.8;text-wrap:pretty}
+  .entry ul{margin:20px 0 0;padding:0;list-style:none}
+  .entry li{position:relative;margin-top:11px;padding-left:19px;color:var(--record-ink);font-size:12px;line-height:1.65}
+  .entry li::before{content:'—';position:absolute;left:0;color:var(--record-gold)}
+  .status{display:inline-flex;margin-top:19px;padding:7px 9px;border:1px solid var(--record-line);
+    color:var(--record-gold);font-size:8px;letter-spacing:.16em;text-transform:uppercase}
+  .status.private{border-color:rgba(182,167,255,.25);color:var(--record-private)}
+  .principle{margin-top:48px;padding:clamp(28px,5vw,56px);border:1px solid var(--record-line);
+    background:linear-gradient(120deg,rgba(199,168,105,.09),transparent 52%),var(--record-panel)}
+  .principle blockquote{max-width:900px;margin:18px 0 0;font-family:Poppins,sans-serif;
+    font-size:clamp(27px,4.7vw,55px);font-weight:500;line-height:1.12;letter-spacing:-.04em}
+  .principle p{max-width:760px;margin:21px 0 0;color:var(--record-muted);font-size:13px;line-height:1.8}
+  .actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
+  .action{min-height:58px;display:flex;align-items:center;justify-content:center;padding:12px 18px;border:1px solid var(--record-line);
+    background:transparent;color:var(--record-gold-light);font:700 10px/1.2 'Space Mono',monospace;
+    letter-spacing:.15em;text-align:center;text-decoration:none;text-transform:uppercase;cursor:pointer}
+  .action.primary{border-color:var(--record-gold);background:var(--record-gold);color:#050505}
+  .action:hover{border-color:var(--record-gold-light);background:var(--record-gold-light);color:#050505}
+  .foot{display:flex;justify-content:space-between;gap:24px;margin-top:34px;padding-top:22px;border-top:1px solid var(--record-line);
+    color:var(--record-ghost);font-size:9px;line-height:1.7;letter-spacing:.1em;text-transform:uppercase}
+  @media(max-width:760px){
+    .record{width:min(100% - 24px,1120px);padding-top:5px}.hero{grid-template-columns:1fr;gap:26px;padding:28px 0 30px}
+    h1{font-size:clamp(45px,14.5vw,70px)}.edition{padding:18px}.summary{grid-template-columns:1fr}
+    .summary-item+.summary-item{border-left:0;border-top:1px solid var(--record-line)}
+    .release{padding-top:38px}.release-head{align-items:start;flex-direction:column;gap:15px}.entries{grid-template-columns:1fr}
+    .entry{padding:24px 20px}.entry--wide{grid-column:auto;display:block}.entry--wide>div+div{margin-top:17px}
+    .actions{grid-template-columns:1fr}.action{min-height:56px}.foot{flex-direction:column}
+  }
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="record record--latest" id="main-content">
+  <nav class="record-editions" aria-label="House Record editions">
+    <span class="section-label">The House Record</span>
+    <div><a href="/patchnotes">003 <span>Current edition</span></a><a href="/patchnotes-002" aria-current="page">002 <span>Archive</span></a><a href="/patchnotes-001">001 <span>Archive ↗</span></a></div>
+  </nav>
+  <aside class="record-archive-notice"><span>Archived edition 002 · Published 04 September 2026</span><a href="/patchnotes">Read the current edition ↗</a></aside>
+  <section class="hero" aria-labelledby="record-title">
+    <div>
+      <div class="eyebrow">House Record · 02—04 September 2026</div>
+      <h1 id="record-title">More to explore.<br>More to verify.</h1>
+      <p class="lede"><strong>Some additions deserve a closer look.</strong> Since the first House Record, we have opened new ways to read the House, inspect a wallet’s holdings and find our collections—while continuing to improve the systems behind them.</p>
+    </div>
+    <aside class="edition" aria-label="Release edition">
+      <div class="release-tag">Public edition 002</div>
+      <strong>The work continues.</strong>
+      <span>New public tools. Three verified marketplace collections. A clearer record of what has shipped.</span>
+    </aside>
+  </section>
+
+  <section class="summary summary--three" aria-label="New public additions">
+    <div class="summary-item"><b>02</b><span>new public tools · Ledger &amp; Passport</span></div>
+    <div class="summary-item"><b>03</b><span>collections verified on GraveMarket</span></div>
+    <div class="summary-item"><b>01</b><span>in-game Registrar · BULLENSAGA</span></div>
+  </section>
+  <nav class="record-sections" aria-label="Inside this edition">
+    <a href="#public-additions">Public additions</a><a href="#refinements">Refinements &amp; receipts</a><a href="#operations">Behind the scenes</a><a href="#archive">Earlier edition</a>
+  </nav>
+
+  <article class="release" id="public-additions" aria-labelledby="public-heading">
+    <header class="release-head">
+      <div><div class="section-label">01 / Public additions</div><h2 id="public-heading">Open to the House.</h2></div>
+      <div class="release-state">Live</div>
+    </header>
+    <div class="entries">
+      <section class="entry">
+        <div class="entry-number">01 / LIVING LEDGER</div>
+        <h3>One timeline.<br>Sources attached.</h3>
+        <p>The Living Ledger brings market summaries, supply changes, custody receipts, collectible records and verified deliveries into one public chronology. Entries retain their source or receipt so the record can be followed beyond the headline.</p>
+        <p>House Record explains what we ship. Living Ledger records what happens. Neither guesses who controls a wallet or why it moved.</p>
+        <a class="record-link" href="/ledger">Open the Living Ledger <span aria-hidden="true">↗</span></a>
+      </section>
+      <section class="entry">
+        <div class="entry-number">02 / WALLET PASSPORT</div>
+        <h3>What an address holds.<br>Nothing it has to sign.</h3>
+        <p>A single read-only view brings together $BULLEN, The Herd, House Objects and BULLENSAGA Founding Records held by a Solana address. Paste an address, or connect a wallet to supply its public address.</p>
+        <p>No signature or spending permission is requested. Burned assets are excluded from the holdings view, and collectible artwork is shown in full, with its label below.</p>
+        <a class="record-link" href="/passport">Read a Wallet Passport <span aria-hidden="true">↗</span></a>
+      </section>
+      <section class="entry">
+        <div class="entry-number">03 / BULLENSAGA REGISTRAR</div>
+        <h3>A record inside<br>the Estate.</h3>
+        <p>The related BULLENSAGA game now has its own Registrar: an in-world reading of the bearer’s on-chain record, expressed as Witness Seals, House Claims and Founding Records.</p>
+        <p>Unopened records stay unopened. Disconnected visitors no longer see specimen holdings or the collection preview that revealed too much before entry.</p>
+        <a class="record-link" href="https://bullensaga.com/registrar">Visit the Registrar <span aria-hidden="true">↗</span></a>
+      </section>
+      <section class="entry">
+        <div class="entry-number">04 / GRAVEMARKET</div>
+        <h3>Three collections.<br>One creator profile.</h3>
+        <p>BULLENCIAGA now has an official creator profile on GraveMarket, with The Herd, BULLENCIAGA House Objects and BULLENSAGA Founding Records all live and verified there.</p>
+        <p>The collections are not new; their marketplace presence is. Original claims and qualifying preorders remain available at the source.</p>
+        <a class="record-link" href="https://gravemarket.io/creators/bullenciaga">View the creator profile <span aria-hidden="true">↗</span></a>
+      </section>
+    </div>
+    <div class="record-collections" aria-label="Collection listings and original issuance">
+      <section><div class="section-label">The Herd</div><p>The original collection.</p><div><a href="https://gravemarket.io/collection/bullenciaga">GraveMarket ↗</a><a href="/#nft">Mint at the House ↗</a></div></section>
+      <section><div class="section-label">House Objects</div><p>Numbered Signet &amp; Cufflinks editions.</p><div><a href="https://gravemarket.io/collection/bullenciaga-house-objects">GraveMarket ↗</a><a href="/objects">Claim an edition ↗</a></div></section>
+      <section><div class="section-label">Founding Records</div><p>Through qualifying BULLENSAGA preorder editions.</p><div><a href="https://gravemarket.io/collection/bullensaga-founding-records">GraveMarket ↗</a><a href="https://bullensaga.com/preorder">Explore preorders ↗</a></div></section>
+    </div>
+  </article>
+
+  <article class="release" id="refinements" aria-labelledby="refinements-heading">
+    <header class="release-head">
+      <div><div class="section-label">02 / Refinements &amp; receipts</div><h2 id="refinements-heading">The details matter.</h2></div>
+      <div class="release-state">Shipped</div>
+    </header>
+    <div class="entries">
+      <section class="entry">
+        <div class="entry-number">05 / PUBLIC EXPERIENCE</div>
+        <h3>Clearer routes.<br>The whole picture.</h3>
+        <p>Desktop navigation has been reordered across House, Market and Explore. Mobile keeps the full, ungrouped directory, and the cross-site Jump To navigation has been restored and aligned.</p>
+        <ul>
+          <li>Square collectible fields preserve the full artwork instead of cropping it.</li>
+          <li>Names and record labels sit below the image, not over it.</li>
+          <li>Public records no longer carry predeploy labels or example-loading prompts.</li>
+        </ul>
+        <span class="status">Public polish</span>
+      </section>
+      <section class="entry">
+        <div class="entry-number">06 / BUY + HOLD DRAW</div>
+        <h3>The draw stays<br>reproducible.</h3>
+        <p>The completed Buy + Hold draw was published after edition 001. Its closing snapshot records 13 qualifying wallets and 127 entries; the result selects three winners for HERD #680, #625 and #308.</p>
+        <p>The snapshot was published before the later on-chain seed was used. The original snapshot and result remain available without rewriting the historical draw.</p>
+        <div class="record-links"><a class="record-link" href="/giveaway-buy-hold-close-20260902.json">Closing snapshot ↗</a><a class="record-link" href="/giveaway-buy-hold-result-20260902.json">Draw result ↗</a></div>
+      </section>
+    </div>
+  </article>
+
+  <article class="release" id="operations" aria-labelledby="operations-heading">
+    <header class="release-head">
+      <div><div class="section-label">03 / Behind the scenes</div><h2 id="operations-heading">Better tools for the work.</h2></div>
+      <span class="status private">Private operations</span>
+    </header>
+    <p class="record-intro">These are improvements to the House’s own operating tools, not new public downloads. They keep attention on the work without exposing credentials or sensitive controls.</p>
+    <div class="entries">
+      <section class="entry">
+        <div class="entry-number">07 / HOUSE DESK &amp; CONTROL ROOM</div>
+        <h3>A sharper inbox.<br>A more useful phone.</h3>
+        <p>House Desk has been rebuilt around selected accounts and fresh, standalone posts. Replies, quotes and reposts are excluded; freshness is adjustable, with a five-minute default. Review budgets remain bounded, and publishing still requires human approval.</p>
+        <p>The installed stream-capable rebuild passed local checks. Live-stream access and end-to-end delivery remain to be verified when monitoring is enabled; this is not a claim of measured seconds-fast delivery.</p>
+        <p>The iPhone Control Room adds reserve proof and deadline monitoring, broader public-page checks and clearer House Desk intake status. Historical giveaways no longer create false unfinished-delivery alerts merely because a winner later moved a prize or the original draw label predates delivery.</p>
+        <span class="status private">Private apps updated</span>
+      </section>
+      <section class="entry">
+        <div class="entry-number">08 / COMMUNITY BOT</div>
+        <h3>Keep the right card<br>within reach.</h3>
+        <p>BULLENBOT’s raid resurfacing now recognizes its own buy notifications as messages in the same group. Existing burial thresholds and cooldowns still apply; it does not repost the raid after every buy.</p>
+        <p>Admins can also set or reset an individual post’s like target without changing the actual measured engagement, other engagement goals or the campaign timer.</p>
+        <p>The changes passed automated checks and production smoke tests. No synthetic public buys or raids were used for verification.</p>
+        <span class="status">Live bot update</span>
+      </section>
+    </div>
+  </article>
+
+  <section class="principle" aria-labelledby="principle-heading">
+    <div class="section-label" id="principle-heading">The operating principle</div>
+    <blockquote>Not everything needs a teaser.<br>Some things just need to work the next time you visit.</blockquote>
+    <p>More ways to explore. More records to inspect. More attention to the details that make the House useful. This edition records delivered work—and labels the checks that still remain.</p>
+    <div class="actions">
+      <a class="action primary" href="/ledger">Explore the Ledger</a>
+      <a class="action" href="/passport">Read a Passport</a>
+      <a class="action" href="https://gravemarket.io/creators/bullenciaga">View the collections</a>
+      <button class="action" id="buyBullen" type="button">Buy $BULLEN</button>
+    </div>
+  </section>
+
+  <section class="record-archive" id="archive" aria-labelledby="archive-heading">
+    <div class="section-label" id="archive-heading">Previously in the House</div>
+    <a class="record-archive-card" href="/patchnotes-001">
+      <span class="record-archive-number">001</span>
+      <span><span class="section-label">01—02 September 2026</span><strong>48 hours inside the House.</strong><span class="record-archive-description">Quieter systems. Cleaner paths. The first full release record, preserved as a readable HTML edition.</span></span>
+      <span class="record-archive-open">Read edition <span aria-hidden="true">↗</span></span>
+    </a>
+  </section>
+  <footer class="foot"><span>BULLENCIAGA · House Record · Edition 002</span><span>Published 04 September 2026 · Warsaw</span></footer>
+</main>
+<script src="/mobile-buy.js"></script>
+<script>
+(() => {
+  'use strict';
+  const SOL_MINT = 'So11111111111111111111111111111111111111112';
+  const BULLEN_MINT = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
+  const JUPITER_FALLBACK = 'https://jup.ag/swap?buy=' + BULLEN_MINT + '&sell=' + SOL_MINT;
+
+  function openJupiterSwap(){
+    if(!window.Jupiter || typeof window.Jupiter.init !== 'function'){
+      window.open(JUPITER_FALLBACK,'_blank','noopener,noreferrer');
+      return;
+    }
+    window.Jupiter.init({
+      displayMode:'modal',
+      formProps:{initialInputMint:SOL_MINT,initialOutputMint:BULLEN_MINT,fixedMint:BULLEN_MINT,fixedAmount:false,swapMode:'ExactIn'},
+      branding:{logoUri:'https://bullenciaga.com/logo-200.png',name:'BULLENCIAGA'}
+    });
+  }
+
+  document.getElementById('buyBullen').addEventListener('click',() => {
+    if(window.BullenMobileBuy && window.BullenMobileBuy.request({
+      mint:BULLEN_MINT,jupiterUrl:JUPITER_FALLBACK,continueWithJupiter:openJupiterSwap
+    })) return;
+    openJupiterSwap();
+  });
+})();
+</script>
+</body>
+</html>

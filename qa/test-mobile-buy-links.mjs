@@ -69,7 +69,7 @@ window.innerWidth = 1440;
 assert.equal(picker.request({ mint }), false, 'desktop continues using the existing embedded swap');
 
 // Every page-level and JavaScript-disabled fallback must use the same pair.
-for (const name of ['index.html', 'tape.html', 'thedrop-buy.js', 'patchnotes.html', 'patchnotes-001.html']) {
+for (const name of ['index.html', 'tape.html', 'thedrop-buy.js', 'patchnotes.html', 'patchnotes-001.html', 'patchnotes-002.html']) {
   const source = read(name);
   const expression = source.match(/const JUPITER_FALLBACK = (.*);/)[1];
   const fallback = vm.runInNewContext(expression, { CONFIG: { TOKEN_ADDRESS: mint }, BULLEN_MINT: mint, SOL_MINT: sol });
