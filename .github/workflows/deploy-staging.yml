@@ -66,6 +66,11 @@ jobs:
           SMOKE_INCLUDE_API: "0"
         run: node qa/smoke-live.mjs
 
+      - name: Verify iPhone Chrome initial viewport
+        env:
+          SMOKE_BASE_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: node qa/smoke-iphone-viewport.mjs
+
       - name: Publish staging evidence
         env:
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
