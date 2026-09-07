@@ -4346,15 +4346,26 @@
   function easeInOutCubic(t){
     return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
   }
+  function pageScrollSurface(){
+    return getComputedStyle(document.documentElement).getPropertyValue('--bullen-scroll-surface').trim() === 'body'
+      ? document.body : window;
+  }
+  function pageScrollY(){
+    const surface = pageScrollSurface();
+    return surface === window ? window.scrollY : surface.scrollTop;
+  }
   function smoothScrollTo(targetY, duration){
-    const startY = window.scrollY;
+    const surface = pageScrollSurface();
+    const startY = pageScrollY();
     const diff = targetY - startY;
     let startTime = null;
     function step(timestamp){
       if (startTime === null) startTime = timestamp;
       const elapsed = timestamp - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      window.scrollTo(0, startY + diff * easeInOutCubic(progress));
+      const nextY = startY + diff * easeInOutCubic(progress);
+      if (surface === window) window.scrollTo(0, nextY);
+      else surface.scrollTo({top: nextY, left: 0, behavior: 'instant'});
       if (progress < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
@@ -4366,7 +4377,7 @@
       const targetEl = document.querySelector(targetSelector);
       if (!targetEl) return;
       e.preventDefault();
-      const targetY = targetEl.getBoundingClientRect().top + window.scrollY;
+      const targetY = targetEl.getBoundingClientRect().top + pageScrollY();
       smoothScrollTo(targetY, 1100);
     });
   });

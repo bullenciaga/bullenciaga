@@ -19,18 +19,20 @@ for (const name of pages) {
   assert(/<meta name="viewport"/.test(a.html));
   assert(!a.html.includes('data-bullen-navigation'), 'Safari must keep its original handoff');
   const navigation = b.html.match(/<style data-bullen-navigation>[\s\S]*?<\/style>/g) || [];
-  assert.equal(navigation.length, 1, path + ': one early header handoff style');
-  assert(navigation[0].includes('@view-transition { navigation: auto; }'));
-  assert(navigation[0].includes('view-transition-name: bullen-header;'));
-  assert(navigation[0].includes('animation: none;'));
+  assert.equal(navigation.length, 1, path + ': one early native scroll style');
+  assert(!navigation[0].includes('@view-transition'), 'no snapshot transition for the native scroll surface');
+  assert(navigation[0].includes('--bullen-scroll-surface: body;'));
+  assert(navigation[0].includes('overflow: hidden;'));
+  const scrollState = b.html.match(/<script data-bullen-scroll-state>[\s\S]*?<\/script>/g) || [];
+  assert.equal(scrollState.length, 1, path + ': one scoped history helper');
   assert(navigation[0].includes('backdrop-filter: none !important;'));
-  assert.equal(b.html.replace(navigation[0], ''), a.html.replace('viewport-fit=cover', 'viewport-fit=auto'), path + ': only initial viewport and header handoff styles may differ');
+  assert.equal(b.html.replace(navigation[0] + '\n' + scrollState[0], ''), a.html.replace('viewport-fit=cover', 'viewport-fit=auto'), path + ': only native viewport, scroll CSS and scroll-state helper may differ');
   assert.match(b.response.headers.get('Cache-Control'), /no-store/);
   assert.equal(b.response.headers.get('ETag'), null);
   assert.equal(b.response.headers.get('Last-Modified'), null);
   assert.match(a.response.headers.get('Vary'), /User-Agent/i);
   assert.match(b.response.headers.get('Vary'), /User-Agent/i);
-  console.log('PASS',path,'initial viewport and header handoff; remaining document unchanged');
+  console.log('PASS',path,'native scroll surface; fonts, icons and page content unchanged');
 }
 for (const ua of ['Mozilla/5.0 (Linux; Android 16) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/140.0 Safari/537.36', 'Mozilla/5.0 (iPad; CPU OS 26_0 like Mac OS X) AppleWebKit/605.1.15 CriOS/140.0 Mobile/15E148 Safari/604.1']) {
   const {html} = await get('/buy',ua);assert(html.includes('viewport-fit=cover'),'non-iPhone Chrome must be unchanged');assert(!html.includes('data-bullen-navigation'));
