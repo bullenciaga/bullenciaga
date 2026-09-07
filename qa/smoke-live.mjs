@@ -73,7 +73,12 @@ async function fetchChecked(path, validateResponse) {
       }
 
       lastError = new Error(`${url} returned HTTP ${response.status}`);
-      shouldRetry = retryableStatuses.has(response.status);
+      // A removed static redirect can briefly outlive the promoted asset version.
+      // Retry only the known former /buy destination; never follow it or accept
+      // it as success. A persistent redirect still fails and rolls back.
+      const priorBuyRedirect = path === '/buy' && response.status === 302 &&
+        (response.headers.get('location') || '').startsWith('https://pump.fun/coin/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN');
+      shouldRetry = retryableStatuses.has(response.status) || priorBuyRedirect;
     } catch (error) {
       lastError = error;
     }

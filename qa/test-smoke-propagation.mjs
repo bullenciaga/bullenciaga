@@ -6,11 +6,15 @@ import { spawnSync } from 'node:child_process';
 const fixture = `
   import fs from 'node:fs';
   import assert from 'node:assert/strict';
-  let recordCalls = 0, cssCalls = 0;
+  let recordCalls = 0, cssCalls = 0, buyCalls = 0;
   const mode = process.env.PROPAGATION_FIXTURE;
   globalThis.fetch = async input => {
     const pathname = new URL(input).pathname;
     if (['/proof','/proof.html'].includes(pathname)) return new Response(null,{status:301,headers:{location:'/curve'}});
+    if (pathname === '/buy') {
+      buyCalls++;
+      if(mode === 'redirect-permanent' || buyCalls === 1) return new Response(null,{status:302,headers:{location:'https://pump.fun/coin/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN'}});
+    }
     if (pathname === '/patchnotes') {
       recordCalls++;
       if (mode === 'permanent' || recordCalls === 1) return new Response('<title>BULLENCIAGA — House Record</title>Public edition 001',{headers:{'content-type':'text/html'}});
@@ -24,17 +28,22 @@ const fixture = `
   };
   let failure;
   try { await import(${JSON.stringify(new URL('./smoke-live.mjs', import.meta.url).href)}); } catch(error) { failure = error; }
-  if(mode === 'permanent') {
+  if(mode === 'redirect-permanent') {
+    assert(failure, 'Persistent redirect must fail');
+    assert.match(failure.message, /HTTP 302/);
+    assert.equal(buyCalls, 3);
+  } else if(mode === 'permanent') {
     assert(failure, 'Persistent stale HTML must fail and leave rollback available');
     assert.match(failure.message, /edition 003 has not reached/);
     assert.equal(recordCalls, 3, 'Failure must be bounded by max attempts');
   } else {
     assert.equal(failure, undefined, failure?.message);
+    assert.equal(buyCalls, 2, 'Previous buy redirect must be retried');
     assert.equal(recordCalls, 2, 'Stale HTTP 200 HTML must be retried');
     assert.equal(cssCalls, 2, 'Stale HTTP 200 CSS must be retried');
   }
 `;
-for (const mode of ['recover', 'permanent']) {
+for (const mode of ['recover', 'permanent', 'redirect-permanent']) {
   const result = spawnSync(process.execPath, ['--input-type=module', '-e', fixture], {
     encoding: 'utf8', timeout: 15_000,
     env: { ...process.env, PROPAGATION_FIXTURE: mode, SMOKE_BASE_URL: 'https://fixture.invalid',
