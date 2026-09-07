@@ -537,8 +537,10 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   }
 
   html[data-bullen-page="index"] .hero {
-    min-height: var(--bullen-mobile-height, 100svh);
-    padding-top: calc(var(--bullen-mobile-height, 100svh) * .06);
+    /* Width defines the composition, not browser-specific toolbar heights.
+       Content may still grow naturally for larger text/accessibility settings. */
+    min-height: clamp(620px, 172vw, 860px);
+    padding-top: clamp(38px, 10.32vw, 52px);
     padding-bottom: 24px;
   }
   html[data-bullen-page="index"] .hero .scroll-cue { display: none; }
