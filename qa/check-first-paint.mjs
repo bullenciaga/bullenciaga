@@ -1,4 +1,7 @@
 import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import crypto from 'node:crypto';
 import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
@@ -16,7 +19,7 @@ for (const name of htmlFiles) {
   if (bootAt < 0 || bootAt > sharedCssAt) {
     failures.push(`${name} must establish page identity before the shared stylesheet`);
   }
-  if (!html.includes('fonts.googleapis.com/css2?family=Poppins') || !html.includes('family=Space+Mono')) {
+  if (!html.includes('data-bullen-fonts') || !/href="\/fonts\/house-fonts(?:-bold|-full)?\.css"/.test(html) || html.includes('fonts.googleapis.com')) {
     failures.push(`${name} must load the shared House fonts directly`);
   }
   if (!html.includes('src="/bullen-ui.js')) {
@@ -28,9 +31,57 @@ for (const name of htmlFiles) {
     failures.push(`${name} must discover the navigation before third-party deferred scripts`);
   }
   if ((html.match(/src="\/bullen-ui\.js"/g) || []).length !== 1) failures.push(`${name} must mount only one shell`);
-  if (!html.includes("matches?4000:1600") || !html.includes('rel="preload" href="/bullen-ui.css" as="style"')) {
+  if (!html.includes("m?4000:1600") || !html.includes('rel="preload" href="/bullen-ui.css" as="style"')) {
     failures.push(`${name} must reserve the mobile boot window and preload the rail styles`);
   }
+}
+
+// Exercise every page's independent fallback, including a stalled shared script.
+for (const name of htmlFiles) {
+  const html = fs.readFileSync(path.join(site, name), 'utf8');
+  const boot = html.match(/<script>([^<]*__BULLEN_BOOT_TIMER[^<]*)<\/script>/)?.[1];
+  if (!boot) continue;
+  const sheetPath = html.match(/data-bullen-fonts[^>]*href="([^"]+)"/)[1];
+  const sheet = fs.readFileSync(path.join(site, sheetPath), 'utf8');
+  assert(sheet.includes("font-family: 'Poppins'") && sheet.includes("font-family: 'Space Mono'"));
+  for (const [, fontPath, digest] of sheet.matchAll(/url\((\/fonts\/house-([a-f0-9]{16})\.woff2)\)/g)) {
+    const bytes = fs.readFileSync(path.join(site, fontPath));
+    assert.equal(bytes.subarray(0, 4).toString(), 'wOF2');
+    assert(crypto.createHash('sha256').update(bytes).digest('hex').startsWith(digest));
+  }
+  for (const mobile of [true, false]) {
+    for (const outcome of ['ready', 'timeout', 'parsing']) {
+      const classes = new Set(), fontLink = { disabled: false }, events = new Map();
+      let timeout;
+      const document = {
+        readyState: outcome === 'parsing' ? 'loading' : 'interactive',
+        documentElement: { dataset: {}, classList: {
+          add: c => classes.add(c), remove: c => classes.delete(c), contains: c => classes.has(c),
+        } },
+        querySelectorAll: () => [fontLink],
+        addEventListener: (event, handler) => events.set(event, handler),
+      };
+      const window = {};
+      vm.runInNewContext(boot, {document, window, location: {pathname: '/' + name},
+        matchMedia: () => ({matches: mobile}), setTimeout: fn => { timeout = fn; return 1; }, clearTimeout: () => {}});
+      assert(classes.has('bullen-booting'));
+      if (outcome === 'ready') window.__BULLEN_REVEAL(true);
+      else {
+        timeout();
+        if (outcome === 'parsing') {
+          assert(classes.has('bullen-booting'), `${name}: never reveal partially parsed markup`);
+          events.get('DOMContentLoaded')();
+        }
+      }
+      assert(classes.has('bullen-ready') && !classes.has('bullen-booting'));
+      assert.equal(fontLink.disabled, mobile && outcome !== 'ready');
+      window.__BULLEN_REVEAL(outcome !== 'ready');
+      assert.equal(fontLink.disabled, mobile && outcome !== 'ready', 'late completion cannot change the chosen font set');
+    }
+  }
+}
+for (const license of ['Poppins-OFL.txt', 'SpaceMono-OFL.txt']) {
+  assert(fs.readFileSync(path.join(site, 'fonts', license), 'utf8').includes('SIL OPEN FONT LICENSE'));
 }
 
 const css = fs.readFileSync(path.join(site, 'bullen-ui.css'), 'utf8');
@@ -55,7 +106,7 @@ const js = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
 if (!js.includes('mobilePaint ? 2500 : 500') || !js.includes("document.fonts.load('600 12px Poppins')")) {
   failures.push('mobile reveal must wait for the real header faces without changing the desktop font budget');
 }
-for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", "root.classList.add('bullen-ready')", 'const navigationGroups', "button.innerHTML = 'JUMP TO ", "appendGroup('On BULLENCIAGA'", "'/#giveaway'", "mobileDirectory.className = 'bullen-mobile-nav-directory'"]) {
+for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", 'window.__BULLEN_REVEAL(fontsReady)', 'const navigationGroups', "button.innerHTML = 'JUMP TO ", "appendGroup('On BULLENCIAGA'", "'/#giveaway'", "mobileDirectory.className = 'bullen-mobile-nav-directory'"]) {
   if (!js.includes(required)) failures.push(`bullen-ui.js is missing ${required}`);
 }
 

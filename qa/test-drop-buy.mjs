@@ -19,7 +19,8 @@ for (const rule of ['color: var(--mobile-buy-ink)', 'font-weight: 700', 'text-tr
   assert(titleCss.includes(rule), `picker title must preserve the home-page ${rule}`);
 }
 for (const page of ['index.html', 'tape.html', 'thedrop.html']) {
-  assert.match(read(page), /Poppins:wght@[^&"]*700/, `${page} must load the canonical bold picker font`);
+  const fontSheet = read(page).match(/data-bullen-fonts[^>]+href="([^" ]+)"/)[1];
+  assert.match(read(fontSheet.replace(/^\//, '')), /font-family: 'Poppins';\s+font-style: normal;\s+font-weight: 700;/, `${page} must load the canonical bold picker font`);
 }
 
 function setup({ mobile = false, plugin = true, picker = true, button = true } = {}) {
