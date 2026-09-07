@@ -209,5 +209,5 @@
     return true;
   }
 
-  window.BullenMobileBuy = { close, isMobileDevice, request, jupiterSwapUrl };
+  window.BullenMobileBuy = { close, isMobileDevice, request, jupiterSwapUrl, phantomSwapUrl, solflareTokenUrl, pumpUrl, copyText };
 })();

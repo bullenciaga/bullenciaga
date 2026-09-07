@@ -6,6 +6,7 @@
   const page = root.dataset.bullenPage || file.replace(/\.html$/, '') || 'index';
   const labels = {
     index: 'Home',
+    buy: 'Buy $BULLEN',
     stats: 'Stats',
     tape: 'The Tape',
     chart: 'Chart',
@@ -24,6 +25,7 @@
     bullensaga: 'BULLENSAGA',
   };
   const destinations = [
+    ['buy', '/buy'],
     ['objects', '/objects.html'],
     ['giveaways', '/giveaways.html'],
     ['stats', '/stats.html'],
@@ -41,10 +43,10 @@
   ];
   const navigationGroups = [
     ['House', ['objects', 'lock', 'patchnotes', 'giveaways']],
-    ['Market', ['stats', 'chart', 'tape', 'curve']],
+    ['Market', ['buy', 'stats', 'chart', 'tape', 'curve']],
     ['Explore', ['refer', 'thedrop', 'ledger', 'passport']],
   ];
-  const mobileNavigationKeys = ['objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
+  const mobileNavigationKeys = ['buy', 'objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
   const destinationByKey = new Map(destinations);
 
   root.dataset.bullenPage = page;

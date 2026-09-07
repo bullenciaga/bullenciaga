@@ -7,7 +7,7 @@ const site = path.join(root, 'site');
 const expectedIndexHash = '62b215f350fe8e4ce642ec2f55d6e21bac54d1b05bdd985e101ed890ba010c89';
 const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs', 'proof.html'];
 const required = [
-  'index.html', '_redirects', 'stats.html', 'chart.html', 'curve.html',
+  'buy.html', 'buy-page.css', 'buy-page.js', 'index.html', '_redirects', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'whitepaper.pdf',
   'bullen-ui.css', 'bullen-ui.js', 'giveaways.html', 'giveaways.json',
   'objects.html', 'objects.css', 'objects.js', 'bullen-wallet-chooser.js',

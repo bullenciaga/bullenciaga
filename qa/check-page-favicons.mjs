@@ -7,6 +7,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const site = path.join(root, 'site');
 const pages = new Map([
   ['index.html', 'home.svg'],
+  ['buy.html', 'buy.svg'],
   ['giveaways.html', 'giveaways.svg'],
   ['stats.html', 'stats.svg'],
   ['chart.html', 'chart.svg'],
