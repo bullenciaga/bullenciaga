@@ -1,20 +1,24 @@
 // Keep short-domain visits on the established origin for wallets and sessions.
 const aliases = new Set(['bullen.app', 'www.bullen.app']);
 
-// Disconnected native-phone comparisons remain smooth with system typography,
-// but reproduce with the House web fonts even when embedded and without JS.
-// Use the stable font path from the initial HTML, rather than swapping fonts
-// after paint or fading the header. Other browsers retain the original fonts.
-const iphoneRendering = `<style data-bullen-native-render>
-html[data-bullen-native-fonts][data-bullen-page] body,
-html[data-bullen-native-fonts][data-bullen-page] body * {
-  font-family: Arial, sans-serif !important;
-}
+// Keep the outgoing rail through a full-document navigation. The ordinary
+// content fade stays in the page, outside the browser's header snapshot.
+const iphoneNavigation = `<style data-bullen-navigation>
 @media (max-width: 820px) {
+  @view-transition { navigation: auto; }
+  :root { view-transition-name: none; }
   .bullen-site-shell {
+    view-transition-name: bullen-header;
     background: #050505 !important;
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
+  }
+  ::view-transition-group(bullen-header),
+  ::view-transition-old(bullen-header),
+  ::view-transition-new(bullen-header) {
+    animation: none;
+    opacity: 1;
+    mix-blend-mode: normal;
   }
 }
 </style>`;
@@ -61,16 +65,8 @@ export default {
     response.headers.delete('ETag');
     response.headers.delete('Last-Modified');
     response.headers.delete('Content-Length');
-    let sharedShell = false;
-    return new HTMLRewriter().on('html', {
-      element(element) { element.setAttribute('data-bullen-native-fonts', ''); },
-    }).on('style[data-bullen-boot]', {
-      element(element) {
-        sharedShell = true;
-        element.before(iphoneRendering, { html: true });
-      },
-    }).on('link[data-bullen-fonts], link[rel="preload"][as="font"]', {
-      element(element) { if (sharedShell) element.remove(); },
+    return new HTMLRewriter().on('style[data-bullen-boot]', {
+      element(element) { element.before(iphoneNavigation, { html: true }); },
     }).on('meta[name="viewport"]', {
       element(element) {
         const content = element.getAttribute('content');
