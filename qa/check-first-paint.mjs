@@ -10,6 +10,7 @@ for (const name of htmlFiles) {
   const html = fs.readFileSync(path.join(site, name), 'utf8');
   if (!html.includes('href="/bullen-ui.css')) continue;
 
+  if (!html.includes('<style data-bullen-boot>')) failures.push(`${name} must hide the unfinished payload before external CSS arrives`);
   const bootAt = html.indexOf('__BULLEN_BOOT_TIMER');
   const sharedCssAt = html.indexOf('href="/bullen-ui.css');
   if (bootAt < 0 || bootAt > sharedCssAt) {
@@ -27,7 +28,7 @@ for (const name of htmlFiles) {
     failures.push(`${name} must discover the navigation before third-party deferred scripts`);
   }
   if ((html.match(/src="\/bullen-ui\.js"/g) || []).length !== 1) failures.push(`${name} must mount only one shell`);
-  if (!html.includes("matches?3000:1600") || !html.includes('rel="preload" href="/bullen-ui.css" as="style"')) {
+  if (!html.includes("matches?4000:1600") || !html.includes('rel="preload" href="/bullen-ui.css" as="style"')) {
     failures.push(`${name} must reserve the mobile boot window and preload the rail styles`);
   }
 }
@@ -51,7 +52,7 @@ if (/html\.bullen-(?:booting|ready) body\s*\{/.test(css)) {
 }
 
 const js = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
-if (!js.includes('mobilePaint ? 1200 : 500') || !js.includes("document.fonts.load('600 12px Poppins')")) {
+if (!js.includes('mobilePaint ? 2500 : 500') || !js.includes("document.fonts.load('600 12px Poppins')")) {
   failures.push('mobile reveal must wait for the real header faces without changing the desktop font budget');
 }
 for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", "root.classList.add('bullen-ready')", 'const navigationGroups', "button.innerHTML = 'JUMP TO ", "appendGroup('On BULLENCIAGA'", "'/#giveaway'", "mobileDirectory.className = 'bullen-mobile-nav-directory'"]) {
