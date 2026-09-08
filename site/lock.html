@@ -65,8 +65,10 @@
   .lock-card{min-width:0;padding:30px;border-right:1px solid var(--lock-line);border-bottom:1px solid var(--lock-line);
     background:linear-gradient(145deg,rgba(199,168,105,.055),transparent 46%),rgba(9,9,9,.76)}
   .lock-card h3{margin:13px 0 0;font-family:Poppins,sans-serif;font-size:clamp(25px,3vw,34px);font-weight:500;
-    line-height:1.1;letter-spacing:-.035em}.amount{margin-top:26px;color:var(--lock-gold-light);font-family:Poppins,sans-serif;
-    font-size:clamp(36px,5vw,54px);font-weight:500;line-height:1;letter-spacing:-.045em}.amount small{font:400 11px/1 'Space Mono',monospace;letter-spacing:.14em}
+    line-height:1.1;letter-spacing:-.035em}.amount{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px 16px;margin-top:26px;color:var(--lock-gold-light);font-family:Poppins,sans-serif;
+    font-size:clamp(36px,5vw,54px);font-weight:500;line-height:1;letter-spacing:-.045em}
+  .amount small{display:inline-flex;align-items:baseline;gap:9px;font:400 11px/1.5 'Space Mono',monospace;letter-spacing:.14em}
+  .amount-usd{display:inline-block;min-width:22ch;color:var(--lock-gold);letter-spacing:0;white-space:nowrap;font-variant-numeric:tabular-nums}
   .facts{margin:26px 0 0;border-top:1px solid var(--lock-line)}.fact{display:flex;justify-content:space-between;gap:22px;
     padding:12px 0;border-bottom:1px solid var(--lock-line);font-size:10px;line-height:1.55}.fact dt{color:var(--lock-muted)}
   .fact dd{margin:0;color:var(--lock-ink);text-align:right}.fact dd.good{color:var(--lock-live)}
@@ -134,7 +136,7 @@
       <article class="lock-card">
         <div class="card-kicker">01 / Next volume burn · 7D</div>
         <h3>The next-burn tranche</h3>
-        <div class="amount">25,000,000 <small>BULLEN</small></div>
+        <div class="amount"><span>25,000,000</span> <small>BULLEN <span class="amount-usd" data-locked-bullen="25000000">(USD —)</span></small></div>
         <dl class="facts">
           <div class="fact"><dt>Hard cliff</dt><dd><time datetime="2026-09-09T17:00:00Z">09 Sep 2026 · 19:00 CEST</time></dd></div>
           <div class="fact"><dt>Unlocked before cliff</dt><dd class="good">0</dd></div>
@@ -150,7 +152,7 @@
       <article class="lock-card">
         <div class="card-kicker">02 / Future burn reserve · 30D</div>
         <h3>The longer reserve</h3>
-        <div class="amount">212,500,000 <small>BULLEN</small></div>
+        <div class="amount"><span>212,500,000</span> <small>BULLEN <span class="amount-usd" data-locked-bullen="212500000">(USD —)</span></small></div>
         <dl class="facts">
           <div class="fact"><dt>Hard cliff</dt><dd><time datetime="2026-10-02T17:00:00Z">02 Oct 2026 · 19:00 CEST</time></dd></div>
           <div class="fact"><dt>Unlocked before cliff</dt><dd class="good">0</dd></div>
@@ -209,6 +211,37 @@
     });
   }
   render(); setInterval(render,60000);
+  const usd = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
+  let priceBusy = false;
+  async function refreshLockValues(){
+    if(priceBusy || document.hidden) return;
+    priceBusy = true;
+    const nodes = document.querySelectorAll('[data-locked-bullen]');
+    try {
+      const response = await fetch('/volume',{cache:'no-store',signal:AbortSignal.timeout(12000)});
+      if(!response.ok) throw new Error('Price unavailable');
+      const data = await response.json();
+      const price = Number(data.price), stamp = Number(data.fetchedAt);
+      if(data.ok !== true || !Number.isFinite(price) || price <= 0 ||
+         !Number.isFinite(stamp) || stamp <= 0 || data.stale || data.marketStale || Date.now()-stamp > 600000){
+        throw new Error('Current price unavailable');
+      }
+      for(const node of nodes){
+        const value = Number(node.dataset.lockedBullen) * price;
+        if(!Number.isFinite(value)) throw new Error('Value unavailable');
+        node.textContent = '(≈ '+usd.format(value)+' USD)';
+        node.title = 'Estimated market value · price updated '+new Date(stamp).toLocaleString();
+      }
+    } catch {
+      for(const node of nodes){
+        node.textContent = '(USD unavailable)';
+        node.title = 'A current market price is temporarily unavailable.';
+      }
+    } finally { priceBusy = false; }
+  }
+  refreshLockValues();
+  setInterval(refreshLockValues,60000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden) refreshLockValues();});
 })();
 </script>
 </body>
