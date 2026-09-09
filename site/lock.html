@@ -12,17 +12,17 @@
 <link rel="preload" href="/bullen-ui.css" as="style">
 <script defer src="/bullen-ui.js"></script>
 <title>BULLENCIAGA — Burn Reserve</title>
-<meta name="description" content="Verify the 237.5M BULLEN volume-burn reserve across two public, non-cancellable Jupiter Lock escrows.">
+<meta name="description" content="Verify BULLEN volume-burn reserve schedules, live locked supply and public, non-cancellable Jupiter Lock escrows.">
 <link rel="canonical" href="https://bullenciaga.com/lock">
 <meta name="theme-color" content="#050505">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bullenciaga.com/lock">
 <meta property="og:title" content="237.5M BULLEN · two hard cliffs · public proof">
-<meta property="og:description" content="The next-burn tranche and future reserve are locked, public and independently verifiable on Jupiter.">
+<meta property="og:description" content="The next-burn tranche and future reserve have public schedules and independently verifiable Jupiter escrows.">
 <meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=2026-09-02-lock">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="BULLENCIAGA — Burn Reserve">
-<meta name="twitter:description" content="237.5M BULLEN in two public, non-cancellable hard-cliff locks.">
+<meta name="twitter:description" content="237.5M BULLEN allocated across two public, non-cancellable hard-cliff schedules.">
 <meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=2026-09-02-lock">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/lock.svg">
 
@@ -109,20 +109,20 @@
 <main class="reserve" id="main-content">
   <section class="hero">
     <div>
-      <div class="eyebrow">Public reserve record · 02 September 2026</div>
-      <h1>Locked for the next burn.</h1>
-      <p class="lede"><strong>237,500,000 $BULLEN. Two hard cliffs. Zero drip.</strong>
-        The volume-burn reserve is separated by purpose, excluded from circulating supply and independently verifiable on Jupiter.</p>
+      <div class="eyebrow">Public reserve record · 09 September 2026</div>
+      <h1>Reserve for the next burn.</h1>
+      <p class="lede"><strong>237,500,000 $BULLEN allocated. Two hard cliffs. Zero drip.</strong>
+        The volume-burn reserve is separated by purpose and independently verifiable on Jupiter. Only tokens still locked before their cliff are excluded from circulating supply.</p>
     </div>
     <aside class="total" aria-label="Total locked reserve">
       <div class="card-kicker">Locked now</div>
-      <b>237.5M</b>
-      <span>100% of the post-tier-one volume-burn reserve across two public escrows.</span>
+      <b id="locked-total">—</b>
+      <span id="locked-status">See Jupiter for current balances. Live supply loads when available.</span>
     </aside>
   </section>
 
   <section class="proof-strip" aria-label="Lock guarantees">
-    <div class="proof-stat"><b>0</b><span>tokens currently claimable</span></div>
+    <div class="proof-stat"><b id="elapsed-cliffs">—</b><span>escrow schedules past their cliff</span></div>
     <div class="proof-stat"><b>0</b><span>cancellable contracts</span></div>
     <div class="proof-stat"><b>2</b><span>finalized Token-2022 escrow accounts</span></div>
   </section>
@@ -130,7 +130,7 @@
   <section class="locks" id="locks">
     <header class="section-head">
       <div><div class="section-label">The live locks</div><h2>Proof, not promises.</h2></div>
-      <div class="verified">Verified on-chain</div>
+      <div class="verified">Schedules verified on-chain</div>
     </header>
     <div class="lock-grid">
       <article class="lock-card">
@@ -138,15 +138,15 @@
         <h3>The next-burn tranche</h3>
         <div class="amount"><span>25,000,000</span> <small>BULLEN <span class="amount-usd" data-locked-bullen="25000000">(USD —)</span></small></div>
         <dl class="facts">
-          <div class="fact"><dt>Hard cliff</dt><dd><time datetime="2026-09-09T17:00:00Z">09 Sep 2026 · 19:00 CEST</time></dd></div>
+          <div class="fact"><dt>Hard cliff</dt><dd><time datetime="2026-09-16T17:00:00Z">16 Sep 2026 · 19:00 CEST</time></dd></div>
           <div class="fact"><dt>Unlocked before cliff</dt><dd class="good">0</dd></div>
           <div class="fact"><dt>Vesting rate</dt><dd>0 per week</dd></div>
           <div class="fact"><dt>Can cancel</dt><dd>None</dd></div>
           <div class="fact"><dt>Can change recipient</dt><dd>None</dd></div>
         </dl>
-        <div class="countdown" data-cliff="2026-09-09T17:00:00Z">Calculating cliff…</div>
-        <a class="verify-link" href="https://lock.jup.ag/escrow/643KD1Zus2FEKV5ZKkMtW58tv4dfAAgLQHkXhWbs8295" target="_blank" rel="noopener noreferrer">Verify 25M on Jupiter ↗</a>
-        <p class="address">Escrow 643KD1Zus2FEKV5ZKkMtW58tv4dfAAgLQHkXhWbs8295<br>Token account 2125652ZzkUVShQFwwuTMCtKeEdeEC6LbSJsRBgh4vHQ</p>
+        <div class="countdown" data-cliff="2026-09-16T17:00:00Z">Calculating cliff…</div>
+        <a class="verify-link" href="https://lock.jup.ag/escrow/AuskhWTZCbXJLvW8A8jhVczZ9nKi1t3emty8M1rCvXHB" target="_blank" rel="noopener noreferrer">Verify 25M on Jupiter ↗</a>
+        <p class="address">Escrow AuskhWTZCbXJLvW8A8jhVczZ9nKi1t3emty8M1rCvXHB<br>Token account DaYMxWbKCrxFCEn2xmx8bW8wXBKZSvZ86iwcoWioZ86B</p>
       </article>
 
       <article class="lock-card">
@@ -193,24 +193,66 @@
 
   <footer class="foot">
     <span>BULLENCIAGA · Public burn reserve</span>
-    <span>Verified 02 September 2026 · Solana mainnet</span>
+    <span>Schedules verified 09 September 2026 · Solana mainnet</span>
   </footer>
 </main>
 <script>
 (() => {
   'use strict';
   const units = [[86400000,'d'],[3600000,'h'],[60000,'m']];
+  const cliffNodes = [...document.querySelectorAll('[data-cliff]')];
+  const lockedTotal = document.getElementById('locked-total');
+  const lockedStatus = document.getElementById('locked-status');
+  const elapsedCliffs = document.getElementById('elapsed-cliffs');
+  const compact = new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:2});
+  let supplySnapshot = null, supplyBusy = false;
+  function renderLockedTotal(){
+    const now = Date.now();
+    // A cached response from before a cliff cannot establish what is locked
+    // after it, even while it would otherwise still pass the freshness check.
+    const crossedCliff = supplySnapshot && cliffNodes.some(node => {
+      const cliff = Date.parse(node.dataset.cliff);
+      return cliff <= now && cliff > supplySnapshot.stamp;
+    });
+    if(!supplySnapshot || now - supplySnapshot.stamp > 120000 || crossedCliff){
+      lockedTotal.textContent = '—';
+      lockedStatus.textContent = 'Live locked balance unavailable. Verify current balances on Jupiter.';
+      return;
+    }
+    lockedTotal.textContent = compact.format(supplySnapshot.locked);
+    lockedStatus.textContent = 'BULLEN locked before its cliff, excluded from circulating supply. Updated '+new Date(supplySnapshot.stamp).toLocaleTimeString()+'.';
+  }
+  async function refreshLockedTotal(){
+    if(supplyBusy || document.hidden) return;
+    supplyBusy = true;
+    try {
+      const response = await fetch('/supply',{cache:'no-store',signal:AbortSignal.timeout(12000)});
+      if(!response.ok) throw new Error('Supply unavailable');
+      const data = await response.json();
+      const locked = Number(data.nonCirculating), stamp = Date.parse(data.updatedAt);
+      if(data.mint !== 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN' ||
+         data.nonCirculating == null || !Number.isFinite(locked) || locked < 0 ||
+         !Number.isFinite(stamp) || Date.now()-stamp > 120000 || stamp-Date.now() > 60000){
+        throw new Error('Current locked balance unavailable');
+      }
+      supplySnapshot = {locked,stamp};
+    } catch { supplySnapshot = null; }
+    finally { supplyBusy = false; renderLockedTotal(); }
+  }
   function render(){
-    document.querySelectorAll('[data-cliff]').forEach((node) => {
+    cliffNodes.forEach((node) => {
       let remaining = Date.parse(node.dataset.cliff) - Date.now();
       if(!Number.isFinite(remaining)) return;
       if(remaining <= 0){ node.textContent = 'Cliff reached · verify current state on Jupiter'; return; }
       const parts=[];
       for(const [size,label] of units){const value=Math.floor(remaining/size);remaining-=value*size;if(value||parts.length)parts.push(value+label)}
-      node.textContent='Hard cliff in '+parts.join(' ');
+      node.textContent='Hard cliff in '+(parts.join(' ') || 'under 1m');
     });
+    elapsedCliffs.textContent = String(cliffNodes.filter(node => Date.parse(node.dataset.cliff) <= Date.now()).length);
+    renderLockedTotal();
   }
-  render(); setInterval(render,60000);
+  render(); setInterval(render,1000);
+  refreshLockedTotal(); setInterval(refreshLockedTotal,60000);
   const usd = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
   let priceBusy = false;
   async function refreshLockValues(){
@@ -241,7 +283,7 @@
   }
   refreshLockValues();
   setInterval(refreshLockValues,60000);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden) refreshLockValues();});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();refreshLockValues();refreshLockedTotal();}});
 })();
 </script>
 </body>

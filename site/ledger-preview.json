@@ -1,8 +1,9 @@
 {
   "ok": true,
   "preview": true,
-  "updatedAt": "2026-09-03T03:30:00.000Z",
+  "updatedAt": "2026-09-09T17:04:54.000Z",
   "events": [
+    {"id": "relock-25-20260909", "kind": "custody", "at": "2026-09-09T17:04:54.000Z", "title": "Next-burn tranche renewed its public lock", "detail": "25M BULLEN entered a new zero-drip, non-cancellable Jupiter escrow with a 16 September 2026, 17:00 UTC hard cliff. The separate 212.5M reserve remains in its existing escrow.", "amount": "25M BULLEN", "source": "Jupiter Lock", "url": "https://lock.jup.ag/escrow/AuskhWTZCbXJLvW8A8jhVczZ9nKi1t3emty8M1rCvXHB"},
     { "id": "lock-2125", "kind": "custody", "at": "2026-09-02T15:00:00.000Z", "title": "Future burn reserve entered a hard cliff", "detail": "212.5M BULLEN entered its public zero-drip, non-cancellable Jupiter Lock schedule.", "amount": "212.5M BULLEN", "source": "Jupiter Lock", "url": "https://lock.jup.ag/escrow/A6TLCJ8Kasy53pqzKwt2TtJ68JqCZgCi8p6Jo5g7VkuM" },
     { "id": "lock-25", "kind": "custody", "at": "2026-09-02T15:00:00.000Z", "title": "Next-burn tranche entered a hard cliff", "detail": "25M BULLEN entered the public zero-drip schedule for the next cumulative-volume burn.", "amount": "25M BULLEN", "source": "Jupiter Lock", "url": "https://lock.jup.ag/escrow/643KD1Zus2FEKV5ZKkMtW58tv4dfAAgLQHkXhWbs8295" },
     { "id": "giveaway-close", "kind": "delivery", "at": "2026-09-02T13:18:37.000Z", "title": "Buy + Hold draw closed at its published boundary", "detail": "The closing snapshot and future finalized seed were recorded before ranking three prize wallets.", "amount": "3 PIECES", "source": "Giveaway result", "url": "/giveaway-buy-hold-result-20260902.json" },
