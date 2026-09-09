@@ -2,7 +2,7 @@
   "schema": "bullenciaga.giveaways.v1",
   "project": "BULLENCIAGA",
   "token": "$BULLEN",
-  "updatedAt": "2026-09-02T16:27:32Z",
+  "updatedAt": "2026-09-09T19:52:03.220430Z",
   "finalCarryover": {
     "rounds": [0, 1, 2],
     "wallets": 32,
@@ -10,7 +10,8 @@
   },
   "freshness": {
     "mintedEndpoint": "/supply/minted",
-    "followerEntriesEndpoint": "/entries"
+    "followerEntriesEndpoint": "/entries",
+    "followerStatusEndpoint": "/entries/status"
   },
   "campaigns": [
     {
@@ -76,9 +77,9 @@
       "status": "active",
       "displayOrder": 20,
       "layout": "wide",
-      "trigger": { "label": "X followers", "target": 500, "current": null, "source": "manual authenticated X check" },
+      "trigger": { "label": "verified X followers", "target": 500, "current": null, "source": "/entries/status" },
       "eligibility": ["Hold at least 100,000 $BULLEN when entering", "Follow @bullenciagax", "One wallet and one X username per entry"],
-      "prizes": { "type": "herd-positions", "positions": [168, 495, 737, 773, 950] },
+      "prizes": { "type": "herd-positions", "positions": [168, 495, 737, 773, 950], "subtitle": "HERD #168 · HERD #495 · HERD #737 · HERD #773 · HERD #950" },
       "entry": {
         "campaign": "follow500",
         "submitEndpoint": "/entry",
@@ -86,7 +87,16 @@
         "homepageAnchor": "/#giveaway",
         "signatureMessage": "bullenciaga giveaway entry - follow500"
       },
-      "payoutStatus": "not-drawn"
+      "payoutStatus": "not-drawn",
+      "automation": {
+        "statusSource": "/entries/status",
+        "close": "first verified count of at least 500 followers",
+        "selection": "five distinct wallets using the committed future finalized Solana block",
+        "snapshot": "/entries/snapshot",
+        "result": "/entries/result",
+        "delivery": "manual by owner",
+        "staticStatusIsAuthoritative": false
+      }
     },
     {
       "id": "herd-buy-hold-680-625-308",
