@@ -3030,6 +3030,7 @@
 <link rel="stylesheet" href="/bullen-ui.css">
 <link rel="stylesheet" href="/market-surfaces.css">
 <link rel="stylesheet" href="/mobile-buy.css">
+<link rel="stylesheet" href="/follow500.css">
 <script src="/mobile-buy.js"></script>
 <script defer src="/house-burn-registry.js"></script>
 </head>
@@ -3210,8 +3211,10 @@
       signing costs nothing and approves no transaction.
     </div>
 
+    <div id="gvLiveStatus" aria-live="polite"><p class="f500-note">Checking the live giveaway status…</p></div>
+
     <div class="gv-form">
-      <button type="button" class="gv-btn" id="gvConnectBtn">CONNECT WALLET</button>
+      <button type="button" class="gv-btn" id="gvConnectBtn" disabled>CHECKING STATUS</button>
 
       <div class="gv-field" id="gvFieldWrap" hidden>
         <label class="gv-label" for="gvHandle">your x username</label>
@@ -3221,7 +3224,7 @@
                  autocomplete="off" autocapitalize="none" spellcheck="false"
                  placeholder="username">
         </div>
-        <button type="button" class="gv-btn gv-btn-primary" id="gvEnterBtn">SIGN AND ENTER</button>
+        <button type="button" class="gv-btn gv-btn-primary" id="gvEnterBtn" disabled>SIGN AND ENTER</button>
       </div>
 
       <div class="gv-msg" id="gvMsg"></div>
@@ -5722,7 +5725,7 @@
   // and openWalletModal are all already defined above. A parallel
   // implementation would drift from the real one the first time a wallet
   // quirk got fixed in only one of them.
-  (function giveawayModule(){
+  (async function giveawayModule(){
     const sec = document.getElementById('giveaway');
     if (!sec) return;
 
@@ -5736,6 +5739,7 @@
       title: document.getElementById('gvTitle'),
       terms: document.getElementById('gvTerms'),
       publicEntries: document.getElementById('gvPublicEntries'),
+      liveStatus: document.getElementById('gvLiveStatus'),
     };
     if (!els.connect || !els.enter) return;
 
@@ -5752,7 +5756,10 @@
     let publicEndpoint = null;
 
     let closed = true;
+    let entryLabel = 'CHECKING STATUS';
     let busy = false;
+    let followerApi = null;
+    let loadingStatus = null;
 
     function internalPath(value){
       return typeof value === 'string' && /^\/(?!\/)/.test(value) ? value : null;
@@ -5778,7 +5785,7 @@
         entryMessage = entry.signatureMessage;
         submitEndpoint = nextSubmit;
         publicEndpoint = nextPublic;
-        closed = campaign.status !== 'active';
+        closed = true; // Live coordinator status, not this static file, controls entry.
         if (els.title) els.title.textContent = campaign.title;
         if (els.terms) {
           els.terms.innerHTML = campaign.eligibility.map((rule, index) => {
@@ -5801,8 +5808,9 @@
         await loadCount();
       } catch (error) {
         closed = true;
+        entryLabel = 'STATUS UNAVAILABLE';
         reflect();
-        say('the public campaign ledger could not be verified. entry is paused rather than guessed.', 'gv-err');
+        say('the public campaign ledger could not be verified. entry is paused until it can be checked.', 'gv-err');
       }
     }
 
@@ -5819,10 +5827,12 @@
     function reflect(){
       if (closed) {
         els.connect.disabled = true;
-        els.connect.textContent = 'ENTRIES CLOSED';
+        els.connect.textContent = entryLabel;
+        els.enter.disabled = true;
         els.fieldWrap.hidden = true;
         return;
       }
+      els.enter.disabled = busy;
       if (connectedWalletAddress) {
         els.connect.textContent = shortAddr(connectedWalletAddress);
         els.connect.disabled = true;
@@ -5835,20 +5845,22 @@
     }
 
     async function loadCount(){
-      if (!publicEndpoint) return;
-      try {
-        const r = await fetch(publicEndpoint, { cache: 'no-store' });
-        const j = await r.json();
-        if (j && j.ok) {
-          els.count.textContent = j.count;
-          closed = !!j.closed;
-          reflect();
-        }
-      } catch (e) { /* the count is decoration; the form still works */ }
+      if (!followerApi || !publicEndpoint) return false;
+      if (loadingStatus) return loadingStatus;
+      loadingStatus = (async () => {
+        const view = await followerApi.loadFollow500();
+        closed = !view.canEnter;
+        entryLabel = view.entryLabel;
+        els.count.textContent = view.entryCount === null ? '--' : view.entryCount;
+        if (els.liveStatus) els.liveStatus.innerHTML = followerApi.renderFollow500Details(view, { compact: true });
+        reflect();
+        return view.canEnter;
+      })();
+      try { return await loadingStatus; } finally { loadingStatus = null; }
     }
 
     els.connect.addEventListener('click', () => {
-      if (connectedWalletAddress) return;
+      if (closed || connectedWalletAddress) return;
       // Same modal the mint uses, so there is one wallet picker on the site.
       openWalletModal();
     });
@@ -5869,7 +5881,7 @@
     });
 
     els.enter.addEventListener('click', async () => {
-      if (busy) return;
+      if (busy || closed) return;
       if (!connectedWalletAddress) { say('connect a wallet first.', 'gv-err'); return; }
 
       const handle = els.handle.value.trim().replace(/^@+/, '');
@@ -5888,9 +5900,11 @@
 
       busy = true;
       els.enter.disabled = true;
-      say('check your wallet to sign...');
+      say('checking entry availability...');
 
       try {
+        if (!await loadCount()) { say('entry is no longer available. see the live giveaway status above.', 'gv-err'); return; }
+        say('check your wallet to sign...');
         // signMessage takes BYTES, not a string. Passing a string appears to
         // work in some wallets and produces a signature over the wrong data
         // in others, which then fails verification server-side for reasons
@@ -5938,7 +5952,7 @@
           loadCount();
         } else {
           say((j && j.error) || 'entry failed, try again.', 'gv-err');
-          if (j && j.closed) { closed = true; reflect(); }
+          if (j && j.closed) { closed = true; entryLabel = 'ENTRIES CLOSED'; reflect(); loadCount(); }
         }
       } catch (e) {
         const m = (e && e.message) || String(e);
@@ -5956,7 +5970,7 @@
         }
       } finally {
         busy = false;
-        els.enter.disabled = false;
+        reflect();
       }
     });
 
@@ -5974,8 +5988,16 @@
     }
 
     reflect();
-    loadCampaign();
-    setInterval(loadCount, 60000);
+    try {
+      followerApi = await import('/follow500.js');
+      await loadCampaign();
+      setInterval(() => { if (!document.hidden) loadCount(); }, 30_000);
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) loadCount(); });
+    } catch (_) {
+      entryLabel = 'STATUS UNAVAILABLE';
+      reflect();
+      say('the giveaway status could not be loaded. please refresh to try again.', 'gv-err');
+    }
   })();
 
   updateNftUI();
