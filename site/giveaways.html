@@ -17,6 +17,7 @@
   <meta name="description" content="Active, upcoming and completed BULLENCIAGA giveaways with public snapshots and reproducible results.">
 
   <link rel="stylesheet" href="/bullen-ui.css">
+  <link rel="stylesheet" href="/follow500.css">
   <style>
     * { box-sizing: border-box; }
     html { color-scheme: dark; background: var(--bullen-bg); }
@@ -117,14 +118,17 @@
     <p class="proof-note"><strong>Nothing is drawn in the dark.</strong> The entry snapshot is published before the seed exists, and every completed result stays reproducible from the public record.</p>
   </main>
 
-  <script>
+  <script type="module">
+    import { loadFollow500, renderFollow500Details, installFollow500Verifier } from "/follow500.js";
     (async function () {
       const groups = [
         ['active', 'Active', 'Open for participation now'],
+        ['pending', 'Pending', 'Awaiting a verified status or result'],
         ['upcoming', 'Upcoming', 'Visible before its gate is reached'],
         ['completed', 'Completed', 'Snapshot and draw result published'],
       ];
       const root = document.getElementById('campaigns');
+      installFollow500Verifier(root);
       const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
 
       let authority;
@@ -148,21 +152,23 @@
       }
 
       let minted = null;
-      let followerEntries = null;
+      let followerView;
       await Promise.all([
         fetch(authority.freshness.mintedEndpoint).then((response) => response.json()).then((value) => {
           const count = Number(value.minted ?? value.count);
           if (Number.isInteger(count)) minted = count;
         }).catch(() => {}),
-        fetch(authority.freshness.followerEntriesEndpoint).then((response) => response.json()).then((value) => {
-          if (Number.isInteger(value.count)) followerEntries = value.count;
-        }).catch(() => {}),
+        loadFollow500().then((value) => { followerView = value; }),
       ]);
 
       const campaigns = authority.campaigns.map((campaign) => {
         const next = structuredClone(campaign);
         if (campaign.id === 'mint-round-3' && minted !== null) next.trigger.current = minted;
-        if (campaign.id === 'follow500' && followerEntries !== null) next.entry.publicEntries = followerEntries;
+        if (campaign.id === 'follow500') {
+          next.status = followerView.group;
+          next.trigger.current = followerView.count;
+          next.followerView = followerView;
+        }
         return next;
       });
 
@@ -230,19 +236,22 @@
           traits['Glasses And Headgear'], traits.Branding && `${traits.Branding} branding`].filter(Boolean).join(' · ') : '');
         const featured = campaign.featured && media ? ` featured${video ? ' with-video' : ''}` : '';
         const wide = campaign.layout === 'wide' && !media ? ' wide' : '';
-        return `<article class="campaign${featured}${wide}" data-status="${escapeHtml(campaign.status)}">
+        const follower = campaign.id === 'follow500' ? campaign.followerView : null;
+        return `<article class="campaign${featured}${wide}" id="${escapeHtml(campaign.id)}" data-status="${escapeHtml(campaign.status)}">
           ${media}<div class="campaign-copy">
           <div class="status">${escapeHtml(campaign.status.replaceAll('-', ' '))}</div>
           <h3>${escapeHtml(campaign.title)}</h3>
           ${prizeLine ? `<div class="prize-traits">${escapeHtml(prizeLine)}</div>` : ''}
-          <div class="trigger">${escapeHtml(trigger)}</div>${entries}${milestones}
-          ${hasProgress ? `<div class="progress" aria-label="${progress.toFixed(0)} percent complete"><i style="--progress:${progress}%"></i></div>` : ''}
+          ${follower ? '' : `<div class="trigger">${escapeHtml(trigger)}</div>${entries}`}${milestones}
+          ${hasProgress && !follower ? `<div class="progress" aria-label="${progress.toFixed(0)} percent complete"><i style="--progress:${progress}%"></i></div>` : ''}
           <ul class="rules">${campaign.eligibility.map((rule) => `<li>${escapeHtml(rule)}</li>`).join('')}</ul>
           <div class="actions">
-            ${link(campaign.entry && (campaign.entry.url || campaign.entry.homepageAnchor), campaign.kind === 'skill' ? 'Name #699 on X' : 'Enter', campaign.status === 'active')}
+            ${!follower || follower.canEnter ? link(campaign.entry && (campaign.entry.url || campaign.entry.homepageAnchor), campaign.kind === 'skill' ? 'Name #699 on X' : 'Enter', campaign.status === 'active') : ''}
+            ${follower ? link('/entries', 'Public wallet entries') : ''}
             ${link(campaign.snapshot, 'Snapshot')}
             ${link(campaign.result, 'Result')}
           </div>
+          ${follower ? renderFollow500Details(follower) : ''}
           </div>
         </article>`;
       };
@@ -260,6 +269,39 @@
           <div class="campaign-grid">${rows.length ? rows.map(card).join('') : '<div class="empty">No campaigns in this state.</div>'}</div>
         </section>`);
       }
+
+      // Only update this campaign; preserve other cards, media playback and history.
+      let refreshingFollower = false;
+      let previousFollowerView = JSON.stringify(followerView);
+      const refreshFollower = async () => {
+        if (refreshingFollower || document.hidden) return;
+        refreshingFollower = true;
+        try {
+          const nextView = await loadFollow500();
+          const encodedView = JSON.stringify(nextView);
+          if (encodedView === previousFollowerView) return;
+          previousFollowerView = encodedView;
+          const campaign = campaigns.find((item) => item.id === 'follow500');
+          const previousGroup = campaign.status;
+          campaign.status = nextView.group;
+          campaign.trigger.current = nextView.count;
+          campaign.followerView = nextView;
+          const current = document.getElementById('follow500');
+          if (previousGroup === campaign.status) {
+            current?.insertAdjacentHTML('afterend', card(campaign));
+            current?.remove();
+          } else {
+            current?.remove();
+            const destination = document.querySelector(`#${campaign.status}-title + span`)?.closest('.campaign-section')?.querySelector('.campaign-grid');
+            if (destination) { destination.querySelector('.empty')?.remove(); destination.insertAdjacentHTML('beforeend', card(campaign)); }
+            const previous = document.getElementById(`${previousGroup}-title`)?.closest('.campaign-section')?.querySelector('.campaign-grid');
+            if (previous && !previous.querySelector('.campaign')) previous.innerHTML = '<div class="empty">No campaigns in this state.</div>';
+          }
+          document.getElementById('activeCount').textContent = campaigns.filter((item) => item.status === 'active').length;
+        } finally { refreshingFollower = false; }
+      };
+      setInterval(refreshFollower, 30_000);
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshFollower(); });
 
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       root.querySelectorAll('video[autoplay]').forEach((video) => {
