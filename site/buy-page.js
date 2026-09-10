@@ -109,9 +109,6 @@
     if (market.status === 'fulfilled' && market.value.ok === true && positive(market.value.price) !== null) {
       const d = market.value;
       $('market-price').textContent = price(d.price);
-      const change = finite(d.priceChange24h);
-      $('market-change').textContent = change === null ? '24h change unavailable' : (change > 0 ? '+' : '') + change.toFixed(2) + '% · 24h';
-      $('market-change').className = change === null ? '' : change >= 0 ? 'positive' : 'negative';
       $('market-volume').textContent = finite(d.volume24h) >= 0 ? usd(d.volume24h) : '—';
       $('market-liquidity').textContent = positive(d.liquidityUsd) !== null ? usd(d.liquidityUsd) : '—';
       const s = supply.status === 'fulfilled' && supply.value.mint === MINT ? supply.value : {};
@@ -121,7 +118,7 @@
       const stale = d.marketStale || !stamp || Date.now() - stamp > 10 * 60 * 1000;
       $('market-status').textContent = (stale ? 'Delayed snapshot' : 'Updated') + (stamp ? ' · ' + new Date(stamp).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : '') + (s.circulatingSupply ? '' : ' · supply unavailable');
     } else {
-      for (const id of ['market-price','market-change','market-volume','market-liquidity','market-cap','market-fdv']) $(id).textContent = '—';
+      for (const id of ['market-price','market-volume','market-liquidity','market-cap','market-fdv']) $(id).textContent = '—';
       $('market-status').textContent = 'Market data unavailable. Buying options remain available.';
     }
     marketBusy = false;
@@ -133,19 +130,28 @@
     chartController?.abort(); chartController = new AbortController();
     const controller = chartController;
     const request = ++chartRequest;
+    const selectedRange = range;
+    const rangeLabel = selectedRange === 'all' ? 'all time' : selectedRange;
+    $('market-change').textContent = '— · ' + rangeLabel;
+    $('market-change').className = '';
     $('price-chart').setAttribute('hidden',''); $('chart-empty').hidden = false; $('chart-empty').textContent = 'Loading price history…';
     const timer = setTimeout(() => controller.abort(),12000);
     try {
-      const d = await json('/ohlcv?tf=' + range, controller.signal);
+      const d = await json('/ohlcv?tf=' + selectedRange, controller.signal);
       if (request !== chartRequest) return;
       if (d.ok !== true || !Array.isArray(d.candles)) throw new Error();
       const byTime = new Map();
       for (const c of d.candles) if (Array.isArray(c) && positive(c[0]) !== null && positive(c[4]) !== null) byTime.set(Number(c[0]),Number(c[4]));
       const now = Date.now();
-      const cutoff = range === 'all' ? 0 : now - (range === '7d' ? 7 : 1) * 86400000;
+      const cutoff = selectedRange === 'all' ? 0 : now - (selectedRange === '7d' ? 7 : 1) * 86400000;
       const points = [...byTime].filter(([time]) => time >= cutoff && time <= now).sort((a,b) => a[0]-b[0]);
       if (points.length < 2) throw new Error();
       const start = points[0][0], end = points.at(-1)[0];
+      // Use the same closing prices as the chart, independent of the market snapshot.
+      const change = finite((points.at(-1)[1] / points[0][1] - 1) * 100);
+      const roundedChange = change === null ? null : Number(change.toFixed(2));
+      $('market-change').textContent = roundedChange === null ? rangeLabel + ' change unavailable' : (roundedChange > 0 ? '+' : '') + roundedChange.toFixed(2) + '% · ' + rangeLabel;
+      $('market-change').className = roundedChange > 0 ? 'positive' : roundedChange < 0 ? 'negative' : '';
       const low = Math.min(...points.map(p=>p[1])), high = Math.max(...points.map(p=>p[1]));
       const span = high-low || high * .02;
       const coords = points.map(([t,v]) => [((t-start)/(end-start)*632+4).toFixed(2),(145-(v-low)/span*120).toFixed(2)]);
@@ -157,6 +163,8 @@
       $('price-chart').removeAttribute('hidden'); $('chart-empty').hidden = true;
     } catch {
       if (request !== chartRequest) return;
+      $('market-change').textContent = rangeLabel + ' change unavailable';
+      $('market-change').className = '';
       $('chart-empty').textContent = 'Price history unavailable for this range.';
       $('chart-start').textContent = '—'; $('chart-end').textContent = '—';
     } finally { clearTimeout(timer); }
