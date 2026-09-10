@@ -256,13 +256,12 @@ for (const name of ['chart.html', 'refer.html', 'thedrop.html']) {
 }
 
 const home = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
-if (!home.includes("{ id: 'giveaway', label: 'Giveaway' }")) failures.push('homepage Jump To menu omits the live giveaway');
+if (home.includes('id="giveaway"') || home.includes("{ id: 'giveaway', label: 'Giveaway' }") || shell.includes('/#giveaway')) failures.push('completed giveaway remains on the homepage or in homepage section navigation');
 if (home.includes('data-bullen-home-nav')) failures.push('homepage retains the redundant mid-hero navigation strip');
 if (!home.includes("targetSelector === '#' || !targetSelector.startsWith('#')")) failures.push('homepage smooth scrolling can intercept the external mobile buy fallback');
 for (const duplicate of ["giveaways.html', label: 'All Giveaways", "proof', label: 'Proof", "refer.html', label: 'Referrals", "thedrop', label: 'The Drop", "stats.html', label: 'Live Dashboard"]) {
   if (home.includes(duplicate)) failures.push(`homepage Jump To duplicates shared navigation: ${duplicate}`);
 }
-if (!home.includes("fetch('/giveaways.json'")) failures.push('homepage giveaway card is not driven by the campaign authority');
 if (home.includes("const ENTRY_MESSAGE = 'bullenciaga giveaway entry")) failures.push('homepage duplicates the campaign signature message');
 if (!home.includes('visibility:hidden') || !home.includes('opacity:0') || !home.includes('transition:')) failures.push('homepage Jump To no longer uses a quick fade');
 

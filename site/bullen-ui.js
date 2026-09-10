@@ -130,7 +130,6 @@
     button.setAttribute('aria-controls', menuId);
 
     const homeSections = [
-      ['/#giveaway', 'Giveaway'],
       ['/#stats', 'Live Stats'],
       ['/#how-to-buy', 'How To Buy'],
       ['/#nft', 'The Herd Collection'],

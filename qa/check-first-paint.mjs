@@ -117,7 +117,7 @@ const js = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
 if (!js.includes('mobilePaint ? 2500 : 500') || !js.includes("document.fonts.load('600 12px Poppins')")) {
   failures.push('mobile reveal must wait for the real header faces without changing the desktop font budget');
 }
-for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", 'window.__BULLEN_REVEAL(fontsReady)', 'const navigationGroups', "button.innerHTML = 'JUMP TO ", "appendGroup('On BULLENCIAGA'", "'/#giveaway'", "mobileDirectory.className = 'bullen-mobile-nav-directory'"]) {
+for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", 'window.__BULLEN_REVEAL(fontsReady)', 'const navigationGroups', "button.innerHTML = 'JUMP TO ", "appendGroup('On BULLENCIAGA'", "mobileDirectory.className = 'bullen-mobile-nav-directory'"]) {
   if (!js.includes(required)) failures.push(`bullen-ui.js is missing ${required}`);
 }
 

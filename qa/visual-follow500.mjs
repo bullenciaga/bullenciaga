@@ -97,25 +97,15 @@ try {
       observations.push({width,phase,status:await panel.getAttribute('data-status'),label:await panel.locator('.f500-label').innerText()});
       if(phase==='failure')assert.match(content,/Status unavailable/i);
     }
-    for (const phase of ['armed','closed','failure']) {
-      current=phase;
-      await page.goto(base+'/?fixture='+phase+'#giveaway',{waitUntil:'domcontentloaded'});
-      await page.waitForFunction(()=>document.querySelector('#gvLiveStatus .f500-label'));
-      assert.equal(await page.locator('#gvConnectBtn').isDisabled(),phase!=='armed',`homepage ${phase} button`);
-      await page.locator('#gvLiveStatus').screenshot({path:path.join(output,`homepage-${width}-${phase}.png`)});
-    }
-    current='armed';
-    await page.goto(base+'/?fixture=transition#giveaway',{waitUntil:'domcontentloaded'});
-    await page.waitForFunction(()=>document.querySelector('#gvConnectBtn')?.disabled===false);
-    current='closed';
-    await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));
-    await page.waitForFunction(()=>document.querySelector('#gvConnectBtn')?.textContent==='ENTRIES CLOSED');
-    assert.equal(await page.locator('#gvConnectBtn').isDisabled(),true,'open homepage follows live cutoff');
-    // Homepage unrelated graphics may fail because all external resources are
-    // intentionally blocked. The giveaway module must never throw.
+    await page.goto(base+'/',{waitUntil:'domcontentloaded'});
+    await page.waitForSelector('header[data-bullen-hydrated="true"]');
+    assert.equal(await page.locator('#giveaway').count(),0,'completed campaign is removed from homepage');
+    assert.equal(await page.locator('a[href="#giveaway"], a[href="/#giveaway"]').count(),0,'no dead giveaway section links');
+    assert.equal(await page.locator('section.hero + section#stats').count(),1,'live stats follow the hero directly');
+    assert.ok(await page.locator('a[href="/giveaways.html"]').count(),'results remain accessible through shared navigation');
     assert.equal(errors.filter(error=>/follow500|giveawayModule|followerView|Unexpected token/.test(error)).length,0,errors.join('\n'));
     await context.close();
   }
   await fs.writeFile(path.join(output,'report.json'),JSON.stringify({passed:observations.length,observations},null,2)+'\n');
-  console.log(`Follower500 browser QA passed: ${observations.length} campaign renders and 6 homepage states.`);
+  console.log(`Follower500 browser QA passed: ${observations.length} campaign renders and 2 homepage retirement checks.`);
 } finally { await browser.close(); await new Promise(resolve=>server.close(resolve)); }
