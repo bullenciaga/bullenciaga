@@ -72,7 +72,7 @@ body {
 .passport-form { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; padding: 32px 0 20px; }
 .passport-form label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .passport-form input { min-width: 0; height: 50px; padding: 0 16px; border: 1px solid var(--intel-line); border-radius: 0; outline: 0; background: rgba(9,9,9,.78); color: var(--intel-ink); font: 12px/1 "Space Mono", monospace; }
-.passport-form input:focus-visible { border-color: var(--intel-pale); box-shadow: inset 3px 0 var(--intel-pale); }
+html[data-focus-navigation="keyboard"] .passport-form input:focus-visible { border-color: var(--intel-pale); box-shadow: inset 3px 0 var(--intel-pale); }
 .passport-notice { min-height: 21px; color: var(--intel-muted); font-size: 9px; line-height: 1.6; }
 .passport-notice.is-error { color: #e0685f; }
 .passport-record { margin-top: 18px; }

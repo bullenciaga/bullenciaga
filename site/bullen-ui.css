@@ -110,7 +110,7 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   transition: transform var(--bullen-motion-fast) ease;
 }
 
-.bullen-skip:focus { transform: translateY(0); }
+html[data-focus-navigation="keyboard"] .bullen-skip:focus { transform: translateY(0); }
 
 .bullen-site-shell {
   position: fixed;
@@ -442,26 +442,6 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
 .bullen-site-admin-label {
   color: var(--bullen-danger);
   white-space: nowrap;
-}
-
-:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-  outline: 2px solid var(--bullen-focus) !important;
-  outline-offset: 3px !important;
-}
-
-/* Programmatic focus can establish an accessible starting point without making
-   the focused action look preselected. The class is removed on first blur, so
-   subsequent keyboard focus keeps the standard visible House focus ring. */
-:where(a, button, input, select, textarea, [tabindex]).bullen-auto-focus-neutral:focus {
-  outline: none !important;
-  outline-offset: 0 !important;
-}
-
-/* Keep focus itself intact after taps, without a keyboard-style action ring.
-   Text-entry controls retain their normal focus indicator in either mode. */
-html[data-bullen-input="pointer"] :where(a, button, summary, [role="button"]):focus {
-  outline: none !important;
-  outline-offset: 0 !important;
 }
 
 [data-bullen-main]:focus { outline: none; }
