@@ -14,7 +14,7 @@ assert.equal(createHash('sha256').update(originalBody).digest('hex'),
 assert.equal(createHash('sha256').update(archive002.slice(archive002.indexOf('  <section class="hero"'), archive002.indexOf('  <footer'))).digest('hex'), '9bde9dc85451aed2698a6dde37fa42025a83d49273d2717418c89272a33b742e', 'Edition 002 article must remain intact');
 assert.equal(createHash('sha256').update(archive003.slice(archive003.indexOf('  <section class="hero"'), archive003.indexOf('  <footer'))).digest('hex'), 'fa0ded96869e1f5ce56f821d370e92d5ad1cec95391f8df42bdb90aecef9e6c9', 'Edition 003 article must remain intact');
 assert.match(current, /Public edition 004/);
-assert.match(current, /Prepared 11 September 2026/);
+assert.match(current, /Published 11 September 2026/);
 assert.match(current, /href="\/patchnotes-001"/);
 assert.match(archive002, /live-stream access and end-to-end delivery remain to be verified/i);
 assert.match(archive, /class="record-archive-notice"/);
