@@ -12,6 +12,8 @@ let checks=0;
 const quoteStub=`window.Jupiter={init:config=>{window.__config=config;const host=document.getElementById(config.integratedTargetId);host.insertAdjacentHTML('beforeend','<div data-swap-stub style="height:380px;padding:30px;color:#c7a869">Isolated test swap · SOL → BULLEN</div>');}};`;
 try {
  for(const width of [320,375,390,430,820,1440]){
+  const chartNow=Date.now(), day=86400000, chartRanges=[];
+  const candles=[[chartNow-40*day,0,0,0,.0001],[chartNow-3*day,0,0,0,.00018],[chartNow-3600000,0,0,0,.0002],[chartNow-3600000,0,0,0,.00021],[chartNow-1800000,0,0,0,.00024],[chartNow-900000,0,0,0,null],[chartNow+day,0,0,0,100]];
   const context=await browser.newContext({viewport:{width,height:1000},reducedMotion:'reduce'});
   await context.grantPermissions(['clipboard-read','clipboard-write']);
   await context.route('**/*',route=>{
@@ -19,7 +21,7 @@ try {
    if(u.hostname==='plugin.jup.ag')return route.fulfill({contentType:'text/javascript',body:quoteStub});
    if(u.pathname==='/volume')return route.fulfill({json:{ok:true,price:.00024,volume24h:480,liquidityUsd:41000,priceChange24h:-2.5,marketStale:false,fetchedAt:Date.now()}});
    if(u.pathname==='/supply')return route.fulfill({json:{mint:MINT,totalSupply:820000000,circulatingSupply:580000000}});
-   if(u.pathname==='/ohlcv')return route.fulfill({json:{ok:true,candles:[[Date.now()-3600000,0,0,0,.0002],[Date.now()-3600000,0,0,0,.00021],[Date.now()-1800000,0,0,0,.00024],[Date.now()-900000,0,0,0,null]]}});
+   if(u.pathname==='/ohlcv'){chartRanges.push(u.searchParams.get('tf'));return route.fulfill({json:{ok:true,candles}});}
    if(u.origin===base || /fonts\.(googleapis|gstatic)\.com/.test(u.hostname))return route.continue();
    return route.abort();
   });
@@ -34,6 +36,7 @@ try {
   await page.locator('#copy-contract').click();assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),MINT);
   assert.equal(await page.locator('#price-chart').isVisible(),true);
   assert((await page.locator('#chart-line').getAttribute('d')).includes('L'));assert(!(await page.locator('#chart-line').getAttribute('d')).includes('NaN'));
+  assert.equal((await page.locator('#chart-line').getAttribute('d')).match(/L/g).length,1,'24H excludes older, duplicate, invalid and future samples');
   for(const wallet of ['phantom','solflare']){
    const href=await page.locator(`[data-wallet=${wallet}]`).getAttribute('href');const u=new URL(href);
    if(wallet==='phantom')assert.equal(u.searchParams.get('buy'),'solana:101/address:'+MINT);
@@ -43,6 +46,14 @@ try {
   for(const wallet of ['backpack','coinbase','trust','okx'])assert(decodeURIComponent(decodeURIComponent(await page.locator(`[data-wallet=${wallet}]`).getAttribute('href'))).includes('https://bullenciaga.com/buy'));
   for(const link of await page.locator('[data-route=jupiter]').all()){const u=new URL(await link.getAttribute('href'));assert.equal(u.searchParams.get('buy'),MINT);assert.equal(u.searchParams.get('sell'),SOL);}
   await page.locator('[data-range="7d"]').click();await page.waitForFunction(()=>!document.querySelector('#price-chart').hasAttribute('hidden'));assert.equal(await page.locator('[data-range="7d"]').getAttribute('aria-pressed'),'true');
+  assert.equal((await page.locator('#chart-line').getAttribute('d')).match(/L/g).length,2,'7D includes the three-day sample');
+  await page.locator('[data-range="all"]').click();await page.waitForFunction(()=>!document.querySelector('#price-chart').hasAttribute('hidden'));
+  assert.equal(await page.locator('[data-range="all"]').getAttribute('aria-pressed'),'true');assert.equal(await page.locator('[data-range][aria-pressed="true"]').count(),1);
+  assert.equal((await page.locator('#chart-line').getAttribute('d')).match(/L/g).length,3,'All time keeps history older than seven days without invalid or future points');
+  assert((await page.locator('#chart-description').textContent()).includes(await page.evaluate(t=>new Date(t).toLocaleString(),chartNow-40*day)),'All time begins at the oldest available sample');
+  assert(chartRanges.includes('all'),'All time requests the existing all-history feed');
+  await page.locator('[data-range="24h"]').click();await page.waitForFunction(()=>!document.querySelector('#price-chart').hasAttribute('hidden'));
+  assert.equal((await page.locator('#chart-line').getAttribute('d')).match(/L/g).length,1,'Switching back restores the 24H window');
   await page.evaluate(()=>{window.phantom={solana:{connect(){throw new Error('Must not connect automatically');}}};window.dispatchEvent(new Event('focus'));});
   await page.locator('[data-wallet=phantom]').click();assert.equal(new URL(page.url()).pathname,'/buy');assert.match(await page.locator('#copy-status').textContent(),/Connect Wallet/);
   assert.equal(errors.length,0,errors.join('\n'));
