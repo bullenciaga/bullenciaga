@@ -41,3 +41,5 @@ for(const [format,[w,h]]of Object.entries(FORMAT))for(const layout of ['grid','r
 const blocked=vm.createContext({URL,location:{origin:'https://bullenciaga.com'},window:{addEventListener(){}},document:{addEventListener(){}},localStorage:{getItem(){throw new Error('blocked')}}});
 assert.doesNotThrow(()=>vm.runInContext(code,blocked),'blocked browser storage does not disable tools');
 console.log(`Collector tools: ${arrangements} bounded layouts; private data removal, source validation, storage limits and original artwork mapping passed.`);
+
+await import("./test-collector-render.mjs");
