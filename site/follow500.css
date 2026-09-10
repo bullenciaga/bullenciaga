@@ -6,6 +6,7 @@
 .f500-stats small { font-size: 15px; color: var(--bullen-muted, #aaa); }
 .f500-stats span { display: block; margin-top: 6px; color: var(--bullen-muted, #aaa); font: 400 10px/1.5 var(--bullen-font-data, 'Space Mono', monospace); text-transform: uppercase; letter-spacing: .06em; }
 .f500-note, .f500-time, .f500-winners p, .f500-method { margin: 10px 0; color: var(--bullen-muted, #aaa); font: 400 12px/1.8 var(--bullen-font-data, 'Space Mono', monospace); }
+.f500-note { max-width: 68ch; }
 .f500-time { font-size: 10px; }
 .f500-proof { display: flex; flex-wrap: wrap; gap: 12px 22px; margin-top: 16px; }
 .f500-proof a, .f500-winners a, .f500-method a { color: var(--bullen-brand-light, #dfc581); text-decoration: underline; text-underline-offset: 4px; }
@@ -25,7 +26,6 @@
 .campaign.wide .f500-details { grid-column: 1 / -1; margin-top: 24px; }
 .campaign[data-status="pending"] { border-color: rgba(231,184,92,.3); }
 .campaign[data-status="pending"] .status { color: var(--bullen-warning, #e7b85c); }
-#giveaway .f500-details { padding-top: 0; border-top: 0; }
 @media (max-width: 480px) {
   .f500-stats { gap: 20px 26px; }
   .f500-winners li { grid-template-columns: 1fr; gap: 6px; }

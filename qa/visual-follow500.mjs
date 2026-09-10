@@ -76,7 +76,8 @@ try {
       assert.equal(await page.locator('#mint-round-3').count(),1,'future mint round preserved');
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth + 1),`${width}px ${phase} has no horizontal page overflow`);
       if(phase==='drawn') {
-        assert.match(content,/Delivery pending/);
+        assert.match(content,/Prizes have been delivered/);
+        assert.equal(await panel.locator('.f500-note br').count(),3,'summary breaks the replacement sentence into readable lines');
         assert.match(content,/owner.{0,20}amendment/i);
         const recipientRows = await panel.locator('.f500-winners ol').innerText();
         assert.ok(recipientRows.includes(ranked[5].wallet),'amended recipient shown');
