@@ -87,7 +87,7 @@
   const icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg>';
   let bridge = null, saved = [], storageAvailable = true, shortlistDialog = null, studioDialog = null;
   let studioItems = [], selected = [], collectionLabel = 'Public artwork', studioRender = 0, studioLoad = 0, dirty = false;
-  const imageCache = new Map();
+  const imageCache = new Map(), reloadSources = new Set();
   let studioReady = 0, exporting = false, readyConfig = null;
   const ART_PROXY = 'https://bullenciaga-img-proxy.bullenciaga-e5c.workers.dev/';
   function proxyFor(url) {
@@ -365,43 +365,112 @@
       brand: studioDialog.querySelector('#collector-brand').checked,
       caption: studioDialog.querySelector('#collector-caption').value.trim(), entries: selected.slice() };
   }
+  const CRC_TABLE = Array.from({length:256},(_,value) => {
+    for (let bit=0;bit<8;bit++) value = value & 1 ? 0xedb88320 ^ (value >>> 1) : value >>> 1;
+    return value >>> 0;
+  });
+  function imageType(bytes) {
+    const fail = () => { throw new Error('The image response was incomplete or damaged.'); };
+    const view = new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+    const text = (at,size) => String.fromCharCode(...bytes.subarray(at,at+size));
+    if (bytes.length >= 8 && bytes[0]===137 && text(1,7)==='PNG\r\n\x1a\n') {
+      let at=8, sawHeader=false, sawData=false;
+      while (at+12 <= bytes.length) {
+        const size=view.getUint32(at), type=text(at+4,4), end=at+12+size;
+        if (end>bytes.length) fail();
+        let crc=0xffffffff;
+        for (let i=at+4;i<end-4;i++) crc=CRC_TABLE[(crc^bytes[i])&255]^(crc>>>8);
+        if (((crc^0xffffffff)>>>0)!==view.getUint32(end-4)) fail();
+        if (!sawHeader) { if (type!=='IHDR'||size!==13||!view.getUint32(at+8)||!view.getUint32(at+12)) fail(); sawHeader=true; }
+        if (type==='IDAT') sawData=true;
+        if (type==='IEND') { if (size!==0||end!==bytes.length||!sawData) fail(); return 'image/png'; }
+        at=end;
+      }
+      fail();
+    }
+    if (bytes.length>=12 && text(0,4)==='RIFF' && text(8,4)==='WEBP') {
+      if (view.getUint32(4,true)+8!==bytes.length) fail();
+      let at=12,sawImage=false;
+      while(at+8<=bytes.length) { const size=view.getUint32(at+4,true),type=text(at,4); at+=8+size+(size&1); if(at>bytes.length)fail(); if(['VP8 ','VP8L','ANMF'].includes(type))sawImage=true; }
+      if(at!==bytes.length||!sawImage)fail(); return 'image/webp';
+    }
+    if (bytes.length>=4 && bytes[0]===255 && bytes[1]===216) {
+      let at=2,sawScan=false;
+      while(at<bytes.length) {
+        if(bytes[at++]!==255)fail(); while(bytes[at]===255)at++;
+        const marker=bytes[at++];
+        if(marker===217) { if(at!==bytes.length||!sawScan)fail(); return 'image/jpeg'; }
+        if(marker===1)continue;
+        if(at+2>bytes.length)fail(); const size=view.getUint16(at); if(size<2||at+size>bytes.length)fail(); at+=size;
+        if(marker===218) {
+          sawScan=true;
+          while(at<bytes.length) { if(bytes[at]!==255){at++;continue;}const next=bytes[at+1];if(next===0||(next>=208&&next<=215)){at+=2;continue;}break; }
+        }
+      }
+      fail();
+    }
+    if(bytes.length>=14 && ['GIF87a','GIF89a'].includes(text(0,6))) {
+      let at=13+(bytes[10]&128 ? 3*(2**((bytes[10]&7)+1)) : 0),sawImage=false;
+      const blocks=()=>{while(at<bytes.length){const size=bytes[at++];if(!size)return;at+=size;if(at>bytes.length)fail();}fail();};
+      while(at<bytes.length){const block=bytes[at++];if(block===59){if(at!==bytes.length||!sawImage)fail();return 'image/gif';}if(block===33){at++;blocks();}else if(block===44){if(at+9>bytes.length)fail();const packed=bytes[at+8];at+=9+(packed&128?3*(2**((packed&7)+1)):0);at++;blocks();sawImage=true;}else fail();}
+      fail();
+    }
+    throw new Error('This artwork format could not be verified for export.');
+  }
+  async function originalBytes(response) {
+    if (!response.ok || !response.body) throw new Error('The original image host did not respond.');
+    const reader=response.body.getReader(), chunks=[];
+    let length=0;
+    try {
+      while(true) { const {done,value}=await reader.read(); if(done)break; length+=value.byteLength; if(length>32*1024*1024)throw new Error('The original image is too large.'); chunks.push(value); }
+    } catch(error) { await reader.cancel().catch(()=>{}); throw error; }
+    const bytes=new Uint8Array(length);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}
+    return {bytes,type:imageType(bytes)};
+  }
   async function loadImage(url) {
     if (imageCache.has(url)) return imageCache.get(url);
-    // Both routes return the same original, never a thumbnail. A slow gateway
-    // gets a second route after two seconds; either can recover the other.
-    const alternate = proxyFor(url), images = [];
+    // An <img> load/decode can succeed for a partial PNG. Validate complete
+    // bytes before decoding or caching; a ready composition must be whole.
+    const alternate = proxyFor(url), routes = [];
     const promise = new Promise((resolve,reject) => {
       let done = false, started = 0, failed = 0, hedge;
-      const finish = (image, error) => {
+      const finish = (winner, error) => {
         if (done) return;
         done = true; clearTimeout(deadline); clearTimeout(hedge);
-        images.forEach(candidate => {
-          candidate.onload = candidate.onerror = null;
-          if (candidate !== image) candidate.src = '';
+        routes.forEach(route => {
+          route.controller.abort();
+          if(!winner)reloadSources.add(route.source);
+          if(route.image) { route.image.onload=route.image.onerror=null; if(route!==winner)route.image.src=''; }
+          if(route.objectUrl)URL.revokeObjectURL(route.objectUrl);
         });
-        if (image) resolve(image); else reject(error);
+        if (winner) resolve(winner.image); else reject(error);
       };
       const deadline = setTimeout(() => finish(null,new Error('Artwork took too long to respond.')),16000);
-      const start = source => {
+      const start = async source => {
         started++;
-        const image = new Image(); images.push(image); image.crossOrigin = 'anonymous';
-        let rejected = false;
-        const fail = () => {
-          if (done || rejected) return;
-          rejected = true;
-          failed++;
-          if (started === 1 && alternate !== url) { clearTimeout(hedge); start(alternate); }
-          else if (failed === started) finish(null,new Error('The original image could not be loaded.'));
-        };
-        image.onload = async () => {
-          try {
-            if (image.decode) await image.decode();
-            if (!image.naturalWidth || !image.naturalHeight) throw new Error('Empty artwork');
-            finish(image);
-          } catch (_) { fail(); }
-        };
-        image.onerror = fail;
-        image.src = source;
+        const route={controller:new AbortController(),source}; routes.push(route);
+        try {
+          const response=await fetch(source,{mode:'cors',credentials:'omit',cache:reloadSources.has(source)?'reload':'default',signal:route.controller.signal});
+          const {bytes,type}=await originalBytes(response);
+          if(done)return;
+          route.objectUrl=URL.createObjectURL(new Blob([bytes],{type}));
+          const image=route.image=new Image();
+          await new Promise((resolve,reject)=>{
+            image.onload=resolve; image.onerror=()=>reject(new Error('The original image could not be decoded.'));
+            image.src=route.objectUrl;
+          });
+          if(image.decode)await image.decode();
+          if(!image.naturalWidth||!image.naturalHeight)throw new Error('Empty artwork');
+          reloadSources.delete(source);
+          finish(route);
+        } catch (_) {
+          if(done)return;
+          failed++; reloadSources.add(source);
+          route.controller.abort();
+          if(route.objectUrl)URL.revokeObjectURL(route.objectUrl);
+          if(started===1 && alternate!==url){clearTimeout(hedge);start(alternate);}
+          else if(failed===started)finish(null,new Error('The complete original image could not be loaded.'));
+        }
       };
       if (alternate !== url) hedge = setTimeout(() => start(alternate),2000);
       start(url);
