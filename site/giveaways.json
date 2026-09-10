@@ -2,7 +2,7 @@
   "schema": "bullenciaga.giveaways.v1",
   "project": "BULLENCIAGA",
   "token": "$BULLEN",
-  "updatedAt": "2026-09-09T19:52:03.220430Z",
+  "updatedAt": "2026-09-10T00:55:16.659Z",
   "finalCarryover": {
     "rounds": [0, 1, 2],
     "wallets": 32,
@@ -94,6 +94,7 @@
         "selection": "five distinct wallets using the committed future finalized Solana block",
         "snapshot": "/entries/snapshot",
         "result": "/entries/result",
+        "amendment": "/follow500-amendment-20260910.json",
         "delivery": "manual by owner",
         "staticStatusIsAuthoritative": false
       }

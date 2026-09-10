@@ -14,6 +14,10 @@
 .f500-winners ol { margin: 14px 0; padding: 0; list-style: none; }
 .f500-winners li { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 18px; padding: 14px 0; border-top: 1px solid var(--bullen-border, rgba(199,168,105,.25)); }
 .f500-prize { color: var(--bullen-brand-light, #dfc581); }
+.f500-prize small { display: block; margin-top: 6px; font: 400 10px/1.5 var(--bullen-font-data, 'Space Mono', monospace); }
+.f500-amendment { margin: 20px 0; padding: 16px 0; border-top: 1px solid var(--bullen-border, rgba(199,168,105,.25)); color: var(--bullen-muted, #aaa); font: 400 12px/1.8 var(--bullen-font-data, 'Space Mono', monospace); }
+.f500-amendment summary { cursor: pointer; color: var(--bullen-brand-light, #dfc581); }
+.f500-amendment a { color: var(--bullen-brand-light, #dfc581); overflow-wrap: anywhere; text-underline-offset: 4px; }
 .f500-winners a, .f500-method code { overflow-wrap: anywhere; }
 .f500-method { border-top: 1px solid var(--bullen-border, rgba(199,168,105,.25)); padding-top: 15px; }
 .f500-method summary { cursor: pointer; color: var(--bullen-text, #f5f3ee); }
