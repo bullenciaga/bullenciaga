@@ -1,0 +1,30 @@
+{
+  "schema": "bullenciaga.follow500.amendment.v1",
+  "campaign": "follow500",
+  "revision": 1,
+  "type": "owner-authorized-exception",
+  "amendedAt": "2026-09-10T00:55:16.659Z",
+  "snapshotHash": "1102b8bc8cb7cd6ec4a77dd3cde390c250f4dd2cdabe9d470f5c602157c72b82",
+  "seedBlockhash": "Gq3jAseXHZMgt2MxCxS8mNZxsrSxYYHZyReZGgzQJX2L",
+  "originalResult": "/entries/result",
+  "originalSnapshot": "/entries/snapshot",
+  "manualDelivery": true,
+  "payoutStatus": "awaiting-owner",
+  "reason": "The owner authorized a one-time replacement for HERD #737 after a post-draw check confirmed that the original recipient held 0 BULLEN. The replacement is the next wallet in the original random ranking.",
+  "ruleDisclosure": "The original 100,000 BULLEN eligibility rule applied when entering, not at draw time. This is an owner-authorized exception; the original draw remains valid under its published rules.",
+  "replacement": {
+    "prizeNumber": 737,
+    "assetId": "H5YbaVZCmws5G2ET4BzsUgNQSm5GaaaAfq1xXJkFaF8s",
+    "previousWallet": "2bRiKrwYTPQLZzdsnUvUkm1JihkdELECa5ZchTzwGSEA",
+    "wallet": "A8R3r4E2GN9g8FRrujHyFbsq9phL3yYxHwRQkGTiDMm8",
+    "originalRank": 6,
+    "score": "1a09fd2824fa9f6bc192734b3c5d4679c0e3c2095df7b2b07b37d141ef64e6ef"
+  },
+  "balanceEvidence": {
+    "checkedAt": "2026-09-10T00:47:03Z",
+    "commitment": "finalized",
+    "originalWalletBullen": "0",
+    "replacementWalletBullen": "3681820.986492"
+  },
+  "selection": "Original seed and snapshot; exclude all five original winners and take the next ranked wallet. No new draw or seed."
+}
