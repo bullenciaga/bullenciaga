@@ -1,0 +1,11 @@
+/* Neutral even before deferred JavaScript loads. Do not reset decorative,
+   selected, checked or validation borders/shadows; focus-only rules are gated
+   where each component defines them. Real focus and the caret remain intact. */
+html:not([data-focus-navigation="keyboard"]) :focus {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+html[data-focus-navigation="keyboard"] :where(a, button, input, select, textarea, summary, [tabindex], [contenteditable]):focus {
+  outline: 2px solid var(--bullen-focus, #f3cf72) !important;
+  outline-offset: 3px !important;
+}

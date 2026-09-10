@@ -4,12 +4,12 @@ import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
-const expectedIndexHash = 'e223fef958554b70cc3a9ea3607e6ea2148f83a66de0231bbad272c63c78ea32';
+const expectedIndexHash = 'bb1a0d29448f162094a9413820cfdc227deaf9b44df0fa940535fc4b9c37da44';
 const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs', 'proof.html'];
 const required = [
   'buy.html', 'buy-page.css', 'buy-page.js', 'index.html', '_redirects', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'whitepaper.pdf',
-  'bullen-ui.css', 'bullen-ui.js', 'giveaways.html', 'giveaways.json', 'follow500.js', 'follow500.css',
+  'bullen-ui.css', 'bullen-ui.js', 'bullen-focus.css', 'bullen-focus.js', 'giveaways.html', 'giveaways.json', 'follow500.js', 'follow500.css',
   'objects.html', 'objects.css', 'objects.js', 'bullen-wallet-chooser.js',
   'tape.html', 'favicons/tape.svg',
   'patchnotes.html', 'patchnotes-001.html', 'patchnotes-002.html', 'house-record.css', 'favicons/patchnotes.svg', 'lock.html', 'favicons/lock.svg',

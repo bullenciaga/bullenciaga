@@ -24,6 +24,7 @@ for (const name of [...publicPages, 'referrals.html']) {
 
 const shell = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
 const shellCss = fs.readFileSync(path.join(site, 'bullen-ui.css'), 'utf8');
+const focusCss = fs.readFileSync(path.join(site, 'bullen-focus.css'), 'utf8');
 const marketCss = fs.readFileSync(path.join(site, 'market-surfaces.css'), 'utf8');
 const homeSource = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
 const tapeSource = fs.readFileSync(path.join(site, 'tape.html'), 'utf8');
@@ -130,7 +131,7 @@ if (!mobileBuy.includes("overlay.setAttribute('aria-describedby', 'bullen-mobile
 if (!mobileBuy.includes('focusWithoutRecommendation')
     || !mobileBuy.includes("classList.add('bullen-auto-focus-neutral')")
     || !mobileBuy.includes("classList.remove('bullen-auto-focus-neutral')")
-    || !shellCss.includes('.bullen-auto-focus-neutral:focus')
+    || !focusCss.includes('html:not([data-focus-navigation="keyboard"]) :focus')
     || !mobileBuyCss.includes('.bullen-auto-focus-neutral:focus')) {
   failures.push('automatic modal focus can look like an endorsed or preselected action');
 }

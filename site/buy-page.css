@@ -4,7 +4,7 @@ body{margin:0}
 .buy-desk{width:min(1240px,calc(100% - 72px));margin:0 auto;padding:34px 0 24px;color:var(--buy-ink)}
 .buy-desk a{color:inherit;text-decoration:none}
 .buy-desk button{font:inherit;cursor:pointer}
-.buy-desk a:focus-visible,.buy-desk button:focus-visible,.buy-desk summary:focus-visible{outline:2px solid var(--buy-pale);outline-offset:4px}
+html[data-focus-navigation="keyboard"] .buy-desk a:focus-visible,html[data-focus-navigation="keyboard"] .buy-desk button:focus-visible,html[data-focus-navigation="keyboard"] .buy-desk summary:focus-visible{outline:2px solid var(--buy-pale);outline-offset:4px}
 .buy-desk [hidden]{display:none!important}
 .buy-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:38px}
 .eyebrow{margin:0 0 12px;color:var(--buy-gold);font-size:10px;letter-spacing:.2em;line-height:1.5}

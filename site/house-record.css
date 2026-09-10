@@ -31,7 +31,7 @@
 .record-archive-notice{display:flex;align-items:center;justify-content:space-between;gap:28px;padding:22px;border:1px solid var(--record-line);background:rgba(199,168,105,.06)}
 .record-archive-notice p{max-width:740px;margin:10px 0 0;color:var(--record-muted);font-size:11px;line-height:1.8}
 .record-archive-notice>a{display:flex;align-items:center;gap:12px;min-height:44px;flex-shrink:0;color:var(--record-gold-light);font-size:11px;text-decoration:none}
-.record a:focus-visible{outline:2px solid var(--record-gold-light);outline-offset:5px}
+html[data-focus-navigation="keyboard"] .record a:focus-visible{outline:2px solid var(--record-gold-light);outline-offset:5px}
 @media(max-width:760px){
   .record-editions{align-items:flex-start;flex-direction:column;gap:14px;padding-top:10px}
   .record-editions>div{width:100%}.record-editions a{flex:1;justify-content:center;padding:10px}
