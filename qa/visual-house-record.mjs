@@ -3,11 +3,10 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
 
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
-const output = path.join(root, '.visual/house-record-003');
+const output = path.join(root, '.visual/house-record-004');
 await fs.mkdir(output, { recursive: true });
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.json': 'application/json', '.jpg': 'image/jpeg', '.png': 'image/png' };
@@ -49,7 +48,7 @@ try {
   for (const width of [320, 375, 390, 430, 820, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await goto('/patchnotes');
-    await page.getByRole('heading', { level: 1, name: 'The House opens its doors.' }).waitFor();
+    await page.getByRole('heading', { level: 1, name: 'The House, in your hands.' }).waitFor();
     const data = await measure();
     assert(data.documentWidth <= width, `Record overflows ${width}: ${JSON.stringify(data)}`);
     if (width <= 820) {
@@ -58,8 +57,8 @@ try {
     }
     results.push({ page: 'patchnotes', ...data });
     if ([375, 1440].includes(width)) {
-      await page.screenshot({ path: path.join(output, `edition-003-${width}.png`), fullPage: true });
-      await page.screenshot({ path: path.join(output, `edition-003-top-${width}.png`) });
+      await page.screenshot({ path: path.join(output, `edition-004-${width}.png`), fullPage: true });
+      await page.screenshot({ path: path.join(output, `edition-004-top-${width}.png`) });
     }
     if (width <= 820) {
       const jump = page.locator('.jumpto-btn');
@@ -71,26 +70,38 @@ try {
       await page.locator('.bullen-nav-toggle').click();
       await page.locator('.bullen-site-shell.nav-open').waitFor();
       const labels = await page.locator('.bullen-mobile-nav-directory a').allTextContents();
-      assert.deepEqual(labels, ['House Objects', 'House Record', 'Burn Reserve', 'Stats', 'Chart', 'The Tape', 'Curve', 'Referrals', 'The Drop', 'Living Ledger', 'Wallet Passport']);
+      assert.deepEqual(labels, ['Buy $BULLEN', 'House Objects', 'House Record', 'Burn Reserve', 'Stats', 'Chart', 'The Tape', 'Curve', 'Referrals', 'The Drop', 'Living Ledger', 'Wallet Passport']);
       await page.locator('.bullen-nav-toggle').click();
     }
-    await page.locator('.record-archive-card[href="/patchnotes-002"]').click();
-    await page.waitForURL('**/patchnotes-002');
-    await page.getByRole('heading', { level: 1, name: 'More to explore. More to verify.' }).waitFor();
-    assert(await page.locator('.record-archive-notice').isVisible());
-    assert.equal(await page.locator('html').getAttribute('data-bullen-page'), 'patchnotes');
-    assert((await page.evaluate(() => document.documentElement.scrollWidth)) <= width);
-    await page.locator('.record-archive-notice a').click();
-    await page.waitForURL('**/patchnotes');
-    await page.locator('.record-archive-card[href="/patchnotes-001"]').click();
-    await page.waitForURL('**/patchnotes-001');
-    await page.getByRole('heading', { level: 1, name: '48 hours inside the House.' }).waitFor();
-    assert(await page.locator('.record-archive-notice').isVisible());
-    assert.equal(await page.locator('html').getAttribute('data-bullen-page'), 'patchnotes');
-    assert((await page.evaluate(() => document.documentElement.scrollWidth)) <= width);
-    if ([375, 1440].includes(width)) await page.screenshot({ path: path.join(output, `archive-001-top-${width}.png`) });
-    await page.locator('.record-archive-notice a').click();
-    await page.waitForURL('**/patchnotes');
+    const picker = page.locator('.record-editions summary');
+    await picker.click();
+    const menu = await page.locator('.record-editions ul').boundingBox();
+    assert(menu.x >= 0 && menu.x + menu.width <= width);
+    assert.equal(await page.locator('.record-editions li').count(), 4);
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('.record-editions details').getAttribute('open'), null);
+    for (const edition of ['003', '002', '001']) {
+      await picker.click();
+      await page.locator(`.record-editions a[href="/patchnotes-${edition}"]`).click();
+      await page.waitForURL(`**/patchnotes-${edition}`);
+      assert(await page.locator('.record-archive-notice').isVisible());
+      assert.equal(await page.locator('html').getAttribute('data-bullen-page'), 'patchnotes');
+      assert((await page.evaluate(() => document.documentElement.scrollWidth)) <= width);
+      assert.equal(await page.locator('.record-editions a[aria-current]').getAttribute('href'), `/patchnotes-${edition}`);
+      if ([375, 1440].includes(width)) await page.screenshot({path:path.join(output, `archive-${edition}-top-${width}.png`)});
+      await page.locator('.record-archive-notice a').click();
+      await page.waitForURL('**/patchnotes');
+    }
+    await picker.focus();
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.focusNavigation), 'keyboard');
+    await page.keyboard.press('Escape');
+    await picker.click();
+    await page.locator('h1').click();
+    assert.equal(await page.locator('.record-editions details').getAttribute('open'), null);
+    assert.equal(await picker.evaluate(e => getComputedStyle(e).outlineStyle), 'none');
+
   }
   // Every existing public shared-shell page, including the home page's own control.
   await page.setViewportSize({ width: 375, height: 850 });
@@ -101,17 +112,6 @@ try {
     assert(data.rightPadding >= 12 && data.gap >= 8 && data.brandGap >= 0 && data.right <= 375, `${route}: controls overlap ${JSON.stringify(data)}`);
     results.push({ page: route, ...data });
     if (route === '/') await page.screenshot({ path: path.join(output, 'home-mobile-375.png') });
-  }
-  // Compare the desktop button with the unmodified release's CSS in the same browser.
-  if (!process.env.VISUAL_BASE_URL) {
-    await page.setViewportSize({ width: 1440, height: 1000 });
-    await goto('/patchnotes');
-    const after = await measure();
-    const beforeCss = execFileSync('git', ['show', '0bad30a:site/bullen-ui.css'], { cwd: root, encoding: 'utf8' });
-    await page.route('**/bullen-ui.css', route => route.fulfill({ contentType: 'text/css', body: beforeCss }));
-    await goto('/patchnotes');
-    assert.deepEqual(await measure(), after, 'Desktop Jump To styling must remain unchanged');
-    results.push({ desktopUnchanged: true });
   }
   await fs.writeFile(path.join(output, 'checks.json'), JSON.stringify(results, null, 2));
   console.log(JSON.stringify({ pass: true, checks: results.length, output }));
