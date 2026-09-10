@@ -6,7 +6,7 @@ const site = path.join(root, 'site');
 const publicPages = [
   'index.html', 'buy.html', 'stats.html', 'chart.html', 'curve.html',
   'transparency.html', 'refer.html', 'thedrop.html', 'giveaways.html', 'objects.html', 'tape.html',
-  'patchnotes.html', 'patchnotes-001.html', 'patchnotes-002.html', 'lock.html', 'ledger.html', 'passport.html',
+  'patchnotes.html', 'patchnotes-001.html', 'patchnotes-002.html', 'patchnotes-003.html', 'lock.html', 'ledger.html', 'passport.html',
   'rooms.html',
 ];
 const failures = [];

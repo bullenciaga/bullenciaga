@@ -11,27 +11,28 @@
 <link rel="preload" href="/fonts/house-af7cf6d2b897ec45.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/bullen-ui.css" as="style">
 <script defer src="/bullen-ui.js"></script>
-<title>BULLENCIAGA — House Record · Edition 003</title>
-<meta name="description" content="House Record edition 003: Discord opens, connected community bots, House Key and Inner Rooms, game editions, and collection browsing.">
+<title>BULLENCIAGA — House Record · Edition 004</title>
+<meta name="description" content="House Record edition 004: collector shortlist and image studio, The Third Door, development support, market views and mobile refinements.">
 <link rel="canonical" href="https://bullenciaga.com/patchnotes">
 <meta name="theme-color" content="#050505">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://bullenciaga.com/patchnotes">
-<meta property="og:title" content="The House opens its doors.">
-<meta property="og:description" content="House Record 003: a new community home, connected bots, House Key and Inner Rooms, and more ways into BULLENSAGA.">
-<meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=house-record-003">
+<meta property="og:title" content="The House, in your hands.">
+<meta property="og:description" content="House Record 004: create with the collection, explore the Estate through interactive dialogue, and follow the latest House records.">
+<meta property="og:image" content="https://bullenciaga.com/og-image.jpg?v=house-record-004">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The House opens its doors.">
-<meta name="twitter:description" content="House Record 003: a new community home, connected bots, House Key and Inner Rooms, and more ways into BULLENSAGA.">
-<meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=house-record-003">
+<meta name="twitter:title" content="The House, in your hands.">
+<meta name="twitter:description" content="House Record 004: create with the collection, explore the Estate through interactive dialogue, and follow the latest House records.">
+<meta name="twitter:image" content="https://bullenciaga.com/og-image.jpg?v=house-record-004">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/patchnotes.svg">
 
 <link rel="stylesheet" href="/bullen-ui.css">
 <link rel="stylesheet" href="/mobile-buy.css">
 <link rel="stylesheet" href="/house-record.css">
 <script src="https://plugin.jup.ag/plugin-v1.js" data-preload defer></script>
+<script defer src="/house-record.js"></script>
 <style>
   :root{
     --record-bg:#050505;
@@ -127,109 +128,145 @@
 <header data-bullen-shell="" class="bullen-site-shell" data-bullen-shell-source="7954f77478acab2866e18a11a6a3a67260925b084789a6ee29c09e38ace79b30"><div class="bullen-site-bar"><a class="bullen-site-brand" href="/">BULLENCIAGA <span>House Record</span></a><div class="bullen-site-actions"><nav class="bullen-site-nav" aria-label="BULLENCIAGA public pages" id="bullen-public-nav-patchnotes"><details class="bullen-nav-group is-active"><summary aria-label="House pages">House</summary><div class="bullen-nav-group-menu"><a href="/objects.html">House Objects</a><a href="/lock.html">Burn Reserve</a><a href="/patchnotes.html" aria-current="page">House Record</a><a href="/giveaways.html">Giveaways</a></div></details><details class="bullen-nav-group"><summary aria-label="Market pages">Market</summary><div class="bullen-nav-group-menu"><a href="/buy">Buy $BULLEN</a><a href="/stats.html">Stats</a><a href="/chart.html">Chart</a><a href="/tape.html">The Tape</a><a href="/curve.html">Curve</a></div></details><details class="bullen-nav-group"><summary aria-label="Explore pages">Explore</summary><div class="bullen-nav-group-menu"><a href="/refer.html">Referrals</a><a href="/thedrop.html">The Drop</a><a href="/ledger.html">Living Ledger</a><a href="/passport.html">Wallet Passport</a></div></details><div class="bullen-mobile-nav-directory"><a href="/buy">Buy $BULLEN</a><a href="/objects.html">House Objects</a><a href="/patchnotes.html" aria-current="page">House Record</a><a href="/lock.html">Burn Reserve</a><a href="/stats.html">Stats</a><a href="/chart.html">Chart</a><a href="/tape.html">The Tape</a><a href="/curve.html">Curve</a><a href="/refer.html">Referrals</a><a href="/thedrop.html">The Drop</a><a href="/ledger.html">Living Ledger</a><a href="/passport.html">Wallet Passport</a></div><a href="/rooms.html">Inner Rooms</a><a href="https://bullensaga.com/" class="bullen-site-sister" aria-label="Visit BULLENSAGA">BULLENSAGA</a></nav><div class="bullen-site-aux"><div class="jumpto-widget bullen-page-jumpto" aria-label="House Record section navigation"><button type="button" class="jumpto-btn" aria-haspopup="true" aria-expanded="false" aria-controls="bullen-page-jumpto-patchnotes">JUMP TO <svg class="jumpto-chevron" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l5 5-5 5"></path></svg></button><div class="jumpto-menu" id="bullen-page-jumpto-patchnotes"><div class="jumpto-group-label">On BULLENCIAGA</div><a class="jumpto-item" href="/#stats">Live Stats</a><a class="jumpto-item" href="/#how-to-buy">How To Buy</a><a class="jumpto-item" href="/#nft">The Herd Collection</a><a class="jumpto-item" href="/#gallery">Browse The Herd</a><a class="jumpto-item" href="/#roadmap">Roadmap</a><a class="jumpto-item" href="/#faq">FAQ</a><div class="jumpto-divider"></div><div class="jumpto-group-label">Elsewhere</div><a class="jumpto-item" href="https://bullenciaga.com/jupiter_vrfd" target="_blank" rel="noopener noreferrer">Jupiter Verification<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://x.com/bullenciagax" target="_blank" rel="noopener noreferrer">X Profile<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://bullenciaga.com/chat" target="_blank" rel="noopener noreferrer">X Chat<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="/telegram" target="_blank" rel="noopener noreferrer">Telegram<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="/discord" target="_blank" rel="noopener noreferrer">Discord<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://pump.fun/profile/bullenciagax" target="_blank" rel="noopener noreferrer">pump.fun<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://www.tensor.trade/trade/bullenciaga" target="_blank" rel="noopener noreferrer">Tensor<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://magiceden.io/marketplace/bullenciaga" target="_blank" rel="noopener noreferrer">Magic Eden<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://gravemarket.io/collection/bullenciaga" target="_blank" rel="noopener noreferrer">GraveMarket<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="/whitepaper" target="_blank" rel="noopener noreferrer">Whitepaper<span class="jumpto-item-ext">↗</span></a><div class="jumpto-divider"></div><div class="jumpto-group-label">Listings &amp; Data</div><a class="jumpto-item" href="https://www.coingecko.com/coins/bullen" target="_blank" rel="noopener noreferrer">CoinGecko<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://www.geckoterminal.com/solana/pools/9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ" target="_blank" rel="noopener noreferrer">GeckoTerminal<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://dexscreener.com/solana/9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ" target="_blank" rel="noopener noreferrer">DexScreener<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://www.dextools.io/app/token/bullenciaga" target="_blank" rel="noopener noreferrer">DEXTools<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://coinpaprika.com/coin/bullen-bullenciaga/" target="_blank" rel="noopener noreferrer">CoinPaprika<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://dexpaprika.com/solana/token/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN" target="_blank" rel="noopener noreferrer">DexPaprika<span class="jumpto-item-ext">↗</span></a><a class="jumpto-item" href="https://blockspot.io/coin/bullenciaga-bullen/" target="_blank" rel="noopener noreferrer">Blockspot<span class="jumpto-item-ext">↗</span></a></div></div></div><button type="button" class="bullen-nav-toggle" aria-label="Open page navigation" aria-controls="bullen-public-nav-patchnotes" aria-expanded="false"><span></span><span></span><span></span></button></div></div></header>
 <!-- BULLEN_SHELL_END -->
 <main class="record record--latest" id="main-content">
-  <nav class="record-editions" aria-label="House Record editions">
+  <nav class="record-editions" aria-label="House Record archive">
     <span class="section-label">The House Record</span>
-    <div><a href="/patchnotes" aria-current="page">003 <span>Current</span></a><a href="/patchnotes-002">002 <span>Archive ↗</span></a><a href="/patchnotes-001">001 <span>Archive ↗</span></a></div>
+    <details class="record-picker">
+      <summary>Edition 004 · Current<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg></summary>
+      <ul aria-label="House Record editions">
+        <li><a href="/patchnotes" aria-current="page"><span class="edition-number">004</span><span><strong>The House, in your hands.</strong><small>07—11 September 2026 · Current</small></span></a></li>
+        <li><a href="/patchnotes-003"><span class="edition-number">003</span><span><strong>The House opens its doors.</strong><small>04—07 September 2026</small></span></a></li>
+        <li><a href="/patchnotes-002"><span class="edition-number">002</span><span><strong>More to explore. More to verify.</strong><small>02—04 September 2026</small></span></a></li>
+        <li><a href="/patchnotes-001"><span class="edition-number">001</span><span><strong>48 hours inside the House.</strong><small>01—02 September 2026</small></span></a></li>
+      </ul>
+    </details>
   </nav>
   <section class="hero" aria-labelledby="record-title">
-    <div>
-      <div class="eyebrow">House Record · 04—07 September 2026</div>
-      <h1 id="record-title">The House opens<br>its doors.</h1>
-      <p class="lede"><strong>A place to arrive. A reason to return.</strong> Discord is open, the community bots work together, and there are new ways to play, collect and spend time in the House.</p>
+    <div><div class="eyebrow">07—11 September 2026 · House Record 004</div>
+      <h1 id="record-title">The House,<br>in your hands.</h1>
+      <p class="lede"><strong>Save a piece. Make an image. Step into a story.</strong> Edition 003 opened the doors to the community. This edition gives you more to do once you arrive: collector tools, an interactive visit to the Estate, and clearer ways to follow what is being built.</p>
     </div>
-    <aside class="edition" aria-label="Release edition">
-      <div class="release-tag">Public edition 003</div>
-      <strong>Come on in.</strong>
-      <span>A new community home, a Key to the Inner Rooms, and a clearer route into BULLENSAGA.</span>
-    </aside>
+    <aside class="edition"><div class="section-label">Public edition 004</div><strong>Take a closer look.</strong><span>New experiences, completed records and the details that make the House easier to use.</span></aside>
   </section>
-  <section class="summary summary--three" aria-label="This edition at a glance">
-    <div class="summary-item"><b>Discord</b><span>The House is open</span></div>
-    <div class="summary-item"><b>2.0</b><span>BULLENBOT &amp; SAGABOT on Telegram</span></div>
-    <div class="summary-item"><b>House Key</b><span>A place in the Inner Rooms</span></div>
-  </section>
-  <nav class="record-sections" aria-label="Inside this edition">
-    <a href="#community">The community</a><a href="#collect-and-play">Collect &amp; play</a><a href="#refinements">The details</a><a href="#archive">Earlier editions</a>
-  </nav>
+  <div class="summary summary--three" aria-label="This edition at a glance">
+    <div class="summary-item"><b>Create</b><span>Shortlist &amp; image studio</span></div>
+    <div class="summary-item"><b>Explore</b><span>The Third Door · interactive lore</span></div>
+    <div class="summary-item"><b>Follow</b><span>Development, markets &amp; records</span></div>
+  </div>
+  <nav class="record-sections" aria-label="In this edition"><a href="#collect">Collect &amp; create</a><a href="#estate">Inside BULLENSAGA</a><a href="#records">Markets &amp; records</a><a href="#details">The details</a><a href="#archive">Previous editions</a></nav>
 
-  <article class="release" id="community" aria-labelledby="community-heading">
-    <header class="release-head"><div><div class="section-label">01 / The community</div><h2 id="community-heading">Make yourself at home.</h2></div><div class="release-state">Live</div></header>
+  <article class="release" id="collect" aria-labelledby="collect-heading">
+    <header class="release-head"><div><div class="section-label">01 / Collect &amp; create</div><h2 id="collect-heading">Make something of your collection.</h2></div><div class="release-state">Shipped</div></header>
     <div class="entries">
-      <section class="entry entry--wide">
-        <div><div class="entry-number">01 / DISCORD</div><h3>Conversation has<br>a new address.</h3></div>
-        <div><p>The BULLENCIAGA Discord brings conversation, collecting, art and BULLENSAGA together. Start in the salon, show a piece in the herd, share work in the atelier or find the game rooms. Choose the interests and optional alerts you want to follow.</p>
-        <p>You do not need crypto or an NFT to join the public House. A quick human check opens participation; collectible verification adds the roles and holder rooms you qualify for.</p>
-        <a class="record-link" href="https://bullenciaga.com/discord">Enter the Discord <span aria-hidden="true">↗</span></a></div>
+      <section class="entry">
+        <div class="entry-number">01 / YOUR SHORTLIST</div><h3>Keep the pieces<br>that catch your eye.</h3>
+        <p>Edition 004 brought more of your collection into one gallery. Now you can save pieces to a shortlist and compare their artwork, traits, gallery rarity and available marketplace listings side by side.</p>
+        <p>Open the image studio with your selected pieces already in place. You can still browse the collection and add more; the shortlist is a starting point.</p>
+        <div class="record-links"><a class="record-link" href="https://bullenciaga.com/#gallery">Build a shortlist <span aria-hidden="true">↗</span></a></div>
       </section>
       <section class="entry">
-        <div class="entry-number">02 / WALLET VERIFICATION</div><h3>From Discord<br>into your wallet.</h3>
-        <p>Private verification replies now offer direct Phantom and Solflare buttons. On mobile, the invitation opens in the wallet’s browser with its verification session intact. Inside the wallet, one VERIFY button continues the process.</p>
-        <p>You review a sign-in message naming your Discord account. Current collectible holdings determine your roles. Verification requests no transaction, approval or transfer; you can unlink your wallet later.</p>
-        <span class="status">Phantom &amp; Solflare</span>
-      </section>
-      <section class="entry">
-        <div class="entry-number">03 / TAKE PART</div><h3>Show up.<br>Play together.</h3>
-        <p><strong>/daily</strong> signs you into the guest book and earns House points. Build a streak, claim a weekly bonus and use <strong>/rewards</strong> for cosmetic badges. Seven visited days earns HOUSE REGULAR; thirty earns HOUSE FIXTURE.</p>
-        <p><strong>/quiz</strong> starts a three-round HERD team challenge. <strong>/flex</strong> shares full artwork in the conversation, using either a piece number or a named custom. <strong>/rank</strong> shows your own progress.</p>
-        <p>House points are cosmetic and separate from the shared X raid score. Sharing a piece does not claim ownership.</p>
-        <span class="status">Inside Discord</span>
-      </section>
-      <section class="entry entry--wide">
-        <div><div class="entry-number">04 / CONNECTED BOTS</div><h3>Two places.<br>One shared campaign.</h3></div>
-        <div><p>Staff can start and manage the BULLENCIAGA raid campaign from Discord or Telegram. Both communities follow the same campaign and weekly X score. BULLENSAGA’s Telegram campaign remains separate.</p>
-        <p>Discord also receives automatic buy, collectible-sale and listing cards, mint records, official X posts, preorder records and supply updates. Optional notification roles let members choose their pings; routine card updates stay quiet.</p>
-        <p>BULLENBOT and SAGABOT have reached 2.0 on Telegram, with expanded command directories and grouped public links. Use <strong>/bullen</strong> with BULLENBOT and <strong>/saga</strong> with SAGABOT. Market shortcuts, wallet lookups and named artwork are easier to find across the two platforms.</p>
-        <a class="record-link" href="https://bullenciaga.com/telegram">Open BULLENCIAGA Telegram <span aria-hidden="true">↗</span></a></div>
+        <div class="entry-number">02 / THE IMAGE STUDIO</div><h3>Make it yours.</h3>
+        <p>Arrange up to nine pieces into an X banner, phone background or print. Choose a layout and background, reorder the artwork, add a title, and decide whether to show piece names and the House signature. Download the result as a PNG.</p>
+        <p>Original artwork keeps its full composition. On mobile, the preview stays visible while the options scroll beneath it. Adding a piece keeps the last finished preview on screen while the next one loads, with recovery for slow or incomplete image requests.</p>
+        <div class="record-links"><a class="record-link" href="https://bullenciaga.com/#gallery">Create an image <span aria-hidden="true">↗</span></a></div>
       </section>
     </div>
   </article>
-
-  <article class="release" id="collect-and-play" aria-labelledby="collect-heading">
-    <header class="release-head"><div><div class="section-label">02 / Collect &amp; play</div><h2 id="collect-heading">More ways into the House.</h2></div><div class="release-state">Shipped</div></header>
+  <article class="release" id="estate" aria-labelledby="estate-heading">
+    <header class="release-head"><div><div class="section-label">02 / Inside BULLENSAGA</div><h2 id="estate-heading">A little closer to the Estate.</h2></div><div class="release-state">Shipped</div></header>
     <div class="entries">
-      <section class="entry">
-        <div class="entry-number">05 / HOUSE KEY &amp; INNER ROOMS</div><h3>A pair.<br>A Key. A room.</h3>
-        <p>An eligible wallet holding a Signet and Cufflinks can earn a House Key. Their serial numbers do not need to match. One wallet can earn one Key, and each source piece can support one award.</p>
-        <p>Current Key holders can enter the website’s Inner Rooms and the Discord inner salon after verification. The website salon now supports image sharing with an optional caption, a preview before posting and larger views of images in the conversation.</p>
-        <div class="record-links"><a class="record-link" href="/objects">Explore House Objects <span aria-hidden="true">↗</span></a><a class="record-link" href="/rooms">Visit the Inner Rooms <span aria-hidden="true">↗</span></a></div>
-      </section>
-      <section class="entry">
-        <div class="entry-number">06 / BULLENSAGA EDITIONS</div><h3>Choose the game.<br>Choose your edition.</h3>
-        <p>The preorder page now separates GAME EDITIONS from GAME EDITIONS + COLLECTIBLES. Game-only Standard and House editions offer card checkout without a wallet.</p>
-        <p>The collectible editions retain their own inclusions and checkout paths. The choice is visible before checkout, so players can see what belongs to the game and what comes with a collectible edition.</p>
-        <a class="record-link" href="https://bullensaga.com/preorder">Explore the editions <span aria-hidden="true">↗</span></a>
-      </section>
       <section class="entry entry--wide">
-        <div><div class="entry-number">07 / COLLECTION BROWSING</div><h3>More of your collection,<br>in one search.</h3></div>
-        <div><p>Gallery wallet searches now include House Objects and BULLENSAGA Founding Records alongside the numbered HERD collection. The existing filters still apply, and clearing the wallet search returns to the original gallery.</p>
-        <p>The House Key has a lighter gallery preview, and collectible artwork keeps its full frame. Wallet Passport remains available for a separate read-only view of an address’s holdings.</p>
-        <div class="record-links"><a class="record-link" href="https://bullenciaga.com/#gallery">Open the gallery <span aria-hidden="true">↗</span></a><a class="record-link" href="/passport">Read a Wallet Passport <span aria-hidden="true">↗</span></a></div></div>
+        <div><div class="entry-number">03 / THE THIRD DOOR</div><h3>An unfinished entry.<br>A few questions.</h3></div>
+        <div><p><strong>The Third Door</strong> is a short interactive dialogue set in the Estate: a way to meet its characters, feel the atmosphere and get a little closer to the lore. It is a web story, not the actual gameplay or a playable demo of the final game. It offers a taste of the kind of conversation being developed for BULLENSAGA.</p>
+        <p>Choose one of six investigators and speak with the Steward. Follow the questions through the Workshop and the Flooded Cloister, check what you find, and return to your notes before choosing a conclusion. Different investigators bring different lines to the conversation.</p>
+        <p>Letters appear as you read; a tap reveals the rest. Questions and places are marked once asked or checked, five observations collect in your folio, and conclusions can be reconsidered. Pixel-art settings, character portraits, quiet selection clicks and music complete the scene. Music starts automatically where the browser permits, or after your first interaction, and respects your saved choice.</p>
+        <div class="record-links"><a class="record-link" href="https://bullensaga.com/case">Enter The Third Door <span aria-hidden="true">↗</span></a></div></div>
+      </section>
+      <section class="entry">
+        <div class="entry-number">04 / SUPPORT DEVELOPMENT</div><h3>Help build<br>what comes next.</h3>
+        <p>The new funding page brings preorders and direct support into a public view of development funding. Its cumulative $75,000 campaign sets out milestones for a playable demo, a workstation, time to build, game completion and a full voice cast.</p>
+        <p>Give once or support monthly through the available checkout options. The page explains contributor rewards, lifetime support progress and the 10% $BULLEN buyback-and-burn allocation on direct and monthly contributions. Funding progress reflects recorded net receipts; reaching a milestone does not mean the work or reward has already been delivered.</p>
+        <p>Preorder editions keep their stated benefits. Estate Edition includes a short in-game dedication; the contributor figurine has its own eligibility and production terms.</p>
+        <div class="record-links"><a class="record-link" href="https://bullensaga.com/funding">See funding &amp; rewards <span aria-hidden="true">↗</span></a><a class="record-link" href="https://bullensaga.com/preorder">Compare game editions <span aria-hidden="true">↗</span></a></div>
+      </section>
+      <section class="entry">
+        <div class="entry-number">05 / A FIRST LOOK</div><h3>See it taking shape.</h3>
+        <p>A new BULLENSAGA first-look room on Discord gives verified House Key or Founding Record holders a place for early previews and threaded feedback. Either qualifying holder role opens the room.</p>
+        <p>Public work-in-progress updates remain available. New arrivals can choose <strong>VERIFY COLLECTIBLES</strong> or <strong>JUST EXPLORING</strong>, with the latter keeping the public House wallet-free.</p>
+        <div class="record-links"><a class="record-link" href="https://bullenciaga.com/discord">Join the conversation <span aria-hidden="true">↗</span></a></div>
       </section>
     </div>
   </article>
-
-  <article class="release" id="refinements" aria-labelledby="details-heading">
-    <header class="release-head"><div><div class="section-label">03 / The details</div><h2 id="details-heading">A House of its own.</h2></div><div class="release-state">Live</div></header>
-    <div class="entries"><section class="entry entry--wide">
-      <div><div class="entry-number">08 / COMMUNITY FINISHES</div><h3>Recognizable<br>in the small things.</h3></div>
-      <div><p>The BULL server tag, custom role icons, expression packs and selected role gradients give the Discord its own identity. SERVER BOOSTER gets a holographic style; collectible and community roles have their own colors.</p>
-      <ul><li>Wallet buttons use wallet logos. Role and action buttons use icons matched to their purpose.</li><li>Command and guide cards share a consistent layout, with their actions grouped inside.</li><li>Flex and quiz cards keep readable proportions, including long trait names and mobile screens.</li><li>Mobile verification preserves its private invitation when opening the wallet app.</li></ul>
-      <p>These changes have passed automated checks and production verification, with native wallet and Discord checks where noted in the release records.</p></div>
-    </section></div>
+  <article class="release" id="records" aria-labelledby="records-heading">
+    <header class="release-head"><div><div class="section-label">03 / Markets &amp; records</div><h2 id="records-heading">See more. Check the record.</h2></div><div class="release-state">Shipped</div></header>
+    <div class="entries">
+      <section class="entry">
+        <div class="entry-number">06 / A DEDICATED BUY PAGE</div><h3>The market,<br>with room to read.</h3>
+        <p><strong>/buy</strong> is now a full page with market information, a price chart and wallet options. Its chart opens on All time, with 24H and 7D views alongside it. The percentage beside the price follows the selected chart range.</p>
+        <p>All time shows the history currently available from the feed. The Tape also keeps its large-buy effects visible independently of the page reveal. For a shorter way to the House, <strong>bullen.app</strong> now leads to the main site.</p>
+        <div class="record-links"><a class="record-link" href="/buy">Open Buy $BULLEN <span aria-hidden="true">↗</span></a><a class="record-link" href="/tape">Watch The Tape <span aria-hidden="true">↗</span></a></div>
+      </section>
+      <section class="entry">
+        <div class="entry-number">07 / THE BURN RESERVE</div><h3>Dates, balances<br>and receipts.</h3>
+        <p>The reserve page now shows current estimated dollar values alongside $BULLEN balances. The 25 million $BULLEN lock was renewed on 9 September, with a 16 September cliff; the separate 212.5 million reserve retains its 2 October cliff.</p>
+        <p>Locked-supply displays follow the verified cliff dates, and previous custody receipts stay in the Living Ledger. Burn tracking also handles delayed reads more carefully, retaining its last reliable record when a read is incomplete.</p>
+        <div class="record-links"><a class="record-link" href="/lock">Read the reserve <span aria-hidden="true">↗</span></a><a class="record-link" href="/ledger">Open the Living Ledger <span aria-hidden="true">↗</span></a></div>
+      </section>
+      <section class="entry">
+        <div class="entry-number">08 / WHITEPAPER 2.1</div><h3>The written picture,<br>brought up to date.</h3>
+        <p>The whitepaper has been refreshed to reflect House Keys and the Inner Rooms, current collectible categories, BULLENSAGA editions and support, contributor rewards, community tools and the rules of the Drop.</p>
+        <p>Its existing public address stays the same. It brings the newer parts of the House into one reference, with links to the pages where the details can be checked.</p>
+        <div class="record-links"><a class="record-link" href="/whitepaper.pdf">Read Whitepaper 2.1 <span aria-hidden="true">↗</span></a></div>
+      </section>
+      <section class="entry">
+        <div class="entry-number">09 / THE 500-FOLLOWER DRAW</div><h3>Five prizes.<br>A completed record.</h3>
+        <p>The 500-follower campaign is complete and all five prizes have been delivered. Its temporary homepage invitation has been retired; the results remain available.</p>
+        <p>The original draw and ranking are preserved. The owner-authorized replacement recipient for HERD #737 is documented separately, using the next eligible wallet in that ranking. The results page keeps the draw, amendment and delivery status visible together.</p>
+        <div class="record-links"><a class="record-link" href="/giveaways#follow500">View the completed draw <span aria-hidden="true">↗</span></a></div>
+      </section>
+    </div>
+  </article>
+  <article class="release" id="details" aria-labelledby="details-heading">
+    <header class="release-head"><div><div class="section-label">04 / The details</div><h2 id="details-heading">Better in the places you touch.</h2></div><div class="release-state">Shipped</div></header>
+    <div class="entries">
+      <section class="entry">
+        <div class="entry-number">10 / MOBILE &amp; GALLERY</div><h3>More room<br>for the artwork.</h3>
+        <p>Gallery cards now use uniform save buttons and footer heights, including House Objects and Founding Records. Repeated serial numbers have moved out of those card titles; the number remains in the piece details.</p>
+        <p>Lightboxes and the Vault sit above the mobile header, so the artwork and close controls can be reached. Square artwork keeps its proportions. The image studio groups its controls more cleanly, with space around dropdown chevrons and between explanatory text and actions.</p>
+      </section>
+      <section class="entry">
+        <div class="entry-number">11 / ACROSS BOTH SITES</div><h3>The small things<br>should stay quiet.</h3>
+        <p>Mobile layout and font-loading fixes reduce shifts as pages open or browser toolbars move. The persistent navigation is present from the first page render, with the approved House typography retained.</p>
+        <p>Keyboard focus indicators now appear when navigating with the keyboard. Tapping, typing or opening a panel no longer leaves an unwanted highlight behind. Close icons, the BULLENSAGA back arrow and media controls have also been aligned and sized consistently.</p>
+      </section>
+      <section class="entry entry--wide">
+        <div><div class="entry-number">12 / COMMUNITY FEEDS</div><h3>Keep the conversation<br>in view.</h3></div>
+        <div><p>Discord buy cards have a more compact layout. Active raid cards can resurface when conversation buries them, without repeating the role ping, and the redundant timed raid reminder has been removed.</p>
+        <p>These are refinements to the connected community announced in edition 003. The public rooms, collectible verification and existing campaign records remain the foundation.</p>
+        <div class="record-links"><a class="record-link" href="https://bullenciaga.com/discord">Visit the House <span aria-hidden="true">↗</span></a></div></div>
+      </section>
+    </div>
   </article>
 
   <section class="principle" aria-labelledby="principle-heading">
-    <div class="section-label" id="principle-heading">Your place in the House</div>
-    <blockquote>Bring your curiosity.<br>Make yourself known.</blockquote>
-    <p>Join a conversation, play a round, share something you made or explore the collections. The doors are open.</p>
-    <div class="actions"><a class="action primary" href="https://bullenciaga.com/discord">Join the House</a><a class="action" href="/objects">House Objects</a><a class="action" href="https://bullensaga.com/preorder">Explore the game</a><button class="action" id="buyBullen" type="button">Buy $BULLEN</button></div>
+    <div class="section-label" id="principle-heading">Your next visit</div>
+    <blockquote>Make something yours.<br>Discover something new.</blockquote>
+    <p>Build a composition from the collection, ask the Steward a question, or read the records behind the House. There is more to explore.</p>
+    <div class="actions"><a class="action primary" href="https://bullenciaga.com/#gallery">Create an image</a><a class="action" href="https://bullensaga.com/case">The Third Door</a><a class="action" href="https://bullensaga.com/funding">Support the game</a><button class="action" id="buyBullen" type="button">Buy $BULLEN</button></div>
   </section>
   <section class="record-archive" id="archive" aria-labelledby="archive-heading">
     <div class="section-label" id="archive-heading">Previously in the House</div>
-    <a class="record-archive-card" href="/patchnotes-002"><span class="record-archive-number">002</span><span><span class="section-label">02—04 September 2026</span><strong>More to explore. More to verify.</strong><span class="record-archive-description">Living Ledger, Wallet Passport, the Registrar and verified marketplace collections.</span></span><span class="record-archive-open">Read edition <span aria-hidden="true">↗</span></span></a>
-    <a class="record-archive-card" href="/patchnotes-001"><span class="record-archive-number">001</span><span><span class="section-label">01—02 September 2026</span><strong>48 hours inside the House.</strong><span class="record-archive-description">The first full release record, preserved as published.</span></span><span class="record-archive-open">Read edition <span aria-hidden="true">↗</span></span></a>
+    <p class="record-intro">Every earlier edition is kept with its original release text. Choose a record to revisit what changed.</p>
+    <details class="record-picker">
+      <summary>Previous editions<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg></summary>
+      <ul aria-label="House Record editions">
+        <li><a href="/patchnotes" aria-current="page"><span class="edition-number">004</span><span><strong>The House, in your hands.</strong><small>07—11 September 2026 · Current</small></span></a></li>
+        <li><a href="/patchnotes-003"><span class="edition-number">003</span><span><strong>The House opens its doors.</strong><small>04—07 September 2026</small></span></a></li>
+        <li><a href="/patchnotes-002"><span class="edition-number">002</span><span><strong>More to explore. More to verify.</strong><small>02—04 September 2026</small></span></a></li>
+        <li><a href="/patchnotes-001"><span class="edition-number">001</span><span><strong>48 hours inside the House.</strong><small>01—02 September 2026</small></span></a></li>
+      </ul>
+    </details>
   </section>
-  <footer class="foot"><span>BULLENCIAGA · House Record · Edition 003</span><span>Published 07 September 2026 · Warsaw</span></footer>
+  <footer class="foot"><span>BULLENCIAGA · House Record · Edition 004</span><span>Published 11 September 2026 · Warsaw</span></footer>
 </main>
 
 <script src="/mobile-buy.js"></script>

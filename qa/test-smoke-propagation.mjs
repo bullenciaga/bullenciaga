@@ -34,7 +34,7 @@ const fixture = `
     assert.equal(buyCalls, 3);
   } else if(mode === 'permanent') {
     assert(failure, 'Persistent stale HTML must fail and leave rollback available');
-    assert.match(failure.message, /edition 003 has not reached/);
+    assert.match(failure.message, /edition 004 has not reached/);
     assert.equal(recordCalls, 3, 'Failure must be bounded by max attempts');
   } else {
     assert.equal(failure, undefined, failure?.message);

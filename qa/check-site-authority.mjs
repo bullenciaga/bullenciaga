@@ -12,7 +12,7 @@ const required = [
   'bullen-ui.css', 'bullen-ui.js', 'bullen-focus.css', 'bullen-focus.js', 'giveaways.html', 'giveaways.json', 'follow500.js', 'follow500.css',
   'objects.html', 'objects.css', 'objects.js', 'bullen-wallet-chooser.js',
   'tape.html', 'favicons/tape.svg',
-  'patchnotes.html', 'patchnotes-001.html', 'patchnotes-002.html', 'house-record.css', 'favicons/patchnotes.svg', 'lock.html', 'favicons/lock.svg',
+  'patchnotes.html', 'patchnotes-001.html', 'patchnotes-002.html', 'patchnotes-003.html', 'house-record.js', 'house-record.css', 'favicons/patchnotes.svg', 'lock.html', 'favicons/lock.svg',
   'ledger.html', 'favicons/ledger.svg', 'house-ledger.js', 'ledger-preview.json',
   'passport.html', 'favicons/passport.svg', 'wallet-passport.js', 'house-intelligence.css',
   'collector-tools.js', 'collector-tools.css', 'assets/collection-originals/promise-nft.png', 'assets/collection-originals/triad-nft.png',
