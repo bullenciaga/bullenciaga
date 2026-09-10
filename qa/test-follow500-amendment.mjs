@@ -146,7 +146,8 @@ check(html.includes(FOLLOW500_ENDPOINTS.result) && html.includes(FOLLOW500_ENDPO
   && html.includes(FOLLOW500_ENDPOINTS.amendment), 'original proof and amendment each have public links');
 check(!html.includes('The lowest five scores win, in the prize order shown above.'), 'amended table is not falsely described as original top-five output');
 check(!html.includes('@') && !/xuser|username\s*:/i.test(html), 'private submitted handles never appear');
-check(/pending/i.test(html) && !/prizes (?:sent|delivered)/i.test(html), 'manual delivery is not confused with completed draw');
+check(loaded.deliveryComplete === true && html.includes('Prizes have been delivered.') && !html.includes('Delivery pending'), 'owner-confirmed delivery is shown after recipient verification');
+check(/class="f500-note">[^<]+<br>[^<]+<br>[^<]+<br>Prizes have been delivered\.<\/p>/.test(html), 'recipient summary breaks the replacement sentence into readable lines');
 const compact = renderFollow500Details(loaded, { compact: true });
 check(/amend/i.test(compact), 'homepage compact summary also discloses amendment');
 check(!compact.includes('class="f500-prize"'), 'homepage does not duplicate recipient table');
