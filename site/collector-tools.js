@@ -86,7 +86,7 @@
   }
   const icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg>';
   let bridge = null, saved = [], storageAvailable = true, shortlistDialog = null, studioDialog = null;
-  let studioItems = [], selected = [], collectionLabel = 'Public artwork', studioRender = 0, dirty = false;
+  let studioItems = [], selected = [], collectionLabel = 'Public artwork', studioRender = 0, studioLoad = 0, dirty = false;
   const imageCache = new Map();
   try { saved = parseSaved(localStorage.getItem(STORAGE)); } catch (_) { storageAvailable = false; }
   const known = new Map(saved.map(e => [e.key, e]));
@@ -236,34 +236,54 @@
     studioDialog.querySelector('#collector-caption').oninput = rerender;
     studioDialog.querySelector('#collector-art-search').oninput = () => renderLibrary();
     studioDialog.querySelector('#collector-export').onclick = exportImage;
-    studioDialog.addEventListener('close', () => { if (!studioDialog.open) studioRender++; });
+    studioDialog.addEventListener('close', () => { if (!studioDialog.open) { studioRender++; studioLoad++; } });
     studioDialog.querySelector('#collector-library-more').onclick = () => renderLibrary(studioDialog.querySelectorAll('[data-add-art]').length + 36);
   }
   async function openStudio(options = {}) {
     ensureStudio();
+    const request = ++studioLoad;
     studioDialog.showCollector();
     studioDialog.scrollTop = 0;
     studioDialog.querySelector('.collector-controls').scrollTop = 0;
-    const status = studioDialog.querySelector('#collector-render-status');
-    status.textContent = 'Opening the artwork…';
-    studioDialog.querySelector('#collector-export').disabled = true;
+    const seeds = Array.isArray(options.selectedItems) ? normalized(options.selectedItems) : null;
+    const supplied = Array.isArray(options.items) ? normalized(options.items) : null;
+    const initial = supplied || seeds || [];
+    studioItems = [...new Map(initial.map(e => [e.key,e])).values()]; register(studioItems);
+    const wanted = options.selectedKey ? studioItems.find(e => e.key === options.selectedKey) : null;
+    selected = wanted ? [wanted] : studioItems.slice(0, seeds ? MAX_PIECES : 3);
+    dirty = false;
+    collectionLabel = options.label || 'Public artwork';
+    studioDialog.querySelector('#collector-library-label').textContent = collectionLabel;
+    const note = studioDialog.querySelector('#collector-library-note');
+    const catalogueNote = seeds
+      ? `${seeds.length > MAX_PIECES ? 'Your first nine pieces are selected.' : 'Your chosen pieces are selected.'} Add any other artwork from the catalogue below, or remove pieces to change your arrangement.`
+      : 'Browse the collection’s original art. Making an image does not imply ownership or reserve a piece.';
+    note.textContent = supplied
+      ? 'Artwork from the public wallet record you opened. Selection does not grant ownership.'
+      : seeds ? `${catalogueNote} Loading the rest of the catalogue…` : 'Loading the artwork catalogue…';
+    studioDialog.querySelector('#collector-art-search').value = '';
+    renderLibrary(); renderOrder(); drawPreview();
+    if (supplied) return;
+    // Seed artwork is usable immediately. Discovery can fail independently
+    // without preventing a saved composition from being edited or exported.
+    let timeout;
     try {
-      const items = Array.isArray(options.items) ? normalized(options.items) : await loadPublic();
-      if (!studioDialog.open) return;
-      const seeds = Array.isArray(options.selectedItems) ? normalized(options.selectedItems) : null;
-      studioItems = [...new Map([...(seeds || []), ...items].map(e => [e.key,e])).values()]; register(studioItems);
-      collectionLabel = options.label || 'Public artwork';
-      const wanted = options.selectedKey ? studioItems.find(e => e.key === options.selectedKey) : null;
-      selected = wanted ? [wanted] : seeds
-        ? [...new Set(seeds.map(e => e.key))].slice(0, MAX_PIECES).map(key => studioItems.find(e => e.key === key))
-        : studioItems.slice(0, Math.min(3,studioItems.length));
-      dirty = false;
-      studioDialog.querySelector('#collector-library-label').textContent = collectionLabel;
-      studioDialog.querySelector('#collector-library-note').textContent = /wallet|collection/i.test(collectionLabel) ? 'Artwork from the public wallet record you opened. Selection does not grant ownership.' : 'Browse the collection’s original art. Making an image does not imply ownership or reserve a piece.';
-      if (seeds) studioDialog.querySelector('#collector-library-note').textContent = `${seeds.length > MAX_PIECES ? 'Your first nine pieces are selected.' : 'Your chosen pieces are selected.'} Add any other artwork from the catalogue below, or remove pieces to change your arrangement.`;
-      studioDialog.querySelector('#collector-art-search').value = '';
+      const items = await Promise.race([
+        loadPublic(),
+        new Promise((_, reject) => { timeout = setTimeout(() => reject(new Error('The artwork catalogue took too long to respond.')), 15000); })
+      ]);
+      if (request !== studioLoad || !studioDialog.open) return;
+      studioItems = [...new Map([...studioItems,...items].map(e => [e.key,e])).values()]; register(studioItems);
+      if (!seeds && !dirty) selected = studioItems.slice(0,3);
+      else selected = selected.map(e => known.get(e.key) || e);
+      note.textContent = catalogueNote;
       renderLibrary(); renderOrder(); drawPreview();
-    } catch (error) { status.textContent = error.message; studioDialog.querySelector('#collector-export').disabled = true; }
+    } catch (_) {
+      if (request !== studioLoad || !studioDialog.open) return;
+      note.textContent = seeds
+        ? 'Your chosen artwork is ready to use. The rest of the catalogue is temporarily unavailable; reopen the studio to retry.'
+        : 'The artwork catalogue is temporarily unavailable. Please close and reopen the studio to try again.';
+    } finally { clearTimeout(timeout); }
   }
   function renderLibrary(limit = 36) {
     const term = studioDialog.querySelector('#collector-art-search').value.trim().toLowerCase();
