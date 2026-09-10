@@ -3271,7 +3271,7 @@
     <svg viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 1L1 6l5 5"/></svg>
   </button>
   <div class="gallery-lightbox-content" id="galleryLightboxContent">
-    <button class="gallery-lightbox-close" id="galleryLightboxCloseStatic" type="button">&times;</button>
+    <button class="gallery-lightbox-close" id="galleryLightboxCloseStatic" type="button" aria-label="Close piece">&times;</button>
   </div>
   <button class="gallery-lightbox-nav next" id="galleryLightboxNext" type="button">
     <svg viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l5 5-5 5"/></svg>
@@ -3519,7 +3519,7 @@
 <div class="version-tag" id="versionTag">build 2026-08-31.2 — open the receipts</div>
 
 <div class="vault-modal" id="vaultModal">
-  <button class="vault-modal-close" id="vaultModalClose" type="button">&times;</button>
+  <button class="vault-modal-close" id="vaultModalClose" aria-label="Close Vault" type="button">&times;</button>
   <div class="vault-modal-inner">
     <div class="vault-title">The Vault</div>
     <div class="vault-subtitle" id="vaultSubtitle">one-of-ones, outside the standard 1,000.</div>
@@ -4760,10 +4760,14 @@
     }
 
     renderWalletModalRows();
-    if (walletEls.modal) walletEls.modal.style.display = 'flex';
+    if (walletEls.modal) {
+      walletEls.modal.style.display = 'flex';
+      document.body.classList.add('wallet-modal-open');
+    }
   }
   function closeWalletModal(){
     if (walletEls.modal) walletEls.modal.style.display = 'none';
+    document.body.classList.remove('wallet-modal-open');
     if (walletEls.otherList) walletEls.otherList.style.display = 'none';
     if (walletEls.otherToggle) walletEls.otherToggle.textContent = 'other wallets';
   }
@@ -4854,7 +4858,7 @@
     `).join('');
 
     galleryEls.lightboxContent.innerHTML = `
-      <button class="gallery-lightbox-close" id="galleryLightboxCloseReveal" type="button">&times;</button>
+      <button class="gallery-lightbox-close" id="galleryLightboxCloseReveal" type="button" aria-label="Close piece">&times;</button>
       <div class="mint-reveal-image-wrap">
         <div class="mint-reveal-image-placeholder"></div>
         <img id="galleryLightboxImgReveal" alt="">
@@ -6979,7 +6983,7 @@
     ` : '';
 
     return `
-      <button class="gallery-lightbox-close" id="galleryLightboxCloseGallery" type="button">&times;</button>
+      <button class="gallery-lightbox-close" id="galleryLightboxCloseGallery" type="button" aria-label="Close piece">&times;</button>
       <img id="galleryLightboxImgGallery" alt="${entry.name}">
       <div class="gallery-lightbox-body">
         <div class="gallery-lightbox-header-row">
@@ -7889,9 +7893,14 @@
     });
   }
   document.addEventListener('keydown', (e) => {
+    if (e.defaultPrevented || document.querySelector('dialog[open], .bwc')) return;
+    if (walletEls.modal && walletEls.modal.style.display === 'flex') {
+      if (e.key === 'Escape') { e.preventDefault(); closeWalletModal(); }
+      return;
+    }
     if (!galleryEls.lightbox || galleryEls.lightbox.style.display !== 'flex') return;
     if (window.__MINT_REVEAL_ACTIVE__) return; // reveal in progress
-    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'Escape') { e.preventDefault(); closeLightbox(); }
     if (e.key === 'ArrowLeft') openLightboxAtIndex(currentLightboxIndex - 1);
     if (e.key === 'ArrowRight') openLightboxAtIndex(currentLightboxIndex + 1);
   });
@@ -8103,7 +8112,8 @@
   // X for it. Skipped while the lightbox is up, since that's stacked on top
   // and its own handler above should get the keypress first.
   document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
+    if (e.key !== 'Escape' || e.defaultPrevented || document.querySelector('dialog[open], .bwc')) return;
+    if (walletEls.modal && walletEls.modal.style.display === 'flex') return;
     if (galleryEls.lightbox && galleryEls.lightbox.style.display === 'flex') return;
     if (vaultEls.modal && vaultEls.modal.style.display === 'block') closeVault();
   });
