@@ -75,10 +75,10 @@ for (const name of fs.readdirSync(site).filter(name => name.endsWith('.html'))) 
   assert.equal((html.match(/src="\/bullen-focus\.js"/g)||[]).length,1,`${name}: shared policy`);
   documents++;
 }
-assert.equal(documents,20);
+assert.equal(documents,21);
 assert(!read('shares.html').includes('src="/bullen-ui.js"'),'private Shares does not acquire public navigation');
 assert.match(read('bullen-focus.css'),/html:not\(\[data-focus-navigation="keyboard"\]\) :focus/,'neutral before JS executes');
 assert.match(read('collector-tools.css'),/html\[data-focus-navigation="keyboard"\] \.collector-palette input:focus-visible\+span/);
 assert.match(read('collector-tools.css'),/\.collector-close svg\{display:block;width:20px;height:20px/);
 assert.match(read('collector-tools.js'),/aria-label="Close \$\{title\}"><svg viewBox="0 0 24 24"/);
-console.log('Focus navigation: Tab/composite keys, typing/caret/IME, delayed autofocus, touch, frame cleanup,20-page coverage and centered collector SVG: ok');
+console.log('Focus navigation: Tab/composite keys, typing/caret/IME, delayed autofocus, touch, frame cleanup,21-page coverage and centered collector SVG: ok');
