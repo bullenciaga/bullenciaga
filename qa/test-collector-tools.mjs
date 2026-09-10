@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const code=fs.readFileSync(new URL('../site/collector-tools.js',import.meta.url),'utf8');
+const context=vm.createContext({URL,location:{origin:'https://bullenciaga.com'},window:{addEventListener(){}},document:{addEventListener(){}},localStorage:{getItem:()=>null}});
+vm.runInContext(code,context);
+const {cleanEntry,parseSaved,layoutFor,FORMAT,originalFor}=context.window.BullenCollectors;
+const manifest=JSON.parse(fs.readFileSync(new URL('../site/gallery-manifest.json',import.meta.url),'utf8'));
+assert.equal(manifest.length,1000);
+assert.equal(manifest.map(cleanEntry).filter(Boolean).length,1000,'all 1,000 canonical editions, including named pieces, are usable');
+const golden=cleanEntry(manifest.find(e=>e.name==='GOLDEN RELIC'));
+assert.equal(golden.key,'GOLDEN RELIC');assert.equal(golden.series,'herd');
+assert.equal(parseSaved(JSON.stringify([golden]))[0].key,'GOLDEN RELIC','named manifest key persists without an invented asset ID');
+const herd={name:'HERD #1',image:'https://gateway.irys.xyz/one',owner:'PRIVATE-TO-THIS-TOOL',wallet:'address',balance:500,attributes:[{trait_type:'Bull',value:'Black'}]};
+const normalized=cleanEntry(herd);
+assert(normalized);assert.equal(normalized.key,'HERD #1');
+assert(!('owner'in normalized));assert(!('wallet'in normalized));assert(!('balance'in normalized));
+assert.equal(cleanEntry({...herd,image:'javascript:alert(1)'}),null);
+assert.equal(cleanEntry({...herd,image:'https://untrusted.example/image.png'}),null);
+assert.equal(cleanEntry({...herd,name:'HERD #1001'}),null);
+assert.equal(parseSaved('not json').length,0);
+assert.equal(parseSaved(JSON.stringify({items:[herd]})).length,0);
+assert.equal(parseSaved(JSON.stringify([herd,herd])).length,1,'saved pieces deduplicated');
+assert.equal(parseSaved(JSON.stringify(Array.from({length:110},(_,i)=>({...herd,name:`HERD #${i+1}`})))).length,100,'storage bounded');
+const key=cleanEntry({name:'The Key #006',id:'key-id',image:'/assets/collection-previews/house-object-03-key.webp',series:'house-object'});
+assert.equal(originalFor(key),'/assets/house-objects/house-object-03-key.png','never export the Key thumbnail');
+const promise=cleanEntry({name:'The Promise #006',id:'promise-id',image:'/assets/collection-previews/promise-nft.webp',series:'bullensaga'});
+assert.equal(originalFor(promise),'/assets/collection-originals/promise-nft.png','Founding Record uses original PNG');
+assert.equal(originalFor(normalized),herd.image,'HERD keeps its canonical original');
+const custom=cleanEntry({id:'custom-asset',name:'BAMF',series:'custom',image:'https://gateway.irys.xyz/custom',attributes:[{trait_type:'Bull',value:'Dark Stone-Giant'}]});
+assert.equal(custom.key,'custom:custom-asset');
+assert.equal(parseSaved(JSON.stringify([custom]))[0].name,'BAMF','named customs remain searchable and persist');
+assert.equal(originalFor(custom),'https://gateway.irys.xyz/custom');
+assert.equal(normalized.originalImage,'','missing original URL never turns into the home page');
+let arrangements=0;
+for(const [format,[w,h]]of Object.entries(FORMAT))for(const layout of ['grid','row'])for(let count=0;count<=9;count++){
+ const result=layoutFor(w,h,count,layout);assert.equal(result.slots.length,count);
+ for(const slot of result.slots){assert(slot.x>=0&&slot.y>=0,`${format}/${layout}/${count}: positive bounds`);assert(slot.w>0&&slot.h>0);assert(slot.x+slot.w<=w+1);assert(slot.y+slot.h+slot.label<=h+1);}
+ arrangements++;
+}
+const blocked=vm.createContext({URL,location:{origin:'https://bullenciaga.com'},window:{addEventListener(){}},document:{addEventListener(){}},localStorage:{getItem(){throw new Error('blocked')}}});
+assert.doesNotThrow(()=>vm.runInContext(code,blocked),'blocked browser storage does not disable tools');
+console.log(`Collector tools: ${arrangements} bounded layouts; private data removal, source validation, storage limits and original artwork mapping passed.`);
