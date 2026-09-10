@@ -88,6 +88,13 @@
   let bridge = null, saved = [], storageAvailable = true, shortlistDialog = null, studioDialog = null;
   let studioItems = [], selected = [], collectionLabel = 'Public artwork', studioRender = 0, studioLoad = 0, dirty = false;
   const imageCache = new Map();
+  let studioReady = 0, exporting = false, readyConfig = null;
+  const ART_PROXY = 'https://bullenciaga-img-proxy.bullenciaga-e5c.workers.dev/';
+  function proxyFor(url) {
+    const source = new URL(url, location.origin);
+    return ['gateway.irys.xyz','arweave.net'].includes(source.hostname)
+      ? `${ART_PROXY}?url=${encodeURIComponent(source.href)}` : url;
+  }
   try { saved = parseSaved(localStorage.getItem(STORAGE)); } catch (_) { storageAvailable = false; }
   const known = new Map(saved.map(e => [e.key, e]));
   const displayImage = entry => bridge?.imageUrl(entry.image) || entry.image;
@@ -236,6 +243,10 @@
     studioDialog.querySelector('#collector-caption').oninput = rerender;
     studioDialog.querySelector('#collector-art-search').oninput = () => renderLibrary();
     studioDialog.querySelector('#collector-export').onclick = exportImage;
+    const retry = document.createElement('button');
+    retry.type = 'button'; retry.id = 'collector-retry'; retry.className = 'collector-button';
+    retry.textContent = 'Retry artwork'; retry.hidden = true; retry.onclick = drawPreview;
+    studioDialog.querySelector('#collector-render-status').after(retry);
     studioDialog.addEventListener('close', () => { if (!studioDialog.open) { studioRender++; studioLoad++; } });
     studioDialog.querySelector('#collector-library-more').onclick = () => renderLibrary(studioDialog.querySelectorAll('[data-add-art]').length + 36);
   }
@@ -296,17 +307,46 @@
       if (i >= 0) selected.splice(i,1);
       else if (selected.length >= MAX_PIECES) { showToast('Nine pieces fit this arrangement. Remove one to make room.'); return; }
       else selected.push(known.get(button.dataset.addArt));
-      dirty = true; renderOrder(); renderLibrary(limit); drawPreview();
+      dirty = true; renderOrder(); updateLibrarySelection(); drawPreview();
+    });
+  }
+  function updateLibrarySelection() {
+    const keys = new Set(selected.map(e => e.key));
+    studioDialog.querySelectorAll('[data-add-art]').forEach(button => {
+      const yes = keys.has(button.dataset.addArt);
+      button.setAttribute('aria-pressed', String(yes));
+      button.setAttribute('aria-label', `${yes ? 'Remove' : 'Add'} ${known.get(button.dataset.addArt)?.name || 'piece'}`);
+      button.querySelector('b').textContent = yes ? '✓' : '+';
     });
   }
   function renderOrder() {
-    studioDialog.querySelector('#collector-order').innerHTML = selected.map((e,i) => `<div class="collector-order-piece"><img src="${escape(displayImage(e))}" alt="${escape(e.name)}"><div><button type="button" data-move="${i}" data-direction="-1" aria-label="Move ${escape(e.name)} earlier" ${i === 0 ? 'disabled' : ''}>←</button><button type="button" data-move="${i}" data-direction="1" aria-label="Move ${escape(e.name)} later" ${i === selected.length-1 ? 'disabled' : ''}>→</button><button type="button" data-remove-art="${i}" aria-label="Remove ${escape(e.name)}">×</button></div></div>`).join('') || '<p class="collector-small">Choose a piece below to start your composition.</p>';
-    studioDialog.querySelectorAll('[data-move]').forEach(button => button.onclick = () => {
-      const from = Number(button.dataset.move), to = from + Number(button.dataset.direction);
-      if (to < 0 || to >= selected.length) return;
-      [selected[from], selected[to]] = [selected[to], selected[from]]; dirty = true; renderOrder(); drawPreview();
+    const host = studioDialog.querySelector('#collector-order');
+    const existing = new Map([...host.querySelectorAll('[data-order-key]')].map(node => [node.dataset.orderKey,node]));
+    host.querySelector('.collector-small')?.remove();
+    // Keep decoded image elements attached when adding/removing other pieces.
+    // Replacing the entire list makes every image flash on slow connections.
+    selected.forEach((e,i) => {
+      let node = existing.get(e.key);
+      if (!node) {
+        node = document.createElement('div'); node.className = 'collector-order-piece'; node.dataset.orderKey = e.key;
+        node.innerHTML = `<img src="${escape(displayImage(e))}" alt="${escape(e.name)}"><div><button type="button" data-direction="-1" aria-label="Move ${escape(e.name)} earlier">←</button><button type="button" data-direction="1" aria-label="Move ${escape(e.name)} later">→</button><button type="button" data-remove-order aria-label="Remove ${escape(e.name)}">×</button></div>`;
+        node.querySelectorAll('[data-direction]').forEach(button => button.onclick = () => {
+          const from = selected.findIndex(piece => piece.key === e.key), to = from + Number(button.dataset.direction);
+          if (from < 0 || to < 0 || to >= selected.length) return;
+          [selected[from], selected[to]] = [selected[to], selected[from]]; dirty = true; renderOrder(); drawPreview();
+        });
+        node.querySelector('[data-remove-order]').onclick = () => {
+          selected = selected.filter(piece => piece.key !== e.key); dirty = true;
+          renderOrder(); updateLibrarySelection(); drawPreview();
+        };
+      }
+      node.querySelector('[data-direction="-1"]').disabled = i === 0;
+      node.querySelector('[data-direction="1"]').disabled = i === selected.length - 1;
+      if (host.children[i] !== node) host.insertBefore(node,host.children[i] || null);
+      existing.delete(e.key);
     });
-    studioDialog.querySelectorAll('[data-remove-art]').forEach(button => button.onclick = () => { selected.splice(Number(button.dataset.removeArt),1); dirty = true; renderOrder(); renderLibrary(); drawPreview(); });
+    existing.forEach(node => node.remove());
+    if (!selected.length) { const note = document.createElement('p'); note.className = 'collector-small'; note.textContent = 'Choose a piece below to start your composition.'; host.append(note); }
   }
   function settings() {
     return { format: studioDialog.querySelector('#collector-format').value,
@@ -318,21 +358,79 @@
   }
   async function loadImage(url) {
     if (imageCache.has(url)) return imageCache.get(url);
+    // Both routes return the same original, never a thumbnail. A slow gateway
+    // gets a second route after two seconds; either can recover the other.
+    const alternate = proxyFor(url), images = [];
     const promise = new Promise((resolve,reject) => {
-      const image = new Image(); image.crossOrigin = 'anonymous';
-      const timer = setTimeout(() => { image.src = ''; reject(new Error('Artwork timed out. Please try again.')); }, 20000);
-      image.onload = () => { clearTimeout(timer); resolve(image); };
-      image.onerror = () => { clearTimeout(timer); reject(new Error('An original image could not be loaded for export. Retry or remove that piece.')); };
-      image.src = url;
+      let done = false, started = 0, failed = 0, hedge;
+      const finish = (image, error) => {
+        if (done) return;
+        done = true; clearTimeout(deadline); clearTimeout(hedge);
+        images.forEach(candidate => {
+          candidate.onload = candidate.onerror = null;
+          if (candidate !== image) candidate.src = '';
+        });
+        if (image) resolve(image); else reject(error);
+      };
+      const deadline = setTimeout(() => finish(null,new Error('Artwork took too long to respond.')),16000);
+      const start = source => {
+        started++;
+        const image = new Image(); images.push(image); image.crossOrigin = 'anonymous';
+        let rejected = false;
+        const fail = () => {
+          if (done || rejected) return;
+          rejected = true;
+          failed++;
+          if (started === 1 && alternate !== url) { clearTimeout(hedge); start(alternate); }
+          else if (failed === started) finish(null,new Error('The original image could not be loaded.'));
+        };
+        image.onload = async () => {
+          try {
+            if (image.decode) await image.decode();
+            if (!image.naturalWidth || !image.naturalHeight) throw new Error('Empty artwork');
+            finish(image);
+          } catch (_) { fail(); }
+        };
+        image.onerror = fail;
+        image.src = source;
+      };
+      if (alternate !== url) hedge = setTimeout(() => start(alternate),2000);
+      start(url);
     });
     imageCache.set(url,promise);
-    promise.catch(() => imageCache.delete(url));
+    promise.catch(() => { if (imageCache.get(url) === promise) imageCache.delete(url); });
     return promise;
   }
-  async function paint(canvas, config, scale = 1) {
+  async function prepareFonts(config) {
+    const fallback = { mono: 'monospace', sans: 'sans-serif' };
+    if (!document.fonts?.load) return fallback;
+    // Never wait for the whole page's FontFaceSet.ready: one unrelated stalled
+    // face would block every canvas forever. Only request the text we draw.
+    const requests = [], loaded = new Set();
+    if (config.brand || config.labels) requests.push(['mono','400 24px "Space Mono"', `${config.brand ? 'BULLENCIAGA bullenciaga.com' : ''} ${config.labels ? config.entries.map(e => e.name).join(' ') : ''}`]);
+    if (config.caption) requests.push(['sans','500 24px Poppins',config.caption]);
+    let timer;
+    try {
+      await Promise.race([
+        Promise.all(requests.map(async ([key,font,text]) => { const faces = await document.fonts.load(font,text); if (faces.length) loaded.add(key); })),
+        new Promise(resolve => { timer = setTimeout(resolve,1200); })
+      ]);
+    } catch (_) { /* The declared system fallback fonts remain usable. */ }
+    finally { clearTimeout(timer); }
+    return { mono: loaded.has('mono') ? '"Space Mono", monospace' : fallback.mono,
+      sans: loaded.has('sans') ? 'Poppins, sans-serif' : fallback.sans };
+  }
+  async function paint(canvas, config, scale = 1, progress = () => {}) {
     const [width,height] = FORMAT[config.format] || FORMAT.banner;
-    const images = await Promise.all(config.entries.map(e => loadImage(originalFor(e))));
-    await document.fonts.ready;
+    let loaded = 0, active = true, images, fonts;
+    try { [images,fonts] = await Promise.all([
+      Promise.all(config.entries.map(async entry => {
+        try { const image = await loadImage(originalFor(entry)); if (active) progress(++loaded,config.entries.length); return image; }
+        catch (_) { throw new Error(`${entry.name} could not load. Retry artwork or remove that piece.`); }
+      })),
+      config.fonts || prepareFonts(config)
+    ]); } finally { active = false; }
+    config.fonts = fonts;
     canvas.width = Math.round(width * scale); canvas.height = Math.round(height * scale);
     const ctx = canvas.getContext('2d'); ctx.scale(scale,scale);
     const palette = PALETTES[config.palette] || PALETTES.charcoal;
@@ -340,16 +438,16 @@
     const layout = layoutFor(width,height,images.length,config.layout);
     const fontSize = Math.min(width,height) * .024;
     ctx.textAlign = 'left'; ctx.fillStyle = palette.ink;
-    if (config.brand) { ctx.font = `500 ${fontSize}px "Space Mono", monospace`; ctx.fillText('B U L L E N C I A G A',layout.margin,layout.margin * 1.25); }
-    if (config.caption) { ctx.font = `500 ${fontSize * 1.35}px Poppins, sans-serif`; ctx.fillText(config.caption,layout.margin,layout.header - fontSize * .6,width-layout.margin*2); }
+    if (config.brand) { ctx.font = `400 ${fontSize}px ${fonts.mono}`; ctx.fillText('B U L L E N C I A G A',layout.margin,layout.margin * 1.25); }
+    if (config.caption) { ctx.font = `500 ${fontSize * 1.35}px ${fonts.sans}`; ctx.fillText(config.caption,layout.margin,layout.header - fontSize * .6,width-layout.margin*2); }
     layout.slots.forEach((slot,i) => {
       const img = images[i], ratio = Math.min(slot.w / img.naturalWidth, slot.h / img.naturalHeight);
       const w = img.naturalWidth * ratio, h = img.naturalHeight * ratio;
       ctx.drawImage(img,slot.x + (slot.w-w)/2,slot.y + (slot.h-h)/2,w,h);
-      if (config.labels) { ctx.fillStyle = palette.ink; ctx.textAlign = 'center'; ctx.font = `400 ${Math.min(fontSize*.78,slot.w*.075)}px "Space Mono", monospace`; ctx.fillText(config.entries[i].name,slot.x+slot.w/2,slot.y+slot.h+slot.label*.68,slot.w); }
+      if (config.labels) { ctx.fillStyle = palette.ink; ctx.textAlign = 'center'; ctx.font = `400 ${Math.min(fontSize*.78,slot.w*.075)}px ${fonts.mono}`; ctx.fillText(config.entries[i].name,slot.x+slot.w/2,slot.y+slot.h+slot.label*.68,slot.w); }
     });
     if (config.brand) {
-      ctx.fillStyle = palette.muted; ctx.textAlign = 'right'; ctx.font = `400 ${fontSize*.7}px "Space Mono", monospace`;
+      ctx.fillStyle = palette.muted; ctx.textAlign = 'right'; ctx.font = `400 ${fontSize*.7}px ${fonts.mono}`;
       ctx.fillText('bullenciaga.com',width-layout.margin,height-layout.margin*.65);
     }
     return images;
@@ -359,34 +457,40 @@
     const button = studioDialog.querySelector('#collector-export');
     const [w,h] = FORMAT[config.format];
     studioDialog.querySelector('#collector-dimensions').textContent = `${w.toLocaleString()} × ${h.toLocaleString()} PNG`;
-    button.disabled = true;
+    button.disabled = true; studioReady = 0; readyConfig = null;
+    const retry = studioDialog.querySelector('#collector-retry'); retry.hidden = true;
     if (!config.entries.length) { status.textContent = 'Choose at least one piece to create an image.'; const c=studioDialog.querySelector('canvas'); c.getContext('2d').clearRect(0,0,c.width,c.height); return; }
     status.textContent = 'Loading original artwork…';
     try {
       const next = document.createElement('canvas');
-      const images = await paint(next,config,Math.min(1,1500/Math.max(w,h)));
+      const images = await paint(next,config,Math.min(1,1500/Math.max(w,h)),(loaded,total) => {
+        if (token === studioRender && studioDialog.open) status.textContent = `Loading original artwork… ${loaded}/${total}`;
+      });
       if (token !== studioRender || !studioDialog.open) return;
       const canvas = studioDialog.querySelector('#collector-canvas'); canvas.width=next.width; canvas.height=next.height;
       canvas.getContext('2d').drawImage(next,0,0);
       const slots = layoutFor(w,h,images.length,config.layout).slots;
       const upscaled = images.some((img,i) => Math.min(slots[i].w/img.naturalWidth,slots[i].h/img.naturalHeight) > 1.05);
       status.textContent = upscaled ? 'Ready. Some artwork will be enlarged for this format; no detail is invented.' : 'Ready to download. Original artwork, full composition.';
-      button.disabled = false;
-    } catch (error) { if (token === studioRender) status.textContent = error.message; }
+      studioReady = token; readyConfig = config; button.disabled = exporting;
+    } catch (error) { if (token === studioRender && studioDialog.open) { status.textContent = error.message; retry.hidden = false; } }
   }
   async function exportImage() {
-    const config = settings(), button = studioDialog.querySelector('#collector-export'), status = studioDialog.querySelector('#collector-render-status');
-    if (!config.entries.length) return;
+    const config = readyConfig, button = studioDialog.querySelector('#collector-export'), status = studioDialog.querySelector('#collector-render-status');
+    if (!config?.entries.length || exporting || studioReady !== studioRender) return;
+    const token = studioRender; exporting = true;
     button.disabled = true; button.textContent = 'Preparing PNG…';
     try {
       const canvas = document.createElement('canvas'); await paint(canvas,config);
       const blob = await new Promise((resolve,reject) => { try { canvas.toBlob(b => b ? resolve(b) : reject(new Error('This browser could not create the PNG.')), 'image/png'); } catch (_) { reject(new Error('The image host blocked export. Remove the unavailable piece and try again.')); } });
+      if (token !== studioRender || !studioDialog.open) return;
       const url = URL.createObjectURL(blob), a = document.createElement('a');
       a.href=url; a.download=`BULLENCIAGA-${config.format}-${FORMAT[config.format].join('x')}.png`;
       document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url),30000);
       status.textContent = 'PNG ready. On iPhone, save the downloaded image to Photos.'; dirty=false;
-    } catch (error) { status.textContent = error.message; }
-    finally { button.disabled=false; button.textContent='Download PNG ↗'; }
+    } catch (error) {
+      if (token === studioRender && studioDialog.open) { studioReady = 0; status.textContent = error.message; studioDialog.querySelector('#collector-retry').hidden = false; }
+    } finally { exporting = false; button.disabled = studioReady !== studioRender; button.textContent='Download PNG ↗'; }
   }
   function mountGallery(api) {
     bridge=api;
