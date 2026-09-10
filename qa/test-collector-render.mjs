@@ -4,7 +4,7 @@ import vm from 'node:vm';
 // Controlled DOM/media doubles exercise the actual editor code without a
 // network, wallet, or dependency on browser autoplay/font/image heuristics.
 const source = fs.readFileSync(new URL('../site/collector-tools.js',import.meta.url),'utf8');
-const instrumented = source.replace('  window.BullenCollectors = {', `  window.test = { loadImage,paint,drawPreview,exportImage,renderLibrary,renderOrder,
+const instrumented = source.replace('  window.BullenCollectors = {', `  window.test = { cardLabel,attachCard,loadImage,paint,drawPreview,exportImage,renderLibrary,renderOrder,
  setState(state) { if (state.dialog) studioDialog=state.dialog; if(state.items){studioItems=state.items;register(state.items);} if(state.selected) selected=state.selected; },
  state:()=>({selected,studioRender,studioReady,exporting}) };
   window.BullenCollectors = {`);
@@ -22,6 +22,7 @@ class Node {
  querySelectorAll(sel){return this.children.flatMap(n=>[...(n.matches(sel)?[n]:[]),...n.querySelectorAll(sel)]);}
  querySelector(sel){return this.querySelectorAll(sel)[0]||null;}
  set innerHTML(html){this.children.forEach(n=>n.parent=null);this.children=[];const stack=[this];for(const tok of html.match(/<[^>]*>|[^<]+/g)||[]){if(tok.startsWith('</')){stack.pop();continue;}if(!tok.startsWith('<')){stack.at(-1).textContent=(stack.at(-1).textContent||'')+decode(tok);continue;}const tag=tok.match(/^<([\w-]+)/)?.[1];if(!tag)continue;const n=new Node(tag);for(const [,key,value]of tok.replace(/^<[\w-]+/,'').matchAll(/([\w-]+)(?:="([^"]*)")?/g))n.setAttribute(key,decode(value||''));stack.at(-1).append(n);if(!['img','input','br'].includes(tag))stack.push(n);}}
+ addEventListener(type,callback){this['on'+type]=callback;}
  getContext(){return this.context;}
  toBlob(callback){callback({type:'image/png'});}
 }
@@ -119,5 +120,13 @@ const config=entries=>({entries,format:'banner',layout:'grid',palette:'charcoal'
 {
  const h=harness();await h.api.drawPreview();let toBlob;h.document.createElement=tag=>{const n=new Node(tag);if(tag==='canvas')n.toBlob=fn=>{toBlob=fn;};return n;};
  const exporting=h.api.exportImage();await flush();h.dialog.open=false;h.api.setState({selected:h.items.slice(1,2)});h.dialog.open=true;await h.api.drawPreview();toBlob({});await exporting;assert.equal(h.document.body.children.length,0,'reopened studio never downloads the previous session’s image');
+}
+{
+ const h=harness();
+ for(const [series,name,visible] of [['herd','HERD #168','HERD #168'],['house-object','The Cufflinks #001','The Cufflinks'],['house-object','The Signet #099','The Signet'],['house-object','The Key #008','The Key'],['bullensaga','The Promise #001','The Promise'],['bullensaga','Triad #007','Triad'],['custom','CUSTOM #001','CUSTOM #001']]) {
+  const entry={series,name,id:'verified-id',image:'https://gateway.irys.xyz/original'},card=new Node('article');card.innerHTML='<img><div class="gallery-card-name"></div>';
+  card.querySelector('img').setAttribute('alt',name);h.api.attachCard(card,entry);const label=card.querySelector('.collector-card-label'),button=card.querySelector('[data-save-piece]');
+  assert.equal(label.textContent,visible);assert.equal(label.title,name);assert.equal(card.querySelector('img').getAttribute('alt'),name);assert.match(button.getAttribute('aria-label'),new RegExp(name));assert.equal(entry.name,name,'underlying detail/search identity never modified');
+ }
 }
 console.log('Collector render: bounded fonts/images, decoded fallback race, retry, shared original requests, stable selection DOM, stale renders/exports and complete-only download passed.');

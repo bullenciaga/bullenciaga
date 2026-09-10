@@ -150,6 +150,10 @@
     el.showCollector = () => { priorFocus = document.activeElement; if (!el.open) el.showModal(); };
     return el;
   }
+  function cardLabel(entry) {
+    return ['house-object','bullensaga'].includes(entry.series)
+      ? entry.name.replace(/\s+#\d+\s*$/, '') : entry.name;
+  }
   function attachCard(card, entry) {
     const clean = cleanEntry(entry);
     if (!clean) return;
@@ -162,7 +166,12 @@
     button.title = yes ? 'Remove from shortlist' : 'Save to shortlist';
     button.innerHTML = icon;
     button.addEventListener('click', event => { event.stopPropagation(); toggleSaved(clean); });
-    (card.querySelector('.gallery-card-name') || card).append(button);
+    const footer = card.querySelector('.gallery-card-name');
+    if (footer) {
+      const label = document.createElement('span'); label.className = 'collector-card-label';
+      label.textContent = cardLabel(clean); label.title = clean.name;
+      footer.textContent = ''; footer.append(label,button);
+    } else card.append(button);
   }
   const getEntry = savedEntry => {
     const live = bridge?.entries().find(e => e.name === savedEntry.name && savedEntry.series === 'herd');
