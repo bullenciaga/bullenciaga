@@ -155,7 +155,7 @@
     button.title = yes ? 'Remove from shortlist' : 'Save to shortlist';
     button.innerHTML = icon;
     button.addEventListener('click', event => { event.stopPropagation(); toggleSaved(clean); });
-    card.append(button);
+    (card.querySelector('.gallery-card-name') || card).append(button);
   }
   const getEntry = savedEntry => {
     const live = bridge?.entries().find(e => e.name === savedEntry.name && savedEntry.series === 'herd');
@@ -191,7 +191,7 @@
       button.disabled = count < 2; button.querySelector('span').textContent = `(${count}/3)`;
     });
     body.querySelector('#collector-compare')?.addEventListener('click', () => renderCompare(checkedKeys().map(k => known.get(k))));
-    body.querySelector('#collector-shortlist-studio')?.addEventListener('click', () => { shortlistDialog.close(); openStudio({ items: entries, label: 'From your shortlist' }); });
+    body.querySelector('#collector-shortlist-studio')?.addEventListener('click', () => { shortlistDialog.close(); openStudio({ selectedItems: entries, label: 'Full artwork catalogue' }); });
   }
   function renderCompare(entries) {
     if (entries.length < 2 || entries.length > 3) return;
@@ -202,7 +202,7 @@
     body.innerHTML = `<div class="collector-shortlist-actions"><button type="button" class="collector-button" id="collector-compare-back">← Shortlist</button><label class="collector-check"><input type="checkbox" id="collector-differences"> Differences only</label></div><div class="collector-compare-wrap"><table class="collector-compare"><caption>Artwork, gallery rarity and marketplace listings</caption><thead><tr><th scope="col">The details</th>${entries.map(e => `<th scope="col"><img src="${escape(displayImage(e))}" alt="${escape(e.name)}"><strong>${escape(e.name)}</strong></th>`).join('')}</tr></thead><tbody><tr><th scope="row">Gallery rarity</th>${entries.map(e => `<td>${bridge?.rarity(e) || 'Not ranked'}</td>`).join('')}</tr><tr><th scope="row">Magic Eden</th>${entries.map(e => `<td data-listing-key="${escape(e.key)}">${escape(listingText(e))}</td>`).join('')}</tr>${traits.map(t => `<tr data-trait-row data-different="${differing.includes(t)}"><th scope="row">${escape(t)}</th>${entries.map(e => `<td>${escape(value(e,t))}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="collector-small">Rarity follows the gallery’s curated tiers and trait-frequency ordering. Listing reads may be cached; confirm availability and price on the marketplace.</p><p class="collector-small">Saving a piece does not reserve it. Unclaimed HERD pieces remain part of the random mint.</p><button type="button" class="collector-button primary" id="collector-compare-studio">Create an image with these pieces</button>`;
     body.querySelector('#collector-compare-back').onclick = renderShortlist;
     body.querySelector('#collector-differences').onchange = event => body.querySelectorAll('[data-trait-row]').forEach(row => { row.hidden = event.target.checked && row.dataset.different === 'false'; });
-    body.querySelector('#collector-compare-studio').onclick = () => { shortlistDialog.close(); openStudio({ items: entries, label: 'From your comparison' }); };
+    body.querySelector('#collector-compare-studio').onclick = () => { shortlistDialog.close(); openStudio({ selectedItems: entries, label: 'Full artwork catalogue' }); };
   }
   async function loadPublic() {
     if (bridge?.libraryEntries) return normalized(await bridge.libraryEntries());
@@ -229,7 +229,7 @@
   }
   function ensureStudio() {
     if (studioDialog) return;
-    studioDialog = dialog('Make it yours.', 'collector-studio', `<div class="collector-studio-layout"><section class="collector-workspace" aria-label="Image preview"><div class="collector-canvas-wrap"><canvas id="collector-canvas" width="1500" height="500" aria-label="Your collection image preview"></canvas></div><div class="collector-preview-foot"><span id="collector-dimensions">3000 × 1000 PNG</span><span>Artwork kept whole</span></div><p id="collector-render-status" role="status" aria-live="polite"></p><div class="collector-order-head"><span class="collector-eyebrow">Your arrangement</span><span class="collector-small">Use arrows to reorder · up to 9 pieces</span></div><div id="collector-order" class="collector-order"></div></section><aside class="collector-settings"><div class="collector-setting"><label for="collector-format">Make a</label><select id="collector-format"><option value="banner">X banner · 3:1</option><option value="phone">Phone background · 6:13</option><option value="print">Collection print · 3:2</option></select></div><div class="collector-setting"><label for="collector-layout">Arrangement</label><select id="collector-layout"><option value="grid">Balanced grid</option><option value="row">Gallery row</option></select></div><fieldset class="collector-palette"><legend>Background</legend>${Object.entries(PALETTES).map(([key,p]) => `<label title="${key}" style="--swatch:${p.background}"><input type="radio" name="collector-palette" value="${key}" ${key === 'charcoal' ? 'checked' : ''}><span>${key}</span></label>`).join('')}</fieldset><label class="collector-check"><input type="checkbox" id="collector-labels" checked> Show piece names</label><label class="collector-check"><input type="checkbox" id="collector-brand" checked> House signature</label><div class="collector-setting"><label for="collector-caption">Collection title <span>optional</span></label><input type="text" id="collector-caption" maxlength="42" placeholder="A few favourites."></div><button type="button" id="collector-export" class="collector-button primary">Download PNG ↗</button><p class="collector-small">Created in your browser. Wallet addresses and balances never appear in the image.</p></aside><section class="collector-library"><div class="collector-library-head"><div><span class="collector-eyebrow" id="collector-library-label">Public artwork</span><h3>Choose your pieces.</h3></div><label class="collector-search-label"><span class="collector-sr-only">Find artwork</span><input id="collector-art-search" type="search" placeholder="Search a name or edition"></label></div><p id="collector-library-note" class="collector-small"></p><div id="collector-library-grid" class="collector-library-grid"></div><button type="button" class="collector-button" id="collector-library-more" hidden>Show more artwork</button></section></div>`);
+    studioDialog = dialog('Make it yours.', 'collector-studio', `<div class="collector-studio-layout"><section class="collector-workspace" aria-label="Image preview"><div class="collector-canvas-wrap"><canvas id="collector-canvas" width="1500" height="500" aria-label="Your collection image preview"></canvas></div><div class="collector-preview-foot"><span id="collector-dimensions">3000 × 1000 PNG</span><span>Artwork kept whole</span></div><p id="collector-render-status" role="status" aria-live="polite"></p></section><div class="collector-controls"><section class="collector-arrangement" aria-label="Selected artwork"><div class="collector-order-head"><span class="collector-eyebrow">Your arrangement</span><span class="collector-small">Use arrows to reorder · up to 9 pieces</span></div><div id="collector-order" class="collector-order"></div></section><aside class="collector-settings"><div class="collector-setting"><label for="collector-format">Make a</label><select id="collector-format"><option value="banner">X banner · 3:1</option><option value="phone">Phone background · 6:13</option><option value="print">Collection print · 3:2</option></select></div><div class="collector-setting"><label for="collector-layout">Arrangement</label><select id="collector-layout"><option value="grid">Balanced grid</option><option value="row">Gallery row</option></select></div><fieldset class="collector-palette"><legend>Background</legend>${Object.entries(PALETTES).map(([key,p]) => `<label title="${key}" style="--swatch:${p.background}"><input type="radio" name="collector-palette" value="${key}" ${key === 'charcoal' ? 'checked' : ''}><span>${key}</span></label>`).join('')}</fieldset><div class="collector-display-options" role="group" aria-label="Image details"><label class="collector-check"><input type="checkbox" id="collector-labels" checked> Show piece names</label><label class="collector-check"><input type="checkbox" id="collector-brand" checked> House signature</label></div><div class="collector-setting"><label for="collector-caption">Collection title <span>optional</span></label><input type="text" id="collector-caption" maxlength="42" placeholder="A few favourites."></div><button type="button" id="collector-export" class="collector-button primary">Download PNG ↗</button><p class="collector-small">Created in your browser. Wallet addresses and balances never appear in the image.</p></aside><section class="collector-library"><div class="collector-library-head"><div><span class="collector-eyebrow" id="collector-library-label">Public artwork</span><h3>Choose your pieces.</h3></div><label class="collector-search-label"><span class="collector-sr-only">Find artwork</span><input id="collector-art-search" type="search" placeholder="Search a name or edition"></label></div><p id="collector-library-note" class="collector-small"></p><div id="collector-library-grid" class="collector-library-grid"></div><button type="button" class="collector-button" id="collector-library-more" hidden>Show more artwork</button></section></div></div>`);
     const rerender = () => { dirty = true; drawPreview(); };
     ['collector-format','collector-layout','collector-labels','collector-brand'].forEach(id => studioDialog.querySelector(`#${id}`).onchange = rerender);
     studioDialog.querySelectorAll('[name="collector-palette"]').forEach(el => el.onchange = rerender);
@@ -242,18 +242,25 @@
   async function openStudio(options = {}) {
     ensureStudio();
     studioDialog.showCollector();
+    studioDialog.scrollTop = 0;
+    studioDialog.querySelector('.collector-controls').scrollTop = 0;
     const status = studioDialog.querySelector('#collector-render-status');
     status.textContent = 'Opening the artwork…';
+    studioDialog.querySelector('#collector-export').disabled = true;
     try {
       const items = Array.isArray(options.items) ? normalized(options.items) : await loadPublic();
       if (!studioDialog.open) return;
-      studioItems = [...new Map(items.map(e => [e.key,e])).values()]; register(studioItems);
+      const seeds = Array.isArray(options.selectedItems) ? normalized(options.selectedItems) : null;
+      studioItems = [...new Map([...(seeds || []), ...items].map(e => [e.key,e])).values()]; register(studioItems);
       collectionLabel = options.label || 'Public artwork';
       const wanted = options.selectedKey ? studioItems.find(e => e.key === options.selectedKey) : null;
-      selected = wanted ? [wanted] : studioItems.slice(0, Math.min(3,studioItems.length));
+      selected = wanted ? [wanted] : seeds
+        ? [...new Set(seeds.map(e => e.key))].slice(0, MAX_PIECES).map(key => studioItems.find(e => e.key === key))
+        : studioItems.slice(0, Math.min(3,studioItems.length));
       dirty = false;
       studioDialog.querySelector('#collector-library-label').textContent = collectionLabel;
       studioDialog.querySelector('#collector-library-note').textContent = /wallet|collection/i.test(collectionLabel) ? 'Artwork from the public wallet record you opened. Selection does not grant ownership.' : 'Browse the collection’s original art. Making an image does not imply ownership or reserve a piece.';
+      if (seeds) studioDialog.querySelector('#collector-library-note').textContent = `${seeds.length > MAX_PIECES ? 'Your first nine pieces are selected.' : 'Your chosen pieces are selected.'} Add any other artwork from the catalogue below, or remove pieces to change your arrangement.`;
       studioDialog.querySelector('#collector-art-search').value = '';
       renderLibrary(); renderOrder(); drawPreview();
     } catch (error) { status.textContent = error.message; studioDialog.querySelector('#collector-export').disabled = true; }
