@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
-const expectedIndexHash = 'b6d87d1cd59d909d0292e4605a3cad5f35a1efe0fd2a5edf72b4a5a9bcac15c7';
+const expectedIndexHash = '1251a8f87c256b35314576a2f74689cc3ca1d8fb77b88c5aacaeb76acf54229e';
 const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs', 'proof.html'];
 const required = [
   'buy.html', 'buy-page.css', 'buy-page.js', 'index.html', '_redirects', 'stats.html', 'chart.html', 'curve.html',
@@ -15,6 +15,7 @@ const required = [
   'patchnotes.html', 'patchnotes-001.html', 'patchnotes-002.html', 'house-record.css', 'favicons/patchnotes.svg', 'lock.html', 'favicons/lock.svg',
   'ledger.html', 'favicons/ledger.svg', 'house-ledger.js', 'ledger-preview.json',
   'passport.html', 'favicons/passport.svg', 'wallet-passport.js', 'house-intelligence.css',
+  'collector-tools.js', 'collector-tools.css', 'assets/collection-originals/promise-nft.png', 'assets/collection-originals/triad-nft.png',
   'house-burn-registry.js', 'market-surfaces.css', 'mobile-buy.css', 'mobile-buy.js',
   'giveaway-snapshot-2.json', 'giveaway-result-2.json',
 ];

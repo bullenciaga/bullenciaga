@@ -17,8 +17,9 @@
   const groupNames = { herd: 'The Herd', houseObjects: 'House Objects', bullensaga: 'BULLENSAGA Founding Records' };
 
   function pieceCard(item, kind) {
+    const key = kind === 'herd' ? (window.BullenCollectors?.isHerdName(item.name) ? item.name : `custom:${item.id}`) : `${kind === 'houseObjects' ? 'house-object' : 'bullensaga'}:${item.id}`;
     const image = item.image ? `<img src="${escape(item.image)}" alt="" loading="lazy">` : '';
-    return `<article class="passport-piece">${image}<div class="passport-piece-copy"><small>${escape(groupNames[kind])}</small><strong>${escape(item.name || short(item.id))}</strong><a href="https://solscan.io/token/${encodeURIComponent(item.id)}" target="_blank" rel="noreferrer">${escape(short(item.id))} ↗</a></div></article>`;
+    return `<article class="passport-piece">${image}<div class="passport-piece-copy"><small>${escape(groupNames[kind])}</small><strong>${escape(item.name || short(item.id))}</strong><a href="https://solscan.io/token/${encodeURIComponent(item.id)}" target="_blank" rel="noreferrer">${escape(short(item.id))} ↗</a><button type="button" class="collector-button" data-studio-piece="${escape(key)}">Use in an image ↗</button></div></article>`;
   }
 
   function render(payload) {
@@ -33,6 +34,9 @@
       const items = collections[kind] || [];
       return `<section><header class="passport-section-head"><h3>${escape(groupNames[kind])}</h3><span>${items.length} VERIFIED</span></header>${items.length ? `<div class="passport-grid">${items.map((item) => pieceCard(item, kind)).join('')}</div>` : '<div class="intel-empty">No pieces from this collection in the wallet.</div>'}</section>`;
     }).join('');
+    const artwork = Object.keys(groupNames).flatMap(kind => (collections[kind] || []).map(item => ({ ...item, series: kind === 'houseObjects' ? 'house-object' : kind === 'bullensaga' ? 'bullensaga' : window.BullenCollectors?.isHerdName(item.name) ? 'herd' : 'custom' })));
+    window.BullenCollectors?.mountPassport(artwork);
+    document.querySelector('[data-passport-studio]').disabled = artwork.length === 0;
     record.hidden = false;
     state.textContent = payload.stale ? 'Stale chain read' : (payload.cached ? 'Cached chain read' : 'Fresh chain read');
     state.classList.toggle('is-preview', Boolean(payload.stale));
