@@ -141,8 +141,9 @@
       if (d.ok !== true || !Array.isArray(d.candles)) throw new Error();
       const byTime = new Map();
       for (const c of d.candles) if (Array.isArray(c) && positive(c[0]) !== null && positive(c[4]) !== null) byTime.set(Number(c[0]),Number(c[4]));
-      const cutoff = Date.now() - (range === '7d' ? 7 : 1) * 86400000;
-      const points = [...byTime].filter(([time]) => time >= cutoff && time <= Date.now()).sort((a,b) => a[0]-b[0]);
+      const now = Date.now();
+      const cutoff = range === 'all' ? 0 : now - (range === '7d' ? 7 : 1) * 86400000;
+      const points = [...byTime].filter(([time]) => time >= cutoff && time <= now).sort((a,b) => a[0]-b[0]);
       if (points.length < 2) throw new Error();
       const start = points[0][0], end = points.at(-1)[0];
       const low = Math.min(...points.map(p=>p[1])), high = Math.max(...points.map(p=>p[1]));
