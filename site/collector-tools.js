@@ -141,7 +141,7 @@
     const el = document.createElement('dialog');
     el.className = `collector-dialog ${name}`;
     el.setAttribute('aria-labelledby', `${name}-title`);
-    el.innerHTML = `<header class="collector-dialog-head"><div><span class="collector-eyebrow">BULLENCIAGA · COLLECTOR TOOLS</span><h2 id="${name}-title">${title}</h2></div><button type="button" class="collector-close" aria-label="Close ${title}">×</button></header>${body}`;
+    el.innerHTML = `<header class="collector-dialog-head"><div><span class="collector-eyebrow">BULLENCIAGA · COLLECTOR TOOLS</span><h2 id="${name}-title">${title}</h2></div><button type="button" class="collector-close" aria-label="Close ${title}"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>${body}`;
     document.body.append(el);
     let priorFocus;
     el.addEventListener('close', () => { if (priorFocus?.isConnected) priorFocus.focus(); });

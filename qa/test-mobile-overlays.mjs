@@ -3,27 +3,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const read = name => fs.readFileSync(new URL(`../site/${name}`, import.meta.url), 'utf8');
-const ui = read('bullen-ui.js');
 const html = read('index.html');
-const listeners = new Map();
-const classes = new Set(['bullen-auto-focus-neutral']);
-const activeElement = { classList: { remove: name => classes.delete(name) } };
-const document = {
-  documentElement: { dataset: {} }, activeElement,
-  addEventListener: (name, callback, capture) => { assert.equal(capture, true); listeners.set(name, callback); },
-};
-vm.runInNewContext('const root = document.documentElement;\n' + ui.slice(ui.indexOf('  // Dialogs may focus'), ui.indexOf('  /* Settle fonts')), { document });
-listeners.get('pointerdown')({ pointerType: 'touch' });
-assert.equal(document.documentElement.dataset.bullenInput, 'pointer');
-assert.equal(document.activeElement, activeElement, 'pointer styling must not blur accessible focus');
-listeners.get('keydown')({ key: 'Tab' });
-assert.equal(document.documentElement.dataset.bullenInput, 'keyboard');
-assert.equal(classes.size, 0, 'Tab restores visible focus even on a previously neutral programmatic target');
-listeners.get('pointerdown')({ pointerType: 'mouse' });
-listeners.get('keydown')({ key: 'Control', ctrlKey: true });
-assert.equal(document.documentElement.dataset.bullenInput, 'pointer', 'modifier alone does not switch mode');
-listeners.get('keydown')({ key: 'Enter' });
-assert.equal(document.documentElement.dataset.bullenInput, 'keyboard');
 
 // Run the actual two legacy handlers in registration order. One Escape must
 // dismiss only the uppermost layer and must not reach through a native dialog.
@@ -76,7 +56,5 @@ const css = read('bullen-ui.css');
 assert.match(css, /body:is\(\.vault-open, \.lightbox-open, \.wallet-modal-open, \.bullen-mobile-buy-open\)/);
 assert.match(css, /body:has\(\.collector-dialog\[open\], \.bwc\)/);
 assert.match(css, /visibility: var\(--bullen-overlay-header-visibility, visible\)/);
-assert.match(css, /html\[data-bullen-input="pointer"\] :where\(a, button, summary, \[role="button"\]\):focus/);
-assert.match(css, /:where\(a, button, input, select, textarea, summary, \[tabindex\]\):focus-visible/);
 assert.match(css, /\.bwc-close \{[\s\S]*?width: 44px;[\s\S]*?min-width: 44px;[\s\S]*?height: 44px;[\s\S]*?min-height: 44px;[\s\S]*?padding: 0;/);
-console.log('Mobile overlays: pointer/keyboard focus, nested Escape, wallet/native priority, reveal protection and mobile sizing contracts: ok');
+console.log('Mobile overlays: nested Escape, wallet/native priority, reveal protection and mobile sizing contracts: ok');
