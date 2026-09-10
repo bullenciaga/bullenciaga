@@ -123,7 +123,7 @@
     }
     marketBusy = false;
   }
-  let range = '24h';
+  let range = 'all';
   let chartController;
   let chartRequest = 0;
   async function refreshChart() {

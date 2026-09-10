@@ -72,8 +72,11 @@ try {
   await page.locator('#copy-contract').click();assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),MINT);
   assert.equal(await page.locator('#price-chart').isVisible(),true);
   assert((await page.locator('#chart-line').getAttribute('d')).includes('L'));assert(!(await page.locator('#chart-line').getAttribute('d')).includes('NaN'));
-  assert.equal((await page.locator('#chart-line').getAttribute('d')).match(/L/g).length,1,'24H excludes older, duplicate, invalid and future samples');
-  await assertChange(page,'+14.29% · 24h','positive');
+  assert.equal(chartRanges[0],'all','First load requests the all-history feed');
+  assert.equal(await page.locator('[data-range="all"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('[data-range][aria-pressed="true"]').count(),1);
+  assert.equal((await page.locator('#chart-line').getAttribute('d')).match(/L/g).length,3,'Default All time includes older history while excluding duplicate, invalid and future samples');
+  await assertChange(page,'+140.00% · all time','positive');
   for(const wallet of ['phantom','solflare']){
    const href=await page.locator(`[data-wallet=${wallet}]`).getAttribute('href');const u=new URL(href);
    if(wallet==='phantom')assert.equal(u.searchParams.get('buy'),'solana:101/address:'+MINT);
@@ -103,9 +106,9 @@ try {
  // Changes use plotted closing prices, and every new range clears old values/colors.
  {
   const {context,page,errors}=await controlledPage();
-  await assertChange(page,'— · 24h','');
+  await assertChange(page,'— · all time','');
   await respond(page,'/volume',marketFixture());await respond(page,'/supply',supplyFixture);
-  await respond(page,'/ohlcv',closes(2,3),{range:'24h'});await assertChange(page,'+50.00% · 24h','positive');
+  await respond(page,'/ohlcv',closes(2,3),{range:'all'});await assertChange(page,'+50.00% · all time','positive');
   await page.locator('[data-range="7d"]').click();await assertChange(page,'— · 7d','');
   assert.equal(await page.locator('#price-chart').isVisible(),false);
   await respond(page,'/ohlcv',closes(4,2),{range:'7d'});await assertChange(page,'-50.00% · 7d','negative');
@@ -128,7 +131,7 @@ try {
  // Independent market success and failure cannot replace a selected chart change.
  for(const marketFails of [false,true]){
   const {context,page,errors}=await controlledPage();
-  await respond(page,'/ohlcv',closes(2,3),{range:'24h'});
+  await respond(page,'/ohlcv',closes(2,3),{range:'all'});
   await page.locator('[data-range="all"]').click();await assertChange(page,'— · all time','');
   await respond(page,'/ohlcv',closes(1,2),{range:'all'});await assertChange(page,'+100.00% · all time','positive');
   await respond(page,'/volume',marketFails?{ok:false}:marketFixture(),{status:marketFails?503:200});
@@ -143,7 +146,7 @@ try {
  {
   const {context,page,errors}=await controlledPage();
   await respond(page,'/volume',marketFixture());await respond(page,'/supply',supplyFixture);
-  await respond(page,'/ohlcv',closes(2,3),{range:'24h'});
+  await respond(page,'/ohlcv',closes(2,3),{range:'all'});
   await page.locator('[data-range="7d"]').click();await assertChange(page,'— · 7d','');
   await page.locator('[data-range="all"]').click();await assertChange(page,'— · all time','');
   await respond(page,'/ohlcv',closes(1,3),{range:'all'});await assertChange(page,'+200.00% · all time','positive');
