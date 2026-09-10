@@ -457,6 +457,13 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   outline-offset: 0 !important;
 }
 
+/* Keep focus itself intact after taps, without a keyboard-style action ring.
+   Text-entry controls retain their normal focus indicator in either mode. */
+html[data-bullen-input="pointer"] :where(a, button, summary, [role="button"]):focus {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+
 [data-bullen-main]:focus { outline: none; }
 
 /* A full eleven-destination rail cannot remain legible on tablets and small
@@ -593,6 +600,49 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
 
   :where(button, [role="button"], input, select, textarea) {
     min-height: 44px;
+  }
+
+  /* Legacy overlays keep their established Vault < piece < wallet order.
+     The persistent header steps aside, including when a nested piece closes
+     back into its still-open Vault. Native collector dialogs use top layer. */
+  html body:is(.vault-open, .lightbox-open, .wallet-modal-open, .bullen-mobile-buy-open),
+  html body:has(.collector-dialog[open], .bwc) {
+    --bullen-overlay-header-visibility: hidden;
+    overflow: hidden !important;
+  }
+  .bullen-site-shell,
+  .bullen-skip {
+    visibility: var(--bullen-overlay-header-visibility, visible);
+  }
+
+  .gallery-lightbox-close,
+  .vault-modal-close,
+  .wallet-modal-close,
+  .collector-close,
+  .bwc-close {
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    line-height: 1;
+    flex: none;
+  }
+  .vault-modal-close {
+    top: max(18px, env(safe-area-inset-top));
+    right: max(18px, env(safe-area-inset-right));
+    z-index: 20;
+    background: #050505;
+  }
+  .gallery-lightbox-close {
+    position: sticky;
+    top: 14px;
+    right: auto;
+    /* Zero net flow height keeps the artwork flush with the card top. */
+    margin: 0 14px -44px auto;
   }
 
   .bullen-nav-toggle {

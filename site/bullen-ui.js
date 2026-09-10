@@ -336,6 +336,20 @@
   document.addEventListener('touchstart', prefetchPage, { passive: true });
   document.addEventListener('focusin', prefetchPage);
 
+  // Dialogs may focus their first action automatically, even after a tap.
+  // Track actual input rather than blurring that accessible focus target.
+  const setInputModality = (mode) => {
+    root.dataset.bullenInput = mode;
+    if (mode === 'keyboard') {
+      document.activeElement?.classList.remove('bullen-auto-focus-neutral');
+    }
+  };
+  document.addEventListener('pointerdown', () => setInputModality('pointer'), true);
+  document.addEventListener('keydown', (event) => {
+    if (event.metaKey || event.ctrlKey || event.altKey || ['Shift', 'Control', 'Alt', 'Meta'].includes(event.key)) return;
+    setInputModality('keyboard');
+  }, true);
+
   /* Settle fonts before revealing the payload. If mobile font delivery times
      out, the inline reveal helper disables the font sheet for this document:
      a late face must never replace a fallback after content is visible.
