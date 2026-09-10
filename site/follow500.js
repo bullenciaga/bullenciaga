@@ -1,5 +1,5 @@
 /* Public, wallet-only presentation of the follower giveaway coordinator. */
-export const FOLLOW500_ENDPOINTS = Object.freeze({ status: '/entries/status', snapshot: '/entries/snapshot', result: '/entries/result' });
+export const FOLLOW500_ENDPOINTS = Object.freeze({ status: '/entries/status', snapshot: '/entries/snapshot', result: '/entries/result', amendment: '/follow500-amendment-20260910.json' });
 export const FOLLOW500_PRIZES = Object.freeze([
   [168, 'FyT11Fpt4rSxBnn5Cs8CinKmrgr9117G9SKHh6ox7nzE'],
   [495, '3vTeUbBjAcQq3ZBda2uvbo28LKbkio4k6mRRaESMP3fx'],
@@ -70,7 +70,21 @@ export async function loadFollow500(fetcher = fetch, now = Date.now()) {
         if (resultResponse.ok) result = await resultResponse.json();
       } catch (_) { /* A closed campaign remains closed when proof cannot be loaded. */ }
     }
-    return follow500View(status, result, now);
+    const view = follow500View(status, result, now);
+    if (!view.result) return view;
+    try {
+      const [snapshot, amendment] = await Promise.all([FOLLOW500_ENDPOINTS.snapshot, FOLLOW500_ENDPOINTS.amendment].map(async (url) => {
+        const response = await fetcher(url, { cache: 'no-store', signal: AbortSignal.timeout(10_000) });
+        if (!response.ok) throw new Error('amendment unavailable');
+        return response.json();
+      }));
+      const verified = await verifyFollow500Amendment(snapshot, result, amendment);
+      return { ...view, selectedWinners: verified.winners, amendment: verified.amendment, label: 'Winners selected · Owner amendment', note: 'Five prize recipients are listed below. HERD #737 has an owner-authorized replacement from the original random ranking. Manual delivery remains pending.' };
+    } catch (_) {
+      // Never fall back to the superseded recipient list when amendment proof
+      // is unavailable or inconsistent with the immutable original draw.
+      return { ...view, group: 'pending', result: null, label: 'Amended result awaiting verification', note: 'Entries are closed. The amended recipient list could not be verified. Check the public amendment and original draw records, or return shortly.' };
+    }
   } catch (_) { return follow500View(); }
 }
 
@@ -83,9 +97,12 @@ export function renderFollow500Details(view, { compact = false } = {}) {
     ...(view.eligibleCount !== null ? [`<div><b>${view.eligibleCount.toLocaleString()}</b><span>Eligible wallets</span></div>`] : []),
   ].join('');
   const result = view.result;
-  const winners = result && !compact ? `<div class="f500-winners"><h4>The five winning wallets</h4><p>Delivery pending. The owner will send each prize directly to its selected wallet.</p><ol>${result.winners.map((winner) => `<li><span class="f500-prize">HERD #${winner.prizeNumber}</span><a href="https://solscan.io/account/${winner.wallet}" target="_blank" rel="noopener noreferrer" aria-label="View winning wallet for HERD ${winner.prizeNumber}">${winner.wallet}</a></li>`).join('')}</ol></div>` : '';
-  const proof = view.snapshot ? `<div class="f500-proof"><a href="${FOLLOW500_ENDPOINTS.snapshot}" target="_blank" rel="noopener">Snapshot &amp; seed commitment ↗</a>${result ? `<a href="${FOLLOW500_ENDPOINTS.result}" target="_blank" rel="noopener">Draw result ↗</a>` : ''}${result && compact ? '<a href="/giveaways#follow500">See the five winning wallets ↗</a>' : ''}</div>` : '';
-  return `<div class="f500-details" data-phase="${escapeHtml(view.phase)}"><p class="f500-label">${escapeHtml(view.label)}</p><div class="f500-stats">${stats}</div><p class="f500-note">${escapeHtml(view.note)}</p>${observed ? `<p class="f500-time">Follower count observed ${escapeHtml(observed)}.</p>` : ''}${closed ? `<p class="f500-time">Entries closed ${escapeHtml(closed)}.</p>` : ''}${proof}${winners}${result && !compact ? `<details class="f500-method"><summary>How to check the draw</summary><p>Each eligible wallet has one chance. Wallets are ranked by the SHA-256 digest of the campaign tag, snapshot hash, finalized blockhash and wallet address. The lowest five scores win, in the prize order shown above.</p><p>Snapshot SHA-256: <code>${result.snapshotHash}</code></p><p>Committed target slot: ${result.seed.targetSlot.toLocaleString()}. Finalized seed slot: <a href="https://solscan.io/block/${result.seed.slot}" target="_blank" rel="noopener noreferrer">${result.seed.slot.toLocaleString()}</a>.</p><p>The complete input format, ranking and scores are in the public result. X usernames are kept private.</p><button type="button" class="f500-verify" data-follow500-verify>Recompute snapshot &amp; winners</button><p data-follow500-verification aria-live="polite"></p></details>` : ''}</div>`;
+  const amendment = view.amendment;
+  const recipients = view.selectedWinners || result?.winners;
+  const winners = result && !compact ? `<div class="f500-winners"><h4>${amendment ? 'The five selected prize recipients' : 'The five winning wallets'}</h4><p>Delivery pending. The owner will send each prize directly to its selected wallet.</p><ol>${recipients.map((winner) => `<li><span class="f500-prize">HERD #${winner.prizeNumber}${winner.amended ? '<small>Owner replacement</small>' : ''}</span><a href="https://solscan.io/account/${winner.wallet}" target="_blank" rel="noopener noreferrer" aria-label="View selected wallet for HERD ${winner.prizeNumber}">${winner.wallet}</a></li>`).join('')}</ol></div>` : '';
+  const proof = view.snapshot ? `<div class="f500-proof"><a href="${FOLLOW500_ENDPOINTS.snapshot}" target="_blank" rel="noopener">Snapshot &amp; seed commitment ↗</a>${result || view.phase === 'drawn' ? `<a href="${FOLLOW500_ENDPOINTS.result}" target="_blank" rel="noopener">Original draw result ↗</a><a href="${FOLLOW500_ENDPOINTS.amendment}" target="_blank" rel="noopener">Public amendment ↗</a>` : ''}${result && compact ? '<a href="/giveaways#follow500">See the five selected wallets ↗</a>' : ''}</div>` : '';
+  const amendmentNote = amendment && !compact ? `<details class="f500-amendment"><summary>HERD #${amendment.replacement.prizeNumber} · Owner-authorized replacement</summary><p>Recorded ${escapeHtml(dateLabel(amendment.amendedAt))}. ${escapeHtml(amendment.reason)}</p><p>${escapeHtml(amendment.ruleDisclosure)}</p><p>Original recipient: <a href="https://solscan.io/account/${amendment.replacement.previousWallet}" target="_blank" rel="noopener noreferrer">${amendment.replacement.previousWallet}</a>.</p><p>The replacement above was next in the original random ranking, at rank ${amendment.replacement.originalRank}. The original five winners were excluded from replacement selection. The other four recipients, snapshot and seed are unchanged.</p></details>` : '';
+  return `<div class="f500-details" data-phase="${escapeHtml(view.phase)}"><p class="f500-label">${escapeHtml(view.label)}</p><div class="f500-stats">${stats}</div><p class="f500-note">${escapeHtml(view.note)}</p>${observed ? `<p class="f500-time">Follower count observed ${escapeHtml(observed)}.</p>` : ''}${closed ? `<p class="f500-time">Entries closed ${escapeHtml(closed)}.</p>` : ''}${proof}${winners}${amendmentNote}${result && !compact ? `<details class="f500-method"><summary>How to check the draw${amendment ? ' and amendment' : ''}</summary><p>Each eligible wallet had one chance in the original draw. Wallets are ranked by the SHA-256 digest of the campaign tag, snapshot hash, finalized blockhash and wallet address. The lowest five scores selected the original winners.${amendment ? ' The owner amendment separately assigns HERD #737 to the next wallet in that same ranking, rank 6.' : ''}</p><p>Snapshot SHA-256: <code>${result.snapshotHash}</code></p><p>Committed target slot: ${result.seed.targetSlot.toLocaleString()}. Finalized seed slot: <a href="https://solscan.io/block/${result.seed.slot}" target="_blank" rel="noopener noreferrer">${result.seed.slot.toLocaleString()}</a>.</p><p>The original input format, winners and scores remain in the original draw result. X usernames are kept private.</p><button type="button" class="f500-verify" data-follow500-verify>Verify original draw &amp; replacement</button><p data-follow500-verification aria-live="polite"></p></details>` : ''}</div>`;
 }
 
 export async function verifyFollow500Proof(snapshot, result, digest = crypto.subtle) {
@@ -103,7 +120,30 @@ export async function verifyFollow500Proof(snapshot, result, digest = crypto.sub
   const ranked = await Promise.all(snapshot.wallets.map(async (wallet) => ({ wallet, score: await sha256(`follow500-v1\n${computed}\n${result.seed.blockhash}\n${wallet}\n`) })));
   ranked.sort((a, b) => a.score < b.score ? -1 : a.score > b.score ? 1 : a.wallet < b.wallet ? -1 : 1);
   if (!result.winners.every((winner, index) => winner.wallet === ranked[index].wallet && winner.score === ranked[index].score)) throw new Error('The published winning wallets do not match the committed seed and snapshot.');
-  return { snapshotHash: computed, walletsChecked: ranked.length, winnersChecked: 5 };
+  return { snapshotHash: computed, walletsChecked: ranked.length, winnersChecked: 5, ranked };
+}
+
+export async function verifyFollow500Amendment(snapshot, result, amendment, digest = crypto.subtle) {
+  const proof = await verifyFollow500Proof(snapshot, result, digest);
+  const replacement = amendment?.replacement;
+  const original = result.winners.find((winner) => winner.prizeNumber === replacement?.prizeNumber);
+  const reserve = proof.ranked.find((row) => !result.winners.some((winner) => winner.wallet === row.wallet));
+  if (amendment?.schema !== 'bullenciaga.follow500.amendment.v1' || amendment.campaign !== 'follow500'
+      || amendment.revision !== 1 || amendment.type !== 'owner-authorized-exception'
+      || amendment.manualDelivery !== true || amendment.payoutStatus !== 'awaiting-owner'
+      || amendment.snapshotHash !== result.snapshotHash || amendment.seedBlockhash !== result.seed.blockhash
+      || !validDate(amendment.amendedAt)
+      || typeof amendment.reason !== 'string' || !amendment.reason.trim() || amendment.reason.length > 1000
+      || typeof amendment.ruleDisclosure !== 'string' || !amendment.ruleDisclosure.trim() || amendment.ruleDisclosure.length > 1000
+      || !original || !reserve || replacement.prizeNumber !== 737 || replacement.previousWallet !== original.wallet
+      || replacement.assetId !== original.assetId || replacement.wallet !== reserve.wallet
+      || replacement.originalRank !== 6 || replacement.score !== reserve.score) {
+    throw new Error('The owner amendment does not match the original draw and next reserve wallet.');
+  }
+  const winners = result.winners.map((winner) => winner === original
+    ? { ...winner, wallet: reserve.wallet, score: reserve.score, rank: replacement.originalRank, originalRank: replacement.originalRank, amended: true }
+    : { ...winner });
+  return { winners, amendment, proof };
 }
 
 export function installFollow500Verifier(root, fetcher = fetch) {
@@ -114,13 +154,13 @@ export function installFollow500Verifier(root, fetcher = fetch) {
     button.disabled = true;
     output.textContent = 'Recomputing the public snapshot hash and all wallet scores…';
     try {
-      const [snapshot, result] = await Promise.all([FOLLOW500_ENDPOINTS.snapshot, FOLLOW500_ENDPOINTS.result].map(async (url) => {
+      const [snapshot, result, amendment] = await Promise.all([FOLLOW500_ENDPOINTS.snapshot, FOLLOW500_ENDPOINTS.result, FOLLOW500_ENDPOINTS.amendment].map(async (url) => {
         const response = await fetcher(url, { cache: 'no-store', signal: AbortSignal.timeout(10_000) });
         if (!response.ok) throw new Error('Public proof is temporarily unavailable. Try again shortly.');
         return response.json();
       }));
-      const proof = await verifyFollow500Proof(snapshot, result);
-      output.textContent = `Verified: the snapshot hash and all five winning wallet/prize pairs match the published seed. ${proof.walletsChecked} eligible wallets checked. This checks the published calculation; the linked Solana block provides the chain record.`;
+      const { proof } = await verifyFollow500Amendment(snapshot, result, amendment);
+      output.textContent = `Verified: the original snapshot and five original winners match the published seed. The separate owner replacement for HERD #${amendment.replacement.prizeNumber} is the next wallet in that ranking, rank ${amendment.replacement.originalRank}. ${proof.walletsChecked} eligible wallets checked. This verifies the published calculations, not the owner's exception decision or prize delivery. The linked Solana block provides the chain record.`;
     } catch (error) { output.textContent = error.message || 'The public proof could not be verified.'; }
     finally { button.disabled = false; }
   });
