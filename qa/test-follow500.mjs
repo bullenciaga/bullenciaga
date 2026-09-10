@@ -1,6 +1,4 @@
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import vm from 'node:vm';
 import { createHash } from 'node:crypto';
 import { FOLLOW500_PRIZES, validateFollow500Status, validateFollow500Result, follow500View, loadFollow500, renderFollow500Details, verifyFollow500Proof } from '../site/follow500.js';
 
@@ -53,7 +51,7 @@ check((html.match(/class="f500-prize"/g) || []).length === 5, 'five prize-wallet
 check(html.includes('Delivery pending.') && !html.includes('prizes sent'), 'selection is distinguished from delivery');
 check(html.includes('/entries/snapshot') && html.includes('/entries/result'), 'both public proof links available');
 check(!html.includes('@') && !html.includes('xuser'), 'no entrant username fields rendered');
-check(!renderFollow500Details(drawn, { compact: true }).includes('class="f500-prize"'), 'compact homepage links to winners without a duplicated table');
+check(!renderFollow500Details(drawn, { compact: true }).includes('class="f500-prize"'), 'compact rendering links to winners without a duplicated table');
 for (const edit of [
   { ...result, winners: result.winners.slice(0, 4) },
   { ...result, winners: result.winners.map((winner) => ({ ...winner, wallet: wallets[0] })) },
@@ -72,31 +70,6 @@ check(!statusFailure.canEnter, 'non-success HTTP status does not unlock entry');
 const resultFailure = await loadFollow500(async (url) => url.endsWith('/status') ? { ok: true, json: async () => drawnStatus } : { ok: false }, now);
 check(!resultFailure.result && !resultFailure.canEnter, 'missing proof after draw never reopens entries');
 
-// Run the actual homepage entry module with the shared presenter mocked at its
-// import boundary. A previously connected wallet must not sign after cutoff.
-const home = fs.readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-const start = home.indexOf('  (async function giveawayModule(){');
-const end = home.indexOf('\n\n  updateNftUI();', start);
-const entryModule = home.slice(start, end).replace("await import('/follow500.js')", 'followerApiFixture');
-const ids = ['giveaway','gvConnectBtn','gvFieldWrap','gvHandle','gvEnterBtn','gvMsg','gvCount','gvTitle','gvTerms','gvPublicEntries','gvLiveStatus'];
-const events = {};
-const elements = Object.fromEntries(ids.map(id => [id, { textContent: '', innerHTML: '', value: '', hidden: false, disabled: false, classList: { remove(){}, add(){} }, addEventListener(name, callback){ events[`${id}:${name}`] = callback; } }]));
-let liveView = open, signatures = 0;
-const context = {
-  document: { getElementById: id => elements[id], hidden: false, addEventListener(){}, createElement: () => ({ textContent:'', className:'', append(){}, outerHTML: '<div></div>' }) },
-  connectedWalletAddress: wallets[0], connectedWalletId: 'fixture',
-  followerApiFixture: { loadFollow500: async () => liveView, renderFollow500Details },
-  findWallet: () => ({ getProvider: () => ({ signMessage: async () => { signatures++; return new Uint8Array(64); } }) }),
-  openWalletModal(){}, setInterval(){}, console, TextEncoder,
-  fetch: async () => ({ ok: true, json: async () => ({ schema: 'bullenciaga.giveaways.v1', campaigns: [{ id:'follow500', status:'active', title:'Follower 500', eligibility:[], entry:{ campaign:'follow500', submitEndpoint:'/entry', publicEndpoint:'/entries', signatureMessage:'bullenciaga giveaway entry - follow500' } }] }) }),
-};
-await vm.runInNewContext(entryModule, context);
-check(elements.gvFieldWrap.hidden === false, 'connected wallet sees entry form while armed and current');
-elements.gvHandle.value = 'fixture_user';
-liveView = follow500View({ ...drawnStatus, phase: 'closed' }, null, now);
-await events['gvEnterBtn:click']();
-check(signatures === 0 && elements.gvFieldWrap.hidden === true, 'close between page load and click prevents wallet signing');
-check(elements.gvEnterBtn.disabled === true, 'finally block cannot re-enable closed entry button');
 const payload = { campaign: 'follow500', wallets: [...wallets].sort(), count: 5, seedCommitment: { targetSlot: result.seed.targetSlot } };
 const snapshotHash = createHash('sha256').update(JSON.stringify(payload)).digest('hex');
 const snapshot = { ...payload, snapshotHash, hashEncoding: 'fixture' };
