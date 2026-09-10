@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
-const expectedIndexHash = '1251a8f87c256b35314576a2f74689cc3ca1d8fb77b88c5aacaeb76acf54229e';
+const expectedIndexHash = 'e223fef958554b70cc3a9ea3607e6ea2148f83a66de0231bbad272c63c78ea32';
 const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs', 'proof.html'];
 const required = [
   'buy.html', 'buy-page.css', 'buy-page.js', 'index.html', '_redirects', 'stats.html', 'chart.html', 'curve.html',
