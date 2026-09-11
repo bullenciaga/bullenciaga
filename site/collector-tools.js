@@ -220,32 +220,37 @@
     body.querySelector('#collector-differences').onchange = event => body.querySelectorAll('[data-trait-row]').forEach(row => { row.hidden = event.target.checked && row.dataset.different === 'false'; });
     body.querySelector('#collector-compare-studio').onclick = () => { shortlistDialog.close(); openStudio({ selectedItems: entries, label: 'Full artwork catalogue' }); };
   }
-  async function loadPublic() {
-    if (bridge?.libraryEntries) return normalized(await bridge.libraryEntries());
-    const response = await fetch('/gallery-manifest.json');
-    if (!response.ok) throw new Error('The artwork catalogue could not be loaded. Please try again.');
-    const entries = await response.json();
-    if (!Array.isArray(entries)) throw new Error('The artwork catalogue is unavailable.');
-    // Read the same verified collection as the gallery's Vault. The static
-    // 1,000-piece manifest stays separate from named on-chain custom pieces.
+  async function loadPublic(publish = () => {}, signal) {
+    // The main catalogue is already in memory on the gallery page. Publish it
+    // before any live custom-piece lookup so RPC latency cannot hide it.
+    let entries = normalized(bridge?.entries?.() || []);
+    if (!entries.length) {
+      const response = await fetch('/gallery-manifest.json', { signal });
+      if (!response.ok) throw new Error('The artwork catalogue could not be loaded.');
+      const data = await response.json();
+      if (!Array.isArray(data) || !data.length) throw new Error('The artwork catalogue is unavailable.');
+      entries = normalized(data);
+    }
+    if (!entries.length) throw new Error('The artwork catalogue is unavailable.');
+    publish(entries);
+    if (bridge?.libraryEntries) return normalized([...entries, ...await bridge.libraryEntries({ signal })]);
     const names = new Set(entries.map(e => e.name));
-    try {
-      for (let page=1; page<=5; page++) {
-        const read = await fetch('/rpc', { method:'POST', headers:{'Content-Type':'application/json'}, signal:AbortSignal.timeout(15000), body:JSON.stringify({jsonrpc:'2.0',id:'collector-public-art',method:'getAssetsByGroup',params:{groupKey:'collection',groupValue:'5GXF7Uug7mZy2pj5XDk4LP9yH7oA5oMQEbCT49ggQnVC',page,limit:1000}}) });
-        const data = await read.json();
-        if (!read.ok || data.error || !Array.isArray(data.result?.items)) throw new Error('Custom artwork unavailable');
-        for (const asset of data.result.items) {
-          const name=asset.content?.metadata?.name;
-          if (!asset.burnt && !EXCLUDED_CUSTOMS.has(asset.id) && name && !names.has(name)) { entries.push({id:asset.id,name,image:asset.content?.links?.image || asset.content?.files?.[0]?.uri,attributes:asset.content?.metadata?.attributes||[],series:'custom'}); names.add(name); }
-        }
-        if (data.result.items.length < 1000) break;
+    for (let page=1; page<=5; page++) {
+      const read = await fetch('/rpc', { method:'POST', headers:{'Content-Type':'application/json'}, signal, body:JSON.stringify({jsonrpc:'2.0',id:'collector-public-art',method:'getAssetsByGroup',params:{groupKey:'collection',groupValue:'5GXF7Uug7mZy2pj5XDk4LP9yH7oA5oMQEbCT49ggQnVC',page,limit:1000}}) });
+      const data = await read.json();
+      if (!read.ok || data.error || !Array.isArray(data.result?.items)) throw new Error('Custom artwork unavailable');
+      for (const asset of data.result.items) {
+        const name=asset.content?.metadata?.name;
+        if (!asset.burnt && !EXCLUDED_CUSTOMS.has(asset.id) && name && !names.has(name)) { entries.push({id:asset.id,name,image:asset.content?.links?.image || asset.content?.files?.[0]?.uri,attributes:asset.content?.metadata?.attributes||[],series:'custom'}); names.add(name); }
       }
-    } catch (_) { showToast('The standard collection is ready. Custom pieces are temporarily unavailable; reopen the studio to retry.'); }
+      publish(normalized(entries));
+      if (data.result.items.length < 1000) break;
+    }
     return normalized(entries);
   }
   function ensureStudio() {
     if (studioDialog) return;
-    studioDialog = dialog('Make it yours.', 'collector-studio', `<div class="collector-studio-layout"><section class="collector-workspace" aria-label="Image preview"><div class="collector-canvas-wrap"><canvas id="collector-canvas" width="1500" height="500" aria-label="Your collection image preview"></canvas></div><div class="collector-preview-foot"><span id="collector-dimensions">3000 × 1000 PNG</span><span>Artwork kept whole</span></div><p id="collector-render-status" role="status" aria-live="polite"></p></section><div class="collector-controls"><section class="collector-arrangement" aria-label="Selected artwork"><div class="collector-order-head"><span class="collector-eyebrow">Your arrangement</span><span class="collector-small">Use arrows to reorder · up to 9 pieces</span></div><div id="collector-order" class="collector-order"></div></section><aside class="collector-settings"><div class="collector-setting"><label for="collector-format">Make a</label><select id="collector-format"><option value="banner">X banner · 3:1</option><option value="phone">Phone background · 6:13</option><option value="print">Collection print · 3:2</option></select></div><div class="collector-setting"><label for="collector-layout">Arrangement</label><select id="collector-layout"><option value="grid">Balanced grid</option><option value="row">Gallery row</option></select></div><fieldset class="collector-palette"><legend>Background</legend>${Object.entries(PALETTES).map(([key,p]) => `<label title="${key}" style="--swatch:${p.background}"><input type="radio" name="collector-palette" value="${key}" ${key === 'charcoal' ? 'checked' : ''}><span>${key}</span></label>`).join('')}</fieldset><div class="collector-display-options" role="group" aria-label="Image details"><label class="collector-check"><input type="checkbox" id="collector-labels" checked> Show piece names</label><label class="collector-check"><input type="checkbox" id="collector-brand" checked> House signature</label></div><div class="collector-setting"><label for="collector-caption">Collection title <span>optional</span></label><input type="text" id="collector-caption" maxlength="42" placeholder="A few favourites."></div><button type="button" id="collector-export" class="collector-button primary">Download PNG ↗</button><p class="collector-small">Created in your browser. Wallet addresses and balances never appear in the image.</p></aside><section class="collector-library"><div class="collector-library-head"><div><span class="collector-eyebrow" id="collector-library-label">Public artwork</span><h3>Choose your pieces.</h3></div><label class="collector-search-label"><span class="collector-sr-only">Find artwork</span><input id="collector-art-search" type="search" placeholder="Search a name or edition"></label></div><p id="collector-library-note" class="collector-small"></p><div id="collector-library-grid" class="collector-library-grid"></div><button type="button" class="collector-button" id="collector-library-more" hidden>Show more artwork</button></section></div></div>`);
+    studioDialog = dialog('Make it yours.', 'collector-studio', `<div class="collector-studio-layout"><section class="collector-workspace" aria-label="Image preview"><div class="collector-canvas-wrap"><canvas id="collector-canvas" width="1500" height="500" aria-label="Your collection image preview"></canvas></div><div class="collector-preview-foot"><span id="collector-dimensions">3000 × 1000 PNG</span><span>Artwork kept whole</span></div><p id="collector-render-status" role="status" aria-live="polite"></p></section><div class="collector-controls"><section class="collector-arrangement" aria-label="Selected artwork"><div class="collector-order-head"><span class="collector-eyebrow">Your arrangement</span><span class="collector-small">Use arrows to reorder · up to 9 pieces</span></div><div id="collector-order" class="collector-order"></div></section><aside class="collector-settings"><div class="collector-setting"><label for="collector-format">Make a</label><select id="collector-format"><option value="banner">X banner · 3:1</option><option value="phone">Phone background · 6:13</option><option value="print">Collection print · 3:2</option></select></div><div class="collector-setting"><label for="collector-layout">Arrangement</label><select id="collector-layout"><option value="grid">Balanced grid</option><option value="row">Gallery row</option></select></div><fieldset class="collector-palette"><legend>Background</legend>${Object.entries(PALETTES).map(([key,p]) => `<label title="${key}" style="--swatch:${p.background}"><input type="radio" name="collector-palette" value="${key}" ${key === 'charcoal' ? 'checked' : ''}><span>${key}</span></label>`).join('')}</fieldset><div class="collector-display-options" role="group" aria-label="Image details"><label class="collector-check"><input type="checkbox" id="collector-labels" checked> Show piece names</label><label class="collector-check"><input type="checkbox" id="collector-brand" checked> House signature</label></div><div class="collector-setting"><label for="collector-caption">Collection title <span>optional</span></label><input type="text" id="collector-caption" maxlength="42" placeholder="A few favourites."></div><button type="button" id="collector-export" class="collector-button primary">Download PNG ↗</button><p class="collector-small">Created in your browser. Wallet addresses and balances never appear in the image.</p></aside><section class="collector-library"><div class="collector-library-head"><div><span class="collector-eyebrow" id="collector-library-label">Public artwork</span><h3>Choose your pieces.</h3></div><label class="collector-search-label"><span class="collector-sr-only">Find artwork</span><input id="collector-art-search" type="search" placeholder="Search a name or edition"></label></div><p id="collector-library-note" class="collector-small" role="status"></p><button type="button" class="collector-button" id="collector-library-retry" hidden>Retry catalogue</button><div id="collector-library-grid" class="collector-library-grid"></div><button type="button" class="collector-button" id="collector-library-more" hidden>Show more artwork</button></section></div></div>`);
     const rerender = () => { dirty = true; drawPreview(); };
     ['collector-format','collector-layout','collector-labels','collector-brand'].forEach(id => studioDialog.querySelector(`#${id}`).onchange = rerender);
     studioDialog.querySelectorAll('[name="collector-palette"]').forEach(el => el.onchange = rerender);
@@ -283,27 +288,46 @@
       : seeds ? `${catalogueNote} Loading the rest of the catalogue…` : 'Loading the artwork catalogue…';
     studioDialog.querySelector('#collector-art-search').value = '';
     renderLibrary(); renderOrder(); drawPreview();
+    studioDialog.querySelector('#collector-library-retry').hidden = true;
     if (supplied) return;
-    // Seed artwork is usable immediately. Discovery can fail independently
-    // without preventing a saved composition from being edited or exported.
-    let timeout;
-    try {
-      const items = await Promise.race([
-        loadPublic(),
-        new Promise((_, reject) => { timeout = setTimeout(() => reject(new Error('The artwork catalogue took too long to respond.')), 15000); })
-      ]);
-      if (request !== studioLoad || !studioDialog.open) return;
-      studioItems = [...new Map([...studioItems,...items].map(e => [e.key,e])).values()]; register(studioItems);
-      if (!seeds && !dirty) selected = studioItems.slice(0,3);
-      else selected = selected.map(e => known.get(e.key) || e);
-      note.textContent = catalogueNote;
-      renderLibrary(); renderOrder(); drawPreview();
-    } catch (_) {
-      if (request !== studioLoad || !studioDialog.open) return;
-      note.textContent = seeds
-        ? 'Your chosen artwork is ready to use. The rest of the catalogue is temporarily unavailable; reopen the studio to retry.'
-        : 'The artwork catalogue is temporarily unavailable. Please close and reopen the studio to try again.';
-    } finally { clearTimeout(timeout); }
+    const retry = studioDialog.querySelector('#collector-library-retry');
+    let attempt = 0;
+    const refreshCatalogue = async () => {
+      const current = ++attempt;
+      const controller = new AbortController();
+      let active = true, timeout, mainReady = false;
+      const valid = () => active && current === attempt && request === studioLoad && studioDialog.open;
+      const merge = items => {
+        if (!valid()) return;
+        studioItems = [...new Map([...studioItems,...items].map(e => [e.key,e])).values()]; register(studioItems);
+        if (!seeds && !dirty && !selected.length) selected = studioItems.slice(0,3);
+        else selected = selected.map(e => known.get(e.key) || e);
+        mainReady = true;
+        note.textContent = `${catalogueNote} Checking additional custom pieces…`;
+        renderLibrary(); renderOrder(); drawPreview();
+      };
+      retry.hidden = true;
+      note.textContent = `${catalogueNote} Loading the catalogue…`;
+      try {
+        const items = await Promise.race([
+          loadPublic(merge, controller.signal),
+          new Promise((_, reject) => { timeout = setTimeout(() => {
+            controller.abort(); reject(new Error('Catalogue request timed out.'));
+          }, 15000); })
+        ]);
+        if (!valid()) return;
+        merge(items);
+        note.textContent = catalogueNote;
+      } catch (_) {
+        if (!valid()) return;
+        note.textContent = mainReady
+          ? 'The main catalogue is ready. Some additional custom pieces could not be loaded. You can keep editing or retry below.'
+          : 'Your current artwork is still available. The catalogue could not be loaded. Retry below without closing the studio.';
+        retry.hidden = false;
+      } finally { active = false; clearTimeout(timeout); controller.abort(); }
+    };
+    retry.onclick = refreshCatalogue;
+    await refreshCatalogue();
   }
   function renderLibrary(limit = 36) {
     const term = studioDialog.querySelector('#collector-art-search').value.trim().toLowerCase();
