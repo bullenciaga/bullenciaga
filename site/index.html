@@ -1141,12 +1141,6 @@
     .gallery-special-btn,
     .gallery-comprehensive-btn,
     .gallery-clear-btn{ display:none !important; }
-    /* The dev hold filter is the exception. Every other select is hidden at
-       this width because eight of them stack into a wall -- but this one is
-       a single control, it only exists when the dev wallet is connected, so
-       it costs a visitor nothing, and picking prize stock out of a mixed
-       grid on a phone is exactly when the wrong piece gets sent. */
-    #galleryDevFilter:not([hidden]){ display:block !important; width:100%; }
   }
 
   /* Hidden vault trigger -- deliberately unlabeled and easy to miss unless
@@ -3264,21 +3258,6 @@
         <button type="button" class="gallery-toggle-btn active-filter" data-value="asc">asc</button>
         <button type="button" class="gallery-toggle-btn" data-value="desc">desc</button>
       </div>
-      <!-- Dev-only. Hidden for every visitor and revealed by
-           syncDevFilterVisibility() only while the dev wallet is connected,
-           so it is not a secret so much as a control with no meaning for
-           anybody else: every option filters to a pool of pieces that only
-           the dev wallet holds. -->
-      <select id="galleryDevFilter" class="gallery-select" aria-label="dev hold filter" hidden>
-        <option value="all">hold: all</option>
-        <option value="ticket-comp">hold: ticket comp</option>
-        <option value="buy-comp">hold: buy comp</option>
-        <option value="gravemarket">hold: gravemarket</option>
-        <option value="follower">hold: follower 500</option>
-        <option value="giveaway">hold: giveaway</option>
-        <option value="flash-giveaway">hold: flash</option>
-        <option value="none">hold: not stock</option>
-      </select>
       <div id="galleryTraitFilters" style="display:contents;"></div>
       <button class="gallery-comprehensive-btn" id="galleryComprehensiveBtn" type="button">comprehensive filtering</button>
       <button class="gallery-special-btn" id="specialBtnRelic" type="button">relic</button>
@@ -4556,7 +4535,6 @@
     }
     setWalletStatus(true, connectedWalletAddress);
     updateNftUI();
-    syncDevFilterVisibility();
     renderGallery(); // refresh OWNED tags for whatever's currently visible
   }
 
@@ -4651,7 +4629,6 @@
     }
     setWalletStatus(false);
     updateNftUI();
-    syncDevFilterVisibility();
     renderGallery();
   }
 
@@ -5689,7 +5666,6 @@
     filtersGrid: document.getElementById('galleryFilters'),
     filtersCollapse: document.getElementById('galleryFiltersCollapse'),
     traitFiltersContainer: document.getElementById('galleryTraitFilters'),
-    devFilter: document.getElementById('galleryDevFilter'),
     comprehensiveBtn: document.getElementById('galleryComprehensiveBtn'),
     specialBtns: {
       relic: document.getElementById('specialBtnRelic'),
@@ -5731,12 +5707,6 @@
   let currentFilteredList = []; // full filtered list, not just the current page -- lets lightbox nav cross page boundaries
   let currentLightboxIndex = -1;
   let galleryClaimedFilter = 'all'; // 'all' | 'claimed' | 'unclaimed' | 'listed'
-  // Dev-only. 'all' for everyone else, always, because the control that sets
-  // it is never rendered for them -- and renderGallery still checks the
-  // connected wallet before applying it, so a hand-set value in the console
-  // narrows nothing.
-  let galleryDevHoldFilter = 'all';
-
   // Live Magic Eden listings, keyed by asset address, fetched through the
   // same-origin worker (see /listings there for why it's proxied). Empty
   // until the first successful fetch; every consumer treats "no data" as
@@ -7412,7 +7382,7 @@
   }
 
   // ONE PLACE that decides which pool a piece belongs to. The badge, the
-  // lightbox line, the dev grouping and the dev filter all read this, so
+  // lightbox line and other hold-status displays read this, so
   // they cannot disagree with each other -- which they would the first time
   // a new category was added to four call sites and remembered in three.
   // Returns null for anything the dev wallet does not hold.
@@ -7587,17 +7557,6 @@
       });
     }
 
-    // Dev-only hold filter. Gated on the connected wallet as well as on the
-    // value, so it is dead code for every other visitor even if the value is
-    // set by hand. 'none' means everything that is NOT dev-held stock, which
-    // is the view for checking that nothing has been mislabelled.
-    if (connectedWalletAddress === DEV_WALLET && galleryDevHoldFilter !== 'all') {
-      filtered = filtered.filter(e => {
-        const kind = holdKindOf(e);
-        return galleryDevHoldFilter === 'none' ? kind === null : kind === galleryDevHoldFilter;
-      });
-    }
-
     const activeTraitCategories = Object.keys(galleryTraitFilters);
     if (activeTraitCategories.length) {
       filtered = filtered.filter(entry => {
@@ -7637,16 +7596,9 @@
       filtered = filtered.slice().reverse();
     }
 
-    // Dev-wallet-only grouping, applied last so it wins over the chosen sort
-    // without replacing it -- within each group the selected order still
-    // holds. Nobody else sees any difference: for every other visitor the
-    // condition is false and the list is untouched.
-    //
-    // The point is operational rather than cosmetic. The dev wallet holds
-    // three different kinds of thing at once -- flash stock, round stock, and
-    // the one-of-ones that are never prizes -- and picking a giveaway piece
-    // out of a mixed grid at speed is how the wrong asset gets sent.
-    if (connectedWalletAddress === DEV_WALLET) {
+    // Prize grouping belongs only in My Collection. The public gallery
+    // follows the selected sort for every visitor, including the developer.
+    if (galleryMode === 'mine' && connectedWalletAddress === DEV_WALLET) {
       const groupOf = entry => {
         // Ticket-comp stock first: it is the pool with a live 72-hour
         // deadline, so it is the one most likely to be reached for under
@@ -7763,32 +7715,6 @@
       document.body.removeChild(ta);
     }
   });
-  // Shows the dev hold filter only while the dev wallet is connected, and
-  // resets it on the way out -- a filter left set behind a control that is
-  // no longer on screen would silently narrow the gallery for the next
-  // wallet that connects, and there would be nothing visible to blame.
-  function syncDevFilterVisibility(){
-    if (!galleryEls.devFilter) return;
-    const isDev = connectedWalletAddress === DEV_WALLET;
-    galleryEls.devFilter.hidden = !isDev;
-    if (!isDev && galleryDevHoldFilter !== 'all') {
-      galleryDevHoldFilter = 'all';
-      galleryEls.devFilter.value = 'all';
-      galleryEls.devFilter.classList.remove('active-filter');
-    }
-  }
-
-  if (galleryEls.devFilter) {
-    galleryEls.devFilter.addEventListener('change', () => {
-      galleryDevHoldFilter = galleryEls.devFilter.value;
-      galleryEls.devFilter.classList.toggle('active-filter', galleryDevHoldFilter !== 'all');
-      galleryPage = 0;
-      renderGallery();
-      updateClearFiltersVisibility();
-    });
-  }
-  syncDevFilterVisibility();
-
   // Shows/hides the small "clear ×" button based on whether any filter
   // (claimed/unclaimed, a trait dropdown, or a special-tier button) is
   // currently active. Sort order doesn't count -- it reorders, it doesn't
@@ -7801,7 +7727,6 @@
     const anyActive = galleryClaimedFilter !== 'all'
       || Object.keys(galleryTraitFilters).length > 0
       || !!gallerySpecialTier
-      || galleryDevHoldFilter !== 'all'
       || gallerySearchTerm.trim() !== '';
     galleryEls.clearBtn.style.display = anyActive ? 'inline-flex' : 'none';
     if (anyActive) positionClearBtn();
@@ -7829,12 +7754,6 @@
 
     gallerySpecialTier = null;
     Object.values(galleryEls.specialBtns).forEach(b => { if (b) b.classList.remove('active-filter'); });
-
-    galleryDevHoldFilter = 'all';
-    if (galleryEls.devFilter) {
-      galleryEls.devFilter.value = 'all';
-      galleryEls.devFilter.classList.remove('active-filter');
-    }
 
     galleryPage = 0;
     renderGallery();

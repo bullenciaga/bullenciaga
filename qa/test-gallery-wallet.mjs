@@ -86,6 +86,39 @@ assert.match(context.galleryEls.count.textContent, /some collectibles unavailabl
 assert.equal(context.galleryEls.heading.textContent, 'Browse The Herd');
 assert.ok(names().includes('The Promise #006'), 'one unavailable collection does not hide the other');
 
+// Connecting the developer must not reorder the public gallery. Exercise
+// all sort modes and both directions with prize stock in a conflicting order.
+context.gallerySearchTerm = '';
+context.galleryManifest = [{ name: 'HERD #1' }, { name: 'HERD #2' }, { name: 'HERD #3' }];
+context.rarityScores = new Map([['HERD #1', 20], ['HERD #2', 30], ['HERD #3', 10]]);
+context.manualRarityRank = () => -1;
+context.listingFor = e => ({ price: { 'HERD #1': 3, 'HERD #2': 1, 'HERD #3': 2 }[e.name] });
+context.isTicketCompPiece = e => e.name === 'HERD #3';
+for (const fn of ['isBuyCompPiece', 'isGraveMarketPiece', 'isFlashGiveawayPiece', 'isGiveawayPiece', 'isFollowerPiece']) context[fn] = () => false;
+const expectedSorts = {
+  number: ['HERD #1', 'HERD #2', 'HERD #3'],
+  rarity: ['HERD #2', 'HERD #1', 'HERD #3'],
+  price: ['HERD #2', 'HERD #3', 'HERD #1'],
+};
+for (const [mode, expected] of Object.entries(expectedSorts)) {
+  context.gallerySortMode = mode;
+  for (const direction of ['asc', 'desc']) {
+    context.gallerySortDirection = direction;
+    for (const connected of [null, wallet, other]) {
+      context.connectedWalletAddress = connected;
+      await render();
+      assert.deepEqual(names(), direction === 'asc' ? expected : [...expected].reverse(), `${mode}/${direction} stays public for ${connected}`);
+    }
+  }
+}
+context.galleryMode = 'mine';
+context.gallerySortMode = 'number';
+context.gallerySortDirection = 'asc';
+context.loadMyAssets = async () => [...context.galleryManifest, key];
+await render();
+assert.deepEqual(names(), ['HERD #3', 'HERD #1', 'HERD #2', 'The Key #006'], 'My Collection keeps prize grouping and companion assets');
+assert.doesNotMatch(html, /galleryDevFilter|galleryDevHoldFilter|syncDevFilterVisibility/, 'hold dropdown and its hidden filtering state are removed');
+
 // Exercise actual collection parsing: burnt assets excluded, failed RPC not cached.
 const loader = vm.createContext({
   AbortSignal,
