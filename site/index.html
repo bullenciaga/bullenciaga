@@ -1249,16 +1249,17 @@
   /* Small inline copy affordance on the owner line. Pairing it with the
      wallet-aware search turns "who owns this" into "show me everything they
      own" in two clicks, without adding a visible feature to explain. */
-  .owner-copy-btn{
+  .gallery-lightbox-owner .owner-copy-btn{
+    position:relative;
     box-sizing:border-box;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     flex:0 0 44px;
     width:44px;
-    height:44px;
+    height:22px;
     min-width:44px;
-    min-height:44px;
+    min-height:22px;
     line-height:1;
     white-space:nowrap;
     margin:0;
@@ -1268,11 +1269,13 @@
     font-family:'Space Mono', monospace;
     font-size:8.5px;
     letter-spacing:0.06em;
-    padding:1px 5px;
+    padding:0;
     cursor:pointer;
     text-transform:uppercase;
     transition:border-color 0.2s ease, color 0.2s ease;
   }
+  /* Preserve the compact border while keeping a comfortable touch target. */
+  .owner-copy-btn::before{content:"";position:absolute;inset:-11px 0}
   .owner-copy-btn:hover{
     border-color:var(--gold);
     color:var(--gold);
