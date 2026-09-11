@@ -5,9 +5,10 @@ import zlib from 'node:zlib';
 // Controlled DOM/media doubles exercise the actual editor code without a
 // network, wallet, or dependency on browser autoplay/font/image heuristics.
 const source = fs.readFileSync(new URL('../site/collector-tools.js',import.meta.url),'utf8');
-const instrumented = source.replace('  window.BullenCollectors = {', `  window.test = { imageType,originalBytes,cardLabel,attachCard,loadImage,paint,drawPreview,exportImage,renderLibrary,renderOrder,
- setState(state) { if (state.dialog) studioDialog=state.dialog; if(state.items){studioItems=state.items;register(state.items);} if(state.selected) selected=state.selected; },
- state:()=>({selected,studioRender,studioReady,exporting}) };
+const instrumented = source.replace('  window.BullenCollectors = {', `  window.test = { imageType,originalBytes,cardLabel,attachCard,loadImage,paint,drawPreview,exportImage,renderLibrary,renderOrder,openStudio,loadPublic,
+ setBridge(api){bridge={imageUrl:e=>e.image,...api};},
+ setState(state) { if (state.dialog) studioDialog=state.dialog; if(state.items){studioItems=state.items;register(state.items);} if(state.selected) selected=state.selected; if('dirty' in state) dirty=state.dirty; },
+ state:()=>({selected,studioItems,studioRender,studioReady,exporting}) };
   window.BullenCollectors = {`);
 const flush = async () => { for(let i=0;i<30;i++) await Promise.resolve(); };
 const decode = s => s.replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
@@ -56,8 +57,8 @@ function harness({image=()=> 'ok',fonts=()=>Promise.resolve([])}={}){
  vm.runInContext(instrumented,context);
  const api=context.window.test,clean=context.window.BullenCollectors.cleanEntry;
  const items=[1,2,3,4].map(i=>clean({name:`HERD #${i}`,image:`https://gateway.irys.xyz/art${i}`}));
- const dialog=new Node('dialog');dialog.open=true;
- dialog.innerHTML='<canvas id="collector-canvas"></canvas><p id="collector-render-status"></p><button id="collector-export"></button><button id="collector-retry"></button><span id="collector-dimensions"></span><input id="collector-format"><input id="collector-layout"><input name="collector-palette"><input id="collector-labels"><input id="collector-brand"><input id="collector-caption"><input id="collector-art-search"><div id="collector-library-grid"></div><button id="collector-library-more"></button><div id="collector-order"></div>';
+ const dialog=new Node('dialog');dialog.open=true;dialog.showCollector=()=>{dialog.open=true;};
+ dialog.innerHTML='<div class="collector-controls"></div><span id="collector-library-label"></span><p id="collector-library-note"></p><button id="collector-library-retry"></button><canvas id="collector-canvas"></canvas><p id="collector-render-status"></p><button id="collector-export"></button><button id="collector-retry"></button><span id="collector-dimensions"></span><input id="collector-format"><input id="collector-layout"><input name="collector-palette"><input id="collector-labels"><input id="collector-brand"><input id="collector-caption"><input id="collector-art-search"><div id="collector-library-grid"></div><button id="collector-library-more"></button><div id="collector-order"></div>';
  dialog.querySelector('#collector-format').value='banner';dialog.querySelector('#collector-layout').value='grid';dialog.querySelector('[name="collector-palette"]').value='charcoal';dialog.querySelector('[name="collector-palette"]').checked=true;dialog.querySelector('#collector-labels').checked=dialog.querySelector('#collector-brand').checked=true;
  api.setState({dialog,items,selected:items.slice(0,1)});
  return{api,items,dialog,requests,fontRequests,advance,document,context,objectUrls};
@@ -166,3 +167,53 @@ const config=entries=>({entries,format:'banner',layout:'grid',palette:'charcoal'
  let cancelled=false;await assert.rejects(h.api.originalBytes({ok:true,body:{getReader:()=>({read:async()=>({done:false,value:new Uint8Array(33*1024*1024)}),cancel:async()=>{cancelled=true;}})}}),/too large/);assert(cancelled,'oversized original cancels stream before decoding');
 }
 console.log('Collector render: bounded fonts/images, decoded fallback race, retry, shared original requests, stable selection DOM, stale renders/exports and complete-only download passed.');
+
+// Standard artwork must appear while optional live discovery is still stalled.
+{
+ const h=harness();
+ const manifest=JSON.parse(fs.readFileSync(new URL('../site/gallery-manifest.json',import.meta.url),'utf8'));
+ let finish, signal;
+ h.api.setBridge({entries:()=>manifest,libraryEntries:({signal:s})=>{signal=s;return new Promise(r=>{finish=r;});}});
+ const opening=h.api.openStudio({selectedItems:[h.items[0]]});
+ await flush();
+ assert.equal(h.api.state().studioItems.length,1000,'all standard artwork appears before the live lookup finishes');
+ assert.equal(h.api.state().selected.length,1,'shortlist selection survives catalogue expansion');
+ h.api.setState({selected:[h.items[0],h.items[1]],dirty:true});
+ await h.advance(15000);await opening;
+ assert.equal(signal.aborted,true,'timed-out optional discovery is cancelled');
+ assert.equal(h.api.state().studioItems.length,1000,'timeout does not discard usable catalogue');
+ assert.match(h.dialog.querySelector('#collector-library-note').textContent,/main catalogue is ready/);
+ assert.equal(h.dialog.querySelector('#collector-library-retry').hidden,false);
+ finish([{id:'late',name:'Late artwork',series:'custom',image:'https://gateway.irys.xyz/late'}]);await flush();
+ assert.equal(h.api.state().studioItems.length,1000,'late completion cannot rewrite the timed-out session');
+ h.api.setBridge({entries:()=>manifest,libraryEntries:async()=>[{id:'custom',name:'Custom artwork',series:'custom',image:'https://gateway.irys.xyz/custom'}]});
+ await h.dialog.querySelector('#collector-library-retry').onclick();
+ assert.equal(h.api.state().studioItems.length,1001,'in-place retry recovers custom artwork');
+ assert.deepEqual(Array.from(h.api.state().selected,e=>e.name),['HERD #1','HERD #2'],'retry preserves the edited selection');
+ assert.equal(h.dialog.querySelector('#collector-library-retry').hidden,true);
+}
+{
+ const h=harness();
+ h.api.setBridge({entries:()=>h.items,libraryEntries:async()=>{throw Error('RPC down');}});
+ await h.api.openStudio({selectedItems:[h.items[0]]});
+ assert.equal(h.api.state().studioItems.length,4,'immediate custom lookup failure leaves the main library visible');
+ assert.equal(h.dialog.querySelector('#collector-library-retry').hidden,false);
+ let finish;
+ h.api.setBridge({entries:()=>h.items,libraryEntries:()=>new Promise(r=>{finish=r;})});
+ const opening=h.api.openStudio({selectedItems:[h.items[0]]});await flush();h.dialog.open=false;
+ finish([{id:'closed',name:'Closed artwork',series:'custom',image:'https://gateway.irys.xyz/closed'}]);await opening;
+ assert.equal(h.api.state().studioItems.length,4,'closed studio ignores late discovery');
+}
+console.log('Collector catalogue: immediate main library, stalled/failed RPC, cancellation, preserved edits, in-place retry and closed-session isolation passed.');
+{
+ const h=harness();h.api.setBridge({});
+ const manifest=JSON.parse(fs.readFileSync(new URL('../site/gallery-manifest.json',import.meta.url),'utf8'));
+ const batches=[];
+ h.context.fetch=async url=>url==='/gallery-manifest.json'
+   ? {ok:true,json:async()=>manifest}
+   : {ok:false,json:async()=>({error:{message:'RPC unavailable'}})};
+ await assert.rejects(h.api.loadPublic(items=>batches.push(items)));
+ assert.equal(batches[0].length,1000,'standalone manifest is published even when custom RPC rejects');
+ h.context.fetch=async()=>({ok:false,json:async()=>({})});
+ await assert.rejects(h.api.loadPublic(()=>assert.fail('invalid manifest must not be published')));
+}

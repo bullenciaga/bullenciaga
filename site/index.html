@@ -6785,7 +6785,7 @@
     'EDjR8XZshTmYdDR1GsoC1ZRHF7ys8xZQ9ZHvZ9ztA7oY', // OZ (copy 2) -- same incident
   ]);
 
-  async function fetchAllCollectionAssets(){
+  async function fetchAllCollectionAssets(signal){
     if (cachedAllCollectionAssets) return cachedAllCollectionAssets;
     if (!NFT_CONFIG.HELIUS_PROXY_URL) return [];
     const allItems = [];
@@ -6793,13 +6793,16 @@
     while (page <= 5) {
       const res = await fetch(NFT_CONFIG.HELIUS_PROXY_URL, {
         method: 'POST',
+        signal: signal || AbortSignal.timeout(15000),
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           jsonrpc: '2.0', id: 'all-assets', method: 'getAssetsByGroup',
           params: { groupKey: 'collection', groupValue: NFT_CONFIG.COLLECTION_ADDRESS, page, limit: 1000 }
         })
       });
+      if (!res.ok) throw new Error('Collection request failed: ' + res.status);
       const data = await res.json();
+      if (data.error || !Array.isArray(data.result?.items)) throw new Error('Collection data unavailable');
       const items = (data && data.result && data.result.items) || [];
       items.forEach(item => {
         if (item.burnt) return; // Helius keeps serving burned assets for a while, flagged via `burnt` -- exclude them so already-burned duplicates disappear everywhere automatically, no manual list to maintain
@@ -8232,8 +8235,8 @@
 
   window.BullenCollectors?.mountGallery({
     entries: () => galleryManifest,
-    libraryEntries: async () => {
-      const all = await fetchAllCollectionAssets();
+    libraryEntries: async ({ signal } = {}) => {
+      const all = await fetchAllCollectionAssets(signal);
       return [...galleryManifest, ...all.filter(e => !manifestNameSet.has(e.name)).map(e => ({...e,series:'custom'}))];
     },
     refreshListings,
