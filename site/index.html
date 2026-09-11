@@ -6989,7 +6989,7 @@
       <img id="galleryLightboxImgGallery" alt="${entry.name}">
       <div class="gallery-lightbox-body">
         <div class="gallery-lightbox-header-row">
-          <div class="gallery-lightbox-name">${entry.name}</div>
+          <div class="gallery-lightbox-name">${isCompanion ? 'THE ' + entry.name.replace(/^THE\s+/i, '').toUpperCase() : entry.name}</div>
           ${priceHtml}
         ${marketActionsHtml}
         </div>

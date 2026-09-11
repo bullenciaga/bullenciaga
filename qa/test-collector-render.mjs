@@ -138,7 +138,7 @@ const config=entries=>({entries,format:'banner',layout:'grid',palette:'charcoal'
 }
 {
  const h=harness();
- for(const [series,name,visible] of [['herd','HERD #168','HERD #168'],['house-object','The Cufflinks #001','The Cufflinks'],['house-object','The Signet #099','The Signet'],['house-object','The Key #008','The Key'],['bullensaga','The Promise #001','The Promise'],['bullensaga','Triad #007','Triad'],['custom','CUSTOM #001','CUSTOM #001']]) {
+ for(const [series,name,visible] of [['herd','HERD #168','HERD #168'],['house-object','The Cufflinks #001','CUFFLINKS'],['house-object','The Signet #099','SIGNET'],['house-object','The Key #008','KEY'],['bullensaga','The Promise #001','PROMISE'],['bullensaga','Triad #007','TRIAD'],['custom','CUSTOM #001','CUSTOM #001']]) {
   const entry={series,name,id:'verified-id',image:'https://gateway.irys.xyz/original'},card=new Node('article');card.innerHTML='<img><div class="gallery-card-name"></div>';
   card.querySelector('img').setAttribute('alt',name);h.api.attachCard(card,entry);const label=card.querySelector('.collector-card-label'),button=card.querySelector('[data-save-piece]');
   assert.equal(label.textContent,visible);assert.equal(label.title,name);assert.equal(card.querySelector('img').getAttribute('alt'),name);assert.match(button.getAttribute('aria-label'),new RegExp(name));assert.equal(entry.name,name,'underlying detail/search identity never modified');
