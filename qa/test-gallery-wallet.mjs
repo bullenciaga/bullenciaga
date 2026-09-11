@@ -11,7 +11,7 @@ const key = { id: 'key', name: 'The Key #006', series: 'house-object', owner: wa
 const promise = { id: 'promise', name: 'The Promise #006', series: 'bullensaga', owner: wallet };
 const element = () => ({ style: {}, textContent: '', innerHTML: '', appendChild() {} });
 const context = vm.createContext({
-  galleryEls: Object.fromEntries(['grid', 'controls', 'pagination', 'empty', 'count', 'pageLabel', 'prevBtn', 'nextBtn'].map(k => [k, element()])),
+  galleryEls: Object.fromEntries(['heading', 'intro', 'grid', 'controls', 'pagination', 'empty', 'count', 'pageLabel', 'prevBtn', 'nextBtn'].map(k => [k, element()])),
   galleryMode: 'all', galleryRenderToken: 0, connectedWalletAddress: null,
   gallerySearchTerm: wallet, galleryManifest: [herd], gallerySpecialTier: null,
   galleryClaimedFilter: 'all', galleryTraitFilters: {}, gallerySortMode: 'number',
@@ -31,6 +31,20 @@ const names = () => Array.from(context.currentFilteredList, e => e.name);
 await render();
 assert.deepEqual(names(), ['HERD #1', 'The Key #006', 'The Promise #006']);
 assert.match(context.galleryEls.count.textContent, /3 pieces found/);
+assert.equal(context.galleryEls.pagination.style.display, 'none', 'a single page has no dead pagination');
+context.computeGalleryPageSize = () => ({ pageSize: 2 });
+await render();
+assert.equal(context.galleryEls.pagination.style.display, 'flex');
+assert.equal(context.galleryEls.pageLabel.textContent, 'Page 1 of 2');
+assert.equal(context.galleryEls.nextBtn.disabled, false);
+context.galleryPage = 1;
+await render();
+assert.equal(context.galleryEls.prevBtn.disabled, false);
+assert.equal(context.galleryEls.nextBtn.disabled, true);
+context.computeGalleryPageSize = () => ({ pageSize: 56 });
+await render();
+assert.equal(context.galleryPage, 0, 'a larger page clamps the old page safely');
+assert.equal(context.galleryEls.pagination.style.display, 'none');
 context.mintedOwnerByName.clear();
 await render();
 assert.deepEqual(names(), ['The Key #006', 'The Promise #006'], 'wallet without HERD still sees collectibles');
@@ -62,11 +76,14 @@ await render();
 resolve([key]);
 await pendingDisconnect;
 assert.match(context.galleryEls.empty.textContent, /connect your wallet/);
+assert.equal(context.galleryEls.heading.textContent, 'Your Collection');
+assert.match(context.galleryEls.intro.textContent, /House Objects and Founding Records/);
 
 context.galleryMode = 'all';
 context.fetchHouseObjectAssets = async () => { throw new Error('outage'); };
 await render();
 assert.match(context.galleryEls.count.textContent, /some collectibles unavailable/);
+assert.equal(context.galleryEls.heading.textContent, 'Browse The Herd');
 assert.ok(names().includes('The Promise #006'), 'one unavailable collection does not hide the other');
 
 // Exercise actual collection parsing: burnt assets excluded, failed RPC not cached.

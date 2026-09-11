@@ -1249,19 +1249,33 @@
   /* Small inline copy affordance on the owner line. Pairing it with the
      wallet-aware search turns "who owns this" into "show me everything they
      own" in two clicks, without adding a visible feature to explain. */
-  .owner-copy-btn{
-    margin-left:8px;
+  .gallery-lightbox-owner .owner-copy-btn{
+    position:relative;
+    box-sizing:border-box;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 44px;
+    width:44px;
+    height:22px;
+    min-width:44px;
+    min-height:22px;
+    line-height:1;
+    white-space:nowrap;
+    margin:0;
     background:none;
     border:1px solid rgba(245,243,238,0.22);
     color:inherit;
     font-family:'Space Mono', monospace;
     font-size:8.5px;
     letter-spacing:0.06em;
-    padding:1px 5px;
+    padding:0;
     cursor:pointer;
     text-transform:uppercase;
     transition:border-color 0.2s ease, color 0.2s ease;
   }
+  /* Preserve the compact border while keeping a comfortable touch target. */
+  .owner-copy-btn::before{content:"";position:absolute;inset:-11px 0}
   .owner-copy-btn:hover{
     border-color:var(--gold);
     color:var(--gold);
@@ -1358,6 +1372,10 @@
   .send-actions button.danger:hover{ background:var(--gold-light); border-color:var(--gold-light); }
   .send-actions button:disabled{ opacity:0.4; cursor:not-allowed; }
   .gallery-lightbox-owner{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
     font-family:'Space Mono', monospace;
     font-size:10.5px;
     color:rgba(245,243,238,0.45);
@@ -1388,12 +1406,13 @@
   /* ===== SECTION: GALLERY GRID =====  cards, names, badges, tier sheen */
   .gallery-grid{
     display:grid;
-    grid-template-columns:repeat(var(--gallery-cols, 6), 1fr);
+    grid-template-columns:repeat(var(--gallery-cols, 6), minmax(0, 1fr));
     gap:12px;
     max-width:1100px;
     margin:0 auto;
   }
   .gallery-card{
+    container-type:inline-size;
     position:relative;
     background:var(--black);
     border:1px solid var(--line);
@@ -1403,6 +1422,9 @@
     will-change:transform;
   }
   .gallery-card:hover{ border-color:var(--gold); }
+  @media (hover:hover){
+    .gallery-card:hover{z-index:10}
+  }
   .gallery-card img{
     width:100%;
     aspect-ratio:1/1;
@@ -1431,6 +1453,11 @@
     color:rgba(245,243,238,0.35);
   }
   .gallery-card-badge{
+    box-sizing:border-box;
+    max-width:calc(100% - 16px);
+    line-height:1.4;
+    overflow-wrap:anywhere;
+    text-align:center;
     position:absolute;
     top:8px;
     right:8px;
@@ -1461,6 +1488,10 @@
     top:8px;
     left:8px;
     right:auto;
+  }
+  /* Narrow cards give market price its own row so both statuses stay readable. */
+  @container (max-width:200px){
+    .gallery-card-badge:not(.listed) ~ .gallery-card-badge.listed{top:36px}
   }
   /* Giveaway stock. A third colour so it can never be confused with gold
      (provenance) or green (market state) at a glance -- this is a third,
@@ -3194,8 +3225,8 @@
 
 <!-- ===== SECTION: GALLERY ===== -->
 <section id="gallery">
-  <div class="stats-label">Browse The Herd</div>
-  <p class="nft-intro">every piece in the collection. search, filter, and see what's already been&nbsp;claimed.</p>
+  <div class="stats-label" id="galleryHeading">Browse The Herd</div>
+  <p class="nft-intro" id="galleryIntro">every piece in the collection. search, filter, and see what's already been&nbsp;claimed.</p>
 
   <div class="gallery-tabs">
     <button class="btn gallery-tab active" id="galleryTabAll" type="button">All 1,000</button>
@@ -3261,7 +3292,7 @@
 
   <div class="gallery-empty" id="galleryEmpty" style="display:none;">connect your wallet to see your pieces.</div>
 
-  <div class="gallery-pagination" id="galleryPagination">
+  <div class="gallery-pagination" id="galleryPagination" style="display:none">
     <button class="btn" id="galleryPrevBtn" type="button">Prev</button>
     <span id="galleryPageLabel">Page 1</span>
     <button class="btn" id="galleryNextBtn" type="button">Next</button>
@@ -5633,6 +5664,8 @@
   // filters to ones belonging to this collection.
   // ------------------------------------------------------------------
   const galleryEls = {
+    heading: document.getElementById('galleryHeading'),
+    intro: document.getElementById('galleryIntro'),
     grid: document.getElementById('galleryGrid'),
     search: document.getElementById('gallerySearch'),
     count: document.getElementById('galleryCount'),
@@ -6906,7 +6939,7 @@
   function computeGalleryColumns(){
     if (!galleryEls.grid) return 4;
     const containerWidth = galleryEls.grid.clientWidth || window.innerWidth * 0.9;
-    const cardTarget = 140; // matches the design's target card width
+    const cardTarget = 170; // leave room for the full name beside the bookmark
     const gap = 12;
     const cols = Math.max(2, Math.floor((containerWidth + gap) / (cardTarget + gap)));
     return cols;
@@ -7495,6 +7528,10 @@
     if (!galleryEls.grid) return;
 
     const renderToken = ++galleryRenderToken;
+    galleryEls.heading.textContent = galleryMode === 'mine' ? 'Your Collection' : 'Browse The Herd';
+    galleryEls.intro.textContent = galleryMode === 'mine'
+      ? 'Your Herd pieces, House Objects and Founding Records, together in one place.'
+      : "every piece in the collection. search, filter, and see what's already been claimed.";
 
     if (galleryMode === 'mine' && !connectedWalletAddress) {
       galleryEls.grid.style.display = 'none';
@@ -7648,11 +7685,11 @@
 
     galleryEls.grid.style.display = 'grid';
     galleryEls.controls.style.display = 'flex';
-    galleryEls.pagination.style.display = 'flex';
     galleryEls.empty.style.display = 'none';
 
     const { pageSize } = computeGalleryPageSize();
     const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+    galleryEls.pagination.style.display = totalPages > 1 ? 'flex' : 'none';
     galleryPage = Math.min(galleryPage, totalPages - 1);
     const pageItems = filtered.slice(galleryPage * pageSize, (galleryPage + 1) * pageSize);
 
@@ -8127,7 +8164,7 @@
     clearTimeout(galleryResizeTimer);
     galleryResizeTimer = setTimeout(() => {
       const { cols, pageSize: newPageSize } = computeGalleryPageSize();
-      if (cols !== lastGalleryCols) {
+      if (cols !== lastGalleryCols || newPageSize !== lastGalleryPageSize) {
         // Figure out which item the user was actually looking at, and land
         // on whichever page still contains that same item under the new
         // layout -- rather than snapping back to page 1 on every resize.
