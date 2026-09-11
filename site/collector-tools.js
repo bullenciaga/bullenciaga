@@ -152,7 +152,7 @@
   }
   function cardLabel(entry) {
     return ['house-object','bullensaga'].includes(entry.series)
-      ? entry.name.replace(/\s+#\d+\s*$/, '').replace(/^THE\s+/i, '').toUpperCase() : entry.name;
+      ? 'THE ' + entry.name.replace(/\s+#\d+\s*$/, '').replace(/^THE\s+/i, '').toUpperCase() : entry.name;
   }
   function attachCard(card, entry) {
     const clean = cleanEntry(entry);
