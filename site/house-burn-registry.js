@@ -31,9 +31,13 @@
       node.textContent = displayValue(path, read(path, payload));
     });
     const status = root.querySelector('[data-house-burn-status]');
-    if (status) status.textContent = payload.totals.burnClaims
-      ? 'verified Token-2022 deposits committed to the public burn escrow'
-      : 'registry live · no public House Object burn claims yet';
+    if (status) {
+      if (payload.totals.burnClaims) {
+        status.innerHTML = '<span class="house-burn-status--full">verified Token-2022 deposits committed to the public burn escrow</span><span class="house-burn-status--mobile">Verified Token-2022 escrow deposits</span>';
+      } else {
+        status.textContent = 'registry live · no public House Object burn claims yet';
+      }
+    }
   }
 
   function renderRecent(root, payload){
