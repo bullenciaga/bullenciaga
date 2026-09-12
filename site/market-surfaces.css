@@ -573,7 +573,7 @@ body.market-surface:not(.transparent) {
 .market-home #roadmap .burn-tier.completed { background: var(--market-gold); }
 .market-home #roadmap .burn-tier.completed .tier-value { color: var(--market-bg); }
 .market-home #roadmap .burn-tier.completed .tier-name { color: rgba(5, 5, 5, 0.64); }
-.market-home #roadmap .burn-tier.in-progress { flex-direction: column-reverse; }
+.market-home #roadmap .burn-tier.in-progress { flex-direction: column; }
 
 .market-home #roadmap .house-burn-registry {
   margin-top: 14px;
@@ -673,3 +673,25 @@ body.market-surface:not(.transparent) {
   .market-surface *,
   .market-home #burnTrackerWrapper * { transition-duration: 0.01ms !important; }
 }
+
+/* Consistent mobile panels: two roomy columns and a shared height. */
+@media (max-width: 700px) {
+  .market-home #roadmap .burn-schedule { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; }
+  .market-home #roadmap .burn-tier,
+  .market-home #roadmap .staking-filler { min-width: 0; min-height: 112px; padding: 20px 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .market-home #roadmap .burn-tier .tier-value { font-size: 24px; line-height: 26px; }
+  .market-home #roadmap .burn-tier .tier-name,
+  .market-home #roadmap .staking-filler .tier-name { margin: 10px 0 0; font-size: 9px; letter-spacing: .05em; line-height: 1.5; white-space: nowrap; }
+  .market-home #roadmap .staking-filler .spinner-dots { margin: 0; }
+}
+@media (max-width: 620px) {
+  .market-home #roadmap .house-burn-registry__metric:nth-child(n+3) { border-top: 1px solid var(--market-line); }
+  .market-home #roadmap .house-burn-registry__head { padding: 13px 12px; }
+  .market-home #roadmap .house-burn-registry__metric { padding: 16px 8px; }
+  .market-home #roadmap .house-burn-registry__metric b { font-size: clamp(11px, 3vw, 17px); white-space: nowrap; }
+  .market-home #roadmap .house-burn-registry__metric span { font-size: 8px; letter-spacing: .06em; }
+  .market-home #roadmap .house-burn-registry__state { letter-spacing: 0; }
+  .market-home #roadmap .house-burn-registry__state .house-burn-status--full { display: none; }
+  .market-home #roadmap .house-burn-registry__state .house-burn-status--mobile { display: inline; white-space: nowrap; }
+}
+.house-burn-status--mobile { display: none; }
