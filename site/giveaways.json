@@ -26,21 +26,22 @@
       "displayOrder": 1,
       "featured": true,
       "trigger": {
-        "label": "72 hours. Counting starts only at the announced launch.",
-        "target": null,
-        "current": null
+        "label": "The draw unlocks at 5,000,000 $BULLEN in cumulative buys.",
+        "target": 5000000,
+        "current": null,
+        "source": "/competition-api/status"
       },
       "eligibility": [
-        "HERD #517 goes to the largest qualifying net buyer; #613 goes to second place. Purchases accumulate across the competition.",
-        "Every 50,000 $BULLEN bought from the official pool and retained at the closing snapshot earns one purchase ticket. There is no ticket cap.",
-        "HERD #699, #61 and #961 are drawn in that order. One prize per winning wallet; ranked winners are removed before the draws.",
-        "Qualifying entrants from the original giveaway already have their wallets entered, with one free entry each for #699 only.",
-        "Net buying means official-pool purchases minus official-pool sales. The qualifying amount is capped by the increase in the wallet\u2019s $BULLEN balance between opening and closing snapshots. Existing holdings and wallet transfers do not create tickets; outflows reduce the retained amount.",
-        "The entry window lasts 72 hours from the published opening snapshot. Purchases at or after the published deadline do not count. Retention is checked in the first finalized closing snapshot after that deadline, within 90 seconds. If that capture fails, results pause for review; the entry deadline does not move.",
-        "At least 50,000 qualifying $BULLEN is required for the ranked prizes. Exact ranking ties use the same committed future-block randomness as the draws.",
-        "The scored snapshot is published before a future finalized Solana block is committed as the draw seed. Results are reproducible from the public evidence. Missing or ambiguous transaction data pauses selection.",
-        "Prizes are delivered manually after wallet verification. If too few eligible wallets remain, unawarded pieces stay with the House for a future campaign. No turnout-based extension.",
-        "The House custodian wallet is excluded. Reserved free-entry wallets are verified before the draw snapshot and future seed are committed. Each verified reservation can be assigned only once."
+        "The draw unlocks at 5,000,000 $BULLEN in cumulative official-pool buys since the original launch. Every buy contributes, including buys below the ticket threshold and buys by wallets excluded from prizes. Sells never reduce this progress.",
+        "HERD #517 goes to the largest qualifying net buyer; #613 goes to second place. Every 50,000 qualifying $BULLEN bought and retained earns one purchase ticket, with no cap.",
+        "All existing purchases continue to count under the original holding requirements. The four original free #699 entries are preserved; qualifying entrants already have their wallets entered.",
+        "HERD #699, #61 and #961 are drawn in that order. One prize per wallet; ranked winners leave the draws, and each draw winner leaves subsequent draws.",
+        "This volume target replaces the original 72-hour deadline. The original opening snapshot is preserved. Eligibility closes at the first finalized balance snapshot whose fully verified pool history reaches the target; every buy through that snapshot counts toward progress.",
+        "Volume progress and prize eligibility are separate. Net buying for tickets and rankings means official-pool buys minus official-pool sells, capped by the wallet balance increase since opening. Existing holdings and transfers do not create tickets. Selling or transferring out can reduce purchase tickets and ranking, exactly as before.",
+        "At least 50,000 qualifying net $BULLEN retained is required for ranked prizes. The dev/custodian wallet and pool cannot receive entries or prizes.",
+        "All original free entries apply only to #699. Public entry records use wallets; entrant names are not published.",
+        "The scored snapshot and amendment evidence are published before a future finalized Solana block is committed as the draw seed. Results are reproducible. Missing or ambiguous transactions pause verification and selection.",
+        "Prizes are delivered manually after wallet verification. If too few eligible wallets remain, unawarded pieces stay with the House. Reaching the volume target does not guarantee five distinct eligible winners."
       ],
       "prizes": {
         "positions": [
@@ -52,9 +53,9 @@
         ],
         "count": 5,
         "subtitle": "#517: first place \u00b7 #613: second place \u00b7 #699, #61 and #961: draws",
-        "video": "/assets/giveaways/golden-jacket/competition.mp4",
         "poster": "/assets/giveaways/golden-jacket/poster.png",
-        "alt": "The Ghost Dripper competition: #517 Ghost Dripper leads five original HERD artworks with ranked and draw prize allocations."
+        "alt": "The Ghost Dripper competition: #517 Ghost Dripper leads five original HERD artworks with ranked and draw prize allocations.",
+        "image": "/assets/giveaways/golden-jacket/poster.png"
       },
       "entry": {
         "type": "automatic-buy-hold",
@@ -64,7 +65,30 @@
         "enabled": true,
         "statusSource": "/competition-api/status"
       },
-      "replacementFor": "vturbo-trophy-699"
+      "replacementFor": "vturbo-trophy-699",
+      "ruleHistory": [
+        {
+          "label": "Original 72-hour launch rules, superseded by the owner-approved volume amendment",
+          "eligibility": [
+            "HERD #517 goes to the largest qualifying net buyer; #613 goes to second place. Purchases accumulate across the competition.",
+            "Every 50,000 $BULLEN bought from the official pool and retained at the closing snapshot earns one purchase ticket. There is no ticket cap.",
+            "HERD #699, #61 and #961 are drawn in that order. One prize per winning wallet; ranked winners are removed before the draws.",
+            "Qualifying entrants from the original giveaway already have their wallets entered, with one free entry each for #699 only.",
+            "Net buying means official-pool purchases minus official-pool sales. The qualifying amount is capped by the increase in the wallet\u2019s $BULLEN balance between opening and closing snapshots. Existing holdings and wallet transfers do not create tickets; outflows reduce the retained amount.",
+            "The entry window lasts 72 hours from the published opening snapshot. Purchases at or after the published deadline do not count. Retention is checked in the first finalized closing snapshot after that deadline, within 90 seconds. If that capture fails, results pause for review; the entry deadline does not move.",
+            "At least 50,000 qualifying $BULLEN is required for the ranked prizes. Exact ranking ties use the same committed future-block randomness as the draws.",
+            "The scored snapshot is published before a future finalized Solana block is committed as the draw seed. Results are reproducible from the public evidence. Missing or ambiguous transaction data pauses selection.",
+            "Prizes are delivered manually after wallet verification. If too few eligible wallets remain, unawarded pieces stay with the House for a future campaign. No turnout-based extension.",
+            "The House custodian wallet is excluded. Reserved free-entry wallets are verified before the draw snapshot and future seed are committed. Each verified reservation can be assigned only once."
+          ],
+          "trigger": {
+            "label": "72 hours. Counting starts only at the announced launch.",
+            "target": null,
+            "current": null
+          }
+        }
+      ],
+      "amendmentPlanned": "five-million-buys"
     },
     {
       "id": "vturbo-trophy-699",
