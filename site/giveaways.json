@@ -34,7 +34,7 @@
         "HERD #517 goes to the largest qualifying net buyer; #613 goes to second place. Purchases accumulate across the competition.",
         "Every 50,000 $BULLEN bought from the official pool and retained at the closing snapshot earns one purchase ticket. There is no ticket cap.",
         "HERD #699, #61 and #961 are drawn in that order. One prize per winning wallet; ranked winners are removed before the draws.",
-        "Qualifying entrants from the original giveaway already have one reserved free entry for #699 only.",
+        "Qualifying entrants from the original giveaway already have their wallets entered, with one free entry each for #699 only.",
         "Net buying means official-pool purchases minus official-pool sales. The qualifying amount is capped by the increase in the wallet\u2019s $BULLEN balance between opening and closing snapshots. Existing holdings and wallet transfers do not create tickets; outflows reduce the retained amount.",
         "The entry window lasts 72 hours from the published opening snapshot. Purchases at or after the published deadline do not count. Retention is checked in the first finalized closing snapshot after that deadline, within 90 seconds. If that capture fails, results pause for review; the entry deadline does not move.",
         "At least 50,000 qualifying $BULLEN is required for the ranked prizes. Exact ranking ties use the same committed future-block randomness as the draws.",
