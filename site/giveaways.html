@@ -61,6 +61,10 @@
     .campaign-media img,
     .campaign-media video { display: block; width: 100%; height: 100%; object-fit: cover; }
     .campaign-media[data-media="video"] { min-height: 0; aspect-ratio: 16 / 9; align-self: center; }
+    #golden-jacket-699-613-517-61-961 .campaign-media[data-media="video"] { aspect-ratio:4/5; max-width:540px; width:100%; margin:auto; }
+    #golden-jacket-699-613-517-61-961 video { object-fit:contain; }
+    .golden-runtime { margin-top:24px; border-top:1px solid var(--bullen-border); padding-top:18px; overflow-wrap:anywhere; }
+    .golden-runtime ol { padding-left:24px; }
     .campaign-copy { min-width: 0; align-self: center; }
     .campaign[data-status="active"] { border-color: rgba(95, 211, 154, .42); }
     .campaign[data-status="upcoming"] { border-color: rgba(231, 184, 92, .3); }
@@ -121,13 +125,14 @@
   </main>
 
   <script type="module">
+    import { installGoldenJacket } from "/golden-jacket.js";
     import { loadFollow500, renderFollow500Details, installFollow500Verifier } from "/follow500.js";
     (async function () {
       const groups = [
         ['active', 'Active', 'Open for participation now'],
         ['pending', 'Pending', 'Awaiting a verified status or result'],
         ['upcoming', 'Upcoming', 'Visible before its gate is reached'],
-        ['completed', 'Completed', 'Snapshot and draw result published'],
+        ['completed', 'Completed', 'Past campaigns; draw proofs are linked where applicable'],
       ];
       const root = document.getElementById('campaigns');
       installFollow500Verifier(root);
@@ -246,14 +251,16 @@
           ${prizeLine ? `<div class="prize-traits">${escapeHtml(prizeLine)}</div>` : ''}
           ${follower ? '' : `<div class="trigger">${escapeHtml(trigger)}</div>${entries}`}${milestones}
           ${hasProgress && !follower ? `<div class="progress" aria-label="${progress.toFixed(0)} percent complete"><i style="--progress:${progress}%"></i></div>` : ''}
-          <ul class="rules">${campaign.eligibility.map((rule) => `<li>${escapeHtml(rule)}</li>`).join('')}</ul>
+          <ul class="rules">${(campaign.id === 'golden-jacket-699-613-517-61-961' ? campaign.eligibility.slice(0,4) : campaign.eligibility).map((rule) => `<li>${escapeHtml(rule)}</li>`).join('')}</ul>
+          ${campaign.id === 'golden-jacket-699-613-517-61-961' ? `<details><summary>Full rules and accounting</summary><ul class="rules">${campaign.eligibility.slice(4).map(rule => `<li>${escapeHtml(rule)}</li>`).join('')}</ul></details>` : ''}
           <div class="actions">
-            ${!follower || follower.canEnter ? link(campaign.entry && (campaign.entry.url || campaign.entry.homepageAnchor), campaign.kind === 'skill' ? 'Name #699 on X' : 'Enter', campaign.status === 'active') : ''}
+            ${(campaign.id !== 'golden-jacket-699-613-517-61-961' || campaign.status === 'active') && (!follower || follower.canEnter) ? link(campaign.entry && (campaign.entry.url || campaign.entry.homepageAnchor), campaign.kind === 'skill' ? 'Name #699 on X' : 'Enter', campaign.status === 'active') : ''}
             ${follower ? link('/entries', 'Public wallet entries') : ''}
             ${link(campaign.snapshot, 'Snapshot')}
             ${link(campaign.result, 'Result')}
           </div>
           ${follower ? renderFollow500Details(follower) : ''}
+          ${campaign.id === 'golden-jacket-699-613-517-61-961' ? '<div class="golden-runtime" aria-live="polite"></div>' : ''}
           </div>
         </article>`;
       };
@@ -271,6 +278,8 @@
           <div class="campaign-grid">${rows.length ? rows.map(card).join('') : '<div class="empty">No campaigns in this state.</div>'}</div>
         </section>`);
       }
+
+      installGoldenJacket(authority);
 
       // Only update this campaign; preserve other cards, media playback and history.
       let refreshingFollower = false;

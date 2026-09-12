@@ -2,9 +2,13 @@
   "schema": "bullenciaga.giveaways.v1",
   "project": "BULLENCIAGA",
   "token": "$BULLEN",
-  "updatedAt": "2026-09-10T00:55:16.659Z",
+  "updatedAt": "2026-09-12",
   "finalCarryover": {
-    "rounds": [0, 1, 2],
+    "rounds": [
+      0,
+      1,
+      2
+    ],
     "wallets": 32,
     "bankedEntries": 62
   },
@@ -15,12 +19,60 @@
   },
   "campaigns": [
     {
-      "id": "vturbo-trophy-699",
-      "title": "The vTURBO Trophy — HERD #699",
-      "kind": "skill",
-      "status": "active",
-      "displayOrder": 10,
+      "id": "golden-jacket-699-613-517-61-961",
+      "title": "The Golden Jacket \u2014 Five pieces. One competition.",
+      "kind": "buy-hold",
+      "status": "upcoming",
+      "displayOrder": 1,
       "featured": true,
+      "trigger": {
+        "label": "72 hours. Counting starts only at the announced launch.",
+        "target": null,
+        "current": null
+      },
+      "eligibility": [
+        "HERD #517 goes to the largest qualifying net buyer; #613 goes to second place. Purchases accumulate across the competition.",
+        "Every 50,000 $BULLEN bought from the official pool and retained at the closing snapshot earns one purchase ticket. There is no ticket cap.",
+        "HERD #699, #61 and #961 are drawn in that order. One prize per winning wallet; ranked winners are removed before the draws.",
+        "KIRI, OZMAN, SEACOVE, L and HYPE BULLENCIAGA each receive one free ticket for #699 only, in recognition of their original naming entries.",
+        "Net buying means official-pool purchases minus official-pool sales. The qualifying amount is capped by the increase in the wallet\u2019s $BULLEN balance between opening and closing snapshots. Existing holdings and wallet transfers do not create tickets; outflows reduce the retained amount.",
+        "The entry window lasts 72 hours from the published opening snapshot. Purchases at or after the published deadline do not count. Retention is checked in the first finalized closing snapshot after that deadline, within 90 seconds. If that capture fails, results pause for review; the entry deadline does not move.",
+        "At least 50,000 qualifying $BULLEN is required for the ranked prizes. Exact ranking ties use the same committed future-block randomness as the draws.",
+        "The scored snapshot is published before a future finalized Solana block is committed as the draw seed. Results are reproducible from the public evidence. Missing or ambiguous transaction data pauses selection.",
+        "Prizes are delivered manually after wallet verification. If too few eligible wallets remain, unawarded pieces stay with the House for a future campaign. No turnout-based extension.",
+        "The House custodian wallet is excluded. Free-entry wallets must be verified and included in the locked rules before launch so the one-prize rule applies consistently."
+      ],
+      "prizes": {
+        "positions": [
+          517,
+          613,
+          699,
+          61,
+          961
+        ],
+        "count": 5,
+        "subtitle": "#517: first place \u00b7 #613: second place \u00b7 #699, #61 and #961: draws",
+        "video": "/assets/giveaways/golden-jacket/competition.mp4",
+        "poster": "/assets/giveaways/golden-jacket/poster.png",
+        "alt": "The Golden Jacket competition: five original HERD artworks with ranked and draw prize allocations."
+      },
+      "entry": {
+        "type": "automatic-buy-hold",
+        "url": "/buy"
+      },
+      "automation": {
+        "enabled": false,
+        "statusSource": "/competition-api/status"
+      },
+      "replacementFor": "vturbo-trophy-699"
+    },
+    {
+      "id": "vturbo-trophy-699",
+      "title": "The vTURBO Trophy \u2014 HERD #699",
+      "kind": "skill",
+      "status": "completed",
+      "displayOrder": 10,
+      "featured": false,
       "trigger": {
         "label": "Collective unlock on the main upgrade post",
         "target": null,
@@ -28,24 +80,17 @@
         "source": "manual authenticated X check",
         "url": "https://x.com/bullenciagax/status/2093018896466923945"
       },
-      "milestones": [
-        { "label": "likes", "target": 50, "current": null },
-        { "label": "reposts", "target": 50, "current": null },
-        { "label": "replies", "target": 50, "current": null }
-      ],
+      "milestones": [],
       "eligibility": [
-        "Reply to the main upgrade post with a name for HERD #699",
-        "Add one sentence of lore",
-        "One entry per person; duplicate or alt-account entries are ineligible",
-        "No purchase necessary",
-        "After all three targets hit, entries stay open for another 24 hours",
-        "The winner is selected manually for originality, BULLENCIAGA energy and horns — no random picker"
+        "Superseded by The Golden Jacket competition. No naming winner selected; five original commenters receive one free #699 draw entry each."
       ],
       "prizes": {
         "type": "herd-position",
-        "positions": [699],
+        "positions": [
+          699
+        ],
         "count": 1,
-        "description": "HERD #699 — Golden Fancy Jacket",
+        "description": "HERD #699 \u2014 Golden Fancy Jacket",
         "image": "https://gateway.irys.xyz/GP5Hh4w56obg6f222QHwq5Axsej4AkrHekMAA3goii8Z",
         "traits": {
           "Background": "Butter Yellow",
@@ -59,16 +104,60 @@
       },
       "entry": {
         "type": "skill-reply",
-        "url": "https://x.com/bullenciagax/status/2093018896466923945",
-        "instructions": ["Name HERD #699", "Write one sentence of lore"]
+        "url": null,
+        "instructions": [
+          "Name HERD #699",
+          "Write one sentence of lore"
+        ]
       },
       "judging": {
         "method": "manual",
         "random": false,
-        "criteria": ["Originality", "BULLENCIAGA energy", "Horns"]
+        "criteria": [
+          "Originality",
+          "BULLENCIAGA energy",
+          "Horns"
+        ]
       },
-      "close": { "afterUnlockHours": 24 },
-      "contact": "Winner contacted privately for a Solana address"
+      "close": {
+        "afterUnlockHours": 24
+      },
+      "contact": "Winner contacted privately for a Solana address",
+      "replacedBy": "golden-jacket-699-613-517-61-961",
+      "resolution": "Superseded by The Golden Jacket competition. No naming winner selected; five original commenters receive one free #699 draw entry each.",
+      "originalEligibility": [
+        "Reply to the main upgrade post with a name for HERD #699",
+        "Add one sentence of lore",
+        "One entry per person; duplicate or alt-account entries are ineligible",
+        "No purchase necessary",
+        "After all three targets hit, entries stay open for another 24 hours",
+        "The winner is selected manually for originality, BULLENCIAGA energy and horns \u2014 no random picker"
+      ],
+      "originalMilestones": [
+        {
+          "label": "likes",
+          "target": 50,
+          "current": null
+        },
+        {
+          "label": "reposts",
+          "target": 50,
+          "current": null
+        },
+        {
+          "label": "replies",
+          "target": 50,
+          "current": null
+        }
+      ],
+      "originalEntry": {
+        "type": "skill-reply",
+        "url": "https://x.com/bullenciagax/status/2093018896466923945",
+        "instructions": [
+          "Name HERD #699",
+          "Write one sentence of lore"
+        ]
+      }
     },
     {
       "id": "follow500",
@@ -77,9 +166,28 @@
       "status": "active",
       "displayOrder": 20,
       "layout": "wide",
-      "trigger": { "label": "verified X followers", "target": 500, "current": null, "source": "/entries/status" },
-      "eligibility": ["Hold at least 100,000 $BULLEN when entering", "Follow @bullenciagax", "One wallet and one X username per entry"],
-      "prizes": { "type": "herd-positions", "positions": [168, 495, 737, 773, 950], "subtitle": "HERD #168 · HERD #495 · HERD #737 · HERD #773 · HERD #950" },
+      "trigger": {
+        "label": "verified X followers",
+        "target": 500,
+        "current": null,
+        "source": "/entries/status"
+      },
+      "eligibility": [
+        "Hold at least 100,000 $BULLEN when entering",
+        "Follow @bullenciagax",
+        "One wallet and one X username per entry"
+      ],
+      "prizes": {
+        "type": "herd-positions",
+        "positions": [
+          168,
+          495,
+          737,
+          773,
+          950
+        ],
+        "subtitle": "HERD #168 \u00b7 HERD #495 \u00b7 HERD #737 \u00b7 HERD #773 \u00b7 HERD #950"
+      },
       "entry": {
         "campaign": "follow500",
         "submitEndpoint": "/entry",
@@ -107,7 +215,7 @@
       "displayOrder": 0,
       "featured": true,
       "trigger": {
-        "label": "72-hour window closed · result publicly reproducible",
+        "label": "72-hour window closed \u00b7 result publicly reproducible",
         "target": null,
         "current": null,
         "source": "/giveaway-buy-hold-close-20260902.json"
@@ -130,9 +238,13 @@
       },
       "prizes": {
         "type": "herd-positions",
-        "positions": [680, 625, 308],
+        "positions": [
+          680,
+          625,
+          308
+        ],
         "count": 3,
-        "subtitle": "HERD #680 · HERD #625 · HERD #308",
+        "subtitle": "HERD #680 \u00b7 HERD #625 \u00b7 HERD #308",
         "video": "/assets/giveaways/herd-buy-hold/herd-buy-hold.mp4",
         "poster": "/assets/giveaways/herd-buy-hold/herd-buy-hold-poster.webp",
         "alt": "Animated BULLENCIAGA Buy + Hold Draw reveal featuring HERD #680, HERD #625 and HERD #308",
@@ -156,7 +268,10 @@
       },
       "entry": {
         "type": "buy-and-hold",
-        "instructions": ["Buy from the official pool", "Hold the qualifying balance through the close snapshot"]
+        "instructions": [
+          "Buy from the official pool",
+          "Hold the qualifying balance through the close snapshot"
+        ]
       },
       "draw": {
         "method": "future-finalized-solana-blockhash",
@@ -174,10 +289,23 @@
       "kind": "mint",
       "round": 0,
       "status": "completed",
-      "trigger": { "label": "Herd mints", "target": 250, "current": 250 },
-      "eligibility": ["1 eligible Herd piece", "100,000 $BULLEN"],
-      "qualification": { "minPieces": 1, "minTokens": 100000, "entries": "flat" },
-      "prizes": { "count": 4 },
+      "trigger": {
+        "label": "Herd mints",
+        "target": 250,
+        "current": 250
+      },
+      "eligibility": [
+        "1 eligible Herd piece",
+        "100,000 $BULLEN"
+      ],
+      "qualification": {
+        "minPieces": 1,
+        "minTokens": 100000,
+        "entries": "flat"
+      },
+      "prizes": {
+        "count": 4
+      },
       "snapshot": "/giveaway-snapshot-0.json",
       "result": "/giveaway-result-0.json",
       "payoutStatus": "unverified"
@@ -188,10 +316,23 @@
       "kind": "mint",
       "round": 1,
       "status": "completed",
-      "trigger": { "label": "Herd mints", "target": 350, "current": 350 },
-      "eligibility": ["2 eligible Herd pieces", "250,000 $BULLEN"],
-      "qualification": { "minPieces": 2, "minTokens": 250000, "entries": "flat" },
-      "prizes": { "count": 8 },
+      "trigger": {
+        "label": "Herd mints",
+        "target": 350,
+        "current": 350
+      },
+      "eligibility": [
+        "2 eligible Herd pieces",
+        "250,000 $BULLEN"
+      ],
+      "qualification": {
+        "minPieces": 2,
+        "minTokens": 250000,
+        "entries": "flat"
+      },
+      "prizes": {
+        "count": 8
+      },
       "snapshot": "/giveaway-snapshot-1.json",
       "result": "/giveaway-result-1.json",
       "payoutStatus": "unverified"
@@ -202,10 +343,23 @@
       "kind": "mint",
       "round": 2,
       "status": "completed",
-      "trigger": { "label": "Herd mints", "target": 500, "current": 500 },
-      "eligibility": ["4 eligible Herd pieces", "500,000 $BULLEN"],
-      "qualification": { "minPieces": 4, "minTokens": 500000, "entries": "flat" },
-      "prizes": { "count": 8 },
+      "trigger": {
+        "label": "Herd mints",
+        "target": 500,
+        "current": 500
+      },
+      "eligibility": [
+        "4 eligible Herd pieces",
+        "500,000 $BULLEN"
+      ],
+      "qualification": {
+        "minPieces": 4,
+        "minTokens": 500000,
+        "entries": "flat"
+      },
+      "prizes": {
+        "count": 8
+      },
       "snapshot": "/giveaway-snapshot-2.json",
       "result": "/giveaway-result-2.json",
       "payoutStatus": "unverified"
@@ -216,10 +370,25 @@
       "kind": "mint",
       "round": 3,
       "status": "upcoming",
-      "trigger": { "label": "Herd mints", "target": 650, "current": null, "source": "/supply/minted" },
-      "eligibility": ["6 eligible Herd pieces", "1,000,000 $BULLEN"],
-      "qualification": { "minPieces": 6, "minTokens": 1000000, "entries": "flat" },
-      "prizes": { "count": 8, "confirmationRequired": true },
+      "trigger": {
+        "label": "Herd mints",
+        "target": 650,
+        "current": null,
+        "source": "/supply/minted"
+      },
+      "eligibility": [
+        "6 eligible Herd pieces",
+        "1,000,000 $BULLEN"
+      ],
+      "qualification": {
+        "minPieces": 6,
+        "minTokens": 1000000,
+        "entries": "flat"
+      },
+      "prizes": {
+        "count": 8,
+        "confirmationRequired": true
+      },
       "snapshot": null,
       "result": null,
       "payoutStatus": "blocked-on-snapshot"
@@ -229,10 +398,29 @@
       "title": "Compounded final",
       "kind": "final",
       "status": "upcoming",
-      "trigger": { "label": "Round 3 settled and dispute window closed", "target": 1, "current": 0 },
-      "eligibility": ["One permanent entry for every mint round qualified", "Round 3 immutable snapshot and result required"],
-      "prizes": { "count": 2, "description": "$BULLEN plus a custom one-of-one" },
-      "draw": { "requiredRounds": [0, 1, 2, 3], "bullenWinners": 1, "customWinners": 1 },
+      "trigger": {
+        "label": "Round 3 settled and dispute window closed",
+        "target": 1,
+        "current": 0
+      },
+      "eligibility": [
+        "One permanent entry for every mint round qualified",
+        "Round 3 immutable snapshot and result required"
+      ],
+      "prizes": {
+        "count": 2,
+        "description": "$BULLEN plus a custom one-of-one"
+      },
+      "draw": {
+        "requiredRounds": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "bullenWinners": 1,
+        "customWinners": 1
+      },
       "snapshot": null,
       "result": null,
       "payoutStatus": "blocked-on-round-3"
