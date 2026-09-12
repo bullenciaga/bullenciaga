@@ -1492,9 +1492,13 @@
     left:8px;
     right:auto;
   }
-  /* Narrow cards give market price its own row so both statuses stay readable. */
-  @container (max-width:200px){
-    .gallery-card-badge:not(.listed) ~ .gallery-card-badge.listed{top:36px}
+  /* Keep both badges in their original corners, including narrow phone cards. */
+  @container (max-width:160px){
+    .gallery-card.is-listed .gallery-card-badge{
+      font-size:7px;
+      letter-spacing:0;
+      padding:3px;
+    }
   }
   /* Giveaway stock. A third colour so it can never be confused with gold
      (provenance) or green (market state) at a glance -- this is a third,
@@ -7464,9 +7468,8 @@
       badge.textContent = 'CLAIMED';
       card.appendChild(badge);
     }
-    // Listing badge sits BELOW the owned/claimed badge rather than replacing
-    // it -- "who holds it" and "is it for sale" are independent facts and a
-    // buyer wants both at a glance.
+    // Listing price sits top-left, opposite the top-right ownership badge.
+    // Both facts remain visible without shifting either badge down.
     const listing = listingFor(entry);
     if (listing) {
       // Marks the CARD, not just the badge -- drives the full-colour
