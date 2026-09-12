@@ -19,12 +19,12 @@ export function installGoldenJacket(authority){
       if(s.counting){const a=document.createElement('a');a.href='/buy';a.className='action primary';a.textContent='Open the buy page';actions.append(a);}
       text('strong',s.phase==='not-started'?'Counting has not started':s.counting?'Competition live':s.phase==='drawn'?'Winners selected · Manual delivery pending':'Entries closed · Selection pending');
       if(s.amendment){
-        article.querySelector('.trigger').textContent='The draw unlocks at 5,000,000 $BULLEN in cumulative buys.';
+        article.querySelector('.trigger').textContent='The draw unlocks at 100,000,000 $BULLEN in cumulative buys.';
         const total=BigInt(s.buyVolumeRaw||'0'),target=BigInt(s.amendment.targetRaw),percent=Number(total*10000n/target)/100;
         const panel=text('div','');panel.className='golden-volume';
         const label=document.createElement('span');label.className='volume-label';label.textContent='THE ROAD TO THE DRAW';panel.append(label);
-        const tally=document.createElement('div');tally.className='volume-tally';tally.textContent=s.volumeReady?(Number(total/1000000n)).toLocaleString()+' / 5,000,000 $BULLEN':'Verifying buys since launch…';panel.append(tally);
-        const track=document.createElement('div');track.className='volume-track';track.setAttribute('role','progressbar');track.setAttribute('aria-label','Cumulative buys toward the draw');track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax','5000000');if(s.volumeReady)track.setAttribute('aria-valuenow',String(Math.min(5000000,Number(total/1000000n))));
+        const tally=document.createElement('div');tally.className='volume-tally';tally.textContent=s.volumeReady?(Number(total/1000000n)).toLocaleString()+' / 100,000,000 $BULLEN':'Verifying buys since launch…';panel.append(tally);
+        const track=document.createElement('div');track.className='volume-track';track.setAttribute('role','progressbar');track.setAttribute('aria-label','Cumulative buys toward the draw');track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax','100000000');if(s.volumeReady)track.setAttribute('aria-valuenow',String(Math.min(100000000,Number(total/1000000n))));
         const fill=document.createElement('span');fill.style.width=Math.min(100,percent)+'%';track.append(fill);panel.append(track);
         const detail=document.createElement('p');detail.textContent=(s.volumeReady?percent.toFixed(1)+'% · ':'')+'Every buy moves the bar. Sells do not move it backwards.';panel.append(detail);
         text('p','Purchase history and entry rules are unchanged. Every purchase ticket still requires holding. The volume target replaces the original timer.');
