@@ -26,13 +26,13 @@
       "displayOrder": 1,
       "featured": true,
       "trigger": {
-        "label": "The draw unlocks at 5,000,000 $BULLEN in cumulative buys.",
-        "target": 5000000,
+        "label": "The draw unlocks at 100,000,000 $BULLEN in cumulative buys.",
+        "target": 100000000,
         "current": null,
         "source": "/competition-api/status"
       },
       "eligibility": [
-        "The draw unlocks at 5,000,000 $BULLEN in cumulative official-pool buys since the original launch. Every buy contributes, including buys below the ticket threshold and buys by wallets excluded from prizes. Sells never reduce this progress.",
+        "The draw unlocks at 100,000,000 $BULLEN in cumulative official-pool buys since the original launch. Every buy contributes, including buys below the ticket threshold and buys by wallets excluded from prizes. Sells never reduce this progress.",
         "HERD #517 goes to the largest qualifying net buyer; #613 goes to second place. Every 50,000 qualifying $BULLEN bought and retained earns one purchase ticket, with no cap.",
         "All existing purchases continue to count under the original holding requirements. The four original free #699 entries are preserved; qualifying entrants already have their wallets entered.",
         "HERD #699, #61 and #961 are drawn in that order. One prize per wallet; ranked winners leave the draws, and each draw winner leaves subsequent draws.",
@@ -88,7 +88,7 @@
           }
         }
       ],
-      "amendmentPlanned": "five-million-buys"
+      "amendmentPlanned": "hundred-million-buys"
     },
     {
       "id": "vturbo-trophy-699",

@@ -1521,19 +1521,14 @@
     outline:1px solid rgba(224,145,92,0.35);
     outline-offset:-1px;
   }
-  /* Buy-competition stock. A fifth colour, and deliberately the loudest one
-     on the grid: this is the only category with a hard deadline attached, so
-     it should be the thing the eye lands on first when scanning dev-held
-     pieces. Bright yellow rather than the house gold (#c7a869) -- gold means
-     provenance everywhere else on this page and reusing it here would make
-     two unrelated facts look like one. */
+  /* Buy-competition prizes use green labels and clear their hold tag on delivery. */
   .gallery-card-badge.buy-comp{
     background:rgba(5,5,5,0.78);
-    color:#ffe14d;
-    border:1px solid #ffe14d;
+    color:#56dca0;
+    border:1px solid #56dca0;
   }
   .gallery-card.is-buy-comp{
-    outline:1px solid rgba(255,225,77,0.4);
+    outline:1px solid rgba(86,220,160,0.4);
     outline-offset:-1px;
   }
   /* GraveMarket space stock. A sixth colour -- cold blue, the furthest thing
@@ -7291,10 +7286,10 @@
     180, 487, 327, 927, 678,
   ]);
 
-  // Set aside for the buy competition specifically. Its own list because it
-  // is drawn by buy-comp.js on entirely different rules from either giveaway,
-  // and because it is the one category with a deadline on it.
+  // Current Ghost Dripper prizes plus any undelivered historical buy prizes.
+  // Live ownership clears these tags once the prize leaves the House wallet.
   const BUY_COMP_PIECES = new Set([
+    517, 613, 699, 61, 961,
     92, 698, 794, 811, 978,
   ]);
 
