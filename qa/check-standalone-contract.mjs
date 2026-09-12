@@ -152,12 +152,11 @@ for (const id of ['vturbo-trophy-699', 'follow500', 'herd-buy-hold-680-625-308',
   if (!authority.campaigns.some((campaign) => campaign.id === id)) failures.push(`giveaway authority missing ${id}`);
 }
 const trophy = authority.campaigns.find((campaign) => campaign.id === 'vturbo-trophy-699');
-if (trophy?.status !== 'active' || trophy?.kind !== 'skill' || trophy?.prizes?.positions?.[0] !== 699
-    || trophy?.entry?.url !== 'https://x.com/bullenciagax/status/2093018896466923945'
-    || trophy?.close?.afterUnlockHours !== 24 || trophy?.judging?.random !== false
-    || trophy?.milestones?.length !== 3
-    || trophy.milestones.some((milestone) => milestone.target !== 50 || milestone.current !== null)) {
-  failures.push('vTURBO Trophy must remain an active manual skill campaign tied to the published 50/50/50 post');
+const golden = authority.campaigns.find(c => c.id === 'golden-jacket-699-613-517-61-961');
+if (trophy?.status !== 'completed' || trophy?.replacedBy !== golden?.id || !trophy?.originalEligibility?.length
+    || trophy?.trigger?.url !== 'https://x.com/bullenciagax/status/2093018896466923945'
+    || golden?.prizes?.positions?.join(',') !== '517,613,699,61,961' || typeof golden?.automation?.enabled !== 'boolean') {
+  failures.push('Golden Jacket replacement must preserve naming-campaign history, corrected prize order and inactive predeploy state');
 }
 const round3 = authority.campaigns.find((campaign) => campaign.id === 'mint-round-3');
 if (round3?.round !== 3 || round3?.trigger?.target !== 650 || round3?.status !== 'upcoming'
