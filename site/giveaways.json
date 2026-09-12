@@ -20,7 +20,7 @@
   "campaigns": [
     {
       "id": "golden-jacket-699-613-517-61-961",
-      "title": "The Golden Jacket \u2014 Five pieces. One competition.",
+      "title": "The Ghost Dripper \u2014 Five pieces. One competition.",
       "kind": "buy-hold",
       "status": "upcoming",
       "displayOrder": 1,
@@ -54,7 +54,7 @@
         "subtitle": "#517: first place \u00b7 #613: second place \u00b7 #699, #61 and #961: draws",
         "video": "/assets/giveaways/golden-jacket/competition.mp4",
         "poster": "/assets/giveaways/golden-jacket/poster.png",
-        "alt": "The Golden Jacket competition: five original HERD artworks with ranked and draw prize allocations."
+        "alt": "The Ghost Dripper competition: #517 Ghost Dripper leads five original HERD artworks with ranked and draw prize allocations."
       },
       "entry": {
         "type": "automatic-buy-hold",
@@ -82,7 +82,7 @@
       },
       "milestones": [],
       "eligibility": [
-        "Superseded by The Golden Jacket competition. No naming winner selected; five original commenters receive one free #699 draw entry each."
+        "Superseded by The Ghost Dripper competition. No naming winner selected; five original commenters receive one free #699 draw entry each."
       ],
       "prizes": {
         "type": "herd-position",
@@ -124,7 +124,7 @@
       },
       "contact": "Winner contacted privately for a Solana address",
       "replacedBy": "golden-jacket-699-613-517-61-961",
-      "resolution": "Superseded by The Golden Jacket competition. No naming winner selected; five original commenters receive one free #699 draw entry each.",
+      "resolution": "Superseded by The Ghost Dripper competition. No naming winner selected; five original commenters receive one free #699 draw entry each.",
       "originalEligibility": [
         "Reply to the main upgrade post with a name for HERD #699",
         "Add one sentence of lore",
