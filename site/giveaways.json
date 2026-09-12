@@ -53,9 +53,10 @@
         ],
         "count": 5,
         "subtitle": "#517: first place \u00b7 #613: second place \u00b7 #699, #61 and #961: draws",
-        "poster": "/assets/giveaways/golden-jacket/poster.png",
+        "poster": "/assets/giveaways/ghost-dripper-100m/poster.png",
         "alt": "The Ghost Dripper competition: #517 Ghost Dripper leads five original HERD artworks with ranked and draw prize allocations.",
-        "image": "/assets/giveaways/golden-jacket/poster.png"
+        "image": "/assets/giveaways/ghost-dripper-100m/poster.png",
+        "video": "/assets/giveaways/ghost-dripper-100m/ghost-dripper-100m.mp4"
       },
       "entry": {
         "type": "automatic-buy-hold",
