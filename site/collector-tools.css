@@ -61,3 +61,7 @@
 }
 
 .collector-close{padding:0;line-height:0}.collector-close svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* Square icon controls override the shared mobile minimum height. */
+.collector-dialog .collector-save{width:36px;min-width:36px;max-width:36px;height:36px;min-height:36px;max-height:36px;aspect-ratio:1;box-sizing:border-box}
+.collector-dialog .collector-close{width:42px;min-width:42px;max-width:42px;height:42px;min-height:42px;max-height:42px;aspect-ratio:1;box-sizing:border-box}
