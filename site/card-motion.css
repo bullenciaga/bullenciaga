@@ -62,3 +62,6 @@
 }
 html{scrollbar-gutter:stable}
 html:has(body.lightbox-open){overflow:hidden}
+
+/* Separate the mint action from its explanatory note on every card. */
+.gallery-lightbox-try-mint-note{margin-top:8px}
