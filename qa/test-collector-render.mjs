@@ -158,8 +158,8 @@ const config=entries=>({entries,format:'banner',layout:'grid',palette:'charcoal'
  let available=false;const h=harness({image:()=>available?'ok':'truncated'});await assert.rejects(h.api.loadImage(h.items[0].image));assert(h.requests.every(r=>!r.image));available=true;await h.api.loadImage(h.items[0].image);assert.equal(h.requests.length,3,'damaged responses never poison the original cache');assert.equal(h.requests[2].cache,'reload','retry bypasses damaged browser HTTP cache');
 }
 {
- const h=harness(),html=fs.readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
- const examples=[['image/jpeg',Buffer.from(html.match(/data:image\/jpeg;base64,([A-Za-z0-9+/=]+)/)[1],'base64')],['image/webp',fs.readFileSync(new URL('../site/assets/collection-previews/house-object-01-signet.webp',import.meta.url))],['image/gif',fs.readFileSync(new URL('../site/assets/giveaways/herd-buy-hold/herd-buy-hold.gif',import.meta.url))]];
+ const h=harness();
+ const examples=[['image/jpeg',fs.readFileSync(new URL('../site/assets/hero/chair-sakura-960.jpg',import.meta.url))],['image/webp',fs.readFileSync(new URL('../site/assets/collection-previews/house-object-01-signet.webp',import.meta.url))],['image/gif',fs.readFileSync(new URL('../site/assets/giveaways/herd-buy-hold/herd-buy-hold.gif',import.meta.url))]];
  for(const[type,bytes]of examples){assert.equal(h.api.imageType(bytes),type,`real repository ${type} accepted`);assert.throws(()=>h.api.imageType(bytes.subarray(0,Math.floor(bytes.length/2))),`truncated ${type} rejected`);assert.throws(()=>h.api.imageType(bytes.subarray(0,-1)),`missing terminal byte ${type} rejected`);}
 }
 {
