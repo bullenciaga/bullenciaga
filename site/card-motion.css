@@ -1,0 +1,7 @@
+/* A soft clear-coat reflection; the artwork and badges remain untouched. */
+.gallery-card{transition:transform .24s cubic-bezier(.22,1,.36,1),border-color .18s ease;transform-origin:center}
+.gallery-card::after{content:"";position:absolute;inset:0 0 44px;pointer-events:none;z-index:1;opacity:var(--card-shine,0);background:radial-gradient(ellipse at var(--card-light-x,50%) var(--card-light-y,30%),rgba(255,246,221,.18),rgba(255,255,255,.045) 32%,transparent 65%);mix-blend-mode:screen;transition:opacity .28s ease}
+.gallery-card .gallery-card-badge{z-index:2}
+.card-flight{position:fixed;z-index:10000;object-fit:cover;display:block;pointer-events:none;transform-origin:0 0;will-change:transform;box-shadow:0 18px 50px #0005}
+@media(hover:none){.gallery-card:active{transform:scale(.98)}}
+@media(prefers-reduced-motion:reduce){.gallery-card{transition:none;transform:none!important}.gallery-card::after{display:none}}
