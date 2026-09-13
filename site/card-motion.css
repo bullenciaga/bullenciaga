@@ -1,6 +1,11 @@
 /* Broad diagonal clear-coat reflection, swept by the card angle rather than a point light. */
 .gallery-card{transition:border-color .18s ease;transform-origin:center}
-.gallery-card::after{content:"";position:absolute;inset:0 0 44px;pointer-events:none;z-index:1;opacity:var(--card-shine,0);background-image:linear-gradient(115deg,transparent 34%,rgba(255,255,255,.025) 42%,rgba(255,249,233,.16) 48%,rgba(255,255,255,.07) 52%,transparent 61%);background-size:250% 200%;background-position:var(--card-reflection-x,50%) var(--card-reflection-y,50%);mix-blend-mode:screen;transition:opacity .3s ease}
+.gallery-card::after{content:"";position:absolute;inset:0 0 44px;pointer-events:none;z-index:1;opacity:var(--card-shine,0);background-image:linear-gradient(115deg,rgba(255,255,255,0) 15%,rgba(255,255,255,.018) 40%,rgba(255,255,255,.065) 53%,rgba(255,255,255,.018) 66%,rgba(255,255,255,0) 90%);background-size:200% 180%;background-position:var(--card-reflection-x,50%) var(--card-reflection-y,50%);mix-blend-mode:screen;transition:opacity .3s ease}
 .gallery-card .gallery-card-badge{z-index:2}
 @media(hover:none){.gallery-card:active{transform:scale(.98)}}
 @media(prefers-reduced-motion:reduce){.gallery-card{transition:none;transform:none!important}.gallery-card::after{display:none}}
+/* The border belongs to the changing outer frame, so its bottom is never clipped. */
+.card-morph-shell{position:fixed;z-index:10000;box-sizing:border-box;border:1px solid var(--gold,#c7a869);background:#050505;overflow:hidden;pointer-events:none;box-shadow:0 16px 48px #0006;contain:layout style}
+.card-morph-layer{pointer-events:none!important}
+.card-morph-layer::after{display:none!important}
+.card-morph-layer .gallery-card-name{box-sizing:border-box}

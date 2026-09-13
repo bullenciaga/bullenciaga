@@ -1,73 +1,92 @@
-/* One continuous card surface; no flying thumbnail or independently fading details. */
+/* A framed shared surface morphs between the real tile and the real lightbox. */
 (() => {
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const hover = matchMedia('(hover: hover) and (pointer: fine)');
-  const ease = 'cubic-bezier(.2,.75,.2,1)';
-  let animations = [], cleanups = [], closing = false;
-  function cancel() {
-    animations.splice(0).forEach(a => a.cancel());
-    cleanups.splice(0).forEach(fn => fn());
-    closing = false;
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  const hover=matchMedia('(hover: hover) and (pointer: fine)');
+  let active=null;
+  function cancel(){
+    if(!active)return;
+    const scene=active;active=null;cancelAnimationFrame(scene.frame);
+    scene.cleanups.forEach(fn=>fn());scene.shell.remove();
   }
-  function animate(el, frames, duration) {
-    const a = el.animate(frames, {duration,easing:ease,fill:'both'});
-    animations.push(a); return a;
+  function hide(scene,el){
+    if(!el)return;const old=el.style.visibility;el.style.visibility='hidden';
+    scene.cleanups.push(()=>{el.style.visibility=old;});
   }
-  function conceal(el) {
-    if(!el) return;
-    const old=el.style.visibility; el.style.visibility='hidden';
-    cleanups.push(()=>{el.style.visibility=old;});
+  function safeClone(el){
+    const clone=el.cloneNode(true);clone.removeAttribute('id');
+    clone.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));
+    clone.inert=true;clone.setAttribute('aria-hidden','true');return clone;
   }
-  function surface(content) {
-    const before = {origin:content.style.transformOrigin,overflow:content.style.overflow,willChange:content.style.willChange};
-    content.style.transformOrigin='0 0';content.style.overflow='hidden';content.style.willChange='transform,clip-path';
-    cleanups.push(()=>{content.style.transformOrigin=before.origin;content.style.overflow=before.overflow;content.style.willChange=before.willChange;});
+  function smooth(a,b,p){const t=Math.max(0,Math.min(1,(p-a)/(b-a)));return t*t*(3-2*t);}
+  function draw(scene,p){
+    scene.progress=p;
+    const lerp=(a,b)=>a+(b-a)*p,from=scene.from,to=scene.to;
+    const width=lerp(from.width,to.width),height=lerp(from.height,to.height);
+    Object.assign(scene.shell.style,{left:lerp(from.left,to.left)+'px',top:lerp(from.top,to.top)+'px',width:width+'px',height:height+'px'});
+    const detail=smooth(.08,.72,p);
+    scene.large.style.transform=`scale(${(width-2)/scene.largeWidth})`;
+    scene.small.style.transform=`scale(${(width-2)/scene.smallWidth})`;
+    scene.large.style.opacity=detail;
+    scene.small.style.opacity=1-detail;
+    scene.overlay.style.backgroundColor=`rgba(5,5,5,${.92*p})`;
   }
-  function miniature(from,to) {
-    const scale=from.width/to.width;
-    return {transform:`translate(${from.left-to.left}px,${from.top-to.top}px) scale(${scale})`,clipPath:`inset(0px 0px ${Math.max(0,to.height-from.height/scale)}px 0px)`};
+  function run(scene,destination,duration,done){
+    cancelAnimationFrame(scene.frame);
+    const start=scene.progress;let started;
+    function tick(now){
+      if(active!==scene)return;
+      started ??= now;const t=Math.min(1,(now-started)/duration);
+      // Soft acceleration and a long, controlled landing; every layer shares this clock.
+      const ease=t<.5?8*t*t*t*t:1-Math.pow(-2*t+2,4)/2;
+      draw(scene,start+(destination-start)*ease);
+      if(t<1)scene.frame=requestAnimationFrame(tick);
+      else {cancel();done?.();}
+    }
+    scene.frame=requestAnimationFrame(tick);
   }
-  const full={transform:'translate(0px,0px) scale(1)',clipPath:'inset(0px 0px 0px 0px)'};
-  function visible(r){return r && r.width>0 && r.top>=0 && r.bottom<=innerHeight;}
-  function open(card,overlay,sourceRect) {
-    cancel();
+  function create(card,overlay,from){
     const content=overlay.querySelector('.gallery-lightbox-content');
-    const image=overlay.querySelector('#galleryLightboxImgGallery');
-    const source=card?.querySelector('img');
-    if(!content || !source?.complete || !source.naturalWidth || reduced.matches)return;
-    content.scrollTop=0;
-    const target=content.getBoundingClientRect();
-    if(!target.width)return;
-    // The decoded thumbnail is an underlay only; the real loader/retry keeps ownership.
-    const oldBackground=image.style.backgroundImage;
-    image.style.backgroundImage=`url(${JSON.stringify(source.currentSrc||source.src)})`;
-    image.style.backgroundSize='cover';
-    cleanups.push(()=>{image.style.backgroundImage=oldBackground;image.style.backgroundSize='';});
-    conceal(card);conceal(overlay.querySelector('#lightboxTierParticles'));
-    surface(content);
-    const end=animate(content,[miniature(sourceRect,target),full],520);
-    animate(overlay,[{backgroundColor:'rgba(5,5,5,0)'},{backgroundColor:'rgba(5,5,5,.92)'}],520);
-    end.finished.then(cancel).catch(()=>{});
+    const to=content.getBoundingClientRect();
+    const shell=document.createElement('div');shell.className='card-morph-shell';shell.setAttribute('aria-hidden','true');
+    const large=safeClone(content),small=safeClone(card);
+    const largeWidth=content.clientWidth,smallWidth=card.clientWidth;
+    for(const [el,width] of [[large,largeWidth],[small,smallWidth]]){
+      el.classList.add('card-morph-layer');
+      Object.assign(el.style,{width:width+'px',maxWidth:'none',maxHeight:'none',height:'auto',position:'absolute',left:'0',top:'0',margin:'0',border:'0',overflow:'visible',visibility:'visible',transition:'none',transformOrigin:'0 0',boxShadow:'none',willChange:'transform,opacity'});
+      shell.appendChild(el);
+    }
+    const source=card.querySelector('img'),hero=large.querySelector('img[id]')||large.querySelector('img');
+    // The gallery lightbox hero precedes any marketplace icons. Use the decoded
+    // source in this temporary representation; never change the real image loader.
+    if(hero && source)hero.src=source.currentSrc||source.src;
+    shell.style.borderColor=getComputedStyle(content).borderColor;
+    document.body.appendChild(shell);
+    const scene={shell,small,large,smallWidth,largeWidth,from,to,overlay,content,card,cleanups:[],frame:0,progress:0};
+    const background=overlay.style.backgroundColor;scene.cleanups.push(()=>{overlay.style.backgroundColor=background;});
+    // Swapping visual representations must not select a new document scroll anchor.
+    for(const el of [document.documentElement,document.body]){
+      const old=el.style.overflowAnchor;el.style.overflowAnchor='none';
+      scene.cleanups.push(()=>{el.style.overflowAnchor=old;});
+    }
+    hide(scene,card);hide(scene,content);hide(scene,overlay.querySelector('#lightboxTierParticles'));
+    overlay.querySelectorAll('.gallery-lightbox-nav').forEach(e=>hide(scene,e));
+    active=scene;return scene;
   }
-  function close(overlay,done) {
-    if(closing)return true;
-    const content=overlay.querySelector('.gallery-lightbox-content');
-    const image=overlay.querySelector('#galleryLightboxImgGallery');
-    if(!content || !image || reduced.matches || overlay.style.display==='none')return false;
-    // Reverse from the current frame when dismissed mid-expansion.
-    const current=getComputedStyle(content),currentFrame={transform:current.transform,clipPath:current.clipPath};
-    const background=getComputedStyle(overlay).backgroundColor;
-    const wasAnimating=animations.length>0;
-    cancel();closing=true;
-    const source=[...document.querySelectorAll('.gallery-card > img')].find(i=>i.alt===image.alt)?.closest('.gallery-card');
-    const from=source?.getBoundingClientRect(),to=content.getBoundingClientRect();
-    let end;
-    if(visible(from) && content.scrollTop<2){
-      conceal(source);conceal(overlay.querySelector('#lightboxTierParticles'));surface(content);
-      end=animate(content,[wasAnimating?currentFrame:full,miniature(from,to)],420);
-      animate(overlay,[{backgroundColor:background},{backgroundColor:'rgba(5,5,5,0)'}],420);
-    }else end=animate(overlay,[{opacity:1},{opacity:0}],180);
-    end.finished.then(()=>{cancel();done();}).catch(()=>{});return true;
+  function open(card,overlay,sourceRect){
+    cancel();const image=card?.querySelector('img');
+    if(reduced.matches||!image?.complete||!image.naturalWidth)return;
+    overlay.querySelector('.gallery-lightbox-content').scrollTop=0;
+    const scene=create(card,overlay,sourceRect);draw(scene,0);run(scene,1,560);
+  }
+  function close(overlay,done){
+    if(active?.closing)return true;
+    if(active?.overlay===overlay){active.closing=true;run(active,0,Math.max(200,460*active.progress),done);return true;}
+    const content=overlay.querySelector('.gallery-lightbox-content'),image=overlay.querySelector('#galleryLightboxImgGallery');
+    if(reduced.matches||!image||overlay.style.display==='none')return false;
+    const card=[...document.querySelectorAll('.gallery-card > img')].find(i=>i.alt===image.alt)?.closest('.gallery-card');
+    const from=card?.getBoundingClientRect();
+    if(!from || from.top<0 || from.bottom>innerHeight || content.scrollTop>2)return false;
+    const scene=create(card,overlay,from);scene.closing=true;draw(scene,1);run(scene,0,460,done);return true;
   }
   function attach(card) {
     let frame=0,bounds=null,active=false,last=0;
