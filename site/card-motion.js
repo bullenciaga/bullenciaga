@@ -2,7 +2,14 @@
 (() => {
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   const hover=matchMedia('(hover: hover) and (pointer: fine)');
-  let active=null;
+  let active=null,pickedName=null;
+  function select(name){
+    pickedName=name||null;
+    document.querySelectorAll('.gallery-card').forEach(card=>{
+      if(card.closest('.card-morph-shell'))return;
+      card.classList.toggle('card-picked-up',!!pickedName && card.querySelector('img')?.alt===pickedName);
+    });
+  }
   function cancel(){
     if(!active)return;
     const scene=active;active=null;cancelAnimationFrame(scene.frame);
@@ -13,21 +20,27 @@
     scene.cleanups.push(()=>{el.style.visibility=old;});
   }
   function safeClone(el){
-    const clone=el.cloneNode(true);clone.removeAttribute('id');
+    const clone=el.cloneNode(true);clone.removeAttribute('id');clone.classList.remove('card-picked-up');
     clone.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));
     clone.inert=true;clone.setAttribute('aria-hidden','true');return clone;
   }
   function smooth(a,b,p){const t=Math.max(0,Math.min(1,(p-a)/(b-a)));return t*t*(3-2*t);}
   function draw(scene,p){
     scene.progress=p;
-    const lerp=(a,b)=>a+(b-a)*p,from=scene.from,to=scene.to;
+    // First clear the compact footer. Only then lift/grow the black panel.
+    // The same timeline runs backward, restoring its label only after landing.
+    const growth=smooth(.12,1,p);
+    const lerp=(a,b)=>a+(b-a)*growth,from=scene.from,to=scene.to;
     const width=lerp(from.width,to.width),height=lerp(from.height,to.height);
     Object.assign(scene.shell.style,{left:lerp(from.left,to.left)+'px',top:lerp(from.top,to.top)+'px',width:width+'px',height:height+'px'});
-    const detail=smooth(.08,.72,p);
+    const detail=smooth(.12,.82,p);
     scene.large.style.transform=`scale(${(width-2)/scene.largeWidth})`;
     scene.small.style.transform=`scale(${(width-2)/scene.smallWidth})`;
     scene.large.style.opacity=detail;
     scene.small.style.opacity=1-detail;
+    if(scene.footer)scene.footer.style.opacity=1-smooth(0,.12,p);
+    scene.smallBadges.forEach(el=>{el.style.opacity=1-smooth(0,.16,p);});
+    if(scene.details)scene.details.style.opacity=smooth(.22,.70,p);
     scene.overlay.style.backgroundColor=`rgba(5,5,5,${.92*p})`;
   }
   function run(scene,destination,duration,done){
@@ -36,9 +49,8 @@
     function tick(now){
       if(active!==scene)return;
       started ??= now;const t=Math.min(1,(now-started)/duration);
-      // Soft acceleration and a long, controlled landing; every layer shares this clock.
-      const ease=t<.5?8*t*t*t*t:1-Math.pow(-2*t+2,4)/2;
-      draw(scene,start+(destination-start)*ease);
+      // Geometry and typography have deliberate phases on this one reversible clock.
+      draw(scene,start+(destination-start)*t);
       if(t<1)scene.frame=requestAnimationFrame(tick);
       else {cancel();done?.();}
     }
@@ -61,7 +73,9 @@
     if(hero && source)hero.src=source.currentSrc||source.src;
     shell.style.borderColor=getComputedStyle(content).borderColor;
     document.body.appendChild(shell);
-    const scene={shell,small,large,smallWidth,largeWidth,from,to,overlay,content,card,cleanups:[],frame:0,progress:0};
+    const scene={shell,small,large,smallWidth,largeWidth,from,to,overlay,content,card,
+      footer:small.querySelector('.gallery-card-name'),smallBadges:[...small.querySelectorAll('.gallery-card-badge')],
+      details:large.querySelector('.gallery-lightbox-body'),cleanups:[],frame:0,progress:0};
     const background=overlay.style.backgroundColor;scene.cleanups.push(()=>{overlay.style.backgroundColor=background;});
     // Swapping visual representations must not select a new document scroll anchor.
     for(const el of [document.documentElement,document.body]){
@@ -76,19 +90,20 @@
     cancel();const image=card?.querySelector('img');
     if(reduced.matches||!image?.complete||!image.naturalWidth)return;
     overlay.querySelector('.gallery-lightbox-content').scrollTop=0;
-    const scene=create(card,overlay,sourceRect);draw(scene,0);run(scene,1,560);
+    const scene=create(card,overlay,sourceRect);draw(scene,0);run(scene,1,600);
   }
   function close(overlay,done){
     if(active?.closing)return true;
-    if(active?.overlay===overlay){active.closing=true;run(active,0,Math.max(200,460*active.progress),done);return true;}
+    if(active?.overlay===overlay){active.closing=true;run(active,0,Math.max(200,520*active.progress),done);return true;}
     const content=overlay.querySelector('.gallery-lightbox-content'),image=overlay.querySelector('#galleryLightboxImgGallery');
     if(reduced.matches||!image||overlay.style.display==='none')return false;
     const card=[...document.querySelectorAll('.gallery-card > img')].find(i=>i.alt===image.alt)?.closest('.gallery-card');
     const from=card?.getBoundingClientRect();
     if(!from || from.top<0 || from.bottom>innerHeight || content.scrollTop>2)return false;
-    const scene=create(card,overlay,from);scene.closing=true;draw(scene,1);run(scene,0,460,done);return true;
+    const scene=create(card,overlay,from);scene.closing=true;draw(scene,1);run(scene,0,520,done);return true;
   }
   function attach(card) {
+    card.classList.toggle('card-picked-up',!!pickedName && card.querySelector('img')?.alt===pickedName);
     let frame=0,bounds=null,active=false,last=0;
     let x=0,y=0,scale=1,tx=0,ty=0,ts=1;
     function tick(time){
@@ -119,5 +134,5 @@
     });
   }
   addEventListener('resize',cancel);reduced.addEventListener('change',cancel);
-  window.BullenCardMotion={attach,open,close,cancel};
+  window.BullenCardMotion={attach,open,close,cancel,select};
 })();

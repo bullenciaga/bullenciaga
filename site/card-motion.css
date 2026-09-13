@@ -9,3 +9,6 @@
 .card-morph-layer{pointer-events:none!important}
 .card-morph-layer::after{display:none!important}
 .card-morph-layer .gallery-card-name{box-sizing:border-box}
+
+/* Preserve the space while its physical card is being inspected, including data refreshes. */
+.gallery-card.card-picked-up{visibility:hidden!important;pointer-events:none!important}

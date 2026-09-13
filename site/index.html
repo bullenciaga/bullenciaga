@@ -7068,6 +7068,7 @@
     if (index < 0 || index >= currentFilteredList.length) return;
     currentLightboxIndex = index;
     const entry = currentFilteredList[index];
+    window.BullenCardMotion?.select(entry.name);
     const hasPrev = index > 0;
     const hasNext = index < currentFilteredList.length - 1;
     galleryEls.lightboxContent.innerHTML = buildLightboxCardHtml(entry);
@@ -7183,6 +7184,7 @@
   function closeLightbox(event){
     if (event && window.BullenCardMotion?.close(galleryEls.lightbox, () => closeLightbox())) return;
     window.BullenCardMotion?.cancel();
+    window.BullenCardMotion?.select(null);
     window.__MINT_REVEAL_ACTIVE__ = false;
     // Belt and braces with the reset on open: clearing here means the class
     // never outlives the lightbox at all, whichever way it was dismissed.
