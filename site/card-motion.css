@@ -21,3 +21,30 @@
 #vaultModalClose:active{transform:scale(.96)}
 .card-shuffle-layer{pointer-events:none!important}
 @media(prefers-reduced-motion:reduce){#vaultModalClose{transition:none;transform:none!important}}
+
+/* One inspection frame per viewport. Extra information scrolls inside the
+   black lower panel; shorter cards keep the same quiet black base. */
+:root{--inspection-height:min(880px,88svh);--inspection-width:min(560px,88vw,calc(88svh * .68))}
+.gallery-lightbox-content.gallery-inspection{
+  box-sizing:border-box;width:var(--inspection-width);height:var(--inspection-height);
+  max-width:none;max-height:none;display:flex;flex-direction:column;overflow:hidden;background:#050505;
+}
+.gallery-inspection>img{flex:none;width:100%;height:auto;aspect-ratio:1;object-fit:cover;min-height:0}
+.gallery-inspection>.gallery-lightbox-close{position:absolute;top:12px;right:12px;margin:0}
+.gallery-inspection>.gallery-lightbox-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;background:#050505;scrollbar-width:thin;scrollbar-color:#645735 #050505}
+.gallery-inspection .gallery-reward-details{max-height:none;overflow:visible;padding:0;font-size:11.5px}
+.gallery-reward-details summary{padding:11px 14px;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.gallery-reward-details summary::-webkit-details-marker{display:none}
+.gallery-reward-details summary::after{content:'+';font-size:16px;line-height:1}
+.gallery-reward-details[open] summary::after{content:'−'}
+.gallery-reward-details summary:hover{background:#c7a86912}
+.gallery-reward-details summary:focus-visible{outline:1px solid var(--gold);outline-offset:-3px}
+.gallery-reward-details p{margin:0;padding:0 14px 14px}
+@media(min-width:701px){
+  #galleryLightbox:has(.gallery-inspection)>.gallery-lightbox-nav.prev{left:calc(50% - var(--inspection-width)/2 - 8px)}
+  #galleryLightbox:has(.gallery-inspection)>.gallery-lightbox-nav.next{right:calc(50% - var(--inspection-width)/2 - 8px)}
+}
+@media(min-width:701px){
+  :root{--inspection-height:min(880px,88svh,calc(100svh - var(--bullen-header-height,64px) - 24px))}
+  #galleryLightbox:has(.gallery-inspection),.lightbox-swipe-preview:has(.gallery-inspection){padding:calc(var(--bullen-header-height,64px) + 12px) 6vw 12px}
+}

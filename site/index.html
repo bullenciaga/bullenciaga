@@ -4872,6 +4872,7 @@
 
   function openMintRevealOverlay(){
     if (!galleryEls.lightbox || !galleryEls.lightboxContent) return;
+    galleryEls.lightboxContent.classList.remove('gallery-inspection');
     galleryEls.lightboxContent.classList.remove(...TIER_BORDER_CLASSES);
 
     const placeholderRows = Array.from({ length: MINT_REVEAL_PLACEHOLDER_COUNT }, (_, i) => `
@@ -7058,10 +7059,11 @@
           `).join('')}
         </div>
         ${special ? `
-          <div class="gallery-lightbox-special-note">
-            This piece carries a share of ongoing creator fee rewards. If you're holding it, email
-            contact@bullenciaga.com to confirm ownership and get set up to receive your share.
-          </div>
+          <details class="gallery-lightbox-special-note gallery-reward-details">
+            <summary>Creator fee rewards</summary>
+            <p>This piece carries a share of ongoing creator fee rewards. If you're holding it, email
+            contact@bullenciaga.com to confirm ownership and get set up to receive your share.</p>
+          </details>
         ` : ''}
       </div>
     `;
@@ -7075,6 +7077,7 @@
     window.BullenCardMotion?.select(entry.name);
     const hasPrev = index > 0;
     const hasNext = index < currentFilteredList.length - 1;
+    galleryEls.lightboxContent.classList.add('gallery-inspection');
     galleryEls.lightboxContent.innerHTML = buildLightboxCardHtml(entry);
     // The lightbox's z-index sits above the Vault modal's, so it always
     // renders on top without needing to close the Vault underneath --
@@ -7198,7 +7201,7 @@
     window.__MINT_REVEAL_ACTIVE__ = false;
     // Belt and braces with the reset on open: clearing here means the class
     // never outlives the lightbox at all, whichever way it was dismissed.
-    if (galleryEls.lightboxContent) galleryEls.lightboxContent.classList.remove('sending');
+    if (galleryEls.lightboxContent) galleryEls.lightboxContent.classList.remove('sending', 'gallery-inspection');
     galleryEls.lightbox.style.display = 'none';
     document.body.classList.remove('lightbox-open');
     clearTimeout(navFadeTimer);
@@ -7954,7 +7957,7 @@
         wrap.className = 'lightbox-swipe-preview';
         wrap.inert=true;wrap.setAttribute('aria-hidden','true');
         const card = document.createElement('div');
-        card.className = 'gallery-lightbox-content';
+        card.className = 'gallery-lightbox-content gallery-inspection';
         const tier = tierEffectOf(entry);
         if (tier) card.classList.add(`tier-border-${tier}`);
         card.innerHTML = buildLightboxCardHtml(entry);
@@ -8020,7 +8023,7 @@
       // inputs and a half-finished action, and changing the piece underneath
       // mid-transfer is the worst possible moment to do it.
       if (galleryEls.lightboxContent.classList.contains('sending')) return;
-      if (e.target.closest && e.target.closest('input, textarea, select, button, a')) return;
+      if (e.target.closest && e.target.closest('input, textarea, select, button, a, summary')) return;
       const t = e.touches[0];
       sx = t.clientX; sy = t.clientY;
       cardW = galleryEls.lightboxContent.getBoundingClientRect().width || window.innerWidth;

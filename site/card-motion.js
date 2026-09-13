@@ -69,7 +69,7 @@
     const largeWidth=content.clientWidth,smallWidth=card.clientWidth;
     for(const [el,width] of [[large,largeWidth],[small,smallWidth]]){
       el.classList.add('card-morph-layer');
-      Object.assign(el.style,{width:width+'px',maxWidth:'none',maxHeight:'none',height:'auto',position:'absolute',left:'0',top:'0',margin:'0',border:'0',overflow:'visible',visibility:'visible',transition:'none',transformOrigin:'0 0',boxShadow:'none',willChange:'transform,opacity'});
+      Object.assign(el.style,{width:width+'px',maxWidth:'none',maxHeight:'none',height:el===large?content.clientHeight+'px':'auto',position:'absolute',left:'0',top:'0',margin:'0',border:'0',overflow:el===large?'hidden':'visible',visibility:'visible',transition:'none',transformOrigin:'0 0',boxShadow:'none',willChange:'transform,opacity'});
       shell.appendChild(el);
     }
     const source=card.querySelector('img'),hero=large.querySelector('img[id]')||large.querySelector('img');
@@ -78,6 +78,7 @@
     if(hero && source)hero.src=source.currentSrc||source.src;
     shell.style.borderColor=getComputedStyle(content).borderColor;
     document.body.appendChild(shell);
+    if(large.querySelector('.gallery-lightbox-body'))large.querySelector('.gallery-lightbox-body').scrollTop=content.querySelector('.gallery-lightbox-body')?.scrollTop||0;
     const scene={shell,small,large,smallWidth,largeWidth,from,to,overlay,content,card,
       footer:small.querySelector('.gallery-card-name'),smallBadges:[...small.querySelectorAll('.gallery-card-badge')],
       details:large.querySelector('.gallery-lightbox-body'),cleanups:[],frame:0,progress:0};
@@ -133,7 +134,9 @@
       el.classList.add('card-shuffle-layer');
       const hero=el.querySelector('img'),source=[...document.querySelectorAll('.gallery-card > img')].find(i=>i.alt===hero?.alt);
       if(hero && source?.complete && source.naturalWidth)hero.src=source.currentSrc||source.src;
-      document.body.appendChild(el);el.scrollTop=content.scrollTop;return el;
+      document.body.appendChild(el);el.scrollTop=content.scrollTop;
+      if(el.querySelector('.gallery-lightbox-body'))el.querySelector('.gallery-lightbox-body').scrollTop=content.querySelector('.gallery-lightbox-body')?.scrollTop||0;
+      return el;
     }
     const outgoing=layer();render();const incoming=layer();
     outgoing.style.zIndex=10002;incoming.style.zIndex=10001;
