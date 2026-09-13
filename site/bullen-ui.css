@@ -107,12 +107,17 @@ html[data-bullen-page="stats"] body:not(.transparent) #stage {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   transform: translateY(-180%);
-  transition: transform var(--bullen-motion-fast) ease;
+  opacity: var(--bullen-overlay-header-opacity, 1);
+  transition: transform var(--bullen-motion-fast) ease, opacity 280ms ease, visibility 0s linear var(--bullen-overlay-header-delay, 0s);
 }
 
 html[data-focus-navigation="keyboard"] .bullen-skip:focus { transform: translateY(0); }
 
 .bullen-site-shell {
+  opacity: var(--bullen-overlay-header-opacity, 1);
+  visibility: var(--bullen-overlay-header-visibility, visible);
+  transition: opacity 280ms ease, visibility 0s linear var(--bullen-overlay-header-delay, 0s);
+  pointer-events: var(--bullen-overlay-header-pointer, auto);
   position: fixed;
   z-index: 1200;
   inset: 0 0 auto;
@@ -133,6 +138,13 @@ html[data-focus-navigation="keyboard"] .bullen-skip:focus { transform: translate
   text-transform: uppercase;
   isolation: isolate;
   box-sizing: border-box;
+}
+
+body.lightbox-open {
+  --bullen-overlay-header-visibility: hidden;
+  --bullen-overlay-header-opacity: 0;
+  --bullen-overlay-header-delay: 280ms;
+  --bullen-overlay-header-pointer: none;
 }
 
 .bullen-site-shell * { box-sizing: border-box; }
@@ -588,6 +600,9 @@ html[data-focus-navigation="keyboard"] .bullen-skip:focus { transform: translate
   html body:is(.vault-open, .lightbox-open, .wallet-modal-open, .bullen-mobile-buy-open),
   html body:has(.collector-dialog[open], .bwc) {
     --bullen-overlay-header-visibility: hidden;
+    --bullen-overlay-header-opacity: 0;
+    --bullen-overlay-header-delay: 280ms;
+    --bullen-overlay-header-pointer: none;
     overflow: hidden !important;
   }
   .bullen-site-shell,
@@ -696,6 +711,7 @@ html[data-focus-navigation="keyboard"] .bullen-skip:focus { transform: translate
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .bullen-site-shell, .bullen-skip { transition-delay: 0s; }
   html.bullen-ready body > :not(.bullen-site-shell):not(.bullen-skip) { transition: none; }
   *, *::before, *::after {
     scroll-behavior: auto !important;
