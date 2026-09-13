@@ -17,8 +17,11 @@ const context = {
   closeLightbox: () => { gallery.style.display = 'none'; },
   closeVault: () => { vault.style.display = 'none'; },
   closeWalletModal: () => { wallet.style.display = 'none'; },
-  currentLightboxIndex: 1, openLightboxAtIndex: () => { moves++; },
+  currentFilteredList: [{}, {}, {}], currentLightboxIndex: 1, openLightboxAtIndex: () => { moves++; },
 };
+const navStart=html.indexOf('  function navigateLightbox(dir){');
+const navEnd=html.indexOf('  function openLightbox(entry, sourceCard){',navStart);
+vm.runInNewContext(html.slice(navStart,navEnd), context);
 for (const marker of ["    if (e.defaultPrevented || document.querySelector('dialog[open], .bwc')) return;", "    if (e.key !== 'Escape' || e.defaultPrevented"]) {
   const at = html.indexOf(marker);
   assert(at > 0);

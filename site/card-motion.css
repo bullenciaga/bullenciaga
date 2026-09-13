@@ -1,0 +1,67 @@
+/* Broad diagonal clear-coat reflection, swept by the card angle rather than a point light. */
+.gallery-card{transition:border-color .18s ease,opacity .27s ease,visibility 0s;transform-origin:center}
+.gallery-card::after{content:"";position:absolute;inset:0 0 44px;pointer-events:none;z-index:1;opacity:var(--card-shine,0);background-image:linear-gradient(115deg,rgba(255,255,255,0) 15%,rgba(255,255,255,.018) 40%,rgba(255,255,255,.065) 53%,rgba(255,255,255,.018) 66%,rgba(255,255,255,0) 90%);background-size:200% 180%;background-position:var(--card-reflection-x,50%) var(--card-reflection-y,50%);mix-blend-mode:screen;transition:opacity .3s ease}
+.gallery-card .gallery-card-badge{z-index:2}
+@media(hover:none){.gallery-card:active{transform:scale(.98)}}
+@media(prefers-reduced-motion:reduce){.gallery-card{transition:none;transform:none!important}.gallery-card::after{display:none}}
+/* The border belongs to the changing outer frame, so its bottom is never clipped. */
+.card-morph-shell{position:fixed;z-index:10000;box-sizing:border-box;border:1px solid var(--gold,#c7a869);background:#050505;overflow:hidden;pointer-events:none;box-shadow:0 16px 48px #0006;contain:layout style}
+.card-morph-layer{pointer-events:none!important}
+.card-morph-layer::after{display:none!important}
+.card-morph-layer .gallery-card-name{box-sizing:border-box}
+
+/* Preserve the space while its physical card is being inspected, including data refreshes. */
+.gallery-card.card-picked-up{opacity:0!important;visibility:hidden;pointer-events:none!important;transition:border-color .18s ease,opacity .27s ease,visibility 0s .27s}
+@media(prefers-reduced-motion:reduce){.gallery-card.card-picked-up{transition:none}}
+
+/* Compact, tactile close control, with an equally visible keyboard state. */
+#vaultModalClose{transition:background .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease}
+#vaultModalClose:focus-visible{outline:2px solid var(--gold);outline-offset:4px;background:#211c12}
+@media(hover:hover){#vaultModalClose:hover{background:var(--gold);color:#050505;box-shadow:0 0 16px #c7a86930;transform:scale(1.04)}}
+#vaultModalClose:active{transform:scale(.96)}
+.card-shuffle-layer{pointer-events:none!important}
+@media(prefers-reduced-motion:reduce){#vaultModalClose{transition:none;transform:none!important}}
+
+/* One inspection frame per viewport. Extra information scrolls inside the
+   black lower panel; shorter cards keep the same quiet black base. */
+:root{--inspection-height:min(calc(var(--inspection-width) + 406px),calc(100svh - 24px));--inspection-width:min(600px,92vw,calc(100svh * .56))}
+.gallery-lightbox-content.gallery-inspection{
+  box-sizing:border-box;width:var(--inspection-width);height:var(--inspection-height);
+  max-width:none;max-height:none;display:flex;flex-direction:column;overflow:hidden;background:#050505;
+}
+.gallery-inspection>img{flex:none;width:100%;height:auto;aspect-ratio:1;object-fit:cover;min-height:0}
+.gallery-inspection>.gallery-lightbox-close{position:absolute;top:12px;right:12px;margin:0}
+.gallery-inspection>.gallery-lightbox-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;background:#050505;scrollbar-width:thin;scrollbar-color:#645735 #050505}
+.gallery-inspection .gallery-reward-details{max-height:none;overflow:visible;padding:0;font-size:11.5px}
+.gallery-reward-details summary{padding:11px 14px;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.gallery-reward-details summary::-webkit-details-marker{display:none}
+.gallery-reward-details summary::after{content:'+';font-size:16px;line-height:1}
+.gallery-reward-details[open] summary::after{content:'−'}
+.gallery-reward-details summary:hover{background:#c7a86912}
+.gallery-reward-details summary:focus-visible{outline:1px solid var(--gold);outline-offset:-3px}
+.gallery-reward-details p{margin:0;padding:0 14px 14px}
+@media(min-width:701px){
+  #galleryLightbox:has(.gallery-inspection)>.gallery-lightbox-nav.prev{left:calc(50% - var(--inspection-width)/2 - 8px)}
+  #galleryLightbox:has(.gallery-inspection)>.gallery-lightbox-nav.next{right:calc(50% - var(--inspection-width)/2 - 8px)}
+}
+@media(min-width:701px){
+  :root{--inspection-height:min(calc(var(--inspection-width) + 374px),calc(100svh - var(--bullen-header-height,64px) - 24px))}
+  #galleryLightbox:has(.gallery-inspection),.lightbox-swipe-preview:has(.gallery-inspection){padding:calc(var(--bullen-header-height,64px) + 12px) 6vw 12px}
+}
+
+/* Measured typical traits get a modest common panel, not all unused viewport height. */
+.gallery-inspection>.gallery-lightbox-body{padding:14px 20px 18px}
+.gallery-inspection .gallery-lightbox-traits{gap:6px 16px}
+.gallery-inspection .gallery-lightbox-status-block{margin-bottom:10px}
+.gallery-inspection .gallery-lightbox-owner{margin-bottom:10px}
+.gallery-inspection .gallery-reward-details{margin-top:12px}
+.gallery-inspection .gallery-reward-details summary{padding:8px 12px}
+@media(max-width:700px){
+ #galleryLightbox:has(.gallery-inspection),.lightbox-swipe-preview:has(.gallery-inspection){padding:12px 4vw}
+ .gallery-inspection>.gallery-lightbox-body{padding:14px 16px 18px}
+}
+html{scrollbar-gutter:stable}
+html:has(body.lightbox-open){overflow:hidden}
+
+/* Separate the mint action from its explanatory note on every card. */
+.gallery-lightbox-try-mint-note{margin-top:8px}
