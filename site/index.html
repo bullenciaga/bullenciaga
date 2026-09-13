@@ -7870,6 +7870,17 @@
       if (e.target === galleryEls.lightbox) closeLightbox(e);
     });
   }
+  if(galleryEls.lightbox)galleryEls.lightbox.addEventListener('wheel',e=>{
+    const content=galleryEls.lightboxContent;
+    if(!content?.classList.contains('gallery-inspection') || e.ctrlKey)return;
+    if(e.target.closest?.('.gallery-lightbox-body'))return;
+    e.preventDefault();
+    if(content.contains(e.target)){
+      const body=content.querySelector('.gallery-lightbox-body');
+      const units=e.deltaMode===1?16:e.deltaMode===2?body.clientHeight:1;
+      body.scrollTop+=e.deltaY*units;
+    }
+  },{passive:false});
   document.addEventListener('keydown', (e) => {
     if (e.defaultPrevented || document.querySelector('dialog[open], .bwc')) return;
     if (walletEls.modal && walletEls.modal.style.display === 'flex') {
@@ -7912,6 +7923,7 @@
     let armed = false, axis = null;
     let previews = [];   // { el, base } -- base is the resting offset, in px
     let settleToken = 0, swipePhase = 0, swipeDir = 1;
+    let touchScrollBody=null,lastTouchY=0;
 
     function clearPreviews(){
       previews.forEach(p => p.el.remove());
@@ -7931,16 +7943,20 @@
       const ease=(a,b)=>{const t=Math.max(0,Math.min(1,(p-a)/(b-a)));return t*t*(3-2*t);};
       const out=ease(0,.46),back=ease(.46,1),arc=out*(1-back),travel=cardW+32;
       galleryEls.lightboxContent.style.zIndex=p<.46?'2':'1';
-      galleryEls.lightboxContent.style.transform=`translateX(${-dir*travel*arc}px) translateY(${4*arc}px) rotate(${-dir*2*arc}deg) scale(${1-(3/cardW)*out})`;
+      galleryEls.lightboxContent.style.transform=dir>0
+        ?`translateX(${travel*arc}px) translateY(${4*arc}px) rotate(${2*arc}deg) scale(${1-(3/cardW)*out})`
+        :`scale(${1-(3/cardW)*out})`;
       galleryEls.lightboxContent.style.opacity=1-ease(.88,1);
       previews.forEach(preview=>{
         const toward=Math.sign(preview.base)===dir;
         preview.el.style.zIndex=p<.46?'1':'2';
-        preview.el.style.transform=`translateX(${dir*8*(1-out)}px) scale(${1-(3/cardW)*(1-out)})`;
+        preview.el.style.transform=dir>0
+          ?`translateX(${-8*(1-out)}px) scale(${1-(3/cardW)*(1-out)})`
+          :`translateX(${-travel*arc}px) translateY(${4*arc}px) rotate(${-2*arc}deg) scale(${1-(3/cardW)*(1-back)})`;
         preview.el.style.opacity=toward?Math.min(1,p*12):0;
       });
     }
-    function setX(dx){setDeck(Math.min(.46,Math.abs(dx)/(cardW+SWIPE_GAP)*.46),dx<0?1:-1);}
+    function setX(dx){setDeck(Math.min(.46,Math.abs(dx)/(cardW+SWIPE_GAP)*.46),dx>0?1:-1);}
     // Neighbours are full cards tucked behind the current card, with a small
     // offset and rotation. The wrapper is laid out exactly like the live
     // lightbox, so the card inside lands on the same centre line at the same
@@ -8025,7 +8041,8 @@
       if (galleryEls.lightboxContent.classList.contains('sending')) return;
       if (e.target.closest && e.target.closest('input, textarea, select, button, a, summary')) return;
       const t = e.touches[0];
-      sx = t.clientX; sy = t.clientY;
+      sx = t.clientX; sy = t.clientY;lastTouchY=t.clientY;
+      touchScrollBody=e.target.matches?.('#galleryLightboxImgGallery')?galleryEls.lightboxContent.querySelector('.gallery-lightbox-body'):null;
       cardW = galleryEls.lightboxContent.getBoundingClientRect().width || window.innerWidth;
       armed = true;
       // Built now rather than at axis-lock. Two full cards cost a few ms of
@@ -8049,16 +8066,17 @@
       if (!axis) {
         if (Math.abs(dx) < SWIPE_LOCK_PX && Math.abs(dy) < SWIPE_LOCK_PX) return;
         axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
-        if (axis === 'y') { armed = false; clearPreviews(); return; } // a scroll, hands off
+        if (axis === 'y') { clearPreviews();if(!touchScrollBody){armed=false;return;} }
         // Only now do the neighbours become visible -- see the CSS note.
-        previews.forEach(p => p.el.classList.add('swipe-visible'));
+        if(axis==='x')previews.forEach(p => p.el.classList.add('swipe-visible'));
       }
       e.preventDefault();
+      if(axis==='y' && touchScrollBody){touchScrollBody.scrollTop+=lastTouchY-t.clientY;lastTouchY=t.clientY;return;}
       if (!SWIPE_ANIMATE) return;
       // Rubber-band at the ends, where there is nothing to reveal.
       let d = dx;
-      const atStart = currentLightboxIndex <= 0 && d > 0;
-      const atEnd = currentLightboxIndex >= currentFilteredList.length - 1 && d < 0;
+      const atStart = currentLightboxIndex <= 0 && d < 0;
+      const atEnd = currentLightboxIndex >= currentFilteredList.length - 1 && d > 0;
       if (atStart || atEnd) d *= 0.25;
       setX(d);
     }, { passive: false });
@@ -8071,7 +8089,7 @@
       if (window.__MINT_REVEAL_ACTIVE__) { abortGesture(); return; }
       const t = e.changedTouches && e.changedTouches[0];
       const dx = t ? t.clientX - sx : 0;
-      const dir = dx < 0 ? 1 : -1;
+      const dir = dx > 0 ? 1 : -1;
       const target = currentLightboxIndex + dir;
       const inRange = target >= 0 && target < currentFilteredList.length;
       const commit = inRange && Math.abs(dx) > cardW * SWIPE_COMMIT;

@@ -24,7 +24,7 @@
 
 /* One inspection frame per viewport. Extra information scrolls inside the
    black lower panel; shorter cards keep the same quiet black base. */
-:root{--inspection-height:min(880px,88svh);--inspection-width:min(560px,88vw,calc(88svh * .68))}
+:root{--inspection-height:min(1120px,calc(100svh - 24px));--inspection-width:min(600px,92vw,calc(100svh * .56))}
 .gallery-lightbox-content.gallery-inspection{
   box-sizing:border-box;width:var(--inspection-width);height:var(--inspection-height);
   max-width:none;max-height:none;display:flex;flex-direction:column;overflow:hidden;background:#050505;
@@ -45,6 +45,20 @@
   #galleryLightbox:has(.gallery-inspection)>.gallery-lightbox-nav.next{right:calc(50% - var(--inspection-width)/2 - 8px)}
 }
 @media(min-width:701px){
-  :root{--inspection-height:min(880px,88svh,calc(100svh - var(--bullen-header-height,64px) - 24px))}
+  :root{--inspection-height:min(1120px,calc(100svh - var(--bullen-header-height,64px) - 24px))}
   #galleryLightbox:has(.gallery-inspection),.lightbox-swipe-preview:has(.gallery-inspection){padding:calc(var(--bullen-header-height,64px) + 12px) 6vw 12px}
 }
+
+/* Use the available height for traits before resorting to internal scrolling. */
+.gallery-inspection>.gallery-lightbox-body{padding:14px 20px 18px}
+.gallery-inspection .gallery-lightbox-traits{gap:6px 16px}
+.gallery-inspection .gallery-lightbox-status-block{margin-bottom:10px}
+.gallery-inspection .gallery-lightbox-owner{margin-bottom:10px}
+.gallery-inspection .gallery-reward-details{margin-top:12px}
+.gallery-inspection .gallery-reward-details summary{padding:8px 12px}
+@media(max-width:700px){
+ #galleryLightbox:has(.gallery-inspection),.lightbox-swipe-preview:has(.gallery-inspection){padding:12px 4vw}
+ .gallery-inspection>.gallery-lightbox-body{padding:14px 16px 18px}
+}
+html{scrollbar-gutter:stable}
+html:has(body.lightbox-open){overflow:hidden}

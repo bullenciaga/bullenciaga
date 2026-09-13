@@ -151,9 +151,17 @@
       // Then return the old card underneath the newly revealed card.
       const out=smooth(0,.46,p),back=smooth(.46,1,p),arc=out*(1-back);
       outgoing.style.zIndex=p<.46?10002:10000;
-      outgoing.style.transform=`translateX(${-dir*travel*arc}px) translateY(${4*arc}px) rotate(${-dir*2*arc}deg) scale(${1-(3/width)*out})`;
+      incoming.style.zIndex=p<.46?10001:10003;
+      if(dir>0){
+        outgoing.style.transform=`translateX(${travel*arc}px) translateY(${4*arc}px) rotate(${2*arc}deg) scale(${1-(3/width)*out})`;
+        incoming.style.transform=`translateX(${-8*(1-out)}px) scale(${1-(3/width)*(1-out)})`;
+      }else{
+        // Previous retrieves the card from behind the LEFT, then covers the
+        // current face. It is the inverse of tucking that face away to the right.
+        incoming.style.transform=`translateX(${-travel*arc}px) translateY(${4*arc}px) rotate(${-2*arc}deg) scale(${1-(3/width)*(1-back)})`;
+        outgoing.style.transform=`scale(${1-(3/width)*out})`;
+      }
       outgoing.style.opacity=1-smooth(.88,1,p);
-      incoming.style.transform=`translateX(${dir*8*(1-out)}px) scale(${1-(3/width)*(1-out)})`;
       incoming.style.opacity=1;
     }
     function tick(now){
