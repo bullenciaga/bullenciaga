@@ -7184,9 +7184,9 @@
   }
   let mobileNavigateLightbox = null;
   function navigateLightbox(dir){
+    if(window.innerWidth<=700 && mobileNavigateLightbox){mobileNavigateLightbox(dir);return;}
     const index=currentLightboxIndex+dir;
     if(index<0 || index>=currentFilteredList.length)return;
-    if(window.innerWidth<=700 && mobileNavigateLightbox){mobileNavigateLightbox(dir);return;}
     if(window.BullenCardMotion) window.BullenCardMotion.shuffle(galleryEls.lightbox,dir,()=>openLightboxAtIndex(index));
     else openLightboxAtIndex(index);
   }
@@ -7926,6 +7926,7 @@
     let previews = [];   // { el, base } -- base is the resting offset, in px
     let settleToken = 0, settleFrame = 0, currentX = 0;
     let restoreSwipeVisuals = null;
+    let settling=false, settlingTarget=null, queuedTarget=null, queuedGesture=false;
     let touchScrollBody=null,lastTouchY=0;
 
     function clearPreviews(){
@@ -7935,7 +7936,7 @@
     function resetCard(){
       galleryEls.lightboxContent.classList.remove('swipe-settling', 'swipe-fading');
       galleryEls.lightboxContent.style.transform = '';
-      currentX=0;
+      currentX=0;settling=false;settlingTarget=null;
       cancelAnimationFrame(settleFrame);settleFrame=0;
       restoreSwipeVisuals?.();restoreSwipeVisuals=null;
     }
@@ -7991,6 +7992,7 @@
     // to the destination before swapping in the interactive card.
     function settle(toX, done, keepDir){
       const token=++settleToken, startX=currentX, originalIndex=currentLightboxIndex;
+      settling=true;settlingTarget=originalIndex+(keepDir||0);
       const content=galleryEls.lightboxContent;
       const items=[{el:content,landing:!keepDir},...previews.map(p=>({el:p.el,landing:Math.sign(p.base)===keepDir}))];
       const previous=items.map(({el})=>({el,transition:el.style.transition,opacity:el.style.opacity}));
@@ -8012,11 +8014,12 @@
           el.style.opacity=opacities[i]+((landing?1:0)-opacities[i])*fade;
         });
         if(t<1)settleFrame=requestAnimationFrame(tick);
-        else{resetCard();clearPreviews();done();}
+        else{resetCard();clearPreviews();done();advanceMobileNavigation();}
       }
       settleFrame=requestAnimationFrame(tick);
     }
     function abortGesture(){
+      queuedTarget=null;queuedGesture=false;
       armed = false; axis = null;
       settleToken++;
       resetCard();
@@ -8026,17 +8029,39 @@
 
     // Mobile chevrons and keyboard navigation share the same slide/settle as
     // touch; the desktop deck animation never runs at this breakpoint.
-    mobileNavigateLightbox=dir=>{
-      abortGesture();window.BullenCardMotion?.cancel();
-      const target=currentLightboxIndex+dir;
-      if(target<0 || target>=currentFilteredList.length)return;
-      if(!SWIPE_ANIMATE){openLightboxAtIndex(target);return;}
+    function advanceMobileNavigation(){
+      if(settling || queuedTarget===null)return;
+      if(galleryEls.lightbox.style.display!=='flex' || window.__MINT_REVEAL_ACTIVE__){queuedTarget=null;return;}
+      if(queuedTarget===currentLightboxIndex){queuedTarget=null;return;}
+      window.BullenCardMotion?.cancel();
+      const dir=Math.sign(queuedTarget-currentLightboxIndex),target=currentLightboxIndex+dir;
+      if(!SWIPE_ANIMATE){const destination=queuedTarget;queuedTarget=null;openLightboxAtIndex(destination);return;}
       cardW=galleryEls.lightboxContent.getBoundingClientRect().width || window.innerWidth;
       buildPreviews();
       settle(-dir*(cardW+SWIPE_GAP),()=>openLightboxAtIndex(target),dir);
+    }
+    mobileNavigateLightbox=dir=>{
+      // Count input from the pending destination, never the old visible index.
+      const base=queuedTarget??settlingTarget??currentLightboxIndex;
+      queuedTarget=Math.max(0,Math.min(currentFilteredList.length-1,base+dir));
+      advanceMobileNavigation();
     };
 
     galleryEls.lightbox.addEventListener('touchstart', (e) => {
+      // A chevron tap must not reset the slide before its click is delivered.
+      if(e.target.closest?.('.gallery-lightbox-nav'))return;
+      if(settling){
+        armed=false;axis=null;queuedGesture=false;
+        if(e.touches.length!==1 || e.target.closest?.('input, textarea, select, button, a, summary'))return;
+        const t=e.touches[0];
+        // During a slide the visible incoming face is inert scenery. Accept
+        // the next swipe over that face as well as the outgoing live card.
+        const faces=[galleryEls.lightboxContent,...previews.map(p=>p.el.firstElementChild)];
+        if(!faces.some(el=>{const r=el.getBoundingClientRect();return t.clientX>=r.left && t.clientX<=r.right && t.clientY>=r.top && t.clientY<=r.bottom;}))return;
+        sx=t.clientX;sy=t.clientY;
+        armed=true;queuedGesture=true;return;
+      }
+      queuedTarget=null;queuedGesture=false;
       window.BullenCardMotion?.cancel();
       armed = false; axis = null;
       settleToken++;            // cancel anything mid-flight
@@ -8076,6 +8101,14 @@
       const t = e.touches[0];
       const dx = t.clientX - sx;
       const dy = t.clientY - sy;
+      if(queuedGesture){
+        if(!axis){
+          if(Math.abs(dx)<SWIPE_LOCK_PX && Math.abs(dy)<SWIPE_LOCK_PX)return;
+          axis=Math.abs(dx)>Math.abs(dy)?'x':'y';
+        }
+        if(axis==='x')e.preventDefault();
+        return;
+      }
       if (!axis) {
         if (Math.abs(dx) < SWIPE_LOCK_PX && Math.abs(dy) < SWIPE_LOCK_PX) return;
         axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
@@ -8095,8 +8128,14 @@
     }, { passive: false });
 
     galleryEls.lightbox.addEventListener('touchend', (e) => {
-      if (!armed) { clearPreviews(); return; }
+      if (!armed) { if(!settling)clearPreviews(); return; }
       armed = false;
+      if(queuedGesture){
+        queuedGesture=false;
+        const t=e.changedTouches?.[0],dx=t?t.clientX-sx:0;
+        if(axis==='x' && Math.abs(dx)>cardW*SWIPE_COMMIT)mobileNavigateLightbox(dx<0?1:-1);
+        axis=null;return;
+      }
       if (axis !== 'x') { abortGesture(); return; }
       if (galleryEls.lightbox.style.display !== 'flex') { abortGesture(); return; }
       if (window.__MINT_REVEAL_ACTIVE__) { abortGesture(); return; }
@@ -8118,7 +8157,7 @@
       else settle(0, () => {}, null);
     }, { passive: true });
 
-    galleryEls.lightbox.addEventListener('touchcancel', abortGesture, { passive: true });
+    galleryEls.lightbox.addEventListener('touchcancel',()=>{if(queuedGesture){armed=false;axis=null;queuedGesture=false;}else abortGesture();},{passive:true});
   }
 
   // Escape also closes the Vault. Skipped while the lightbox is up, since
