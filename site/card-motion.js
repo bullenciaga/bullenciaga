@@ -90,17 +90,17 @@
     cancel();const image=card?.querySelector('img');
     if(reduced.matches||!image?.complete||!image.naturalWidth)return;
     overlay.querySelector('.gallery-lightbox-content').scrollTop=0;
-    const scene=create(card,overlay,sourceRect);draw(scene,0);run(scene,1,600);
+    const scene=create(card,overlay,sourceRect);draw(scene,0);run(scene,1,420);
   }
   function close(overlay,done){
     if(active?.closing)return true;
-    if(active?.overlay===overlay){active.closing=true;run(active,0,Math.max(200,520*active.progress),done);return true;}
+    if(active?.overlay===overlay){active.closing=true;run(active,0,Math.max(140,360*active.progress),done);return true;}
     const content=overlay.querySelector('.gallery-lightbox-content'),image=overlay.querySelector('#galleryLightboxImgGallery');
     if(reduced.matches||!image||overlay.style.display==='none')return false;
     const card=[...document.querySelectorAll('.gallery-card > img')].find(i=>i.alt===image.alt)?.closest('.gallery-card');
     const from=card?.getBoundingClientRect();
     if(!from || from.top<0 || from.bottom>innerHeight || content.scrollTop>2)return false;
-    const scene=create(card,overlay,from);scene.closing=true;draw(scene,1);run(scene,0,520,done);return true;
+    const scene=create(card,overlay,from);scene.closing=true;draw(scene,1);run(scene,0,360,done);return true;
   }
   function attach(card) {
     card.classList.toggle('card-picked-up',!!pickedName && card.querySelector('img')?.alt===pickedName);

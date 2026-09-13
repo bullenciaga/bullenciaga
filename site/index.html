@@ -1200,26 +1200,30 @@
     max-width:1000px;
     margin:0 auto;
   }
-  /* Desktop hides this entirely: it sat in the same top-right corner as the
-     Jump To widget and the two overlapped. On desktop, clicking the backdrop
-     (or pressing Escape) closes the Vault instead, and Jump To stays usable.
-     Mobile is the mirror image -- the X stays, and the Jump To widget is
-     what hides while the Vault is open (see its own rule further down). */
-  .vault-modal-close{
-    display:none;
+  /* Keep the close control visible below desktop navigation. SVG avoids
+     font-baseline drift and stays centered in the square touch target. */
+  #vaultModalClose{
+    display:grid;
+    place-items:center;
     position:fixed;
-    top:24px;
-    right:28px;
-    background:none;
+    top:calc(var(--bullen-header-height, 64px) + env(safe-area-inset-top, 0px) + 12px);
+    right:max(24px, env(safe-area-inset-right, 0px));
+    z-index:20;
+    box-sizing:border-box;
+    background:#050505;
     border:1px solid var(--gold);
     color:var(--gold);
-    width:36px;
-    height:36px;
-    font-size:20px;
+    width:44px;
+    min-width:44px;
+    height:44px;
+    min-height:44px;
+    padding:0;
+    line-height:1;
     cursor:pointer;
   }
+  #vaultModalClose svg{display:block;width:20px;height:20px;pointer-events:none;}
   @media (max-width:700px){
-    .vault-modal-close{ display:block; }
+    #vaultModalClose{top:max(18px, env(safe-area-inset-top));right:max(18px, env(safe-area-inset-right));}
   }
   .vault-title{
     font-family:'Space Mono', monospace;
@@ -3541,7 +3545,7 @@
 <div class="version-tag" id="versionTag">build 2026-08-31.2 — open the receipts</div>
 
 <div class="vault-modal" id="vaultModal">
-  <button class="vault-modal-close" id="vaultModalClose" aria-label="Close Vault" type="button">&times;</button>
+  <button class="vault-modal-close" id="vaultModalClose" aria-label="Close Vault" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   <div class="vault-modal-inner">
     <div class="vault-title">The Vault</div>
     <div class="vault-subtitle" id="vaultSubtitle">one-of-ones, outside the standard 1,000.</div>
@@ -8074,8 +8078,8 @@
     galleryEls.lightbox.addEventListener('touchcancel', abortGesture, { passive: true });
   }
 
-  // Escape also closes the Vault -- worth having now that desktop shows no
-  // X for it. Skipped while the lightbox is up, since that's stacked on top
+  // Escape also closes the Vault. Skipped while the lightbox is up, since
+  // that is stacked on top
   // and its own handler above should get the keypress first.
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape' || e.defaultPrevented || document.querySelector('dialog[open], .bwc')) return;
@@ -8154,7 +8158,9 @@
   if (vaultEls.trigger) vaultEls.trigger.addEventListener('click', openVault);
   if (vaultEls.close) vaultEls.close.addEventListener('click', closeVault);
   if (vaultEls.modal) vaultEls.modal.addEventListener('click', (e) => {
-    if (e.target === vaultEls.modal) closeVault();
+    // Inner margins and grid gaps are backdrop too. Card/control clicks and
+    // selectable heading text retain their own behavior.
+    if (e.target.matches('.vault-modal, .vault-modal-inner, #vaultGrid')) closeVault();
   });
 
   window.BullenCollectors?.mountGallery({
