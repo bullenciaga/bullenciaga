@@ -1,5 +1,5 @@
 /* Broad diagonal clear-coat reflection, swept by the card angle rather than a point light. */
-.gallery-card{transition:border-color .18s ease,opacity .18s ease,visibility 0s;transform-origin:center}
+.gallery-card{transition:border-color .18s ease,opacity .27s ease,visibility 0s;transform-origin:center}
 .gallery-card::after{content:"";position:absolute;inset:0 0 44px;pointer-events:none;z-index:1;opacity:var(--card-shine,0);background-image:linear-gradient(115deg,rgba(255,255,255,0) 15%,rgba(255,255,255,.018) 40%,rgba(255,255,255,.065) 53%,rgba(255,255,255,.018) 66%,rgba(255,255,255,0) 90%);background-size:200% 180%;background-position:var(--card-reflection-x,50%) var(--card-reflection-y,50%);mix-blend-mode:screen;transition:opacity .3s ease}
 .gallery-card .gallery-card-badge{z-index:2}
 @media(hover:none){.gallery-card:active{transform:scale(.98)}}
@@ -11,7 +11,7 @@
 .card-morph-layer .gallery-card-name{box-sizing:border-box}
 
 /* Preserve the space while its physical card is being inspected, including data refreshes. */
-.gallery-card.card-picked-up{opacity:0!important;visibility:hidden;pointer-events:none!important;transition:border-color .18s ease,opacity .18s ease,visibility 0s .18s}
+.gallery-card.card-picked-up{opacity:0!important;visibility:hidden;pointer-events:none!important;transition:border-color .18s ease,opacity .27s ease,visibility 0s .27s}
 @media(prefers-reduced-motion:reduce){.gallery-card.card-picked-up{transition:none}}
 
 /* Compact, tactile close control, with an equally visible keyboard state. */
@@ -24,7 +24,7 @@
 
 /* One inspection frame per viewport. Extra information scrolls inside the
    black lower panel; shorter cards keep the same quiet black base. */
-:root{--inspection-height:min(calc(var(--inspection-width) + 382px),calc(100svh - 24px));--inspection-width:min(600px,92vw,calc(100svh * .56))}
+:root{--inspection-height:min(calc(var(--inspection-width) + 406px),calc(100svh - 24px));--inspection-width:min(600px,92vw,calc(100svh * .56))}
 .gallery-lightbox-content.gallery-inspection{
   box-sizing:border-box;width:var(--inspection-width);height:var(--inspection-height);
   max-width:none;max-height:none;display:flex;flex-direction:column;overflow:hidden;background:#050505;
@@ -45,7 +45,7 @@
   #galleryLightbox:has(.gallery-inspection)>.gallery-lightbox-nav.next{right:calc(50% - var(--inspection-width)/2 - 8px)}
 }
 @media(min-width:701px){
-  :root{--inspection-height:min(calc(var(--inspection-width) + 342px),calc(100svh - var(--bullen-header-height,64px) - 24px))}
+  :root{--inspection-height:min(calc(var(--inspection-width) + 374px),calc(100svh - var(--bullen-header-height,64px) - 24px))}
   #galleryLightbox:has(.gallery-inspection),.lightbox-swipe-preview:has(.gallery-inspection){padding:calc(var(--bullen-header-height,64px) + 12px) 6vw 12px}
 }
 
