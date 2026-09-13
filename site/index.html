@@ -7175,7 +7175,7 @@
     resetNavFadeTimer();
   }
   function openLightbox(entry, sourceCard){
-    const sourceRect = sourceCard?.querySelector('img')?.getBoundingClientRect();
+    const sourceRect = sourceCard?.getBoundingClientRect();
     const index = currentFilteredList.indexOf(entry);
     openLightboxAtIndex(index >= 0 ? index : 0);
     if (sourceRect) window.BullenCardMotion?.open(sourceCard, galleryEls.lightbox, sourceRect);
