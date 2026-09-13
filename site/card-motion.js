@@ -2,7 +2,7 @@
 (() => {
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   const hover=matchMedia('(hover: hover) and (pointer: fine)');
-  let active=null,pickedName=null;
+  let active=null,pickedName=null,shuffleState=null;
   function select(name){
     pickedName=name||null;
     document.querySelectorAll('.gallery-card').forEach(card=>{
@@ -11,6 +11,7 @@
     });
   }
   function cancel(){
+    cancelShuffle();
     if(!active)return;
     const scene=active;active=null;cancelAnimationFrame(scene.frame);
     scene.cleanups.forEach(fn=>fn());scene.shell.remove();
@@ -30,6 +31,10 @@
     // First clear the compact footer. Only then lift/grow the black panel.
     // The same timeline runs backward, restoring its label only after landing.
     const growth=smooth(.12,1,p);
+    if(scene.sourceMatrix){
+      const flat=smooth(0,.65,p),identity=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
+      scene.shell.style.transform=`matrix3d(${scene.sourceMatrix.map((v,i)=>v+(identity[i]-v)*flat).join(',')})`;
+    }
     const lerp=(a,b)=>a+(b-a)*growth,from=scene.from,to=scene.to;
     const width=lerp(from.width,to.width),height=lerp(from.height,to.height);
     Object.assign(scene.shell.style,{left:lerp(from.left,to.left)+'px',top:lerp(from.top,to.top)+'px',width:width+'px',height:height+'px'});
@@ -86,21 +91,68 @@
     overlay.querySelectorAll('.gallery-lightbox-nav').forEach(e=>hide(scene,e));
     active=scene;return scene;
   }
-  function open(card,overlay,sourceRect){
+  function capture(card){
+    if(!card)return null;
+    const transform=getComputedStyle(card).transform,old=card.style.transform;
+    // Measure layout without tilt, then restore before the browser can paint.
+    // The floating surface inherits the exact visible matrix at the handoff.
+    card.style.transform='none';const rect=card.getBoundingClientRect();card.style.transform=old;
+    return {rect,matrix:Array.from(new DOMMatrix(transform==='none'?undefined:transform).toFloat64Array())};
+  }
+  function open(card,overlay,source){
     cancel();const image=card?.querySelector('img');
     if(reduced.matches||!image?.complete||!image.naturalWidth)return;
     overlay.querySelector('.gallery-lightbox-content').scrollTop=0;
-    const scene=create(card,overlay,sourceRect);draw(scene,0);run(scene,1,420);
+    const scene=create(card,overlay,source.rect);scene.sourceMatrix=source.matrix;draw(scene,0);run(scene,1,350);
   }
   function close(overlay,done){
+    cancelShuffle();
     if(active?.closing)return true;
-    if(active?.overlay===overlay){active.closing=true;run(active,0,Math.max(140,360*active.progress),done);return true;}
+    if(active?.overlay===overlay){active.closing=true;run(active,0,Math.max(120,300*active.progress),done);return true;}
     const content=overlay.querySelector('.gallery-lightbox-content'),image=overlay.querySelector('#galleryLightboxImgGallery');
     if(reduced.matches||!image||overlay.style.display==='none')return false;
     const card=[...document.querySelectorAll('.gallery-card > img')].find(i=>i.alt===image.alt)?.closest('.gallery-card');
     const from=card?.getBoundingClientRect();
     if(!from || from.top<0 || from.bottom>innerHeight || content.scrollTop>2)return false;
-    const scene=create(card,overlay,from);scene.closing=true;draw(scene,1);run(scene,0,360,done);return true;
+    const scene=create(card,overlay,from);scene.closing=true;draw(scene,1);run(scene,0,300,done);return true;
+  }
+  function cancelShuffle(){
+    if(!shuffleState)return;
+    const state=shuffleState;shuffleState=null;
+    state.animations.forEach(a=>a.cancel());state.layers.forEach(el=>el.remove());
+    state.content.style.visibility=state.visibility;
+    state.particles.forEach(([el,value])=>el.style.visibility=value);
+  }
+  function shuffle(overlay,dir,render){
+    cancel();
+    if(reduced.matches){render();return;}
+    const content=overlay.querySelector('.gallery-lightbox-content');
+    function layer(){
+      const rect=content.getBoundingClientRect(),el=safeClone(content);
+      Object.assign(el.style,{position:'fixed',left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px',maxHeight:'none',maxWidth:'none',margin:'0',boxSizing:'border-box',pointerEvents:'none',overflow:'hidden',visibility:'visible',transformOrigin:'50% 65%',willChange:'transform,opacity'});
+      el.classList.add('card-shuffle-layer');
+      const hero=el.querySelector('img'),source=[...document.querySelectorAll('.gallery-card > img')].find(i=>i.alt===hero?.alt);
+      if(hero && source?.complete && source.naturalWidth)hero.src=source.currentSrc||source.src;
+      document.body.appendChild(el);el.scrollTop=content.scrollTop;return el;
+    }
+    const outgoing=layer();render();const incoming=layer();
+    outgoing.style.zIndex=10002;incoming.style.zIndex=10001;
+    const visibility=content.style.visibility;content.style.visibility='hidden';
+    const particles=[...overlay.querySelectorAll('.lightbox-tier-particles')].map(el=>[el,el.style.visibility]);
+    particles.forEach(([el])=>el.style.visibility='hidden');
+    const state={content,visibility,particles,layers:[outgoing,incoming],animations:[]};shuffleState=state;
+    const opts={duration:340,easing:'cubic-bezier(.2,.75,.25,1)',fill:'both'};
+    state.animations.push(outgoing.animate([
+      {transform:'translateX(0) rotate(0deg) scale(1)',opacity:1},
+      {transform:`translateX(${-dir*24}%) rotate(${-dir*7}deg) scale(.96)`,opacity:1,offset:.65},
+      {transform:`translateX(${-dir*42}%) rotate(${-dir*11}deg) scale(.92)`,opacity:0}
+    ],opts));
+    state.animations.push(incoming.animate([
+      {transform:`translateX(${dir*12}%) rotate(${dir*4}deg) scale(.92)`,opacity:0},
+      {opacity:1,offset:.25},
+      {transform:'translateX(0) rotate(0deg) scale(1)',opacity:1}
+    ],opts));
+    Promise.all(state.animations.map(a=>a.finished)).then(()=>{if(shuffleState===state)cancelShuffle();}).catch(()=>{});
   }
   function attach(card) {
     card.classList.toggle('card-picked-up',!!pickedName && card.querySelector('img')?.alt===pickedName);
@@ -134,5 +186,5 @@
     });
   }
   addEventListener('resize',cancel);reduced.addEventListener('change',cancel);
-  window.BullenCardMotion={attach,open,close,cancel,select};
+  window.BullenCardMotion={attach,capture,open,close,cancel,select,shuffle};
 })();

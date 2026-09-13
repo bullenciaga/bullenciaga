@@ -7157,11 +7157,11 @@
     // each time, rather than recreating them.
     if (galleryEls.lightboxPrev) {
       galleryEls.lightboxPrev.style.display = hasPrev ? 'flex' : 'none';
-      galleryEls.lightboxPrev.onclick = () => openLightboxAtIndex(currentLightboxIndex - 1);
+      galleryEls.lightboxPrev.onclick = () => navigateLightbox(-1);
     }
     if (galleryEls.lightboxNext) {
       galleryEls.lightboxNext.style.display = hasNext ? 'flex' : 'none';
-      galleryEls.lightboxNext.onclick = () => openLightboxAtIndex(currentLightboxIndex + 1);
+      galleryEls.lightboxNext.onclick = () => navigateLightbox(1);
     }
     // Warm the neighbours' artwork the moment a piece opens, so a swipe
     // reveals an already-decoded image rather than a frame that fills in
@@ -7179,11 +7179,17 @@
     });
     resetNavFadeTimer();
   }
+  function navigateLightbox(dir){
+    const index=currentLightboxIndex+dir;
+    if(index<0 || index>=currentFilteredList.length)return;
+    if(window.BullenCardMotion) window.BullenCardMotion.shuffle(galleryEls.lightbox,dir,()=>openLightboxAtIndex(index));
+    else openLightboxAtIndex(index);
+  }
   function openLightbox(entry, sourceCard){
-    const sourceRect = sourceCard?.getBoundingClientRect();
+    const sourcePose = window.BullenCardMotion?.capture(sourceCard);
     const index = currentFilteredList.indexOf(entry);
     openLightboxAtIndex(index >= 0 ? index : 0);
-    if (sourceRect) window.BullenCardMotion?.open(sourceCard, galleryEls.lightbox, sourceRect);
+    if (sourcePose) window.BullenCardMotion?.open(sourceCard, galleryEls.lightbox, sourcePose);
   }
   function closeLightbox(event){
     if (event && window.BullenCardMotion?.close(galleryEls.lightbox, () => closeLightbox())) return;
@@ -7870,13 +7876,13 @@
     if (!galleryEls.lightbox || galleryEls.lightbox.style.display !== 'flex') return;
     if (window.__MINT_REVEAL_ACTIVE__) return; // reveal in progress
     if (e.key === 'Escape') { e.preventDefault(); closeLightbox(e); }
-    if (e.key === 'ArrowLeft') openLightboxAtIndex(currentLightboxIndex - 1);
-    if (e.key === 'ArrowRight') openLightboxAtIndex(currentLightboxIndex + 1);
+    if (e.key === 'ArrowLeft') navigateLightbox(-1);
+    if (e.key === 'ArrowRight') navigateLightbox(1);
   });
 
   // Touch: drag the card horizontally to page between pieces, with the
-  // neighbouring piece sliding in alongside. Desktop is untouched -- touch
-  // events never fire there, so the arrows and arrow keys stay the only path.
+  // neighbouring piece lifting from behind. Arrows and arrow keys use the
+  // discrete shuffle above; touch keeps direct finger tracking.
   //
   // Neighbours are FULL cards from buildLightboxCardHtml, not artwork stubs,
   // so nothing fades or pops in mid-drag. Their ids are stripped on build:
@@ -7894,7 +7900,7 @@
   // Set SWIPE_ANIMATE = false to fall back to instant paging with no previews
   // and no transform -- one word, if the animation ever misbehaves in the wild.
   if (galleryEls.lightbox) {
-    const SWIPE_ANIMATE = true;
+    const SWIPE_ANIMATE = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const SWIPE_LOCK_PX = 10;   // travel before committing to an axis
     const SWIPE_COMMIT = 0.22;  // fraction of card width that changes the piece
     const SWIPE_GAP = 16;       // px between the card and its neighbours
@@ -7916,11 +7922,16 @@
     // One transform per element and nothing else -- no top/left writes, so a
     // reflow mid-drag can never leave anything stranded at a stale position.
     function setX(dx){
-      galleryEls.lightboxContent.style.transform = `translateX(${dx}px)`;
-      previews.forEach(p => { p.el.style.transform = `translateX(${p.base + dx}px)`; });
+      const step=cardW+SWIPE_GAP,progress=Math.min(1,Math.abs(dx)/step),dir=dx<0?1:-1;
+      galleryEls.lightboxContent.style.transform = `translateX(${dx*.8}px) rotate(${-dir*8*progress}deg) scale(${1-.05*progress})`;
+      previews.forEach(p => {
+        const toward=Math.sign(p.base)===dir,amount=toward?progress:0;
+        p.el.style.transform=`translateX(${Math.sign(p.base)*cardW*.12*(1-amount)}px) rotate(${Math.sign(p.base)*4*(1-amount)}deg) scale(${.94+.06*amount})`;
+        p.el.style.opacity=toward?Math.min(1,progress*5):0;
+      });
     }
-    // Neighbours are full cards parked one card-width plus a gap to either
-    // side. The wrapper is laid out by the browser exactly like the live
+    // Neighbours are full cards tucked behind the current card, with a small
+    // offset and rotation. The wrapper is laid out exactly like the live
     // lightbox, so the card inside lands on the same centre line at the same
     // width without a single measurement.
     function buildPreviews(){
@@ -7933,6 +7944,7 @@
         if (!entry) return;
         const wrap = document.createElement('div');
         wrap.className = 'lightbox-swipe-preview';
+        wrap.inert=true;wrap.setAttribute('aria-hidden','true');
         const card = document.createElement('div');
         card.className = 'gallery-lightbox-content';
         const tier = tierEffectOf(entry);
@@ -7952,7 +7964,8 @@
         // Positioned before insertion, so it is never painted at rest in the
         // middle of the screen on top of the live card.
         const base = dir * step;
-        wrap.style.transform = `translateX(${base}px)`;
+        wrap.style.zIndex='1';
+        wrap.style.transform = `translateX(${dir*cardW*.12}px) rotate(${dir*4}deg) scale(.94)`;
         galleryEls.lightbox.appendChild(wrap);
         previews.push({ el: wrap, base });
       });
