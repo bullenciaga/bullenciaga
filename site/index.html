@@ -7895,8 +7895,8 @@
   });
 
   // Touch: drag the card horizontally to page between pieces, with the
-  // neighbouring piece lifting from behind. Arrows and arrow keys use the
-  // discrete shuffle above; touch keeps direct finger tracking.
+  // neighbouring piece sliding alongside, as in the original mobile gallery.
+  // Desktop arrows retain the separate deck shuffle.
   //
   // Neighbours are FULL cards from buildLightboxCardHtml, not artwork stubs,
   // so nothing fades or pops in mid-drag. Their ids are stripped on build:
@@ -7922,7 +7922,8 @@
     let sx = 0, sy = 0, cardW = 0;
     let armed = false, axis = null;
     let previews = [];   // { el, base } -- base is the resting offset, in px
-    let settleToken = 0, swipePhase = 0, swipeDir = 1;
+    const SWIPE_MS = 280; // matches the existing mobile slide CSS
+    let settleToken = 0;
     let touchScrollBody=null,lastTouchY=0;
 
     function clearPreviews(){
@@ -7932,33 +7933,16 @@
     function resetCard(){
       galleryEls.lightboxContent.classList.remove('swipe-settling', 'swipe-fading');
       galleryEls.lightboxContent.style.transform = '';
-      galleryEls.lightboxContent.style.zIndex = '';
-      galleryEls.lightboxContent.style.opacity = '';
-      swipePhase=0;
+
     }
     // One transform per element and nothing else -- no top/left writes, so a
     // reflow mid-drag can never leave anything stranded at a stale position.
-    function setDeck(p,dir){
-      swipePhase=p;swipeDir=dir;
-      const ease=(a,b)=>{const t=Math.max(0,Math.min(1,(p-a)/(b-a)));return t*t*(3-2*t);};
-      const out=ease(0,.46),back=ease(.46,1),arc=out*(1-back),travel=cardW+32;
-      galleryEls.lightboxContent.style.zIndex=p<.46?'2':'1';
-      galleryEls.lightboxContent.style.transform=dir>0
-        ?`translateX(${travel*arc}px) translateY(${4*arc}px) rotate(${2*arc}deg) scale(${1-(3/cardW)*out})`
-        :`scale(${1-(3/cardW)*out})`;
-      galleryEls.lightboxContent.style.opacity=1-ease(.88,1);
-      previews.forEach(preview=>{
-        const toward=Math.sign(preview.base)===dir;
-        preview.el.style.zIndex=p<.46?'1':'2';
-        preview.el.style.transform=dir>0
-          ?`translateX(${-8*(1-out)}px) scale(${1-(3/cardW)*(1-out)})`
-          :`translateX(${-travel*arc}px) translateY(${4*arc}px) rotate(${-2*arc}deg) scale(${1-(3/cardW)*(1-back)})`;
-        preview.el.style.opacity=toward?Math.min(1,p*12):0;
-      });
+    function setX(dx){
+      galleryEls.lightboxContent.style.transform = `translateX(${dx}px)`;
+      previews.forEach(p => { p.el.style.transform = `translateX(${p.base + dx}px)`; });
     }
-    function setX(dx){setDeck(Math.min(.46,Math.abs(dx)/(cardW+SWIPE_GAP)*.46),dx>0?1:-1);}
-    // Neighbours are full cards tucked behind the current card, with a small
-    // offset and rotation. The wrapper is laid out exactly like the live
+    // Neighbours are full cards parked one card-width plus a gap to either
+    // side. The wrapper is laid out by the browser exactly like the live
     // lightbox, so the card inside lands on the same centre line at the same
     // width without a single measurement.
     function buildPreviews(){
@@ -7991,29 +7975,46 @@
         // Positioned before insertion, so it is never painted at rest in the
         // middle of the screen on top of the live card.
         const base = dir * step;
-        wrap.style.zIndex='1';
-        wrap.style.transform = `translateX(${dir*8}px) scale(${1-3/cardW})`;
+        wrap.style.transform = `translateX(${base}px)`;
         galleryEls.lightbox.appendChild(wrap);
         previews.push({ el: wrap, base });
       });
     }
-    // Continue from the finger's current position, move clear, then tuck the
-    // outgoing card underneath. A token cancels obsolete gesture frames.
-    // Spring-back follows the same path in reverse without changing pieces.
+    // Animate to toX, then hand off. transitionend won't fire when the target
+    // equals the current transform, so the timeout is the real guarantee here,
+    // not a safety net. The token makes a newer gesture cancel a pending one.
+    // keepDir is the direction being committed to (-1 or 1), or null on a
+    // spring-back. Whatever is being landed on stays fully opaque; everything
+    // else fades out over the same curve as the slide, so nothing is ever
+    // simply deleted out from under the finger.
     function settle(toX, done, keepDir){
-      const token=++settleToken,start=swipePhase,destination=keepDir?1:0,dir=keepDir||swipeDir;
-      const duration=keepDir?Math.max(220,420*(1-start)):160;
+      const token = ++settleToken;
+      const els = [galleryEls.lightboxContent, ...previews.map(p => p.el)];
+      els.forEach(el => el.classList.add('swipe-settling'));
+      previews.forEach(p => {
+        const landingOnThis = keepDir && Math.sign(p.base) === keepDir;
+        if (!landingOnThis) p.el.classList.remove('swipe-visible');
+      });
+      // On a commit the live card is the one being left; on a spring-back it
+      // is the one being returned to, so it keeps its opacity.
+      if (keepDir) galleryEls.lightboxContent.classList.add('swipe-fading');
       if(keepDir)window.BullenCardMotion?.select(currentFilteredList[currentLightboxIndex+keepDir]?.name);
-      let started;
-      function tick(now){
-        if(token!==settleToken)return;
+      requestAnimationFrame(() => {if(token===settleToken && galleryEls.lightbox.style.display==='flex')setX(toX);});
+      let fired = false;
+      const finish = () => {
+        if (fired || token !== settleToken) return;
+        fired = true;
         if(galleryEls.lightbox.style.display!=='flex'){abortGesture();return;}
-        started ??= now;const t=Math.min(1,(now-started)/duration);
-        setDeck(start+(destination-start)*t,dir);
-        if(t<1)requestAnimationFrame(tick);
-        else{resetCard();clearPreviews();done();}
-      }
-      requestAnimationFrame(tick);
+        els.forEach(el => el.classList.remove('swipe-settling'));
+        resetCard();          // drops swipe-fading in the same tick, so the
+        clearPreviews();      // transition cannot run backwards on the card
+        done();               // that is about to be re-rendered
+
+      };
+      const onEnd=e=>{if(e.target===galleryEls.lightboxContent){galleryEls.lightboxContent.removeEventListener('transitionend',onEnd);finish();}};
+      galleryEls.lightboxContent.addEventListener('transitionend',onEnd);
+      setTimeout(()=>galleryEls.lightboxContent.removeEventListener('transitionend',onEnd),SWIPE_MS+90);
+      setTimeout(finish, SWIPE_MS + 90);
     }
     function abortGesture(){
       armed = false; axis = null;
@@ -8075,8 +8076,8 @@
       if (!SWIPE_ANIMATE) return;
       // Rubber-band at the ends, where there is nothing to reveal.
       let d = dx;
-      const atStart = currentLightboxIndex <= 0 && d < 0;
-      const atEnd = currentLightboxIndex >= currentFilteredList.length - 1 && d > 0;
+      const atStart = currentLightboxIndex <= 0 && d > 0;
+      const atEnd = currentLightboxIndex >= currentFilteredList.length - 1 && d < 0;
       if (atStart || atEnd) d *= 0.25;
       setX(d);
     }, { passive: false });
@@ -8089,7 +8090,7 @@
       if (window.__MINT_REVEAL_ACTIVE__) { abortGesture(); return; }
       const t = e.changedTouches && e.changedTouches[0];
       const dx = t ? t.clientX - sx : 0;
-      const dir = dx > 0 ? 1 : -1;
+      const dir = dx < 0 ? 1 : -1;
       const target = currentLightboxIndex + dir;
       const inRange = target >= 0 && target < currentFilteredList.length;
       const commit = inRange && Math.abs(dx) > cardW * SWIPE_COMMIT;
