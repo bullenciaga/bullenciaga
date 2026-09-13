@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {competitionFreshness as check} from '../site/golden-jacket.js';
+const now=1800000000000;
+const live={phase:'live',updatedAt:now,buyVolumeRaw:'100'};
+assert.equal(check(live,now).behind,false);
+assert.equal(check({...live,buyVolumeRaw:'100'},now+60000).behind,false);
+assert.equal(check(live,now+300001).behind,true);
+assert.equal(check({...live,problem:'review'},now).behind,true);
+assert.equal(check({...live,updatedAt:undefined},now).verified,null);
+assert.equal(check({...live,updatedAt:now+120000},now).behind,true);
+assert.equal(check({...live,phase:'drawn'},now+999999).behind,false);
+assert.equal(check({...live,phase:'review'},now).behind,true);
+console.log('competition freshness: fresh, quiet, stale, paused, missing/future timestamp and finished draw passed');

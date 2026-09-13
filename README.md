@@ -1,38 +1,68 @@
 # BULLENCIAGA
 
-Canonical public source for the BULLENCIAGA website and its public verification material.
+The public website source for BULLENCIAGA: The Herd collectibles, House Objects,
+$BULLEN, and the public records behind them.
 
-## Identity
+[Visit the House](https://bullenciaga.com) · [The Herd](https://bullenciaga.com/#gallery) · [Whitepaper](https://bullenciaga.com/whitepaper.pdf)
 
-- Project: **BULLENCIAGA**
-- Token: **$BULLEN**
-- Solana mint: `BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN`
-- Website: [bullenciaga.com](https://bullenciaga.com)
+## Explore and verify
 
-The production website snapshot in `site/` is preserved byte-for-byte. Its authoritative `index.html` SHA-256 is:
+| Surface | What you can find |
+| --- | --- |
+| [The Herd](https://bullenciaga.com/#gallery) | Browse the collection, inspect artwork and traits, and view marketplace listings. |
+| [House Objects](https://bullenciaga.com/objects) | Explore the House Object collection. |
+| [Live stats](https://bullenciaga.com/stats) | Supply, mint progress and the volume-based burn schedule. |
+| [Burn reserve](https://bullenciaga.com/lock) | The locked reserve and its public evidence. |
+| [Living Ledger](https://bullenciaga.com/ledger) | A timeline of public market, supply and collection activity. |
+| [Giveaways](https://bullenciaga.com/giveaways) | Current rules, counting progress and published draw evidence. |
+| [House Record](https://bullenciaga.com/patchnotes) | Public project updates and earlier editions. |
+
+The canonical $BULLEN mint on Solana is:
 
 ```text
-3677d535846c40fd861ef0820135248ca73af5badbeb521c97b7c2b0c5581221
+BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN
 ```
 
-## Repository boundary
+## What is in this repository?
 
-This public repository contains the website, public documentation, transaction-safety notes, and verification checks. Telegram moderation, cron signing, giveaways, administrative endpoints, private operational runbooks, and the production API Worker belong in the private `bullenciaga-ops` repository.
+- `site/` — the website pages, scripts, styles, artwork previews and public proof files.
+- `src/website.mjs` — the static-asset request handler and canonical-domain redirects.
+- `docs/` — public architecture, verification and transaction-safety explanations, plus the whitepaper source.
+- `qa/` — checks for page behavior, accessibility-related controls, source integrity and release boundaries.
 
-No private key, wallet keypair, API key, bot token, webhook secret, or Cloudflare credential belongs here.
+The server-side services are separate. This repository does not include wallet
+signing material, service credentials or operator procedures.
 
-## Validate locally
+## Inspect locally
 
-Node.js 24 is the reference runtime.
+Use Node.js24 or newer. The website checks do not require an API key:
 
 ```bash
 npm test
 ```
 
-The tests verify canonical naming, the token mint, production source hashes, static-file completeness, redirect safety, and the separation between static page names and Worker API route prefixes.
+For a local page preview:
 
-## Deployment status
+```bash
+node qa/serve-buy-preview.mjs --serve
+```
 
-Production remains unchanged. GitHub Actions are prepared for a future manually approved Cloudflare deployment, but deployment is blocked until the repository environment, scoped Cloudflare credentials, preview validation, and rollback checkpoint have all been configured.
+Open the printed localhost address; change `/buy` to `/` or another page to explore.
+This previews the front end, not a local copy of the live backend. Some live data,
+wallet connections and marketplace functions require the production services.
+The preview reads the public supply, volume and chart endpoints; it does not
+configure credentials or run server-side transaction services.
 
-See `docs/DEPLOYMENT.md` and `docs/TRANSACTION_SAFETY.md`.
+After changing files under `site/`, run `npm run manifest` and then `npm test`.
+The manifest records file hashes; it is not a security audit or a promise about
+third-party transactions. See [verification](docs/VERIFICATION.md) and
+[architecture](docs/ARCHITECTURE.md).
+
+## Feedback and security
+
+Report reproducible website issues through GitHub Issues. For suspected security
+problems, contact **contact@bullenciaga.com** privately; see [SECURITY.md](SECURITY.md).
+Never include recovery phrases, private keys or credentials in an issue.
+
+Source and artwork are available for inspection under the terms in
+[LICENSE](LICENSE). Public visibility does not grant reuse rights.

@@ -24,6 +24,7 @@ function walk(directory) {
       for (const pattern of suspiciousNames) if (pattern.test(entry.name)) failures.push(`suspicious secret filename: ${relative}`);
       if (textExtensions.has(path.extname(entry.name))) {
         const value = fs.readFileSync(file, 'utf8');
+        if (relative.startsWith('docs/') && /(?:\/Users\/|\/Volumes\/|\/home\/)[^\s`]+/.test(value)) failures.push(`private workstation path in ${relative}`);
         for (const pattern of patterns) if (pattern.test(value)) failures.push(`possible secret in ${relative}: ${pattern}`);
       }
     }
