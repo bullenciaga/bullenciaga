@@ -7182,9 +7182,11 @@
     });
     resetNavFadeTimer();
   }
+  let mobileNavigateLightbox = null;
   function navigateLightbox(dir){
     const index=currentLightboxIndex+dir;
     if(index<0 || index>=currentFilteredList.length)return;
+    if(window.innerWidth<=700 && mobileNavigateLightbox){mobileNavigateLightbox(dir);return;}
     if(window.BullenCardMotion) window.BullenCardMotion.shuffle(galleryEls.lightbox,dir,()=>openLightboxAtIndex(index));
     else openLightboxAtIndex(index);
   }
@@ -7922,8 +7924,8 @@
     let sx = 0, sy = 0, cardW = 0;
     let armed = false, axis = null;
     let previews = [];   // { el, base } -- base is the resting offset, in px
-    const SWIPE_MS = 280; // matches the existing mobile slide CSS
-    let settleToken = 0;
+    let settleToken = 0, settleFrame = 0, currentX = 0;
+    let restoreSwipeVisuals = null;
     let touchScrollBody=null,lastTouchY=0;
 
     function clearPreviews(){
@@ -7933,11 +7935,14 @@
     function resetCard(){
       galleryEls.lightboxContent.classList.remove('swipe-settling', 'swipe-fading');
       galleryEls.lightboxContent.style.transform = '';
-
+      currentX=0;
+      cancelAnimationFrame(settleFrame);settleFrame=0;
+      restoreSwipeVisuals?.();restoreSwipeVisuals=null;
     }
     // One transform per element and nothing else -- no top/left writes, so a
     // reflow mid-drag can never leave anything stranded at a stale position.
     function setX(dx){
+      currentX=dx;
       galleryEls.lightboxContent.style.transform = `translateX(${dx}px)`;
       previews.forEach(p => { p.el.style.transform = `translateX(${p.base + dx}px)`; });
     }
@@ -7980,41 +7985,36 @@
         previews.push({ el: wrap, base });
       });
     }
-    // Animate to toX, then hand off. transitionend won't fire when the target
-    // equals the current transform, so the timeout is the real guarantee here,
-    // not a safety net. The token makes a newer gesture cancel a pending one.
-    // keepDir is the direction being committed to (-1 or 1), or null on a
-    // spring-back. Whatever is being landed on stays fully opaque; everything
-    // else fades out over the same curve as the slide, so nothing is ever
-    // simply deleted out from under the finger.
+    // Keep the live card and its neighbours on one frame clock. CSS opacity
+    // events must never complete the handoff before horizontal motion lands.
+    // A lightly damped spring adds a small overshoot, then returns precisely
+    // to the destination before swapping in the interactive card.
     function settle(toX, done, keepDir){
-      const token = ++settleToken;
-      const els = [galleryEls.lightboxContent, ...previews.map(p => p.el)];
-      els.forEach(el => el.classList.add('swipe-settling'));
-      previews.forEach(p => {
-        const landingOnThis = keepDir && Math.sign(p.base) === keepDir;
-        if (!landingOnThis) p.el.classList.remove('swipe-visible');
-      });
-      // On a commit the live card is the one being left; on a spring-back it
-      // is the one being returned to, so it keeps its opacity.
-      if (keepDir) galleryEls.lightboxContent.classList.add('swipe-fading');
+      const token=++settleToken, startX=currentX, originalIndex=currentLightboxIndex;
+      const content=galleryEls.lightboxContent;
+      const items=[{el:content,landing:!keepDir},...previews.map(p=>({el:p.el,landing:Math.sign(p.base)===keepDir}))];
+      const previous=items.map(({el})=>({el,transition:el.style.transition,opacity:el.style.opacity}));
+      const opacities=items.map(({el})=>Number(getComputedStyle(el).opacity));
+      items.forEach(({el})=>el.style.transition='none');
+      restoreSwipeVisuals=()=>previous.forEach(({el,transition,opacity})=>{el.style.transition=transition;el.style.opacity=opacity;});
       if(keepDir)window.BullenCardMotion?.select(currentFilteredList[currentLightboxIndex+keepDir]?.name);
-      requestAnimationFrame(() => {if(token===settleToken && galleryEls.lightbox.style.display==='flex')setX(toX);});
-      let fired = false;
-      const finish = () => {
-        if (fired || token !== settleToken) return;
-        fired = true;
-        if(galleryEls.lightbox.style.display!=='flex'){abortGesture();return;}
-        els.forEach(el => el.classList.remove('swipe-settling'));
-        resetCard();          // drops swipe-fading in the same tick, so the
-        clearPreviews();      // transition cannot run backwards on the card
-        done();               // that is about to be re-rendered
-
-      };
-      const onEnd=e=>{if(e.target===galleryEls.lightboxContent){galleryEls.lightboxContent.removeEventListener('transitionend',onEnd);finish();}};
-      galleryEls.lightboxContent.addEventListener('transitionend',onEnd);
-      setTimeout(()=>galleryEls.lightboxContent.removeEventListener('transitionend',onEnd),SWIPE_MS+90);
-      setTimeout(finish, SWIPE_MS + 90);
+      const duration=keepDir?460:400;
+      const spring=t=>1-Math.exp(-9*t)*(Math.cos(8*t)+(9/8)*Math.sin(8*t));
+      const end=spring(1);let started;
+      function tick(now){
+        if(token!==settleToken)return;
+        if(galleryEls.lightbox.style.display!=='flex' || originalIndex!==currentLightboxIndex || document.querySelector('.card-morph-shell')){abortGesture();return;}
+        started ??= now;
+        const t=Math.min(1,(now-started)/duration),travel=t===1?1:spring(t)/end;
+        setX(startX+(toX-startX)*travel);
+        items.forEach(({el,landing},i)=>{
+          const f=landing?Math.min(1,t*3):t,fade=f*f*(3-2*f);
+          el.style.opacity=opacities[i]+((landing?1:0)-opacities[i])*fade;
+        });
+        if(t<1)settleFrame=requestAnimationFrame(tick);
+        else{resetCard();clearPreviews();done();}
+      }
+      settleFrame=requestAnimationFrame(tick);
     }
     function abortGesture(){
       armed = false; axis = null;
@@ -8023,6 +8023,18 @@
       clearPreviews();
       window.BullenCardMotion?.select(galleryEls.lightbox.style.display==='flex'?currentFilteredList[currentLightboxIndex]?.name:null);
     }
+
+    // Mobile chevrons and keyboard navigation share the same slide/settle as
+    // touch; the desktop deck animation never runs at this breakpoint.
+    mobileNavigateLightbox=dir=>{
+      abortGesture();window.BullenCardMotion?.cancel();
+      const target=currentLightboxIndex+dir;
+      if(target<0 || target>=currentFilteredList.length)return;
+      if(!SWIPE_ANIMATE){openLightboxAtIndex(target);return;}
+      cardW=galleryEls.lightboxContent.getBoundingClientRect().width || window.innerWidth;
+      buildPreviews();
+      settle(-dir*(cardW+SWIPE_GAP),()=>openLightboxAtIndex(target),dir);
+    };
 
     galleryEls.lightbox.addEventListener('touchstart', (e) => {
       window.BullenCardMotion?.cancel();
