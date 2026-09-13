@@ -7,7 +7,13 @@
     pickedName=name||null;
     document.querySelectorAll('.gallery-card').forEach(card=>{
       if(card.closest('.card-morph-shell'))return;
+      // Closing hands the fully landed surface back in this same paint. Only
+      // switching inspected cards should crossfade their background tiles.
+      const landed=!pickedName && card.classList.contains('card-picked-up');
+      const transition=card.style.transition;
+      if(landed)card.style.transition='none';
       card.classList.toggle('card-picked-up',!!pickedName && card.querySelector('img')?.alt===pickedName);
+      if(landed){void card.offsetWidth;card.style.transition=transition;}
     });
   }
   function cancel(){
@@ -107,7 +113,7 @@
     const scene=create(card,overlay,source.rect);scene.sourceMatrix=source.matrix;draw(scene,0);run(scene,1,350);
   }
   function close(overlay,done){
-    cancelShuffle();select(null);
+    cancelShuffle();
     if(active?.closing)return true;
     if(active?.overlay===overlay){active.closing=true;run(active,0,Math.max(120,300*active.progress),done);return true;}
     const content=overlay.querySelector('.gallery-lightbox-content'),image=overlay.querySelector('#galleryLightboxImgGallery');
