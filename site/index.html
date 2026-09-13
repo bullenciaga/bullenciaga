@@ -169,6 +169,10 @@
     -webkit-text-fill-color:transparent;
     animation:wordmarkShine 5s linear infinite;
   }
+  @media(min-width:821px){
+    /* Balance the visible Poppins lettering, including its trailing tracking. */
+    .hero-mast .wordmark{ transform:translateX(.05em); }
+  }
   @keyframes wordmarkShine{
     from{ background-position:115% 0; }
     to{ background-position:-15% 0; }
