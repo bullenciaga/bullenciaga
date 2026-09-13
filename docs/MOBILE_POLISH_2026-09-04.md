@@ -2,7 +2,7 @@
 
 Canonical record: `work/bullenciaga-site/docs/MOBILE_POLISH_2026-09-04.md`
 in the active BULLENCIAGA website repository.
-Owning iCloud authority: `/Users/mac/Library/Mobile Documents/com~apple~CloudDocs/CHATGPT/BULLENCIAGA`.
+Source authority: `bullenciaga/bullenciaga` on GitHub.
 
 Approval: explicitly requested by the owner in this task. Current authority:
 the reviewed repository source; production authority is the successful GitOps

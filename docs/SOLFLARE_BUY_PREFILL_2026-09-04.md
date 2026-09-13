@@ -2,7 +2,7 @@
 
 ## Authority and approval
 
-Canonical iCloud authority: `/Users/mac/Library/Mobile Documents/com~apple~CloudDocs/CHATGPT/BULLENCIAGA`.
+Source authority: `bullenciaga/bullenciaga` on GitHub.
 
 Active code authority: this `bullenciaga-site` repository. User explicitly requested fixing Solflare buy links across all pages and asked whether a native Solflare swap could be prefilled. No approval to connect a wallet, sign, transact, change financial rules, or modify BULLENSAGA. This handoff records a website-only change; no unapproved visual assets are promoted.
 

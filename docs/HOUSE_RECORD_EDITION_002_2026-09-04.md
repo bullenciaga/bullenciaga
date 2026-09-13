@@ -1,11 +1,6 @@
 # House Record edition 002 and mobile Jump To
 
-Canonical iCloud authority:
-`/Users/mac/Library/Mobile Documents/com~apple~CloudDocs/CHATGPT/BULLENCIAGA`
-
-Current code authority:
-`/Users/mac/.codex/.chatgpt-projects/g-p-6a873cd902f081919acb076925de3827/work/bullenciaga-site`
-and `bullenciaga/bullenciaga` on GitHub.
+Source authority: `bullenciaga/bullenciaga` on GitHub.
 
 Approval state: owner explicitly asked to prepare and ship edition 002, preserve
 edition 001 as an archive, and widen/restyle Jump To on mobile only. No new artwork

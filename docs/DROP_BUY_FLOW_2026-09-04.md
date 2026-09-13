@@ -1,6 +1,6 @@
 # The Drop — existing desktop/mobile buy flow
 
-Canonical iCloud authority: `/Users/mac/Library/Mobile Documents/com~apple~CloudDocs/CHATGPT/BULLENCIAGA`.
+Source authority: `bullenciaga/bullenciaga` on GitHub.
 Active code authority: this `bullenciaga/bullenciaga` website repository.
 Approval: owner requested the existing home-page / Tape buy flow on The Drop.
 
