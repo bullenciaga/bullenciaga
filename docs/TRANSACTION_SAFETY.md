@@ -1,15 +1,19 @@
-# Marketplace transaction safety
+# Wallet and transaction safety
 
-The native list, buy, delist, and change-price flows currently depend on marketplace-generated Solana transactions.
+Connecting a wallet and approving a transaction are separate actions. The
+website's collection and marketplace interfaces may request signatures through
+the connected wallet. Review the requested action, asset, destination and amount
+in the wallet before approving.
 
-The recovered production source shows that the marketplace may sign before the transaction reaches the browser. Phantom documents that multi-signer transactions should be signed by Phantom first with `signTransaction`, followed by collection of the other signatures. Phantom also recommends simulation with `sigVerify: false` before presenting the signing request.
+Marketplace transactions can be supplied by external services. The relevant
+browser code is public for inspection, but this repository is not an independent
+audit of those services or a guarantee that every signing request is safe.
 
-Publishing this repository does not by itself remove transaction warnings. The remediation must be tested across all four operations:
+A wallet warning should not be dismissed merely because a website is listed,
+has public source or appears in a familiar collection. If a request differs
+from the action you intended, reject it and report the issue privately using
+[SECURITY.md](../SECURITY.md).
 
-1. obtain an unsigned transaction or instruction set;
-2. simulate it with signature verification disabled;
-3. have the connected wallet sign first;
-4. collect any marketplace signature afterward;
-5. submit only after signer, account, amount, and simulation checks pass.
-
-Until that flow is proven, transaction-warning remediation remains an open release task. No user should interpret repository visibility as a guarantee that a wallet prompt is safe.
+No recovery phrase or private key belongs in a support request, GitHub issue or
+website form. The canonical mint and website links are listed in the
+[README](../README.md).
