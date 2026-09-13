@@ -1,5 +1,5 @@
 /* Broad diagonal clear-coat reflection, swept by the card angle rather than a point light. */
-.gallery-card{transition:border-color .18s ease;transform-origin:center}
+.gallery-card{transition:border-color .18s ease,opacity .18s ease,visibility 0s;transform-origin:center}
 .gallery-card::after{content:"";position:absolute;inset:0 0 44px;pointer-events:none;z-index:1;opacity:var(--card-shine,0);background-image:linear-gradient(115deg,rgba(255,255,255,0) 15%,rgba(255,255,255,.018) 40%,rgba(255,255,255,.065) 53%,rgba(255,255,255,.018) 66%,rgba(255,255,255,0) 90%);background-size:200% 180%;background-position:var(--card-reflection-x,50%) var(--card-reflection-y,50%);mix-blend-mode:screen;transition:opacity .3s ease}
 .gallery-card .gallery-card-badge{z-index:2}
 @media(hover:none){.gallery-card:active{transform:scale(.98)}}
@@ -11,7 +11,8 @@
 .card-morph-layer .gallery-card-name{box-sizing:border-box}
 
 /* Preserve the space while its physical card is being inspected, including data refreshes. */
-.gallery-card.card-picked-up{visibility:hidden!important;pointer-events:none!important}
+.gallery-card.card-picked-up{opacity:0!important;visibility:hidden;pointer-events:none!important;transition:border-color .18s ease,opacity .18s ease,visibility 0s .18s}
+@media(prefers-reduced-motion:reduce){.gallery-card.card-picked-up{transition:none}}
 
 /* Compact, tactile close control, with an equally visible keyboard state. */
 #vaultModalClose{transition:background .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease}

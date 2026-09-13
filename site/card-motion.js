@@ -87,7 +87,7 @@
       const old=el.style.overflowAnchor;el.style.overflowAnchor='none';
       scene.cleanups.push(()=>{el.style.overflowAnchor=old;});
     }
-    hide(scene,card);hide(scene,content);hide(scene,overlay.querySelector('#lightboxTierParticles'));
+    hide(scene,content);hide(scene,overlay.querySelector('#lightboxTierParticles'));
     overlay.querySelectorAll('.gallery-lightbox-nav').forEach(e=>hide(scene,e));
     active=scene;return scene;
   }
@@ -106,7 +106,7 @@
     const scene=create(card,overlay,source.rect);scene.sourceMatrix=source.matrix;draw(scene,0);run(scene,1,350);
   }
   function close(overlay,done){
-    cancelShuffle();
+    cancelShuffle();select(null);
     if(active?.closing)return true;
     if(active?.overlay===overlay){active.closing=true;run(active,0,Math.max(120,300*active.progress),done);return true;}
     const content=overlay.querySelector('.gallery-lightbox-content'),image=overlay.querySelector('#galleryLightboxImgGallery');
@@ -119,7 +119,7 @@
   function cancelShuffle(){
     if(!shuffleState)return;
     const state=shuffleState;shuffleState=null;
-    state.animations.forEach(a=>a.cancel());state.layers.forEach(el=>el.remove());
+    cancelAnimationFrame(state.frame);state.layers.forEach(el=>el.remove());
     state.content.style.visibility=state.visibility;
     state.particles.forEach(([el,value])=>el.style.visibility=value);
   }
@@ -140,20 +140,27 @@
     const visibility=content.style.visibility;content.style.visibility='hidden';
     const particles=[...overlay.querySelectorAll('.lightbox-tier-particles')].map(el=>[el,el.style.visibility]);
     particles.forEach(([el])=>el.style.visibility='hidden');
-    const state={content,visibility,particles,layers:[outgoing,incoming],animations:[]};shuffleState=state;
-    const opts={duration:340,easing:'cubic-bezier(.2,.75,.25,1)',fill:'both'};
-    state.animations.push(outgoing.animate([
-      {transform:'translateX(0) rotate(0deg) scale(1)',opacity:1},
-      {transform:`translateX(${-dir*24}%) rotate(${-dir*7}deg) scale(.96)`,opacity:1,offset:.65},
-      {transform:`translateX(${-dir*42}%) rotate(${-dir*11}deg) scale(.92)`,opacity:0}
-    ],opts));
-    state.animations.push(incoming.animate([
-      {transform:`translateX(${dir*12}%) rotate(${dir*4}deg) scale(.92)`,opacity:0},
-      {opacity:1,offset:.25},
-      {transform:'translateX(0) rotate(0deg) scale(1)',opacity:1}
-    ],opts));
-    Promise.all(state.animations.map(a=>a.finished)).then(()=>{if(shuffleState===state)cancelShuffle();}).catch(()=>{});
+    const state={content,visibility,particles,layers:[outgoing,incoming],frame:0};shuffleState=state;
+    const width=outgoing.getBoundingClientRect().width,travel=width+32;
+    let started;
+    function drawShuffle(p){
+      // Exchange depth only at the far edge, where the faces no longer overlap.
+      // Then return the old card underneath the newly revealed card.
+      const out=smooth(0,.46,p),back=smooth(.46,1,p),arc=out*(1-back);
+      outgoing.style.zIndex=p<.46?10002:10000;
+      outgoing.style.transform=`translateX(${-dir*travel*arc}px) translateY(${4*arc}px) rotate(${-dir*2*arc}deg) scale(${1-(3/width)*out})`;
+      outgoing.style.opacity=1-smooth(.88,1,p);
+      incoming.style.transform=`translateX(${dir*8*(1-out)}px) scale(${1-(3/width)*(1-out)})`;
+      incoming.style.opacity=1;
+    }
+    function tick(now){
+      if(shuffleState!==state)return;
+      started ??= now;const p=Math.min(1,(now-started)/420);drawShuffle(p);
+      if(p<1)state.frame=requestAnimationFrame(tick);else cancelShuffle();
+    }
+    drawShuffle(0);state.frame=requestAnimationFrame(tick);
   }
+
   function attach(card) {
     card.classList.toggle('card-picked-up',!!pickedName && card.querySelector('img')?.alt===pickedName);
     let frame=0,bounds=null,active=false,last=0;
