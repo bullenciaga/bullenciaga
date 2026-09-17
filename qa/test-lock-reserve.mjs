@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const html = fs.readFileSync(new URL('../site/lock.html', import.meta.url), 'utf8');
 const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1];
 const mint = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
-const firstCliff = Date.parse('2026-09-16T17:00:00Z');
+const firstCliff = Date.parse('2026-09-27T17:00:00Z');
 const lastCliff = Date.parse('2026-10-02T17:00:00Z');
 const settle = () => new Promise(resolve => setImmediate(resolve));
 
@@ -42,8 +42,9 @@ function mount(at) {
   };
 }
 
-assert.match(html,/AuskhWTZCbXJLvW8A8jhVczZ9nKi1t3emty8M1rCvXHB/);
-assert.match(html,/DaYMxWbKCrxFCEn2xmx8bW8wXBKZSvZ86iwcoWioZ86B/);
+assert.match(html,/J6vSzqFLcTWYyg8aPfKSBpnMegvizygzvLKumEUhGATB/);
+assert.match(html,/3EbJKQu31nVxHK9zAaRKpNLYAP7tkY1tHrSPPH2pACiw/);
+assert.doesNotMatch(html,/Next volume burn · 7D|seven-day window/);
 assert.doesNotMatch(html,/tokens currently claimable/,'A schedule does not establish an unwithdrawn balance');
 assert.match(html,/<b id="locked-total">—<\/b>/,'No-JavaScript view must not assert a perpetually locked total');
 
