@@ -136,19 +136,19 @@
     </header>
     <div class="lock-grid">
       <article class="lock-card">
-        <div class="card-kicker">01 / Next volume burn · 7D</div>
+        <div class="card-kicker">01 / Next volume burn</div>
         <h3>The next-burn tranche</h3>
         <div class="amount"><span>25,000,000</span> <small>BULLEN <span class="amount-usd" data-locked-bullen="25000000">(USD —)</span></small></div>
         <dl class="facts">
-          <div class="fact"><dt>Hard cliff</dt><dd><time datetime="2026-09-16T17:00:00Z">16 Sep 2026 · 19:00 CEST</time></dd></div>
+          <div class="fact"><dt>Hard cliff</dt><dd><time datetime="2026-09-27T17:00:00Z">27 Sep 2026 · 19:00 CEST</time></dd></div>
           <div class="fact"><dt>Unlocked before cliff</dt><dd class="good">0</dd></div>
-          <div class="fact"><dt>Vesting rate</dt><dd>0 per week</dd></div>
+          <div class="fact"><dt>Vesting rate</dt><dd>0 before cliff</dd></div>
           <div class="fact"><dt>Can cancel</dt><dd>None</dd></div>
           <div class="fact"><dt>Can change recipient</dt><dd>None</dd></div>
         </dl>
-        <div class="countdown" data-cliff="2026-09-16T17:00:00Z">Calculating cliff…</div>
-        <a class="verify-link" href="https://lock.jup.ag/escrow/AuskhWTZCbXJLvW8A8jhVczZ9nKi1t3emty8M1rCvXHB" target="_blank" rel="noopener noreferrer">Verify 25M on Jupiter ↗</a>
-        <p class="address">Escrow AuskhWTZCbXJLvW8A8jhVczZ9nKi1t3emty8M1rCvXHB<br>Token account DaYMxWbKCrxFCEn2xmx8bW8wXBKZSvZ86iwcoWioZ86B</p>
+        <div class="countdown" data-cliff="2026-09-27T17:00:00Z">Calculating cliff…</div>
+        <a class="verify-link" href="https://lock.jup.ag/escrow/J6vSzqFLcTWYyg8aPfKSBpnMegvizygzvLKumEUhGATB" target="_blank" rel="noopener noreferrer">Verify 25M on Jupiter ↗</a>
+        <p class="address">Escrow J6vSzqFLcTWYyg8aPfKSBpnMegvizygzvLKumEUhGATB<br>Token account 3EbJKQu31nVxHK9zAaRKpNLYAP7tkY1tHrSPPH2pACiw</p>
       </article>
 
       <article class="lock-card">
@@ -176,7 +176,7 @@
       <p>The next scheduled tier destroys 25M $BULLEN. Isolating that exact tranche keeps the larger reserve locked while the burn remains operationally possible.</p>
     </div>
     <ol>
-      <li>If the $1M cumulative-volume tier arrives inside the seven-day window, the 25M tranche can be claimed after its cliff and burned in one curated transaction.</li>
+      <li>If the $1M cumulative-volume tier arrives before the cliff, the 25M tranche can be claimed after its cliff and burned in one curated transaction.</li>
       <li>If the tier has not arrived, only the 25M tranche needs a new public lock. The separate 212.5M reserve does not move with it.</li>
       <li>Every relock creates a new escrow account. The House publishes it here and updates circulating-supply accounting against the exact Token-2022 account.</li>
     </ol>
