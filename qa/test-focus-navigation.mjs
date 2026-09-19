@@ -75,7 +75,7 @@ for (const name of fs.readdirSync(site).filter(name => name.endsWith('.html'))) 
   assert.equal((html.match(/src="\/bullen-focus\.js"/g)||[]).length,1,`${name}: shared policy`);
   documents++;
 }
-assert.equal(documents,21);
+assert.equal(documents,22);
 assert(!read('shares.html').includes('src="/bullen-ui.js"'),'private Shares does not acquire public navigation');
 assert.match(read('bullen-focus.css'),/html:not\(\[data-focus-navigation="keyboard"\]\) :focus/,'neutral before JS executes');
 assert.match(read('collector-tools.css'),/html\[data-focus-navigation="keyboard"\] \.collector-palette input:focus-visible\+span/);
