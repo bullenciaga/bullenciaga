@@ -108,7 +108,6 @@ html[data-focus-navigation="keyboard"] .salon-message-image:focus-visible,html[d
   .rooms-key-art { order:4; }
   .rooms-rule { order:5; grid-template-columns:110px 1fr; margin-top:12px; }
   .rooms-enter { order:6; width:100%; margin-top:6px; }
-  .rooms-gate-copy > [data-ledger-settings] { order:6; }
   .rooms-safety { order:7; }
   .rooms-status { order:8; }
   .rooms-directory { padding:60px 0; }

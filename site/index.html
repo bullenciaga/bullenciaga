@@ -2230,23 +2230,6 @@
     letter-spacing:0.03em;
     color:rgba(245,243,238,0.35);
   }
-  /* Keep Ledger help with the centered mint controls, not the section edge. */
-  #nft > [data-ledger-settings]{
-    width:min(420px,100%);
-    margin:16px auto 0;
-  }
-  #nft > [data-ledger-settings] > .bullen-ledger{
-    margin:0;
-    max-width:none;
-    text-align:center;
-  }
-  #nft > [data-ledger-settings] > .bullen-ledger[open]{
-    padding:14px 18px;
-    border:1px solid rgba(199,168,105,.24);
-    background:rgba(199,168,105,.025);
-  }
-  #nft > [data-ledger-settings] .bullen-ledger label{ justify-content:center; }
-  #nft > [data-ledger-settings] .bullen-ledger p{ text-align:left; }
   /* ===== SECTION: WALLET =====  status dot, modal, wallet rows */
   .wallet-status{
     margin-top:12px;
@@ -3279,7 +3262,6 @@
     <button id="mintNftBtn" class="btn solid" type="button" disabled>Mint<span class="btn-word-full"> NFT</span></button>
   </div>
 
-  <div data-ledger-settings></div>
   <div class="wallet-status" id="walletStatus">
     <span class="wallet-status-dot" id="walletStatusDot"></span>
     <span id="walletStatusText">wallet: not connected</span>
@@ -4791,25 +4773,14 @@
     }
   }
 
-  // If exactly one wallet's provider is already present, skip the picker
-  // and connect straight to it -- on mobile this is almost always because
-  // we're already sitting inside that wallet's own in-app browser (no other
-  // reason its provider would be injected), so making someone choose from a
-  // list of one is a pointless extra tap. On desktop it's the equivalent
-  // case: only one extension installed. If zero or multiple are detected,
-  // the normal picker still shows -- zero means we're not inside any
-  // wallet yet and need to offer the redirect-out choices; multiple means a
-  // genuine choice exists (e.g. several extensions installed at once).
+  // Keep the picker available so hardware-account settings can be chosen
+  // before connecting, including inside a single-wallet browser.
   function detectAvailableWallets(){
     return WALLET_REGISTRY.concat(WALLET_REGISTRY_OTHER).filter(w => w.getProvider());
   }
 
   function openWalletModal(){
     const available = detectAvailableWallets();
-    if (available.length === 1) {
-      connectSpecificWallet(available[0].id);
-      return;
-    }
 
     // X's in-app browser blocks the handoff to a wallet app outright. Not the
     // trigger mechanism -- a real <a href> universal link fails there too,
