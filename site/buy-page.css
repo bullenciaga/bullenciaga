@@ -45,3 +45,7 @@ html[data-focus-navigation="keyboard"] .buy-desk a:focus-visible,html[data-focus
 .wallet-jump{display:inline-block;margin-left:16px;color:var(--buy-pale)!important;border-bottom:1px solid var(--buy-line);padding:5px 0;font-size:10px}.swap-web-fallback{display:block;color:var(--buy-pale)!important;margin-top:8px}#routes-heading,#swap-heading{scroll-margin-top:100px}@media(max-width:760px){.wallet-jump{margin-left:0;display:table;margin-top:8px}}
 
 @media(min-width:761px){.buy-grid{align-items:stretch}.buy-context{display:flex;flex-direction:column}.contract-panel{margin-top:auto}}
+
+.buy-ledger-help { margin:0; padding:0 24px 20px; color:#aaa69e; font:11px/1.7 monospace; }
+.buy-ledger-help summary { color:#c7a869; cursor:pointer; list-style-position:inside; }
+.buy-ledger-help p { margin:10px 0 0; }
