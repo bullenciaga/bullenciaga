@@ -55,6 +55,7 @@
       modal.className = 'bwc';
       modal.innerHTML = '<div class="bwc-back"></div><div class="bwc-card" role="dialog" aria-modal="true" aria-label="Choose a Solana wallet"><div class="bwc-head"><b>CHOOSE A SOLANA WALLET</b><button type="button" class="bwc-close" aria-label="Close">&times;</button></div><div class="bwc-list bwc-list-primary"></div><button type="button" class="bwc-toggle" aria-expanded="false">other wallets</button><div class="bwc-list bwc-list-other" hidden></div><div class="bwc-foot">Your wallet signs locally. BULLENCIAGA never receives a private key.</div></div>';
       document.body.appendChild(modal);
+      if (window.BullenHardwareWallet) window.BullenHardwareWallet.mount(modal.querySelector('.bwc-card'));
       var close = function () { modal.remove(); resolve(null); };
       modal.querySelector('.bwc-close').addEventListener('click', close);
       modal.querySelector('.bwc-back').addEventListener('click', close);

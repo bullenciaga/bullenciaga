@@ -76,15 +76,11 @@
   });
 
   connectButton.addEventListener('click', async () => {
-    const provider = window.phantom && window.phantom.solana ? window.phantom.solana : window.solana;
-    if (!provider || typeof provider.connect !== 'function') {
-      notice.textContent = 'No compatible browser wallet was found. Paste the public address instead.';
-      notice.classList.add('is-error');
-      return;
-    }
     try {
-      const result = await provider.connect({ onlyIfTrusted: false });
-      const wallet = String((result && result.publicKey) || provider.publicKey || '');
+      if (!window.BullenWalletChooser) throw new Error('Wallet support is still loading.');
+      const result = await window.BullenWalletChooser.connect();
+      if (!result) return;
+      const wallet = result.address;
       if (!addressPattern.test(wallet)) throw new Error('The wallet did not return an address.');
       input.value = wallet;
       load(wallet);
