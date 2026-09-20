@@ -46,8 +46,7 @@
   function choose(options) {
     options = options || {};
     injectStyle();
-    var detected = wallets.filter(function (wallet) { return wallet.provider(); });
-    if (detected.length === 1) return connectWallet(detected[0]);
+    // Always show connection settings, even with a single detected wallet.
 
     return new Promise(function (resolve, reject) {
       var mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');

@@ -7,7 +7,10 @@
   function setEnabled(value) {
     preference = Boolean(value);
     try { localStorage.setItem('bullen.ledger-mode.v1', preference ? 'on' : 'off'); } catch (_) {}
-    document.querySelectorAll('[data-ledger-toggle]').forEach(function (input) { input.checked = preference; });
+    document.querySelectorAll('[data-ledger-toggle]').forEach(function (input) {
+      input.checked = preference;
+      input.closest('.bullen-ledger').querySelector('summary').textContent = preference ? 'Using Ledger? On' : 'Using Ledger?';
+    });
   }
   function assertAccount(provider, wallet) {
     if (!provider || !provider.publicKey || String(provider.publicKey) !== wallet) {
@@ -77,9 +80,10 @@
     if (!container || container.querySelector('[data-ledger-toggle]')) return;
     var details = document.createElement('details');
     details.className = 'bullen-ledger';
-    details.innerHTML = '<summary>Using Ledger?</summary><label><input type="checkbox" data-ledger-toggle> Ledger compatibility</label><p>Connect your Ledger account through your wallet. Unlock the device and open its Solana app.</p><p>Ownership proofs are signed offline and never submitted. A wallet may display an estimated fee; this proof does not charge it. Mints, trades and transfers still have their normal costs.</p><p>Device and mobile support depend on your wallet. <a href="https://help.phantom.com/articles/4406388670483" target="_blank" rel="noopener noreferrer">Setup help ↗</a></p>';
+    details.innerHTML = '<summary>Using Ledger?</summary><label><input type="checkbox" data-ledger-toggle> Ledger compatibility</label><p>Select your Ledger account in your wallet first, then choose that wallet above. This setting does not connect a device. Unlock your Ledger and open its Solana app.</p><p>Ownership proofs are signed offline and never submitted. A wallet may display an estimated fee; this proof does not charge it. Mints, trades and transfers still have their normal costs.</p><p>Device and mobile support depend on your wallet. <a href="https://help.phantom.com/articles/4406388670483" target="_blank" rel="noopener noreferrer">Setup help ↗</a></p>';
     var input = details.querySelector('input');
     input.checked = enabled();
+    details.querySelector('summary').textContent = enabled() ? 'Using Ledger? On' : 'Using Ledger?';
     input.addEventListener('change', function () { setEnabled(input.checked); });
     container.appendChild(details);
   }
