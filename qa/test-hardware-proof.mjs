@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import { generateKeyPairSync, sign, verify } from 'node:crypto';
+import { hwBase58Encode, hwBase58Decode, hardwareProofMessage, walletProofPayload } from '../site/wallet-proof-format.mjs';
+const pair = generateKeyPairSync('ed25519');
+const wallet = hwBase58Encode(pair.publicKey.export({format:'der',type:'spki'}).subarray(-32));
+const issued = String(Date.now()), nonce='ab'.repeat(16), message='BULLENCIAGA referral\nreferred: '+wallet+'\nreferrer: another';
+const bytes=hardwareProofMessage(wallet,message,issued,nonce);
+const proof='ledger-v1:'+issued+':'+nonce+':'+hwBase58Encode(sign(null,bytes,pair.privateKey));
+const decoded=walletProofPayload(wallet,proof,message);
+assert(verify(null,decoded.message,pair.publicKey,decoded.signature));
+assert(!verify(null,walletProofPayload(wallet,proof,message+'changed').message,pair.publicKey,decoded.signature));
+assert.throws(()=>walletProofPayload(wallet,proof,message,Number(issued)+300001),/expired/);
+assert.deepEqual(hwBase58Decode(hwBase58Encode(new Uint8Array(32))),new Uint8Array(32));
+assert.throws(()=>hardwareProofMessage(wallet,'x'.repeat(1000),issued,nonce),/too long/);
+assert.deepEqual(Array.from(bytes.slice(68,100)),Array(32).fill(0),'unusable blockhash');
+assert.equal(bytes[100],1,'exactly one instruction');
+assert.deepEqual(Array.from(bytes.slice(101,104)),[1,1,0],'only Memo program and signer');
+console.log('Hardware wallet proof format: cryptographic round trip and safety bounds pass');

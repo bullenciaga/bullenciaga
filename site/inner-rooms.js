@@ -375,17 +375,13 @@
     if (!window.BullenWalletChooser) throw new Error('The wallet register is still loading.');
     var connected = await window.BullenWalletChooser.connect();
     if (!connected) return;
-    if (!connected.provider || typeof connected.provider.signMessage !== 'function') {
-      throw new Error(connected.name + ' cannot sign a plain-text message in this browser.');
-    }
+    if (!window.BullenHardwareWallet) throw new Error('Wallet support is still loading. Try again.');
     setStatus('Preparing a one-use register entry…', false);
     var result = await api('/rpc/rooms/challenge', {
       method:'POST', authorized:false, body:{ wallet:connected.address },
     });
-    setStatus('Review the plain-text register entry inside your wallet.', false);
-    var signed = await connected.provider.signMessage(new TextEncoder().encode(result.challenge.message), 'utf8');
-    var signatureBytes = signed && signed.signature ? signed.signature : signed;
-    var signature = signatureBase58(signatureBytes);
+    setStatus(window.BullenHardwareWallet.guidance('Review the free ownership proof in your wallet.'), false);
+    var signature = await window.BullenHardwareWallet.signProof(connected.provider, connected.address, result.challenge.message);
     var admitted = await api('/rpc/rooms/session', {
       method:'POST', authorized:false,
       body:{ wallet:connected.address, challengeId:result.challenge.id, signature:signature },

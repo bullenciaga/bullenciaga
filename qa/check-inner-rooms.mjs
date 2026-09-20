@@ -12,8 +12,8 @@ const nav = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
 assert.match(html, /THE INNER ROOMS/i);
 assert.match(html, /SIGN THE REGISTER/);
 assert.match(html, /THE SALON/);
-assert.match(html, /plain-text proof of wallet control/i);
-assert.match(html, /cannot move an asset, approve a transaction or spend \$BULLEN/i);
+assert.match(html, /offline ownership proof for Ledger/i);
+assert.match(html, /Neither proof can move an asset or spend \$BULLEN/i);
 assert.match(html, /house-object-03-key\.png/);
 assert.match(html, /id="roomsInterior"[^>]+hidden/);
 assert.match(html, /NO THRESHOLD PUBLISHED/);
@@ -24,7 +24,7 @@ for (const route of [
 ]) assert.ok(js.includes(route), `room client is missing ${route}`);
 
 assert.match(js, /BullenWalletChooser\.connect\(\)/);
-assert.match(js, /provider\.signMessage\(new TextEncoder\(\)\.encode\(result\.challenge\.message\), 'utf8'\)/);
+assert.match(js, /BullenHardwareWallet\.signProof\(connected\.provider, connected\.address, result\.challenge\.message\)/);
 assert.match(js, /function signatureBase58\(value\)/);
 assert.match(js, /ArrayBuffer\.isView\(value\)/);
 assert.match(js, /headers\.set\('Authorization', 'Bearer ' \+ session\.token\)/);

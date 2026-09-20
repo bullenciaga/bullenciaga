@@ -90,12 +90,12 @@ assert.match(objectsJs, /var reviewMode = reviewHost && root\.dataset\.objectsRe
 assert.match(objectsJs, /window\.location\.hostname === 'localhost'/);
 assert.match(objectsJs, /window\.location\.hostname === '127\.0\.0\.1'/);
 assert.doesNotMatch(objects, /<div class="review-ribbon" id="reviewRibbon">LOCAL REVIEW/);
-for (const page of [objects, refer]) assert.match(page, /bullen-wallet-chooser\.js\?v=20260829b/);
+for (const page of [objects, refer]) assert.match(page, /bullen-wallet-chooser\.js\?v=20260920/);
 assert.match(objects, /objects\.css\?v=20260904a/);
 assert.match(objects, /house-object-03-key\.png/);
 assert.match(objects, /ONE EARNED KEY PER WALLET/);
 assert.match(objects, /automatically grants that wallet one numbered Key/);
-assert.match(objects, /objects\.js\?v=20260831b/);
+assert.match(objects, /objects\.js\?v=20260920/);
 assert.match(objectsJs, /bullen-house-object-pending-v1/);
 assert.match(objectsJs, /resumePendingClaim/);
 assert.match(objectsJs, /TRANSACTION_NOT_CONFIRMED/);

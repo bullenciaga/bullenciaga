@@ -11,6 +11,7 @@
   var provider = null;
   var wallet = '';
   var availability = {};
+  var claimBusy = false;
   var pendingClaimKey = 'bullen-house-object-pending-v1';
   var names = {
     'house-object-01-signet': 'THE SIGNET',
@@ -48,7 +49,7 @@
 
   function selectObject(id) {
     var selector = document.querySelector('[data-select-object="' + id + '"]');
-    if (selector && selector.disabled) return;
+    if (claimBusy || selector && selector.disabled) return;
     selectedId = id;
     $('selectedName').textContent = names[id];
     document.querySelectorAll('[data-select-object]').forEach(function (button) {
@@ -59,7 +60,7 @@
   }
 
   function updateClaimButton() {
-    $('beginClaim').disabled = !wallet || availability[selectedId] === 0;
+    $('beginClaim').disabled = claimBusy || !wallet || availability[selectedId] === 0;
   }
 
   function getProvider() {
@@ -75,6 +76,7 @@
       var selected = window.BullenWalletChooser
         ? await window.BullenWalletChooser.connect()
         : null;
+      if (!selected && window.BullenWalletChooser) return;
       if (!selected) {
         provider = getProvider();
         if (!provider) return setStatus('Choose a Solana wallet to continue.', true);
@@ -202,10 +204,13 @@
   }
 
   async function beginClaim() {
-    if (!wallet) return;
+    if (!wallet || claimBusy) return;
+    claimBusy = true;
+    $('connectWallet').disabled = true;
     $('beginClaim').disabled = true;
     $('claimResult').hidden = true;
     try {
+      if (!reviewMode && await resumePendingClaim()) return;
       if (reviewMode) {
         activateStep('reserve', true); setStatus('Review: numbered slot held for 20 minutes.');
         activateStep('escrow', true); setStatus('Review: exact 100,000 $BULLEN escrow transfer signed.');
@@ -214,26 +219,43 @@
         $('claimResult').hidden = false;
         return;
       }
-      if (!provider || !provider.signMessage || !provider.signAndSendTransaction || !window.solanaWeb3) throw new Error('This wallet cannot complete the claim in this browser.');
+      if (!provider || (!provider.signAndSendTransaction && !provider.signTransaction) || !window.solanaWeb3 || !window.BullenHardwareWallet) throw new Error('This wallet cannot complete the claim in this browser.');
 
-      activateStep('wallet', false); setStatus('Approve the free wallet-proof signature…');
+      activateStep('wallet', false); setStatus(window.BullenHardwareWallet.guidance('Approve the free wallet-proof signature…'));
       var challenge = await post('/api/house-objects/challenges', { solWalletAddress: wallet });
-      var proof = await provider.signMessage(new TextEncoder().encode(challenge.message), 'utf8');
-      var proofBytes = proof && proof.signature ? proof.signature : proof;
+      var proof = await window.BullenHardwareWallet.signProof(provider, wallet, challenge.message);
 
       activateStep('reserve', false); setStatus('Holding the lowest available number…');
       var reservation = await post('/api/house-objects/reservations', {
         collectibleId: selectedId,
         solWalletAddress: wallet,
         challengeId: challenge.challengeId,
-        challengeSignature: base58(proofBytes)
+        challengeSignature: proof
       });
 
-      activateStep('escrow', false); setStatus('Approve the exact 100,000 $BULLEN transfer to the public burn escrow…');
+      activateStep('escrow', false); setStatus(window.BullenHardwareWallet.guidance('Approve the exact 100,000 $BULLEN transfer to the public burn escrow…'));
       var bytes = Uint8Array.from(atob(reservation.escrowTransactionBase64), function (character) { return character.charCodeAt(0); });
       var transaction = window.solanaWeb3.Transaction.from(bytes);
-      var sent = await provider.signAndSendTransaction(transaction);
-      var signature = sent && sent.signature ? sent.signature : String(sent || '');
+      window.BullenHardwareWallet.assertAccount(provider, wallet);
+      var signature;
+      if (typeof provider.signAndSendTransaction === 'function') {
+        var sent = await provider.signAndSendTransaction(transaction);
+        signature = sent && sent.signature ? sent.signature : String(sent || '');
+      } else {
+        var originalMessage = transaction.serializeMessage();
+        var signed = await provider.signTransaction(transaction);
+        window.BullenHardwareWallet.assertAccount(provider, wallet);
+        if (!signed.serializeMessage().equals(originalMessage) || !signed.verifySignatures()) throw new Error('The wallet returned a different or invalid transfer. Nothing was submitted.');
+        signature = base58(signed.signature);
+        // Save the exact signed transaction ID BEFORE submitting: a lost RPC
+        // response must resume this reservation, never create a second payment.
+        savePendingClaim({ reservationId:reservation.reservationId, collectibleId:selectedId, solWalletAddress:wallet, escrowTransactionSignature:signature });
+        var encoded = btoa(String.fromCharCode.apply(null, signed.serialize()));
+        var response = await fetch('/rpc', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ jsonrpc:'2.0', id:'object-escrow', method:'sendTransaction', params:[encoded, {encoding:'base64', maxRetries:3}] }) });
+        var submitted = await response.json();
+        if (!response.ok || submitted.error || submitted.result !== signature) throw new Error('The transfer submission could not be confirmed. Check wallet activity before retrying.');
+      }
+      if (!signature) throw new Error('The wallet returned no transaction ID. Check wallet activity before retrying.');
 
       var pending = {
         reservationId: reservation.reservationId,
@@ -247,11 +269,11 @@
       showCompletedClaim(await finalizeClaim(pending));
     } catch (error) {
       if (loadPendingClaim()) {
-        setStatus('Your transfer was submitted and saved. Reconnect this same wallet shortly; the claim will resume automatically.', true);
+        setStatus('Your transfer reference is saved. Reconnect this same wallet to check confirmation; do not send another payment while it is unresolved.', true);
       } else {
         setStatus((error && error.message) || 'The claim could not be completed.', true);
       }
-    } finally { updateClaimButton(); }
+    } finally { claimBusy = false; $('connectWallet').disabled = false; updateClaimButton(); }
   }
 
   async function loadInventory() {
