@@ -2230,6 +2230,23 @@
     letter-spacing:0.03em;
     color:rgba(245,243,238,0.35);
   }
+  /* Keep Ledger help with the centered mint controls, not the section edge. */
+  #nft > [data-ledger-settings]{
+    width:min(420px,100%);
+    margin:16px auto 0;
+  }
+  #nft > [data-ledger-settings] > .bullen-ledger{
+    margin:0;
+    max-width:none;
+    text-align:center;
+  }
+  #nft > [data-ledger-settings] > .bullen-ledger[open]{
+    padding:14px 18px;
+    border:1px solid rgba(199,168,105,.24);
+    background:rgba(199,168,105,.025);
+  }
+  #nft > [data-ledger-settings] .bullen-ledger label{ justify-content:center; }
+  #nft > [data-ledger-settings] .bullen-ledger p{ text-align:left; }
   /* ===== SECTION: WALLET =====  status dot, modal, wallet rows */
   .wallet-status{
     margin-top:12px;
@@ -3273,11 +3290,11 @@
     <div class="wallet-modal-content">
       <button class="wallet-modal-close" id="walletModalClose" type="button" aria-label="close">&times;</button>
       <div class="wallet-modal-title">Connect a wallet</div>
-      <div data-ledger-settings></div>
       <div class="wallet-notice" id="walletModalNotice" style="display:none;"></div>
       <div class="wallet-row-list" id="walletModalList"></div>
       <button class="wallet-other-toggle" id="walletModalOtherToggle" type="button">other wallets</button>
       <div class="wallet-row-list wallet-row-list-other" id="walletModalOtherList" style="display:none;"></div>
+      <div data-ledger-settings></div>
     </div>
   </div>
 
