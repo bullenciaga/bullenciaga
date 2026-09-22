@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-22T18:23:28.681Z",
+  "state": "committed_to_burn_escrow",
+  "mechanism": {
+    "unitCostBullen": 100000,
+    "escrowTokenAccount": "FUtAEk1TAVf2WZ3wqXeHYttqfpTftEf6qrprue5x6mLy",
+    "tokenProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+    "claimAction": "token_2022_transfer_checked",
+    "destructionAction": "scheduled_escrow_burn",
+    "actualBurnLedger": "https://bullenciaga.com/supply/proof"
+  },
+  "totals": {
+    "editionCap": 200,
+    "available": 173,
+    "reserved": 0,
+    "issuedAllSources": 27,
+    "burnClaims": 15,
+    "committedBullen": 1500000
+  },
+  "series": {
+    "signet": {
+      "name": "House Object 01 \u2014 The Signet",
+      "editionCap": 100,
+      "available": 87,
+      "reserved": 0,
+      "issuedAllSources": 13,
+      "burnClaims": 7,
+      "committedBullen": 700000
+    },
+    "cufflinks": {
+      "name": "House Object 02 \u2014 The Cufflinks",
+      "editionCap": 100,
+      "available": 86,
+      "reserved": 0,
+      "issuedAllSources": 14,
+      "burnClaims": 8,
+      "committedBullen": 800000
+    }
+  },
+  "recent": [
+    {
+      "collectibleId": "house-object-02-cufflinks",
+      "serialNumber": 14,
+      "escrowDepositSignature": "zna1tT41hqxC1cxMvtPwRKLvhxga81vXeMgfkDLZkbzDQoygjiJoZ8F9eLsQXL6e1WvBNYHhgaK5waGkEn91kon",
+      "committedBullen": 100000,
+      "committedAt": "2026-09-05T23:31:43.648Z"
+    },
+    {
+      "collectibleId": "house-object-01-signet",
+      "serialNumber": 13,
+      "escrowDepositSignature": "NCDnHxwAoaqaRSfedRGouTGoaS9viGqzh45B3gw5SwFjT8CekJYaj8wRpSrxVE8ctFYAp8RsfjTKsNfJEsLVjRa",
+      "committedBullen": 100000,
+      "committedAt": "2026-09-05T23:31:23.050Z"
+    },
+    {
+      "collectibleId": "house-object-02-cufflinks",
+      "serialNumber": 13,
+      "escrowDepositSignature": "4VjNycjoHbqSbT6BMzE7aA4VjPhteXqa8V3Nzf1STGSArfKQy69eKBwN9Lswkyc8c75r1KosyCpRdE6je5igtvqe",
+      "committedBullen": 100000,
+      "committedAt": "2026-09-05T15:21:07.054Z"
+    },
+    {
+      "collectibleId": "house-object-02-cufflinks",
+      "serialNumber": 11,
+      "escrowDepositSignature": "2jTsa9yYmVVJLV3hGDLv2NAKpTVMejNwmfsGtLdNzRvD35Fh4oEkk5QgnrkkF91Vdh3qmGqvJ5C2pPPwStpT47Lc",
+      "committedBullen": 100000,
+      "committedAt": "2026-09-01T06:30:51.178Z"
+    },
+    {
+      "collectibleId": "house-object-01-signet",
+      "serialNumber": 11,
+      "escrowDepositSignature": "3VoBnWi5imvAuXF2zPuE521Qf789q4MhPp8Vyg9u1WZZv9NrnCxhHbLQgzxH3dgDy4fh1ryiZB3BDUPLcNdafTYS",
+      "committedBullen": 100000,
+      "committedAt": "2026-09-01T06:26:30.935Z"
+    },
+    {
+      "collectibleId": "house-object-02-cufflinks",
+      "serialNumber": 9,
+      "escrowDepositSignature": "2q542qYPV6SyTCjauVFhvXqQX6hpNuWdg9X1u5QcMAEEEu4BZCV3HSi9WWbAF4xFjMTqHehga2QSsaEjHLMjYk2B",
+      "committedBullen": 100000,
+      "committedAt": "2026-09-01T03:58:42.604Z"
+    },
+    {
+      "collectibleId": "house-object-02-cufflinks",
+      "serialNumber": 8,
+      "escrowDepositSignature": "3Qjbbu1JtQNfPgLzQKfN8fJwUCvn9QtkXDM3bxo4FVf9hsknEUk5gnvGnz7SHqeDnpr1yhVGSAPaXbcKsxm81Q1U",
+      "committedBullen": 100000,
+      "committedAt": "2026-08-30T18:06:02.654Z"
+    },
+    {
+      "collectibleId": "house-object-01-signet",
+      "serialNumber": 9,
+      "escrowDepositSignature": "2cQQCspcbfPruvTQQuuUqgoJSs86kMGpDcDVinwMxo4Wxcydc9SEbAcibdd1q62juxQNv49Pwm2gsXWs3MYcNw3e",
+      "committedBullen": 100000,
+      "committedAt": "2026-08-30T18:01:10.171Z"
+    },
+    {
+      "collectibleId": "house-object-02-cufflinks",
+      "serialNumber": 7,
+      "escrowDepositSignature": "3M4H9dqvTAGnnraFvmAF5Yo2y2NE8B45bnDeCCr9DeG6bLFXCNyS48AHDsB2NmkFH1HAAiWGJ1YgHaukmdQ5JkD3",
+      "committedBullen": 100000,
+      "committedAt": "2026-08-30T05:13:43.720Z"
+    },
+    {
+      "collectibleId": "house-object-01-signet",
+      "serialNumber": 8,
+      "escrowDepositSignature": "5jLZmDFhNkeqxAZizuX8sAntz6ztqnLDVUHjDLLQq6MdHtSt7vFh5GZGWpPisDVNU7uvK3DeyH4tELck6WuvZ3KP",
+      "committedBullen": 100000,
+      "committedAt": "2026-08-30T05:11:15.455Z"
+    },
+    {
+      "collectibleId": "house-object-01-signet",
+      "serialNumber": 6,
+      "escrowDepositSignature": "2bzniaeRp5QuK4JfuLpr2MHkqnyTG4425kVQxkDS95RWagNX3Dv1mnDFDFBp5Ryk93XRbVRFApJidFrNBXKUC5nP",
+      "committedBullen": 100000,
+      "committedAt": "2026-08-30T00:40:22.765Z"
+    },
+    {
+      "collectibleId": "house-object-02-cufflinks",
+      "serialNumber": 5,
+      "escrowDepositSignature": "31VVPy9742mAQDshh5Rvk7xzbKqLYwvyApAx7H8q8wDg3roG1mWHc3d1S8EpLdJq2SxQf6EdkYmvtv68kEnRnLzA",
+      "committedBullen": 100000,
+      "committedAt": "2026-08-30T00:40:02.592Z"
+    },
+    {
+      "collectibleId": "house-object-01-signet",
+      "serialNumber": 5,
+      "escrowDepositSignature": "oYQ5u5PgXZqK5PWTeHVDp4wGLkFR2GNNQjVpWgwE8toLs6SSRCoinMJXRuFjdTPtQMHemPi5hJDArojgJQKH2Es",
+      "committedBullen": 100000,
+      "committedAt": "2026-08-30T00:39:42.539Z"
+    },
+    {
+      "collectibleId": "house-object-02-cufflinks",
+      "serialNumber": 4,
+      "escrowDepositSignature": "2gBVNG2H1ksqypf4NhoM5Gksr13FCUu4sNFyabNPvyXEc1d6MYrBYUHuqL9x8RP1R5pAhRkvvDbMiXqXKboApAxm",
+      "committedBullen": 100000,
+      "committedAt": "2026-08-30T00:39:24.088Z"
+    },
+    {
+      "collectibleId": "house-object-01-signet",
+      "serialNumber": 4,
+      "escrowDepositSignature": "7sYjFgJXQPmnt5DMf69ZPCkx7KewMaqoWrMWwiMyqrKTJDG767hFBu63cKdSNRmvKApqRooKDHYAugouX1dXGa6",
+      "committedBullen": 100000,
+      "committedAt": "2026-08-30T00:39:04.528Z"
+    }
+  ]
+}

@@ -1,0 +1,2306 @@
+{
+  "ok": true,
+  "workerVersion": "vTURBO 2.0.19",
+  "count": 328,
+  "burnedInLedger": 181796565.99016196,
+  "burnedActual": 181851569.07733798,
+  "unaccounted": 55003.087176024914,
+  "burns": [
+    {
+      "sig": "VxS7BS2EZzc6aBkRmqTtN1shDU9Y8F2YeF5jnRC6UaBUzFczp2Q4cjiARiMQ5Hep3JYM7qhQwjMj2nDgEksMP5n",
+      "ts": 1790081963000,
+      "amount": 2126.168226,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "62NmP1ayGrFcXD5PH3wsnSszaFgVVTMFVaQp2qvumc8QzHevMyQ5Xs1vWovWuAJEfEtc2VCjcgJnE4FYg1Em19Lu",
+      "ts": 1790058901000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2qxCb4TbUrwbbGCkPiBigMddHRmsrWhhhU6KrVTMbtNLxjHvf938maPGCBorXxVdihVkX2xkyerSJNmFWEn1iYLP",
+      "ts": 1790052901000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "45stmQ4vLZZ6ERvzv4VsDmnEJWLXYmfD1LSwbz4ndBLTLMEo62YRfPNHmiSk8X8fgpsVEA73QNSkCCadUdY2RiE",
+      "ts": 1790004301000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4D9hgVwJ15k1734d8syg3bTp4DYGSHztpzaNGfumGY4oDVQ2FfCFfftD4R13PjGLLU2AF1es86WHjBAjvLADGj1n",
+      "ts": 1789908300000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3gsJmHZ7nHUnN2PvwCkDXcsM6uf3rnwynEdSoerBJLxpkmETt19SqXAvgwCR6LWeX7zhJGYXDQfHmH3niqfeM54T",
+      "ts": 1789908094000,
+      "amount": 59.370636,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "26v7fWBfN64qUn9HwTRfnAktZTDMRWtUdVV2LP8C6pm8AAv8BC4cPRqYh22hX459NUJxAsAVUQa4EFd8eXD56ZzS",
+      "ts": 1789860000000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3vBMgAY8YD3BnbLxvZ4EwKkcLnck1bojZUt8q2P98VsRCC2Wr8mG3QfrJVyYm7S3mZNJ3GJxRM6hEtPDQ7JFBLdj",
+      "ts": 1789762665000,
+      "amount": 4e-06,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "44KAyx9gi3nGMz2esZ2a6y1LVujpX8WyvNGFUeCwwvKnudRvgtDBKQvd9x52AAHL1eCbGNqMhi34JyxoJxJFR5kt",
+      "ts": 1789756800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2h9gc87BF746umwe97J7TzFAvATuoNTH61XbVUdwivaaWQFquSTUNCWVZucfogjdT62vhW4RsjjKyBqJXH3SFfar",
+      "ts": 1789749600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "hhyKEEn3YySpeaEenfe6BMSxzAF33daoJBRWBJrog6hfULt9jtRiHm3wAwWYWWTnnabsr37GDDwLVa4PjT4TTBZ",
+      "ts": 1789647900000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3PW39SCxsNyqmC4erfM5c6oE58ZSwnSFDFCDGPCMLVXSYpqZnkNobVNhWGDq73d5ffVocsNQgL49NxuFL9zHY34a",
+      "ts": 1789548600000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3tg1u5ivEFy9rcWek7x2NRTxt9WCvDScCCnWmj6osZbj8Md5hb2cobhqvLWtqHB2vYJq9hCgoSK8thXwCfFJx6T7",
+      "ts": 1789518000000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3tRj6RHLszTGGApDCwnFNQ3zmQXfgNcHSKMvRuw31DubAZhpD74dDMt5ZCWjvspocKKKzMawNMHqURLx8wuH3VAy",
+      "ts": 1789517700000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5t2J2MaBzNiudyLcSRjCKyqT3HmistZa3zEsv8Bg8hXeNNsZkXTTUr1kXLjzSARgQXQ8WAZn8zD5sKevCGEEonFf",
+      "ts": 1789217358000,
+      "amount": 5542.918953,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "2TXCRJyNLwuEsQzh22tHeHbCTopAhHfpkKW1riZEGPjX6pCbYZBeQcbVY656mFH7YcuMTuY6isKHL22dJfjtgMpF",
+      "ts": 1789169701000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5w311VYFuLNacsf5xBfzc55DAPtLS8xofMm5kDv99aEq3QZkPLxdunVPcChVx4tze6m6CmjxJX5omD3HYxR32ZEN",
+      "ts": 1789031700000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2PEjikqiDTpnErAw3U8VwRLMq66guKf9GT8iWdZNJqN8qh5XSFZR1Jya5APK1oxMdvUvLfGLPKYTtu2k7jk3YQin",
+      "ts": 1788651300000,
+      "amount": 200000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4XqGQExTSCJEp9fL9KExwhfR9Qs7nv984zFPggSw5dJP3t37zAAshPbJQFmrF5DUxZN5nPchA9tXS9RFvzp6DWp",
+      "ts": 1788649800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5rZkpkZ4XFdkM6gqmKdhqC2t5C89gmayvWquY3cnYTh1A3sg2WuDHeQ7sYzCT9o96JkwmtvFPh7jWVPzX1E4Az2R",
+      "ts": 1788621900000,
+      "amount": 100000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5zHwqMKeKv5afEUpU1kp3p88fnqa6gKWG32brNoijsXWAbmRy76S2QkcXhdkoFQsbFZaFBP3nhwpsYLx6LTAaxmS",
+      "ts": 1788538261000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4oyxBqRdvxXWt4VLC6sTRcK5Gai2k8naFZLamLGKGPM9Q6daDEcviQuWuBrqCm5Xqp1dWuvjgqWmJTFDygGKpq3u",
+      "ts": 1788358609000,
+      "amount": 75856.239449,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3Bmt6zBc7tpkrUATdRomphDGLZK1A86TaYo2zGkpxGTfZNcmD4U93wgtkRGif8o95UbCKUniLkpX2yXaGZBbVUTR",
+      "ts": 1788358500000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3Jqyz9RNbhHP7RNsqYoJmLVrHWgNZPfC5ukEbuuUYjKEPp4Cg4qjA32L1QhVAd7E62xxmRJF2ANRppmmBGeRo2de",
+      "ts": 1788244500000,
+      "amount": 100000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4WxYSNNA55HZSEgJwqwLr3Czjzn1rDb6LbgLbPRySD19aBSqx3HUS8cP5fokGQAhe387QvYfGCqy75jLRoRMkqNL",
+      "ts": 1788244200000,
+      "amount": 100000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5MSm52z2ozyYQfMHa4rXLosex5QP1AFsR5PDaEV626utNHjjop1NdYxy5CXEpxHaaG14Py4NZNx9BBw4PsarHPUb",
+      "ts": 1788235344000,
+      "amount": 12251.621786,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5GUkS9EcHoBsLvPWNGpbf2bxbLXLvSRj7r6cND6Y1eEGmbtYnbpSrMufrgJfKvsDM4GgikRUmqMxAAPvsCjGrddv",
+      "ts": 1788235200000,
+      "amount": 100000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4oojPfYc8twcVY6SQzXwbiPYz1G1gsaquuwpomJKc78Qud7o2C9T3FWjf1kzwzzwVB1aazbDVxGjJHtV6JRQ1n7i",
+      "ts": 1788113400000,
+      "amount": 100000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "31iLRenunD5GinUCe7UVVDJx6mTqoj8zFnXdDUSzr5wKPmChU6ePbd8VMxRTbiKS53cbMWGfAZxZBhi52oXmAyUi",
+      "ts": 1788113100000,
+      "amount": 100000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "637bjREpZk3i9zRVS1L2u3XEi4xfMcaxsMPMSotkt2q8pTcjnKq7ohF5wWdJvKmbxeh7T9ngZCSg5HA3m8uC4ipw",
+      "ts": 1788089400000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5kDyUKCFPiYc5gEgwxPgghuqnNpb2anN7xLPiaSLcykH6zdnY4cGFCKoccKgGqb8cUPDctgpGRf5XNSeW7vm9XMe",
+      "ts": 1788089284000,
+      "amount": 66375.521436,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "P5xskdFLaZQMgCUJe5ArPUD1oQ9t5zR1EFiA3WKjfsnFWGFnLQAB9wTPhhd2xCbZfYWJykYUDd6nPVZrhDfn8am",
+      "ts": 1788066900000,
+      "amount": 200000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3WxtmL9Z4RNGDeZQFa9QgmD2bu9o2jLNA3LAyZzwSAHJ9nJresfmkRSXhiJ14K14nSR7PkwXRZtKG3hL6MVfNBus",
+      "ts": 1788049801000,
+      "amount": 200000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5V9XqKxMA6JBkb5HSptNgJAyHYSupNmkLda6SZ4khwmJeJhuxkCnLj6KMoqwCZwNi7RwTSVq2uokRgBGHFF7EvNo",
+      "ts": 1788027301000,
+      "amount": 300000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2mLthqa4T2TtmTaDr8Tb3h2ZVEhcY4sYYayirjNhSrVdnacJfHBcfpSrvUj8DVkgByfb1HN27VzeToe9Gx6JvG6N",
+      "ts": 1788024900000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2fo7AKrC8oYahJjttoVd3qMpYKKE3MwPrWoYVdoEUjWBQVmQ8qrmrkTuPYx8HfvLrtL68Qj69STxN98hXZcqXhXK",
+      "ts": 1787958482000,
+      "amount": 12500,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "47KjvZk3tw7wsxUJK51k1nHJdViGgpCkx3PkgdW4Src8X6dnTe2VCnCMQSf44nx3Fzf4hki99QARsAXeA73uUAqh",
+      "ts": 1787939958000,
+      "amount": 20558.07789,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "337Vu2SNHMPM38LEcU1SSjAqzYR7N5XJ9VJQEAss6NLKGwBH4mJH5GxwKVbGK3TGVvMJ1nUgbcGHQNVWKXyHkuoT",
+      "ts": 1787923106000,
+      "amount": 12500,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "NkdjscVBktZcxvnJsWPj9pSjM12bkvxNTKqrBrUkHnXJoKGFpsJpGwXZpEP21o11sNraMD5fvgJG3V4i4xFoCkG",
+      "ts": 1787914801000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5RjeRCFAMLVN95MAM5H5os8UJw9S4Y1WPA3FLmtDMxrpnCvAufGdTFExqKWJBWyjpR33x6VZdUUSYJpG1Rh1dX1h",
+      "ts": 1787671800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2KPq4btYtFjvUs6vAQBgBu7eH6G8oJT1Ej3kZhoyauQqGmrBW2CV4vDhVhcakcE3RsmeMs7y1EHSZqvAzR5QAGqt",
+      "ts": 1787669322000,
+      "amount": 50000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3myGGFrmVdtwrQ2Jbp7xMEPcPdysu2WAuMeAAvALLdPLqoShTPJdLfuTq5m6zTG3YVT3ozTeswrJGSA75KivP8vq",
+      "ts": 1787659800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4GF9kdfKFQKUKG1CPRvvCELWtx6HvyTD2eTUEppt8ekLH6Chu5uhUA6g4q6QCEEYWV1HA1LKVBAqGs1SGdgibPmr",
+      "ts": 1787599801000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4PRKzcsQveSFmPeZZyKVgex3tzG9qdw8K2moMcBUxfD5zXf9Qe59jBpdGa4CnJ36cztgZghm6snmq9op5kjUWzpg",
+      "ts": 1787599200000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4ZVmff3zokYZoWq9LNhtAZ89Cxhp6htExj1NTLsGro8LfWsiGtvEQH5MSW4mre7swvBfJsu4vVfQwqbsGV1UqrVX",
+      "ts": 1787598900000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2itSvbC3q7aazB3mMsiiLRai4eHDA21yfeVnAG48zi1vktRNhHuUPBgdrLSU4oHdVSbASfX6c9WCkczaRfXDmaeW",
+      "ts": 1787445258000,
+      "amount": 2500,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3eWWyU57kfb9iEkxx1GyFJ2G2rAY6kdNm5APGZYrwRGZrkCJpcTJJvQY7NrPXjvVzDw38rPqa5ANsVAnwLT9Sm2s",
+      "ts": 1787433820000,
+      "amount": 5000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5LJqTq4tsNrKr9B8AzTmuiQs4bWsv4vfRFkjeSoahsjhie76z6885LiD3FfFZThYHbXgGFuDZtEJbQ53o2HzEjZ4",
+      "ts": 1787422303000,
+      "amount": 50000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "4Bjt5sC2GCLdFaEswHuMcvcLAxUrT7BoftgUhkT5sQAmb37pxNQmJPZtfkqLzG4EruJcLof2hBzXJ36rWXQgBEX8",
+      "ts": 1787402700000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "ChXkqFmUt91y47TMao22HhAfqXe5YfPHKAV3FfxEjTD7CBEuJX68e2cJmJucJzWja5zqZafb6tiwiJQcjXpyjfD",
+      "ts": 1787364600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "65FeUELw8tCBbcdRBGxyprdNiBHs9wXDLNeJCqAmh4TEnhR32zwAekb3jaHTSMpf6x24CtunxFQo5aTFM2jFYi9v",
+      "ts": 1787364551000,
+      "amount": 9805.616241,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "4DRgGNGKpBdKLnUvA8BBNU625k43zaEtPgr5NUF2voNvMayThDb18b9Dai4RGidmhaduu4wyM88QhdghkHmB6SYG",
+      "ts": 1787348416000,
+      "amount": 10000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "4uBuW4NfySGQ4kLS6jHLKxE5o5mA2BnmWcJrAzx7d2Mo4k7o1UeASCDV464vX27qMy2Mzff7gzyRd2rNaFy7wKy2",
+      "ts": 1787338815000,
+      "amount": 10000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "4BABjMpsmpUu1xcUfBANVBnJPVWmrTdkxsjU5M4MaSMDbqCFFQu4r38LJpAd9Ju3Cmr6ksjFNR8zV3tUkeP3YX2d",
+      "ts": 1787337300000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3Jye26CMgz7nXZchRBs7RYqJPNHKp8Karqjh1i4ieaz9suPW3RmiBKYE4DS2QMK2Czno6EnK9tgZDf1ey1H6fKdT",
+      "ts": 1787276591000,
+      "amount": 3500,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "67mzpkyGDVKHdz7CybkWYLJaoPzM1LJJyq4Y8LZ5eiEmrqStcn7AvKSNWr3ffShwoyewWrPoEFyJdqKbR7VALDSm",
+      "ts": 1787262885000,
+      "amount": 15000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "uFxJVf6LerrjxHpRk2w9AeEeHZauBmrgMCPRnqjjCvjb9NgUjox6svyNTZwUPJJf5chWHQYzC5ukTKc7nMyafQQ",
+      "ts": 1787262562000,
+      "amount": 15000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3oAMgYY3QtRaSw1Y7YpTDxfDSduVAD2MLYMv25cjMn2w62dHXpTRRZDSPhw1gGKjQe7VmYKwSoJQ2kkN65QC7qph",
+      "ts": 1787241340000,
+      "amount": 100000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3TQWCUDsUN1MHm3XCzpcGZ2zcc2H6GqJXGW8T9ofy5uhULfZZZxvLndJddfPit2qmWLeNJdCwotFtgQZn4Gzm8TR",
+      "ts": 1787239850000,
+      "amount": 10000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "65aiaRv9PQa4e8uAtLEbPQhyTTkDtz5uryonoG4o1vbXMfL7pt7ZrQnaboMwWctdiuHUssjoC319Kb4X3398e5Hd",
+      "ts": 1787184900000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2gxdWm9tESuikNEzVhMQ4Hho9gRRvp4bWfQSKHShgKKz8n1sFc4jUzxYqNxoi5vfnXvmdSmH7gdJDRDoDZW28m3Y",
+      "ts": 1787115600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "nKHvDMhZHPxmDRMRXe1GzeqWfxfuSeVs7Z29tUE4kncYv7VCDDzS6kUq6AT1oP84UW765rfcG52rWQ6W2fBnJxD",
+      "ts": 1787115301000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2MXwrse1rtBy6gBAd36U9FsExCErMRNDEfn3VuhTRzsmwqHUXG2RRchM8TCixTdHVjDtaQ8Qm3wrWigdSqDEXayq",
+      "ts": 1787097000000,
+      "amount": 750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2zZ3Kx4nyhodXQEo7sL6CaAT5M9j9qafKxWU74CdyASwxmmg6EyyvLqx7cBeVhRnSGCopAvYTLD2t1QENuva3bhn",
+      "ts": 1787096700000,
+      "amount": 1250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "HnSScmw7scV6mcN5aogMp5ZhRQgVrao9iWcYwnQN5YxCfKpmFzATS3tvhCzuua4UywC8WJzBpp1PbepZgP1cK3K",
+      "ts": 1787036401000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "EWytNw4BZoGMi6ka6efLKfuvjfLKQkSCwDdu68ysiM53ij5ordjV8MYxuf42SqXAg8cXwk6oSR4aDteM7WQMTKZ",
+      "ts": 1787023200000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "UT8e5HaVQvm4UEK7QmszrNXjBm169QwPECeFNKtAdW2VZpxJgWSwKH5rnatbDwzmePMHjE2DxxYaixaaiaXtu7W",
+      "ts": 1787000700000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2qvWFEXYvnry5KBKLbRt3DVNkJLEws2D32r55fFNHDDi7RKbYhk5wFtxZ9dMTom5mEyNjTMX5JFRc38pdFPF256L",
+      "ts": 1786990200000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3Eccgtm9cTmycCa67MsP4FUNaY2bLU8Ucio11QrTcYdcWS9HTKH33Co7rYP9T4Fq3CUm64d2tBGA27RZaVHZVBHU",
+      "ts": 1786972223000,
+      "amount": 45000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5Xmefhi1FWsxpyKEvYrW42j446L411uFVvsWiwDktn6ELnYPxbW7R2cBRtPdRqGA1z7WMJbzQVDAdYeoSfySCQ3D",
+      "ts": 1786910400000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3HdmtD3LdDGsRHmQJzNTXT8T94eP3gt5xnY4LgZH2ToXpDXQkQbD6sCVnXsaL83iuWvbADHQWEyrpqWTKLKhp2Td",
+      "ts": 1786881177000,
+      "amount": 25000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "2YRhSSkMPpFhLb7z8qvjishwQ6zJDXMXcGZYrfq5Qn1NUdge3YF24xsbvYb6b3J7BWXFWTtRSZmBk9d8ydW9UG1S",
+      "ts": 1786862100000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "L3f48ZFxftGAyubgrYrLufNnpn4gE8Y223JhrQTwZQKAJyae5weNNPtWHwZuydSSLGNhyY6Ff7dbKH85Mjatp1j",
+      "ts": 1786804134000,
+      "amount": 21500,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3iNembFxXhFW4p23SbM7VcCGG3E2p5YwPjnMFFkrTKafiaEHNAEpkRSZCZAJkCHkVPGYUrD1L355QAvCimreyk92",
+      "ts": 1786798349000,
+      "amount": 25000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "2jXf7qtqg5UY9oQb1b26y3sUXDnpxEf8EAsQsyPXTz2EqFaaWXzKEHSM2GyHwPpYg6VbKX3Bg5fvyMBAxG3TbyWa",
+      "ts": 1786790166000,
+      "amount": 50000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5p3BymHTfpL6xmwivRCd8REu5RjvWQFqovRD3qftTixReQYR8qDnpoScx4XxiehtitJ5nrduW2nMngahUV7geUMv",
+      "ts": 1786771500000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3e9CZRskc15VW76ntNfeYnvCGcKqv4effW97fbKFSZzPxT3ggyMtznAx7EtYfPbGiTwRoPv87mDL2eo6CaDnLEEs",
+      "ts": 1786767601000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "56X6eUEWz48wLh3QpLxSdsigFjxuS1AbqSqEEcFcvaPQrHFdZnTDkKpZ7dPuTHaLfMamtzEyQ82jPNPQZfxN2uZU",
+      "ts": 1786754701000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "HVQx1qyw6TttRxfpMiXeG5M6n6iq2RFSL6HTNpyqd4PFu3LU7zY2RzrZZX4zsqQSQovL73e8dutWsSHhn6LjyP7",
+      "ts": 1786749063000,
+      "amount": 10000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3DKYDGeQDB3SJK9SrM1s98cy9Ys43WWN6BjezoNk6i4tk8ZpaMEF34uuqD6DdesYEbqRWFKrtTrDvh5VgfVt1Nnt",
+      "ts": 1786740001000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5zuqZN7LpTz6BGCLt9wNcki7Ye4fzr3HjoqwhkfTQRhWFeaRJi9TLFsqq4XUtEv5uo8GEgSLoMSfx5KdR6eHqBP",
+      "ts": 1786739879000,
+      "amount": 25000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "2gf9CE36jKwa53NFa6kHC9cCz2yZnqmEcozRfHkDvTuRamEdDa4QRdxVZyXSqEf4GLs1m8GcVtTsfaj7nrm9HHsx",
+      "ts": 1786734901000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5BtMxKLJcRoaBbEwe4JTcrDGMx6L3H5GekGdgY19jjNW8e8ohXoc6yDPjhKysYQn7DYn83SGiPS1SFaXGkSS8HQ6",
+      "ts": 1786734600000,
+      "amount": 2500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2esRLL41JtykxDq7YCa9PQ4Trcvnge7wBe7kqtGZErKgiMDeiGkwKfFzjQS7cCJggpGYBQ6R4uWXMouqR2u2j1f7",
+      "ts": 1786734301000,
+      "amount": 1250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3oW89Fb6ACAnhRZE57MTWvxVMQBam6JDa2XHJAiaT1juyNGaugaYQsK2rRYSpTYiEzrk1marjiYuichPTJRkpFHe",
+      "ts": 1786731001000,
+      "amount": 1250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3t9XDLDFfpNRDan3QDfjX3u4mZTMKBjavWJRt3conWHCC2RPLtP3PgK6jEJUwLkbfVjgrZokFyKwaxG76GRohuwV",
+      "ts": 1786725520000,
+      "amount": 25000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5JGL3fvPYNczF8pfvVE57CX2RHeZrni7JUUSSRHuBPMe9saHXKickrTiTBL1dybvk7ZGQYXaU3k3YGkdjUNGR9Fq",
+      "ts": 1786725000000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3aWkfbthjttmChVdeaB23pGyGf1AmBT7RFhUjnmsmrudNFENCpe67DFkpeEnyzA5SNBq5ZvNHfLWBTKrg14ebqB1",
+      "ts": 1786724701000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5JhowYZnXGpLSxgiHkNX2EgGeyxeQaWfvhT1N3BKsqCRTFrU3grhCJfNC2Gu7NvZsv49a9p2f8QsRtL2dXRPNZni",
+      "ts": 1786721400000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5Uk6ss5CAdqd1o4kTGNxqpsT6fybYJcv576qEUa9VDJcHYyfKb1PybWtqwJQ6zpktup3JnSsZgdpGpWaiXEsFSEV",
+      "ts": 1786720800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4GC1Nn9qYF25UjUSmJNMcdUVgz33hGnDD9z3GeZLQmnLR64APqtP881meqKuLar2eBSCw7AMGiSiR2jLy6k4bmUV",
+      "ts": 1786718100000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4Z5KcwK66Kq3abaSUpX32JjUkGtKBsiUHpPtZZcyBSHtBsdbX424aLSGc8MtAbFzFFHPDZ2K1hruvgxciGRpZBG6",
+      "ts": 1786717880000,
+      "amount": 50000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "KzdzgnpDeMRT7pxA52T4FomDX7YQJESE3U7i79oF1xDiTHU1bgTXzYnWTmyumWaTKFSnpx29Fs3okM69U9zQML8",
+      "ts": 1786714437000,
+      "amount": 25000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "xt9pZ6MWt2R5B4iuRxgQQaCtSTfqxTXB3Y6Zz83Umd6ABApyYDvYzhWWHui18UpmhSC1AcDkqEvnnBR2R3QDQ4K",
+      "ts": 1786712605000,
+      "amount": 100000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3UP7KE9iAYx8sp9UPTDi1tmpSBr4ayeqsXZKkcoPumxWwmFCR3dDXj1Dtqx74DggR7V48KiZHVQmdf3mj9ipiCoN",
+      "ts": 1786712332000,
+      "amount": 100000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "4KsiW13ZYH517VFRL916wjptfcRuA7kVSTvHvK2aV2YBM9H8quSc6RzcWAX2SaCA8Q6k9nhZjaWh42Mhj2PBxEgh",
+      "ts": 1786711496000,
+      "amount": 100000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "PRHx7iMhRuBaXrhLAVdmGe8Lbg1irpaLxBkjyArW2B6MZCaQdRTpv1986uy1XEipusMmNn8jdv1PJskGxsCotiv",
+      "ts": 1786681561000,
+      "amount": 50000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5uYSzSEeAMHsH3AAYsihpS3iekQrHVU7rmYySPaQyWp3c6xGhfBr3wHk8xZSgrFyVDAHgUTsa9WvAFPVZzTPJbWa",
+      "ts": 1786673401000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3V6ghQPttrptaqnvXEcPXkrtFAv8KouYXFjuEVjap5kaPVSNdB9ZEDhcWdr4M3xCjWnTQThLHYUxHgKaZZVfaj5s",
+      "ts": 1786670700000,
+      "amount": 1250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2EZ9GwjshM6uwTWJqWeuz8Fu7M3Ei2AeGLiVrFXKSjnwocGmDKpzWxXBC1C1o9FoU19z43oZcJorBei5Zgm5hRJB",
+      "ts": 1786667101000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "59KyXFpL43jnhLPTpeM8Z1ph2cfYgTNP8KGzmN7rU6ZXdTiaQfWKTa33GAmfNsuVtUiXF2Lzc4aKmQVZoR4armhs",
+      "ts": 1786637888000,
+      "amount": 25000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5yinx8ZU4NBeqHjfvR332Ym9913ztSHcMsmtJRUnRFz9mPcqMoo784BexAHtczmqdB4F1rc4N3tZgsWao3RdeAdJ",
+      "ts": 1786627968000,
+      "amount": 20000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3RopLTi2wpLygCkzwd9WsFRYqbLusfZazbR7VH9AE9KXJtXnTc9JYb7rhnDsecxgmiY628A5DoMQJH6JHxjZ54JW",
+      "ts": 1786627200000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5C7hKSQAJ5uWdKxqLgKMRLSgKGGd3FtykcrwDxbErB628YgHxLWu8uL3TSbMrmkKiTdHAxM4ZpftZENtBcF5NooQ",
+      "ts": 1786581974000,
+      "amount": 2500,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5ddBiu6G7YcAnk8yxRxDu98KLTVDYAUkoTKbznHcTULStP2tEJA2K7dxxHqT2HPRcdrDiXzJydkdMb5MgjWeoWi5",
+      "ts": 1786580700000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4MrtWeibFFXfjXvdfQjKzeRT2mDroUdppqER7cNgGVZCfgNUgduARiyCGsCWTFqq7LfqqfAkZE8yV8Q8FJ2MuhvZ",
+      "ts": 1786580400000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3y1cWjtgmp7sARL55s3hPCMXrksoK28xzko4zEEXa3JVvuxGSJ2TY9UPaaAGM8s7auYVKhvLAHSPJR8udnXesE1D",
+      "ts": 1786579075000,
+      "amount": 5000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "6Q2kMGYU9NmjXir5ZYATsYbxMw293Ww9gU23D3vHbcbAArgapRQe2jTHBZikcizejMpVqhRSTCtddZNT14PRjvP",
+      "ts": 1786572556000,
+      "amount": 75000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3Dg31eUqdizhAa6xcoEFdd5bwLeC9ybvcdtGDdHwcF8SMEseG3JUNVuMzxe9NfXCXBXgTTWG47kzUUgkiN7XkUvd",
+      "ts": 1786555556000,
+      "amount": 50000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3uRF4uvWhbQvfVxokEY7UZASzkQiavYYKvjoEyG39SxsSGNeyrUWt3uqSZUh3yYQHDGCeGuVt5cqR39BiyKLZPTV",
+      "ts": 1786549982000,
+      "amount": 100000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "4BrLL5DAtXdXd6BD3UDUtLCtSGHXAPouUdthezvhKtzT2eCXxZL1kPDtM6nzoi1ueXtJVNbacgE6BAXNGdUBqUbE",
+      "ts": 1786505100000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3BG1ExsPF71G8W6bv9E52g8GdKuDgpfeGHDgd93P6mqbVBobWFigQKGBUS2foHXDmsRgV11i9nMsuMvpahnbNVPS",
+      "ts": 1786504657000,
+      "amount": 10000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3sKnexnayovEPRMzdj52z5yWd4DzMvFvQx9fXhVt8FoAdvJerfcBjF9ymDArzCqahGtSVt4QzF6R39tBirpv7SvX",
+      "ts": 1786494047000,
+      "amount": 50000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "2nsdZZehTQxVMg2XfemUn9i9cTG8EmdWsj2zqyJ3bhQN7barifM4aNYxWBhbPBFctGRrJTJcd3cQGCqxeLSADUgQ",
+      "ts": 1786489396000,
+      "amount": 100000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5QSvnXbWn9ZeDL1VeEB5HXPgpjodC8Yu37VycQoZF1oQuFnM9VLQnwtxmYJ1A587ZHkSLoqanSfxAiRkJm1TJ3JX",
+      "ts": 1786484100000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "24ga5GLtFt6gXoMmYFWC2ZdCTdBnPA7PshsSWgfUoMtdPu4EPjR5H9JcDpnUYiCiVAoqszfThVmzYcvgS66nucwM",
+      "ts": 1786479001000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "ergd64iWFgeLg9NRHGBWKcTom8hKrF6H9KEKV9eBbqHsQMQZmKyekXJDSksAFcPtGQC1xZdvunnMcreUxRnEBoN",
+      "ts": 1786478400000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5Y7J4FpBti6k4u59dmaa8GZZNodbjUCzKjAnYPK2CH1RsWTtd9z2dsU5M6UZUyG6mDwP7pfnzKCsx1fRGijg6KKm",
+      "ts": 1786474798000,
+      "amount": 25000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5eqbRSdp5jnJznoXY9vnNujPFmdnf5b3cUEBon9Vt2B29tu9jZRcXYKd9ZaQudbx8pBJm88T9a1XtTH55JpyJzYu",
+      "ts": 1786468580000,
+      "amount": 25000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "4oWaATfoJqXTtJE67e9JL1VjivAWYk9B5gxxRpniMrCXaByDeNGheKryikvZYZQnPDV52XcLEn54uywWRWPNZS1u",
+      "ts": 1786463493000,
+      "amount": 12500000,
+      "kind": "tier",
+      "note": "scheduled burn at $250,000 cumulative volume"
+    },
+    {
+      "sig": "4FWvVgBDLif2rMnchRT9nmbWjSFcnJCf1vKjWzaiSiTpuZkuwhg5daPTcdTGYCdsUig2MRnoCdj9u5e8DymwcVSV",
+      "ts": 1786462800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4ScLHXTLSeY6jiHfoaKSnzLN729P9j3t7Dro7JFdXC6c9FEumLM5fkhtUPM7qpXSp3YUjpizrRTXyfttcga8Zbc2",
+      "ts": 1786426200000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3okff6yBehHds8Hk7MqBnbxePSHYkAzQFXXj7L9YF554dQaozuNgmP5hVoUF3ELv6vcGgkaiQ63N77yQPEow6DhZ",
+      "ts": 1786415182000,
+      "amount": 8000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5p553MwyhM4VoUkvM4ZVnkrZ1zJcrVXcCdxVPvVD4QruTSMGXoK5j7WV7tB9MVpW6s84FjMYaV9wBDFQRMNz7QhW",
+      "ts": 1786412588000,
+      "amount": 15000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "2JU1NYSfgDXT88wxCJP1CNRCR8Uz4AG6x9a2nJU8mbJhHtyXGAPWmz7aQi7BbETWrcrc5UD762bqhBPaztR4scXF",
+      "ts": 1786404192000,
+      "amount": 5000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "35C92p1HY4gs3cp8uxy7BexfEn1eP87cssMC69zXkprSCP3Pfo5q2E8RxQ1MqtVm7jq9YMdRqZhuuQ58zj6Nm3Bm",
+      "ts": 1786402395000,
+      "amount": 75000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "2xV83bx7piQRNFcxDLyG7JyqP4VCabUeqLGz5X1Qjg6cz87x8PybwV1xjXzkEqzeCouirZAR6Sco5qRFK1LXLFFk",
+      "ts": 1786390091000,
+      "amount": 25000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "2SVSCSf4wdqr7HkdzA4LN8to1urpJZhfH1BXgUUsE2HzhTYA48bRE6uuFDM5G7S9NM62kCA6EE1KQCJi9TPN3iFq",
+      "ts": 1786389600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "knaXaT7L9f7GmR1qN4zzRaKjDUStVtojVhAXNf7P9f1EHNYJmwGaqzpvNkYjdwdiorHhE29QpJNjYNSeNr4NDoP",
+      "ts": 1786388313000,
+      "amount": 30000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5SX4UKDsnCjJnMQBB2eZsy2tbpGSmD6h7cTiSiCJjvNumWg38qqQ26dAF47egEfHtbsztrz5fKcBZGcqLmx3TqAp",
+      "ts": 1786388032000,
+      "amount": 40000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5gVYoFoonkMUCh3zih3U9LE9zju2cRmfnAyZahEYwEdz5ystpAmUTvHVSgnCGQJTek1BWzGpcx1G94zoNeG6Sz3q",
+      "ts": 1786386653000,
+      "amount": 10000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5C4dxQKrNtXz8R57iDknQNAk1dsEFZhonWJsPyPARVK89puu1mHaV9KuGGoF3453FfVgHAZMcxTuw3hhqYePY2bW",
+      "ts": 1786373716000,
+      "amount": 20000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "67iCAxDYdeBTNznSPi6EmjrXupmsDe4nH5UxAq8WJzHwMzat2CXHtGCbYvGJpFXq5DepMvmCV1LQpbNMUkkX4tLJ",
+      "ts": 1786371958000,
+      "amount": 30709.797969,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "35ko51RfugFfTnB6tnebx6HSZ2zYYxug5xAvodBE9rgkqsR9nv6HxuTmBEz95VaCt7nqYRarZZvoWKqLz31NcriL",
+      "ts": 1786339003000,
+      "amount": 5000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "4fZecH87TWhqddPcSp9rpmfgDSL8vuEPxPCALRFmFFqRJZjuxJKWhLpNSLEQv9F51cxNBrkAE5TugH6njpkXE13L",
+      "ts": 1786338348000,
+      "amount": 18451.770376,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3NGkN6TxG62LZpEkooU3vb8T2NSmCFeKHqbr3QGm2wv1mHXjLXuh89CssytPHMBWgtiE18RtwJVevHccRFqa7jjV",
+      "ts": 1786334701000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5gmUMVmoEDSFRS2kQUp8Eiqks75mPa8nf113juChjBbfuWvdEeTdCWc68BNq8Wnw9xnoDe5eTzvyeU2a97V9JCUu",
+      "ts": 1786331194000,
+      "amount": 33816.517593,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "SxqhDjBRrYrLyyCvxMkfjY3obpKBr7CpsodUSgihR6qHvqJupxzNybAzBtxK1c8JDzAEtzxCbBNgL6qopoWLr4v",
+      "ts": 1786327860000,
+      "amount": 17045.845872,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "HjeA4tm7JAyK3bBzDpgq9qzr3qg1sreuiNBUebG5mUBNCBQK6PirkpSJj6PDqyvAv6hxpEfa1EqASJ9E3cmvZRs",
+      "ts": 1786327639000,
+      "amount": 17048.391136,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "3nJa5iDEcyuEBSpnJFp8Nu9MTBQFmdXmL1oHeNFt54ukLXwrAqvTTnowpe6EP3Bs4auvb1J4FypNq3Z5GAZBuVt5",
+      "ts": 1786327057000,
+      "amount": 18594.867682,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5CTr4oCie6uufxy56KxUm9wrztYRrUu6ynhGw2fJ9etyxouDka1HbjWemQkiFywX8o8wgRwsAqyziwVLULmpZxxi",
+      "ts": 1786326396000,
+      "amount": 18969.202961,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5QR2EdAUtX6pXBWvS1uFU7ADGtfcgMB12pGS4jc9HCnWiTEGgRDGRJdJXTuwrVy44CHuTdcxJHwk4Zkcezei6nBr",
+      "ts": 1786323921000,
+      "amount": 10000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "gsz1nUcFstPKMpPPczY588W7eHHAEksRYHyKrV7E3Pq7XGwt3ScKH84gc1sSo7psPc4RiiUAN76PAbWFbsTJ9g7",
+      "ts": 1786292091000,
+      "amount": 45000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "4AZ9JvWGW6Nf75Tro1eFShMCAWbxMgRc7Er2dzCooTMVKAWFopnJQkV8kbs3bioACL8riaxbKKVxcS6QEuzLqMGA",
+      "ts": 1786286590000,
+      "amount": 25000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "591jMDanaXQSv966QGfJZiKRydHTDS7MFHmm8C3JMbqB7yFXLrmae3Rek1c71SKyQjEwC2RraC3GMwJWNduHh6Tm",
+      "ts": 1786285383000,
+      "amount": 100000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "4ftZP6vJbhp51UaFsLGxUDx2kFMWciN84BbZAGn9UofwWV6LPFNG6HEDmaMQ8FcpTDnkKp4EpEUVHbHNzudQkvo4",
+      "ts": 1786285201000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "42EAvVGDnBgt9AaLaNK2maA6CPznVN24aPW59Br65VHTEEAMAA3MUfg6NUrovnBLm3EdX1KLummPmngc3CX6xP7e",
+      "ts": 1786278069000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4PhUYegTmcEviRynTk6UehLRRLMBY3wpHnTaJcfHkmusNKjszxbqoaMUzUqzvjsKSpjRJF5xFoZ9nXbWPgPwXDkH",
+      "ts": 1786265401000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "DY3mtNJQLjkVeVkozUWNVCuDMVxZCC2UQBw7WwEAvwungizx7QCHbJT6Sm6yn1wMGga3wBQ15oNY5pz2T7ZB2jJ",
+      "ts": 1786264800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5i1eTtB8xQJbA183KfDZN5NeaZvMCFpbvuYR75hqKVmP82Vk8P2qizDDNWDQFnQk1uadvBiUGXJtrtMeCeKSTiH9",
+      "ts": 1786257600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "32r4rp7GKS74BjPr6wWW84Ng3EmE1xF1ZN3xWS4jXEoQdssSmkP6ssGkKJJBgg91tc1t7D9c2n7JQYRk2E8Z5beV",
+      "ts": 1786255501000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "37a2nV5p6HTPpnXRJYbVG18g7x91PDm8pnS1hANKmWGnreEzmj53zhULGvUZU5RpakJVG8vCgTWunQhCfWy9ixAR",
+      "ts": 1786253700000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4wm2mMXEP8ta3vFt8pUbqqpyH6ervpmXY8ZZjaMHr5KPNeNKWBqfBrkYp1FvAZdAqCoqpJrE6XYci35gfRAsSPQJ",
+      "ts": 1786251900000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2vjpTcLsjUGvRieWSFFgU8H39oFJuRH4JciZWPjDxWfUfZ3uSnKPpamcK5cNhWcyycwdbFigNaZZ4ZEqJ5AkfDxT",
+      "ts": 1786246500000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5pexj4YU4enBzkLpjbkQipLqcDoYXeFyLNa85LypeZkVHFYrxEtnVHqaZM9NrRzrALkA68evAHbVBHL1iyMP6SsA",
+      "ts": 1786246200000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3u6RCEtjLFPLUD152qKbLzc5Ns4aYSrtGCmJofJXdApZdmv9Aybnp1ApR4sDhtK1Zub8nuv12txYgVvUHjvwuAWC",
+      "ts": 1786245600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "572arpgPEQxt4RMi7Y8RWWQbqZUUraNQB1aURJ4SUxBKLtWpppKX8gs2J5SB43E5UcWiTeUNjRjhoHLEpQNbUGvx",
+      "ts": 1786243921000,
+      "amount": 7500,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "2EKHRSKs2CDCqAGxWizfSive8YSPX7m3wriLRtup2ma2jHsWdLPdLDegaeZ4k8N3gCkf3NfTdPGcy6pjUMAvmXa3",
+      "ts": 1786240057000,
+      "amount": 15000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "J3R9TbooqPGvJwP4h71SooceihwzvMfE1a9FurcNJXZxDWq1QTj7wbytmR9YDVEne2RhPvBw4e3dnV7aRfDKLjD",
+      "ts": 1786238890000,
+      "amount": 25000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "5N9Gt29xnsMvKxtAvzqrPJxqatGkCn9J5ogWAhyMPoKdzbGfCQ8kVJ5rE8xWtze4TMsNauEY4h61soR9h8uhkeZX",
+      "ts": 1786238059000,
+      "amount": 100000,
+      "kind": "dev",
+      "note": "bought and burned outright"
+    },
+    {
+      "sig": "53MwLv8XVnucTxyXtwbywYiP9y6z9MHamQA1YxVJbQBEKgKEq5rpqiyn9X55Y5L2uE6SbYmdP73iMZHvatSB5td",
+      "ts": 1786236001000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4ZQ7dCD32wfmD4k2WwUZUJ6GCp11cuPeP3hEawnDUtfGz64JhNWLggnUgorJpirpoYcVXmBiG4uWGhvpA6Bded9R",
+      "ts": 1786230901000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "mgTLaC7ATrMgWy2DuS1kSK4c8ujKkNw2HZxxSVR7RR7DzEREAvEm5ZpnivYApXgMoEefkciyBD6mcJhkpPbnjcB",
+      "ts": 1786217101000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "58DFKNKpAfAvjPe3V3GEe3p7Woe4QJV2mcYdy2yKgu73NVZKTy8w5eozc2cb9up6wZ3EV7D9zDBxjY3trzaviRoj",
+      "ts": 1786216800000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3nWKHKGM9AT4ZKWz5T1Q47Kp1TRNuNY4NpAS3MqA4EhNohHJhj8VTEtCWdzeRQRLnbFyMrG6fs5yhgCNa1LcPxdj",
+      "ts": 1786211101000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5Mybuu1QFWPi5xvaEaCVR7syjPNhyRWk5CJqN4zhWyULRDDMhSXn3YmjYtBC6hYVBGb2dBbwUiTL2NCAm2CKyAMy",
+      "ts": 1786169100000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5ZXTPQdF4Leao2qZ6C96L33weyZj7YC1F9ZzcxQMJNCA75E85U6JyVoAjGcubLhgySgdPgRLz8Jnny4sNsAtwV4m",
+      "ts": 1786167300000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "49HBXoHw3o8LXyxFKFmLDMCAjwRtfCuBdbJwEFtmqtFaXiuAkxh46gWt9Do1NW5FWHmrLhXDeZLcDFmWofWC6hUp",
+      "ts": 1786167000000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "45pFid5GVKXwxfgDgwMbFiFnmsGNj3d4irkHCkCSBy6WLNtpPmExHXzA3Ut7n8CRbvtuQvbevvwdhjasPVA22t5S",
+      "ts": 1786158900000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3UBdgMKMyJeu2MSNAUVBQ1Ln8uVqE1vM7BqrjA2LQz3qcxzNotrjnQYEHt6qcX5R2ndheJcZQVkwLMSEeM4ZB5GX",
+      "ts": 1786156800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5Hwmp3dSBpvbTYGNcQPneiSvjogEfxieqyUa5knCjUK36nWsF7pvzaFBDSVoyxKkSFyiB8zPAKWWUqEb2swE96xJ",
+      "ts": 1786155000000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2DaRpHzwKpEvKZbK8hmvSPNBL3yMtmDqLcLYP4tsXeNhRa7pZnVrVfdaLBzW5Qqnv14EUUVJbt4L4GmcRnnDgwhe",
+      "ts": 1786136700000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3bxcCTQF83twReXja5QxSJ63PJ4GQwG42GZfrDmUeioMamKoYuiDjm1S8Ug7Xf48MdAhLusm36rWS2NEVekoUbJv",
+      "ts": 1786131600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3vypcwTVHF8DKCwRCaD4AnhciDGdPuNYGSjEBU4AZyriwuTY2GbCSM6FvPVCiUA7Y457Lc9kZNVr8R1DHhzWSkjd",
+      "ts": 1786117801000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5cxjU6TAcv5rG5Dbrq91weo3Wi8X8FfDzTmYm54kU1C7ZThdLjm3iDTK5g6cfSVDEVz8it3UWS79gP4CDRJJvf43",
+      "ts": 1786116909000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5KnKx3K2N9AJVKEFNeTiYDWWEGQsdBwPjyiXk2V4fMnmtQp86uSfcDwqU2sYdtbCL8mJmw1mx1yGLrE1XNX2h7g7",
+      "ts": 1786116600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4dJEJiRF32jLdh3qyYDeJjNBYFrWzXdc1HWF6CJzcshwY6bnXAoxqzFrdCezSYBeG9Ue4C8KUQhh6SRQLDVPgAnL",
+      "ts": 1786116000000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3w8UMQ3KwPb4KABJpQWmXzvixFcDKhb5mxXMf7fozun7bPWDCzwub355Vbm5GZyckHC7PZYDraM1N33pR43Hu9k4",
+      "ts": 1786111800000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3A3BX8ciJoYmN1p3QxqAMCEaaWGJ7hWY4E3sy8acCiv3gYsUjT6y3xXfTcUUyXqecuM17DQZdXR7bnfFT21FmVzo",
+      "ts": 1786102500000,
+      "amount": 750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "XLD7se8141QT3pj1FVgu5VFtyCJbc48jZmPVjjKNhVMSMijJke3AyvrSbSA55pKEyi8E5j7U8T63We5CxBNS63e",
+      "ts": 1786102200000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4GfRvopKdagUn9iEEJS3nPuR7sbYiK6SRCtauhkLJhGv7TPH3kBbsjkn4BmU8FgqRmeVEYUJqMWtEaq3pC4D8Hfw",
+      "ts": 1786101600000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2bcfw2eYr46TeuDLA2ZepMG1fiFAAnTpfsw18F2vwdXMGBpsMxE3EXTPQ9bfTj36LmHFa4arbwMYAWVrb3t6Tpp2",
+      "ts": 1786101301000,
+      "amount": 750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4GwapbnZ12F1JbHXChbeqSWBjTp6cHyf4GJkzdALWbFPpvGuKQ34bVgNK62avS5rnfLykgkFGNPwLVyV4kANnU18",
+      "ts": 1786101000000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3LNF3s3dqpThGc7DR2YQpQvWGQ28GQu58eakxNj2yF391dMMBsU54nR8pjDeJyrnfSJqfxrxQ7W71GPGdi2VrrHx",
+      "ts": 1786095600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3LAFpiQt2nx33VVXbfb7RetQdP4zUh9z2K6o2Kfk5TUhztEYySDk1cLsaG3kC7NAtZLVSNrk6GatmFAkUxggsuka",
+      "ts": 1786077000000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3Z2pmSsXJY4v9DGoyuHjQ6LbYXcfutGjU863pmLprs2uJF6umFw7542yARwjqSfFtCYq2vMP3hJn9UYEUyCsF4XZ",
+      "ts": 1786071301000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "21518CEDsqmWeGLvGLL1ynwh5dDxbuXbqHjzPPMKQEVkLGqnaLdvAuKiFZqhyeSMGVxhyjKfv1UE6vAEMuZbTd8v",
+      "ts": 1786069500000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3fSVyPpZXYGLcZ4w7sWCSuQTLYi86E8KjXeHZa6xYBb2Njh93D5D4PJZQkKuakqtk3u7efYTfBhc2nV79gbU7TD8",
+      "ts": 1786046100000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2pYaD5U3sPWF1pBtDy6YKsW5fUJTWQWgCNJ8UPzvN2hG8HcHhjwiQikkASS76n6jYAXs5hRyPZ8veojcRVCU1Wnj",
+      "ts": 1786043100000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4qDqH4K35fZZgWKfDJRcr7SkFk7JgbeA5XyCCXP5cfTP1qctJ9kb1eKXYGbuskJhuk29R1kmFDbq1AydNkHWkDod",
+      "ts": 1786020901000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4ZutpHpsH6gqSaWyXn8jZ3qNs7BZJVP6hPy8idG2CfULtxDmLtSHoGFADrnnKYNkqvdVQRBTUxvPv73Ze5TCDWp5",
+      "ts": 1786014901000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "L1Pns7LnhWG1K4fCUiHCoDGWjxrThVXTb7mtCQvysqqzM7GgT4mYemgjU1HGWoVxGdkwDTR6oi6eXKjzzRco7ES",
+      "ts": 1786008900000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "48YZHxFoUwTTdGrNaepru1KvJxtxSFsddfKwHrAsT2RcJbUbQMptSPfVtTiVtHt7xmbsZeQKFDCFy2npfAamjnGc",
+      "ts": 1785995400000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4d22BKqFAqJYbpgWzf8WVFJRgNsefYa8aBu15iJiyUzC1qh6yJ6f1f2aZbJMgNNd3YeDwiS4DRnAjNbSvAR41peX",
+      "ts": 1785989701000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "58iTBmfMc8srDuTwuSobetC3vPfb6YHEWaaeEBXFbJcwrdfDUjzzkDf2XbgGbjimEnowonW2qTEfkZ8KpjTTp7zJ",
+      "ts": 1785980400000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "cyvH42rrFNrEavmz9a196g7K4NZbyQX679b8jFN5JYieBbpoqYvQWta48V4vKwgkLP86Z5NCQsde1tc1Zxg4eVr",
+      "ts": 1785980100000,
+      "amount": 2000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3MLuKQZdccwiqznpVQNpkUGQt6mRPUjT8bsRBZBc3SrwuDdNVgV7bw8MTu4NcXeG44PqZMdTX9ziFmr21cLtEi7N",
+      "ts": 1785978300000,
+      "amount": 2250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "37t2gd5tVpyuYwk99bMY6ZTm1HbpTi4Hk6psE8s15gcGZKnZCCdVVcFc9v6FaPaX6tkQEMBsHjSpaeyqfhZfGMip",
+      "ts": 1785978001000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2DRTwd4d4f9U1Jhmx8jjFFfZdc95dPQwHVQrHWWXADD66TSFxKfjWkB7Dc3f1hkwJXiHUv4vZ84wueHoh9bLzTY6",
+      "ts": 1785977400000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4aUSFAcTZqFxFnxUnjUmD4iDH3KhSWDzmF7A21jGqKpGaUogBeFejeY7ZfQcv7XhRrfspSrNp42wcDZLbVAVeLP",
+      "ts": 1785976800000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2QaZFXpnu1iaALaRZwvrr6X4XEeL3tRtHFnuoWyDfVsP5p6pQGDtS2QMwCnZteDyqxorx5fctcYo8wxP3Ut7kwfR",
+      "ts": 1785976500000,
+      "amount": 1750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5hBisQRkVsJe8B293kn8HnY55HkkHV6nDC5KcsXz9ZF7KPqTLQnHExwZPJdM1Sx3rFGTfgpvxCT3VGnk2sHb5cs1",
+      "ts": 1785976200000,
+      "amount": 750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2ZHC6ocMq1U2UuqJv3Q6nkcGQ5JVLT64DMGtaCMFHtSuUi3jKCWUbZqfGvyat9tRuScdXFHzg1mM42HXk59Mbb68",
+      "ts": 1785975900000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "39G5Z3TH4ruQ8wWSgK5hfYmz47ErqvJUVjmqJH9sb3BVSnJd58hxsDmDh3fpN1JTf2hE644dxLyg6c9WqBtGoiMv",
+      "ts": 1785969900000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2UTcwBmTYgW2CF3oLsmL8Fs3ARzthmT7DFCaMMNvLaZASarkcCTfJCKVLuRW6hopNYNMdr8EB7DeEszLVgqNRT7o",
+      "ts": 1785963600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2LENoJz4RmoT3hMsMkovLdoTNRRq1DkEQ8dnDbLo9PnA1p7bhJLrxLjym7DcUHL1rrB2DXKeShruevTs8kpvgfRr",
+      "ts": 1785960321000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3Yuy2oqNM4gNAuQ7AUmGiNAHeGHnRJ1qE2Hi1daSBGoCtTvjvSao9HsbFbpnv35pTTDcw2ErXuHh4zSfcqzXJSuQ",
+      "ts": 1785946800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4sAkrEfmBaHiTfuSUNbL9hWUNzYXtodtxWdB7Pe5SqHPmaJPPjc6DkBDYWq2La4k3HzokTw9f4UUxzgw6xSoEegs",
+      "ts": 1785900001000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2Rmj1SVJBKUQx2uogUXGMu9wM4aio6Gj7SYSzj5UdM84EGQgwy2NchvVwwnG5sY3NjdZAqcXU7ebU8nxZzi235KY",
+      "ts": 1785894900000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "56UkZXx4WQZ1NkKysYgrqtTH9xQYgGz2mYnBMgiWMGsxWW1NphY97omoF9TaCSiPzcus3ozysvrbyELZD8ievbKx",
+      "ts": 1785891900000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5rReuuwKN71wFyCJJsz21fyAxvdBuUi2HfA8HFQQZneJgLfidxAbAWzpoY8HxsK27gJDNq4JW88ZBrK9r4Y7HcCP",
+      "ts": 1785888301000,
+      "amount": 2250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3W5ZeiAg92yCLKL6fapAYVuJAEvLzUBckfQMt4dFPmh2GS9TUBXwUZ8tpHuEvP13kCMqqeoBbiNE7imQejN2zoih",
+      "ts": 1785888000000,
+      "amount": 3500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5RAdj5JjJKw9oVJjKpkKv7fnaAXgsoPezESJn6qqrCFkaF97FtwffeE5Xg14KCvGamiwbpHRpdRGXgBxEeQhRzf7",
+      "ts": 1785887700000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "QPfLfgUpuou2utZCnVzcDQREXWv8qqV6piRUvTTe6gzkAoazn2S8GivctUXT49f6gkAqRFCFvG2VyBFVipacbJz",
+      "ts": 1785886501000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5XhFdE9kuVb6XcGXpfpsaAW1FhWVNNv31JyhyT3fJ5SEi3SjpG7rkqRXN1anGX8DU5KEr4snegUZ1QeRu5GdzmnP",
+      "ts": 1785885301000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3hHGehApR4dhxkRW8sAihZBcgd4YoXXyA5pTSs64xfouyy5wsQYUiXsB4GpcdnyH2dDJwg4Yt3vp2npHXrCNHgMR",
+      "ts": 1785880800000,
+      "amount": 1750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4r5qPNMtqNXFdNsKN1vzcHojVPnHkHrhn11RNqvaWsrkRyNJoaz3C2TwkLp8jbC6yug7c3RnvR8ax1yStfqPXzJT",
+      "ts": 1785880500000,
+      "amount": 3000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4bfqLKVRunQZPSt9KmXMfPJCkNRBmsdmToCCozMkhagcBFjJxfuTwJXfYVAd1VoVzS3Yx732hWSVBtBLMzKKanU",
+      "ts": 1785880201000,
+      "amount": 750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4YCsCHEU3tZWD8t5psnAoGhVi46e3eecQspeKnGY4JJxH1o5s8mwAkKGMzja9TxwtuZCLSRmgx7L1jtktJgGb6JV",
+      "ts": 1785879901000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "7jFA4Cxb6qCSYcot9n7gXRaMcbkN814fH3RwR7THwRfwyzL977WQ1tGJrCoQ9LzMjcg85ACM3YCeBYLx1vn6yDr",
+      "ts": 1785876900000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "zSB9Z8tgitpNLtHpLZAsLJFMZDHNfp5UTnGdAf71AviiRFdg2sKwCJKgnAfxrBSYPmompaaqQUURuB9JBnfHcEr",
+      "ts": 1785876300000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4VVhEqpgiEAEY1WfQyy4n7A9UV77mAnTSdqnYpVpurxfM17RNY6HAxDCU7sNG593TuFVcn53hhgfUNtPBc99hEjt",
+      "ts": 1785875100000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3prK363hZ6Dwixmtpi3Bg7ot1Mv2ccR3pFyKGnHCD95ofPfQtyKqpXfgXmFWmmEC3LoF5uRxAaUQtA4jUJUdzjQe",
+      "ts": 1785874501000,
+      "amount": 750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3zz3ecyyMNXL4WzsXNpi4Rd51jQaxSSFsj144YkJN2FSxNgGFm1VhvDhv2VYwpDSr3WxdVFkqsMZc3AQSN2Nw6UR",
+      "ts": 1785874200000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3RP2BueMVdUG83AkUU29iTQQrc77dSsFf8jRB4J6TxDF46ZMzJnAJguLkhTm7J4pVG1MkE1oWezQx8BWrN3We2w9",
+      "ts": 1785873601000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2KJUuWkRzVWTxwBzzh4hUwT4eVJkWTii3BYaHKL8QtFFFhBWeQgJy9DVUrK17MXQTcHMGfJd61Ys79RvqTpD47h3",
+      "ts": 1785873300000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3r4vJWZR7tXPdw1mCEuymzeD4hMNcacu2VMfvq5ry4KWyDmub9P4MRVWUGia6QcLqgF1TazKt4b8ZdetCkjYLYdS",
+      "ts": 1785860700000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "BVecYecehA6vKgxrhAmVCDqJeHXCXMWi7V7HAu5PXAiAUdqoYNpuobDwvatn6ti9oTv9GjN1evQgomr1BRvmcBm",
+      "ts": 1785860401000,
+      "amount": 2500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4tmkwmoC1voPzEzhJgitQsonFrxuhTXUhpFdrs3fjmjvSvmGAQZMcUaR4A1dMLXbMgnyTnGMy41dSHufoBFrbeUG",
+      "ts": 1785860100000,
+      "amount": 2500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4LLoAFtYtMDLX1rpsABv281sWkPHmLXMiXfNtoVvULA3zcK4zZNrw3LPCRG5T3BaaJgrAHh7nc7CPbMr9EddF4sK",
+      "ts": 1785859800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "bdAu6kcCkPpN936FTNd5wgP1TA6PywBSE9GNqDYNTQTq2PvecDdtXAMiJfbA71QcPwU9B6RiNW7NBNJ5eWFXH9A",
+      "ts": 1785847200000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3arWnXfaygcMTP5Us9XW8hzTVsT7sFRrP7oCqq8YR6GBFoC85Vxs1HaG6bHLHagQPc9rGNhdHpvaDpRmdmQE165y",
+      "ts": 1785844800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5qz4UXA3bMWYSX9drudpwbkfhQUGziWq5h6bG8FNByMpGgRU9yHAER91u8mXyJXhccuRdea3tpdUp6oAvTjaQGgi",
+      "ts": 1785842400000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3XJ2GJ57QfmgwzW4F3WDc1hVwWSwRi6Qv1K4SqwhEYGbcsTXAujs5hX3F4Kpp3Eha58GR2TE4GzdG7rBeYQPGj4Z",
+      "ts": 1785827100000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "sWpFUU1tpNvwLJjhz4kmv7GRrLNRj8YiHjzoEv4nsGHu3y7vk16vsGW7SFVqkfrDGQLDAaiUui1TAnCtHVJQTpS",
+      "ts": 1785807600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4Rzoy6z4hQLsh5Ero5A389Qzwuhnhg4Ln6sgPvGsYE5Ju1GUsHAQyGvq5tqZVvo9PfNyTZYMui1zkB1zvRaFPztE",
+      "ts": 1785806100000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3bQWLKyDo2gE83rYWgBorafkcWZBwxPr6HtQViNWu9XUXXoaHpBSiNgrWv2Pf4DEsAhvfgwgPZx7ygaQ25ChC87Y",
+      "ts": 1785804900000,
+      "amount": 750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "31FPHezGwhsWTLJoQVXhmTYHKL33mHLAMG2Mfw6Aw79AwBGwio8FFdRAVMFNPqDe4wid26iE8Y5GwtYhHddWvse4",
+      "ts": 1785804601000,
+      "amount": 1250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "ACCU8jUdAfbUJ2f1WfXWdBeWKJ9eKYZvnCQjBXMZvCiUg5rzVn7hYWyEzMKEx87KSYeRrVTQNZv5au38wgnpuYq",
+      "ts": 1785804000000,
+      "amount": 2250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "rnbp214zmJHUtiyb1rFKQ27rFWLk1pLFTNeXmavywNP5jts1ZhMu35sDLS4GtKGs6tK8WnApqSgzk8ytGZLy1XH",
+      "ts": 1785803701000,
+      "amount": 1500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "PJ9BRRznfmYp8gwNtL1HLJx3r14JRsjsD6MrBuck7E5mgMPh4oNTQ43d5X15v2m8ohn9yNW2up4jdsBhYhpvmgD",
+      "ts": 1785803401000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "379GXWVwUMJfHXcvkHLyFKR9QWwia5zW2S4QjXRg9vUEQ6kXoetQBc7uEeHtaNwjq7Qf6nA6rXb5dYT51RhCT9zz",
+      "ts": 1785803100000,
+      "amount": 2500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4W2U235vgoPnuWVdaMgBBp7thPq6Z4M8WtX6rCkbCBBeEFHKmsb7LRajc33B1EHvjZHUap5jCZHsLH2XktwyJxAa",
+      "ts": 1785802800000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4c8HdPgMzYj5z47chw99ESzUD8yF8aBXMLaZPAakLEcARDMyDrvitwrky5sqZpzzN8hj3eDbEXHkQRLSrjkBi5Rc",
+      "ts": 1785801300000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3zsYUongRxw8gjSd9jgnwMgroFRtsAozDtCQeMTkA7cUsZgx4RWc9xfpqCWqsacfz4sPAJZeSgkJz1c3GuJuZykH",
+      "ts": 1785800700000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5khgQCPRJ628jiQm89tMwdvKCyYX34pGU3623DU1EHZQK6SXKhAoHZ2SumHqHHSREK5VNEUbZsrrZ6Hch59X4JFe",
+      "ts": 1785800400000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "35ENSw2RtqR6ptZm9aZVYqjtAPoRHxKyAgRKm1FPd2WCfmVpow6Tos3ioocbGVHGP4rpdxioVnYZUfra7gj3qqfA",
+      "ts": 1785799500000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2XDacQGZY5zuFR8g3DR7qrs2WgSyZwP5B7WffsyKQMGHTUMEQnuhf4QBq3xvX74SyQPAkmiVuCnFadBjFZro82ZB",
+      "ts": 1785799200000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5PVdpesArpmEyKHDwnnwzbyeRRKg1tQaLmSo74kpUG8M5RnRpGr3XXBC3ffJUJ5gqbhpqPojTb7vnkXgnomdP79h",
+      "ts": 1785792001000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "QWRA5ueVzFLVbEMqNGM3o4sT8BdMUJka4g1x5MrU7EQNtG7DLNrdCTC966e5AaXYBqWzni1C9qup7mjacMr5pTL",
+      "ts": 1785791700000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5bbdQnvpokWdf49T7uDa6tCxky1JviJ8h4AghPy55LKByH2j5Hs6xFoHWNnAUZtX75fcpEamf6tkgH5kuCvyWML4",
+      "ts": 1785791100000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2BrN5eTuUm4TCTbJgiNTARvJdASzg9dwU85nBkRJnCgteE9eSxyJBLoeFvsbXHXyAWGhqQ1mB2XYfveFQW7MvHMs",
+      "ts": 1785782701000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5693gaiz8rNZsCMY9vftWD3Z4q1SUHwzuK9dDfsVc1vpPKFdNpAEqNiVLQC2kxVm1dyHPbSunUa4JwmP6qpaASrM",
+      "ts": 1785781200000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "1BBXaoHszp2bhsNVY6yE7s9DcfYmVXRTcpnmJ4dMZesaSzjVXmyFxg1L9RkEpQkFRryA8r9BvgqTDA5wVtV2T82",
+      "ts": 1785779400000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5v8U3aRhpK3tDtSCoNS9NV3bfkxXZ4xSDo13fEG5D6fdp2QEv2YP1qiAmvWHez2NqRapwx7e1bybCVCWDXicFCqY",
+      "ts": 1785779100000,
+      "amount": 750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4jsH9wC8JYqLBn4RdhGMhVdtaasj8DKPCmiA85MueqSftm9zjPBCRvQ5ZvY339dA7qF51aMCiQPQbEWahXJP93P6",
+      "ts": 1785778800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5gDuYcS2LjhVfwPMRg25Bz9QioKGA3xX3XyB4oraL17xdYZEh8tDpajJbZ2p8Y3KokLEfPMXu8Xb4Zzv4ruunsoH",
+      "ts": 1785776402000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5JogoVcg3PY7eT8mPiXg7c3E6hMRvXYtN7Fv7Ms4RvZvPUyWNq18CkMMzr3HexPnjxwtNpxkvVv5mVeKrgWabKHV",
+      "ts": 1785776101000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "23MGgbaUCxuqF91H2WSnvop6ExeHnBADjq2PvaLMMKkWZNmiHnfKF5H6sWJMuXew9ErzBzToLtxbtxom8ozts6Mn",
+      "ts": 1785773100000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4nytnQ6a6f1sRPEXMFtcZTuFvBWy3EAE1j1oaGoSwXAVGunK6hn4L8zkntFMtqAsLRSN86kR7iNHLoBEr8TRqqu5",
+      "ts": 1785772801000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5fCog3ZDjicSLi5qbpB7TvdtCz4Cu1i84ASBYXcVQipQVh17WzWq61h1CbZ6iqHELqSrSGkXEiG3H6KExcG8BYAA",
+      "ts": 1785772500000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "KuXu28izk7KWrR8TnG2sDpCzT15jaJdegby1yepw3Wu72Q42s36LVm6h9y5r858HeNHgg8tnjXSzPoBS4RqvozZ",
+      "ts": 1785770701000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "27Eo7Ns8bw1S8BJopFzPLYf78gxVfWPNgEZjCz59NDPXSxVhNq9kxiG17jLjidcp3pGM24tBcqiXTt3sLYCU2aBZ",
+      "ts": 1785766500000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5TNmPQihjGo4G16nRt99N9pbu76TS3XV6r659KSwvM1BB7KhFKCz9XXTtJstuE6RUyWGrWAUNxdKSLZ3c8g2jCvy",
+      "ts": 1785766200000,
+      "amount": 3000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5Mw8bWg2YsLa59tKwu6eTjxEexkEFntpU7y1t2jBMJ3GdieBLGTSQT6NKWdYdZkotADB6sfSbuYhsqu8VCBcAQU",
+      "ts": 1785765900000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5L9LRYheHj5ratyX9KmoZPUDBdrbTJFxcKMXbE5kRKvJHNGiySkhmTqHneRHuZ3wV4vjrZQ9QnWZ1GZxw5uYWoRi",
+      "ts": 1785759301000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4j9fDXaWB1z4KMCB6QBb5ucF1QDdvK8Ade8wvNd5xoTCjjdGjDxjPGaQTcUX1T1fxMvZDa6PE1TBhcEJ4EpVq7DT",
+      "ts": 1785756600000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2VJSHyCexWFREmZFvCk14Z9UCQNKntZvBfHJBwWPBxHvCA7B8yePHQvwPxVVwkjLjX1aTs1TLeNzXHTnseuQVFsi",
+      "ts": 1785752700000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4MkjBbgw6KvFrZwNqeLRT6XRLNB12sChUoiWUyrb6uYYT8J3ENKkzV1LWQwrb8uuGvtJhuL9o3E1q3MJzVK25XBQ",
+      "ts": 1785751200000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4SKofWfg3Snc7WQdf6oEkctHyJBkyR6UUyvxkWAVed9hMB1qFxuh3XLCzcCWTfsFwac7NcthyaesJzNftLyyPeah",
+      "ts": 1785749100000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4on95c6ngQPDQAodcTXnicyycaLQLyDKLVWyaF2StNL3DP7rPCsHdJ44qCtMkfqWXBLUdKZe3HodiSZ2Fj4StMdp",
+      "ts": 1785746101000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3mGgqEdH1BUmgZEJpWWkJZsazuzddRRB9sCV3qpqqqGDUTf4VnLLVeJbMccVsXt71df4cXxBvyyvLxFyUSw16hcz",
+      "ts": 1785744300000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4WnSPHUBJeuTvetJA21rSX46AKnEJVGrDWXa6fDyiFTCjEHdrtfLnk3rFKQBBiRiS3GLKTbF3TwGs8Rwyxqkye8F",
+      "ts": 1785734100000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "w2ooTYxz3KYonkRrvYJJM4nib76BtCNQUDAaMWRA85efP1aMUY2862zhLmaC76WCoWWPC2Qs6qhh3UppZn6Ypf6",
+      "ts": 1785732902000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "d4hTFAFsneTjoB3ar7j3q6pkQcPGLA47aDMieY9HbvMNpEM3ybJSnRYQNwgas7ya9d3YYfT1TNK86YtM1xmEWuC",
+      "ts": 1785732601000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "29Y5R5MHBZtTTpHFzNjXajG7hETdzCyT7xjR2m4zNwNFug92X6dGqNTcYYsHfQcn2Ux4j9mLBJyXdP1EXsHf9fGr",
+      "ts": 1785732300000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3gmb74VraekoSVw3Ku3hhChav1p4AUnyKPtrW883YomcSTGVLenLpnXGb1rseHffdqXzpyo3g5mpT8SMLKSKqcNV",
+      "ts": 1785732000000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "CECuQgjfcSvfAibbdeQZVqDm26VpZ5YAB7WMavGymf6urrzTs92AVfiDqRBibFLYqNAhKN19KtYE5i6jfnCCbrb",
+      "ts": 1785730800000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5yUwYssg5DAiJa2bopJsfUtKAHQuZQF3qMKk8XA5LFknvXqpnRKeyhMse6R2JzYFBJGDEXHkQZMGMAbZyPrSzJJq",
+      "ts": 1785730501000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2WDjSyES2hMJETsESnvxqXUmcUUXGgYMEmsouRzFooVYvTs8QZ9yxjmv5kvopHg4wEhUye9SFEMbJ8dPjMwwWg53",
+      "ts": 1785730269000,
+      "amount": 750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "41WHmRXrrANTnEd1pKK1XQEtV2p8wqyt3qRYgaGAsc6fq5Gw3bLdLCmkEH1LuQGhiGg7WGXAsQvktP2DQBFDNq7d",
+      "ts": 1785729600000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4LzYhedfbKrzogpzNP129QfMFhiGFK2bWyetFUh8D7BquHj9YnGTS8vkqEQHhq4LK5TZ28mNgjNfFfpZYLXEXyah",
+      "ts": 1785728101000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4WVAMWm6Fj44WRJi5e4sn8VDZnGsrzPNBXE2UWh7VP55Y8iXcNeHfjiMV79ksFAKHNx5M7bFSHdoeirQFeGbo6wb",
+      "ts": 1785727801000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "P6PLjz1k46e3kgJRZd4rt6k5NTS6VvTJMvUtjFrJmMfLtvsW9ZzN1bPSLWTz8CAZZMubkbxKvyqhVs6amZEEwcd",
+      "ts": 1785727500000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5oBmh8WuqSh9tLbKo1jsNZjLKMqQcYjmWxMMM3SQnq6tMmMYWZuuZsxCLxjsWQHkrtHWWShrMaHauMyw293EkzHQ",
+      "ts": 1785726900000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4v66bmKp9jXvUqXZqp7NV3fZLUgrRVcyVdVS8NiYVrtZuw1YwwbpPG6hzS9sqYquNDoYBTq4Vd5MAUKvXUCc9ApK",
+      "ts": 1785726601000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2LUZaMrVTcYC5s8cS7Gj9jNa5aS6YAdNhAoyBkSrjh9WRLY5HBtPkhGN9Pr7EhT7HioSdJH3R1wWyMfTKXexrvpo",
+      "ts": 1785726000000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2Lj89HAg2WXZLsVN4GzGNfPkCCCauoYDHzkNsvAEFHVUV8k5xptvKohCuLweAZFFNRWUjB1RHhrqGHicPg8PoQAQ",
+      "ts": 1785725700000,
+      "amount": 1000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5HhPFaBpYd61i9r4inLqV3us6KvXM8xXNwVyHhPSxuLSPMvmgsi11G7hE3V1k47A2Kt3m4cW9NvL3YM1sHe19YBB",
+      "ts": 1785725400000,
+      "amount": 2750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3nEbNms3Y1gDyueKeSh1MoRS2a33QqwS9Pw28DAsqUy5icFZYC6A79EPzpsfi27bvj4icmMKySQ2KZ6HMLC9TCB8",
+      "ts": 1785725100000,
+      "amount": 1750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "6HbkwwsDAZve16gayuFeY6JE6gKXkP8m1LaUhZ6VEqRfDTtbBkZ79Tu1E9GCcXYrHS8SsnN3JVCvUh6MW5W91w4",
+      "ts": 1785724800000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4UacqDMHpxyG4HcV3oqbe9o116n3PpjMtua9QCgyWtsr9U5iMGzq8Pa9fZhrsqmSELLdk8D3rXJpMuvx6pstNcUA",
+      "ts": 1785723912000,
+      "amount": 750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2YQmjH9ViCiRJq7SFMoJ2esfBUvjVGrKwpjkVxecxs3zGGasDAdknxBd3wHrbtgMoS6msPDL1gdhmfJfUwW3Sz9K",
+      "ts": 1785723656000,
+      "amount": 13750000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2rLX9m6ZjepoVGeNxRhq6fghZ2RJV9p5pXQ449h5dxLGq2dC4rhohrW2PX98KDeWLdkRUmWz7G2i5XJ1nV6nz7Sq",
+      "ts": 1785717476000,
+      "amount": 1250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "4ESzVgxQrpi4kRcJBaPB2qcQspVuXJJ79kXyDyAoedomKX8PAWVoNndRUCMj6RDKTiJR9zYcsDfSnWwwDsQzKSdS",
+      "ts": 1785711096000,
+      "amount": 2000000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "5yAi3yjcZmLUBG6JbP1qNFejCxyXkncQoYVjssp55Zb2WRnocoheKiTDSYNcx1ayuce64jzQ5qPDX314HVJ4VwUY",
+      "ts": 1785708220000,
+      "amount": 500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "32YsjYAKbec1S5TaqNhXGxgdxQmVgoYKb84Nkp64QCXSfKuzV4ub8Q12kCh5gRVE94jpJyp46Cgp5u5b4jpg5YYw",
+      "ts": 1785707531000,
+      "amount": 1500000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "TdZUkU4ppJMsv4fMRnZdLYx9TfFSnidwFGXr2Lkh3uLPXYbohPfUMJUawjcLDNuGznSMdsCuucrdQ5kdzCGqNix",
+      "ts": 1785706691000,
+      "amount": 7250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "3R9F8nn8ZZ73cGhBbk2fEdfeyPuRLbo6v3vTC8ad1YguqitUFtY1oDfh6y15rvmiaj8mb9Sxp6Yo8EGjjHSSU4dK",
+      "ts": 1785703590000,
+      "amount": 250000,
+      "kind": "escrow",
+      "note": "mint escrow emptied by burn instruction"
+    },
+    {
+      "sig": "2LytvB7e8B4Es6g5akJ7PPUrg1kfG32TMqCT4kW1ewAAzEJ34RUzCHPUh1E5foWb1btMxPNZrvPgpidMUpN4nbfC",
+      "ts": 1785699208000,
+      "amount": 775069.638892,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "5ec7cMwcR8LJHKFApZa37PpxcVbf9affBR94EXEG5o5ToPmaKkf84H1zwTggKEyTUp3meuLD6QfkCopsXi1JVc2r",
+      "ts": 1785699197000,
+      "amount": 746980.536389,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "5pN83nJLwspzrRULXX9Q3oQUXXciNbcrqfpdebrTbeLCfBp86uFyZD7AwqohGpS9tneXW7zmWZxFDTb7CH1Zce96",
+      "ts": 1785699186000,
+      "amount": 440103.434085,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "4s5ZFnAzhBhgCWUbRkNy32WyKhdVnazyc9Y4DNSiF6scLr1pmnhRdzbbQB6gLFr6YZEEPBqkyYgnQ1D512PxBNmN",
+      "ts": 1785699174000,
+      "amount": 813906.406189,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "33WStSmu7JJYuefYtfAQYk966wdczgFeMuFojbkPDwS3jvM5v1Q1SYFNE9seJvuPHg6GaF7yyn8MBSQtc9rTBiun",
+      "ts": 1785699163000,
+      "amount": 756031.419012,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "2h9D88RzwT9cog1R2FFXD6qF7ucEwmGkfuQHTQm314u1jgpoZkp1aUjQD7Y8Wx7sgDUXJLhh7CsXLcQTp3rkgnQR",
+      "ts": 1785699151000,
+      "amount": 922819.193308,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "33YJUzgLX4Jrt9uFuUii4WBnN575bV71A96QsvrFcYtWnWdfKeiTJpNXQA68WnLkdUnTGPJZ4QQDbyyDnPu9guML",
+      "ts": 1785699139000,
+      "amount": 1029493.502327,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "4sDxbpTszVbuE83TUr74yndpkYU2827oHjfsdbSVvuQcZDPy2eJNF4hjAYR5WmT7B4Y77wcQiR6ZDUPVVbP45jvH",
+      "ts": 1785699128000,
+      "amount": 529512.431372,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "5sxbRQxbUMLRmrKAhwuJ7cYJBd6pMeE9cuP7LBfjHNTNPLA9F5B19VjN3SreS5Cwii3vBU5Av2q5Z6U1emiv7gKT",
+      "ts": 1785699117000,
+      "amount": 803593.679528,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "BDbebCzRpTzqTUkK519xiAjR6XT9oygYuMUDZLv2C7kGy7KCaptnb51yBS4QWsB9UarPnTJU9NAicuKf7m5dTGP",
+      "ts": 1785699105000,
+      "amount": 817275.514413,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "58ctxHSMCbzaUppQirbccjDvcPwNqo2RgCJcqP77qpXcMXpNJxC5EL5fFojSvdkEenZZwPiUFJWjVGD6GxASzJdf",
+      "ts": 1785699094000,
+      "amount": 1026261.915597,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "48YpMBdzb9Dc6PFxXCrRGcCN3SYFizTWipBXnPGxk3UwhpM82oGhTfd8Td3f6P7XTwymwCtFra7khD3Gvjxa6nwz",
+      "ts": 1785699082000,
+      "amount": 685138.558251,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "5EpvYeQKf9BPZ4BWDXPur5AtqReeBYwH9wXkuyxZkS86DVaYPAZGCuQQYtZwxZ56vdeSxJ2QEP6U4TrZg3dtR1on",
+      "ts": 1785699071000,
+      "amount": 915331.237964,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "21qeNkrbkXgzXEoHu5gFVtx6nJFcw6Q4kJGmZ2jaPDYDwcS2uEZtGkke7n8cGtN2bXh6pN1VLikrjPu9LDs6iQBM",
+      "ts": 1785699059000,
+      "amount": 1328321.059481,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "3ztFeiKkmjKqNrqWJt85EwBxqitXbu2MP7FsmpbLt8vUpgZ2UeuXJmKZLkSehxht6bMnGvGBeG22Jm7ibVEwHTnp",
+      "ts": 1785699048000,
+      "amount": 1223177.735765,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "3EooFZWZadkskuoSaZdQEtiyV8a8MRWmBm2fgNDE81MgsX2qCdqttXr6w3vwerVy3yqSri1FKmgnPANFZLE2pDmM",
+      "ts": 1785699037000,
+      "amount": 1364619.375835,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "eErvcGiNMRweHeniw72aNmvdXdgvQrN5eYRvTvxZpL9bjEWopbhcc2LDddqhzjXBdRWt47zoVyJRaHuSDtCs1KR",
+      "ts": 1785699025000,
+      "amount": 1224788.44841,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "3QLjdMnrPgNZat52dyx1WTMCDrQPQoLy1MnhsfScChhGhtYpLTNTSfyzoRK1snzzW18xZvkx6XUKoXkaggUHaX3F",
+      "ts": 1785699013000,
+      "amount": 702714.708235,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "3WJYpTw1V7prPJHs5Ux8ZNoPvGFssVWyCHR1gmML7MrdQQ9oAYBDi8x8t6pWxcDN7yUapRmMu4SQwsdH4hwGuzfP",
+      "ts": 1785699002000,
+      "amount": 912617.214766,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "4Jr6WPzNCwer8eUA2rfEfYQmcRUAz9HTxAoTR7uVu9tUADYSRUKtz21rKNpt5orvKppg5vX9jcxBRitvTP53uzN6",
+      "ts": 1785698991000,
+      "amount": 490493.945705,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "3Y9ApyJ48BciAHwFmY3ddP2zQs2oMe3fEFLios39axTfmx1P9VMx1X18M1Nxz2AVBNf9CsgT7tA1ij1jQESNy7yE",
+      "ts": 1785698980000,
+      "amount": 642036.164785,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "4uzJyfJXbFw3STV2rGVRu6KkoR48A9fAiaD7MRoggHFNVfZgewmzeGdKnvLLvRyVpXSPmbghPZhrai934wyEcaAC",
+      "ts": 1785698969000,
+      "amount": 628157.625578,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "dTQTM4Msy1WJvHzJ8j8dwUQisnteRAt1YVL1zsHsx381YvYyhARnpoa3bRGzx2Gh6evs9dJavx7uW856fVKarV2",
+      "ts": 1785698957000,
+      "amount": 1040518.270861,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "58KQVAULK5qzcqHUwFeLHMyRQuafMpEik7tgy9xg7NEDp4xo6WGRfNSeZ14ptXucqVsSxSCxaMpqKf4tuhzez6VX",
+      "ts": 1785698946000,
+      "amount": 912802.603734,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "5LSBvReBSxZ2i8VSEAzuLvyqaFf68Xot6r8TCgeSZimLbYBqGJbyfD9PCabAgnFRjUJaqxs2veAvN5ogQ7ydhcez",
+      "ts": 1785698935000,
+      "amount": 1080337.819965,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "53F5i19SaWnPvGW9wbTeQMoPjmLN2kDuQZtV4CwxMhoNwp6dZB7shQL9ysycJ2hssajk3TsqzmiuyVk9MGA8tB4h",
+      "ts": 1785698910000,
+      "amount": 1226862.834583,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "fURwS1EohLPLLxZRDDDcrZXU7ocrhXd4arQswLZYpUk1vnynwJ7zpBNn6ABPUJroMiZh5z43S6fJTdRafLi4HNc",
+      "ts": 1785698899000,
+      "amount": 1234698.716512,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "vjpZPvepu7ygk5qdHTLnBTvdZKW7Z3gc7Qs3ubKzivwyrABeV8av7pZ6effChJnTPPqT985bjZAYMMVZx5RymnX",
+      "ts": 1785698887000,
+      "amount": 994024.894309,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    },
+    {
+      "sig": "dvrwfN8amErg5oLQ3ZFzvA4xhDT5v8UckJnjB2wMfDJGWNrq9YeLmC6JtEVELdbxNX397PCGfdBHstd5msCC1iR",
+      "ts": 1785698876000,
+      "amount": 1186165.176101,
+      "kind": "launch",
+      "note": "burned by pump.fun mechanics as the curve completed"
+    }
+  ]
+}
