@@ -20,14 +20,14 @@ header{position:sticky;top:0;z-index:20;background:#080a0ddd;backdrop-filter:blu
 .facts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:27px 0;gap:20px}.fact{padding-left:26px;border-left:1px solid var(--line)}.fact:first-child{padding-left:0;border-left:0}.fact strong{display:block;font:600 30px/1.3 var(--display);letter-spacing:-.045em;margin:9px 0;font-variant-numeric:tabular-nums}.fact span{font-size:12px;color:var(--muted)}.snapshotline{display:flex;justify-content:space-between;gap:16px;margin:14px 0 0;font-size:11px;color:var(--dim)}.snapshotline a{color:var(--muted)}
 .chapter{padding-top:98px}.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:38px;margin-bottom:32px}.section-head .eyebrow{margin-bottom:17px}.section-head p:not(.eyebrow){max-width:390px;font-size:15px}.tabs{display:flex;gap:4px;background:#050609;border:1px solid var(--line);padding:4px;border-radius:10px;width:fit-content;margin-bottom:20px}.tabs button{border:0;border-radius:6px;padding:10px 20px;min-height:44px;background:transparent;color:var(--dim);font-size:12px;white-space:nowrap;transition:background .2s,color .2s}.tabs button[aria-pressed=true]{background:#15171b;color:var(--text);box-shadow:inset 0 0 0 1px #ffffff13}.tabs button:hover{color:var(--text)}
 .map-shell{position:relative;border:1px solid #ffffff1b;border-radius:23px;background:linear-gradient(135deg,#0a0c10,#060709 65%);box-shadow:0 30px 90px -55px #000;isolation:isolate}.map-shell:before{content:'';position:absolute;inset:0;border-radius:inherit;opacity:.22;pointer-events:none;background-image:radial-gradient(#adb0b743 .6px,transparent .6px);background-size:20px 20px;mask-image:radial-gradient(ellipse,#000,transparent 80%)}.map-context{position:relative;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 30px;border-bottom:1px solid #ffffff09;font-size:11px;color:var(--dim)}.map-context-label{font-size:9px;letter-spacing:.18em;color:var(--muted)}.map-context>span:last-child>span{margin-left:12px;color:var(--gold)}.map{position:relative;display:grid;grid-template-columns:1fr 1.04fr 1fr;grid-template-rows:236px 236px 236px;gap:68px 70px;padding:40px}.node{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;--px:50%;--py:0%;position:relative;z-index:3;width:100%;min-width:0;padding:23px;text-align:left;border-radius:17px;border:1px solid #ffffff23;border-top-color:#ffffff32;background:radial-gradient(ellipse at var(--px) var(--py),#ffffff06,transparent 70%),linear-gradient(155deg,#0b0d11ed,#07080bee);box-shadow:inset 0 1px 0 #ffffff05,0 14px 32px -12px #0009;backdrop-filter:blur(20px);transition:opacity .25s,border-color .25s,box-shadow .3s;overflow:visible}.node:hover,.node:focus-visible{border-color:#c7aa7080;box-shadow:inset 0 1px 0 #e7cba114,0 18px 44px -12px #000b}.node[aria-pressed=true]{border-color:#c7aa70ac;box-shadow:inset 0 1px 0 #e7cba12a,0 0 35px #c7aa7009,0 18px 40px -15px #000}.node.faded{opacity:.28}.node.faded:hover{opacity:.65}.node-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:19px}.node-icon{width:24px;height:26px;fill:none;stroke:var(--silver);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;transition:filter .3s,stroke .3s}.node:hover .node-icon,.node[aria-pressed=true] .node-icon{stroke:var(--bright);filter:drop-shadow(0 0 7px #c7aa702c)}.node-state{display:flex;align-items:center;gap:6px;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}.node-state:before{content:'';width:4px;height:4px;background:#a3aaa5;border-radius:50%}.node-state.is-proposed{color:var(--gold)}.node-state.is-proposed:before{background:none;border:1px solid var(--gold);width:5px;height:5px}.node .meta{display:block;font-size:9px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-bottom:9px}.node h3{font-size:23px;letter-spacing:-.04em;margin-bottom:11px}.node p{font-size:13px;line-height:1.55;max-width:255px}.node-open{position:absolute;right:17px;bottom:11px;font-size:18px;font-weight:200;color:#9098a8;transition:transform .3s,color .3s}.node:hover .node-open{transform:rotate(90deg);color:var(--gold)}.node[aria-pressed=true] .node-open{color:var(--gold)}.node-platform{grid-area:1/1}.node-reserve{grid-area:1/2}.node-game{grid-area:1/3}.node-community{grid-area:2/1}.node-token{grid-area:2/2}.node-mints{grid-area:2/3}.node-liquidity{grid-area:3/1}.node-burn{grid-area:3/2}.node-proof{grid-area:3/3}.node-token{border-radius:22px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;border-color:#c7aa7055;background:radial-gradient(ellipse at 50% 20%,#ad8b4214,#090a0d 75%)}.node-token h3{font-size:34px;letter-spacing:-.035em;margin:6px 0 8px}.node-token .meta{font-size:8px;letter-spacing:.16em;color:var(--gold)}.node-token p{font-size:11px;color:var(--dim)}.token-emblem{width:42px;height:42px;fill:none;stroke:var(--gold);stroke-width:2.3;stroke-linecap:square;margin-bottom:18px}.token-ring{position:absolute;inset:9px;border:1px solid #c7aa7017;border-radius:14px;pointer-events:none}.token-ring:after{content:'';position:absolute;left:12%;right:12%;top:-1px;height:1px;background:linear-gradient(90deg,transparent,#ddc28766,transparent);animation:breathe 5s ease-in-out infinite}.node-liquidity .node-icon{stroke:var(--silver)}
-.map-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}.flow{transition:opacity .3s}.flow-base{fill:none;stroke:#c7aa70b0;stroke-width:1.2}.flow-base.depth{stroke:#b4cbd0ad}.flow-base.soft{stroke:#9babb957}.flow.is-proposed .flow-base{stroke-dasharray:3 5}.flow-trail{fill:none;stroke:#e8cf9b;stroke-width:2;stroke-dasharray:6 180;stroke-linecap:round;filter:drop-shadow(0 0 3px #ddba74);animation:travel 8s linear infinite}.flow-trail.depth{stroke:var(--silver);filter:drop-shadow(0 0 3px #b4cbd0)}.flow-port{fill:#080a0d;stroke:#c7aa7077;stroke-width:1}.flow-port.depth{stroke:#b4cbd077}.flow.faded{opacity:.055!important}.flow.context-dim{opacity:.62}.flow.active .flow-base{stroke-opacity:1;stroke-width:1.5;stroke:#d1b16f}.flow.active .flow-base.depth{stroke:var(--silver)}.flow.active .flow-trail{animation-duration:4.7s}.flow.active .flow-port{fill:var(--gold);stroke:var(--gold)}.flow.active .flow-port.depth{fill:var(--silver);stroke:var(--silver)}.map.offscreen .flow-trail{animation-play-state:paused}.map-bottom{position:relative;border-top:1px solid var(--line);padding:19px 28px;display:flex;justify-content:space-between;align-items:center;gap:25px;font-size:10px;color:var(--dim)}.map-key{display:flex;gap:17px;flex-shrink:0}.map-key i{display:inline-block;width:17px;height:1px;background:var(--gold);vertical-align:middle;margin-right:6px}.map-key i.cool{background:var(--silver)}.map-key i.dashed{background:repeating-linear-gradient(90deg,#a5adb7 0 3px,transparent 3px 6px)}#route-reading{text-align:right;max-width:475px;font-size:11px;line-height:1.5;color:var(--muted)}
+.map-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}.flow{transition:opacity .3s}.flow-base{fill:none;stroke:#c7aa70b0;stroke-width:1.2}.flow-base.depth{stroke:#b4cbd0ad}.flow-base.soft{stroke:#9babb957}.flow.is-proposed .flow-base{stroke-dasharray:3 5}.flow-trail{fill:none;stroke:#e8cf9b;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 3px #ddba74);animation:none}.flow-trail.depth{stroke:var(--silver);filter:drop-shadow(0 0 3px #b4cbd0)}.flow-port{fill:#080a0d;stroke:#c7aa7077;stroke-width:1}.flow-port.depth{stroke:#b4cbd077}.flow.faded{opacity:.055!important}.flow.context-dim{opacity:.62}.flow.active .flow-base{stroke-opacity:1;stroke-width:1.5;stroke:#d1b16f}.flow.active .flow-base.depth{stroke:var(--silver)}.flow.active .flow-port{fill:var(--gold);stroke:var(--gold)}.flow.active .flow-port.depth{fill:var(--silver);stroke:var(--silver)}.map.offscreen .flow-trail{animation-play-state:paused}.map-bottom{position:relative;border-top:1px solid var(--line);padding:19px 28px;display:flex;justify-content:space-between;align-items:center;gap:25px;font-size:10px;color:var(--dim)}.map-key{display:flex;gap:17px;flex-shrink:0}.map-key i{display:inline-block;width:17px;height:1px;background:var(--gold);vertical-align:middle;margin-right:6px}.map-key i.cool{background:var(--silver)}.map-key i.dashed{background:repeating-linear-gradient(90deg,#a5adb7 0 3px,transparent 3px 6px)}#route-reading{text-align:right;max-width:475px;font-size:11px;line-height:1.5;color:var(--muted)}
 .detail{position:relative;padding:28px 32px;margin-top:16px;display:grid;grid-template-columns:.85fr 1.5fr;gap:44px;min-height:220px}.detail h3{font-size:27px;margin:10px 0 12px}.detail p{font-size:13px}.detail ul{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;margin:0;padding:0;list-style:none;align-content:center}.detail li{font-size:13px;line-height:1.65;color:var(--muted);padding-left:15px;border-left:1px solid #c7aa7040}.detail li b{color:var(--text);font-weight:500}.detail a{display:inline-block;margin-top:15px;font-size:12px;color:var(--gold)}.detail-close{display:none}
 .supply-intro{display:grid;grid-template-columns:1.1fr 1fr;gap:60px;align-items:center;margin-bottom:34px}.bigfloor{display:flex;align-items:baseline;gap:20px}.bigfloor strong{font:600 clamp(72px,9vw,116px)/1 var(--display);letter-spacing:-.075em;color:#decca6}.bigfloor span{font-size:13px;color:var(--muted)}.supply-intro p{font-size:14px;line-height:1.8}.supply-board{padding:32px}.composition{height:45px;display:flex;border-radius:7px;overflow:hidden;gap:3px;background:#040506;margin:24px 0 12px}.composition button{position:relative;min-width:0;border:0;padding:0;background:var(--gold);transition:filter .2s,opacity .2s}.composition button:hover,.composition button[aria-pressed=true]{filter:brightness(1.3)}.composition:has(button[aria-pressed=true]) button[aria-pressed=false]{opacity:.48}.composition button:focus-visible{outline:2px solid white;outline-offset:-3px}.composition .done{background:repeating-linear-gradient(135deg,#766348 0 3px,#25231f 3px 7px)}.composition .reserved{background:#77643e}.composition .herd{background:#b99a60}.composition .objects{background:#e5ca8f}.composition .room{background:linear-gradient(110deg,#31494c,#77949b)}.composition .floor{background:#d4d9db}.composition-caption{display:flex;justify-content:space-between;gap:20px;color:var(--dim);font-size:10px;min-height:33px;margin-bottom:20px}.composition-caption>span:last-child{font-size:8px;letter-spacing:.13em;text-align:right;flex-shrink:0}.ledger{display:grid;grid-template-columns:repeat(3,1fr);gap:28px 32px}.ledger-item{position:relative;padding-left:19px;transition:opacity .2s}.ledger-item:before{content:'';position:absolute;left:0;top:6px;width:7px;height:7px;border-radius:2px;background:var(--swatch)}.ledger-item span{color:var(--muted);font-size:12px}.ledger-item strong{display:block;font:600 25px/1.5 var(--display);letter-spacing:-.035em;font-variant-numeric:tabular-nums}.ledger-item p{font-size:12px;line-height:1.65}.ledger.has-selected .ledger-item:not(.selected){opacity:.4}.equation{display:flex;justify-content:space-between;align-items:center;gap:30px;margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}.equation p{font-size:13px;max-width:720px}.equation strong{font:600 29px var(--display);color:var(--silver);white-space:nowrap}.disclosure{font-size:12px;line-height:1.8;margin-top:18px;color:var(--dim)}.supply-note{border-left:1px solid #c7aa7099;padding:4px 0 4px 18px;margin-top:25px;font-size:13px;color:var(--muted)}.supply-note b{color:var(--text);font-weight:500}.tiers{margin-top:26px;border:1px solid var(--line);border-radius:12px;padding:20px 24px}.tiers summary{font-size:13px}.tiers summary b{font-weight:400;color:var(--gold);margin-left:18px}.tiers-top{font-size:11px;margin:25px 0 18px;color:var(--muted)}.tier-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:23px}.tier{border-top:1px solid #c7aa7040;padding-top:12px}.tier b{display:block;color:var(--text);font-size:16px;font-weight:500}.tier span{font-size:12px;color:var(--muted)}.tier small{display:block;font-size:9px;color:var(--dim);margin-top:7px}.tier:first-child small{color:var(--silver)}
 .mint-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.mint-card{padding:30px}.mint-card .top{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}.mint-card h3{margin:22px 0 17px;font-size:30px}.mint-card p{font-size:14px}.progress-line{height:4px;background:#ffffff0b;margin:27px 0 14px;border-radius:4px;overflow:hidden}.progress-line span{display:block;background:linear-gradient(90deg,#7d6539,#ceb17b);height:100%}.progress-meta{display:flex;justify-content:space-between;gap:15px;font-size:12px;color:var(--muted)}.mint-math{display:flex;gap:15px;align-items:baseline;margin-top:25px;font:600 24px var(--display);letter-spacing:-.04em}.mint-card small{display:block;font-size:12px;color:var(--dim);line-height:1.8;margin-top:16px}.settlement{display:flex;align-items:center;justify-content:center;gap:25px;padding:30px 0 20px;font-size:13px;color:var(--muted)}.settlement b{font-weight:500;color:var(--text)}.settlement i{font-style:normal;color:var(--gold)}.object-extras{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:12px}.object-extras article{border-top:1px solid var(--line);padding-top:20px}.object-extras h4{font-weight:500;font-size:15px;margin:0 0 8px}.object-extras p{font-size:13px;line-height:1.75}
 .allocation{display:grid;grid-template-columns:1.2fr 1fr;gap:54px;padding:37px}.allocation h3{font-size:33px;margin:21px 0 21px}.allocation p{font-size:14px}.allocation-rows{display:flex;flex-direction:column;gap:23px;justify-content:center}.allocation-row{display:grid;grid-template-columns:85px 1fr;gap:20px;border-bottom:1px solid var(--line);padding-bottom:22px}.allocation-row:last-child{border:0;padding-bottom:0}.allocation-row strong{font:600 40px/1.2 var(--display);letter-spacing:-.05em;color:var(--gold)}.allocation-row h4{margin:0 0 6px;font-size:15px;font-weight:500}.allocation-row p{font-size:13px}.allocation-row:last-child strong{color:var(--silver)}.allocation-note{margin-top:22px;font-size:11px!important;color:var(--dim)}.net-definition{margin-top:25px;padding:17px 19px;background:#01020366;border:1px solid var(--line);border-radius:10px}.net-definition b{display:block;font-size:9px;letter-spacing:.15em;color:var(--silver);font-weight:500;margin-bottom:8px}.net-definition p{font-size:13px}.other-fees{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:30px}.other-fees h3{font-size:23px;margin-bottom:14px}.other-fees p{font-size:13px;line-height:1.9}.other-fees a{display:inline-block;margin-top:12px;font-size:12px;color:var(--gold)}
 .depth-panel{padding:34px}.depth-head{display:flex;justify-content:space-between;gap:45px;margin-bottom:25px;align-items:flex-start}.depth-head h3{font-size:28px;max-width:390px}.depth-head p{max-width:445px;font-size:14px}.pool-stats{display:grid;grid-template-columns:repeat(3,1fr);padding:22px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);gap:25px}.pool-stats strong{font:600 26px var(--display);letter-spacing:-.04em;display:block}.pool-stats span{font-size:12px;color:var(--muted)}.depth-lab{display:grid;grid-template-columns:.95fr 1.2fr;gap:48px;margin-top:33px}.lab-controls label{display:block;font-size:14px;color:var(--text);margin-bottom:8px}.range-title{display:flex;justify-content:space-between}.lab-controls output{font:600 18px var(--display);color:var(--silver)}input[type=range]{width:100%;accent-color:var(--silver);min-height:36px;cursor:pointer;margin:7px 0 17px}.lab-controls p{font-size:12px}.depth-results{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-content:start}.depth-result{background:#03050799;border:1px solid var(--line);border-radius:12px;padding:20px}.depth-result span{font-size:9px;letter-spacing:.07em;color:var(--muted)}.depth-result strong{display:block;font:600 35px/1.3 var(--display);letter-spacing:-.05em;margin-top:8px}.depth-result:last-of-type strong{color:var(--silver)}.depth-bars{grid-column:span 2;height:62px;display:flex;flex-direction:column;gap:12px;padding-top:7px}.depth-bars div{height:8px;width:100%;background:#ffffff06;border-radius:4px}.depth-bars i{display:block;height:100%;background:#9b8253;width:50%;border-radius:4px;transition:width .2s}.depth-bars div:last-child i{background:var(--silver)}.lab-explain{grid-column:span 2;font-size:12px;line-height:1.8;color:var(--dim)}.lp-plan{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:35px}.lp-plan article{padding-top:20px;border-top:1px solid #b4cbd032}.lp-plan .num{font-size:9px;letter-spacing:.11em;color:var(--silver)}.lp-plan h4{font-size:15px;font-weight:500;margin:10px 0}.lp-plan p{font-size:13px;line-height:1.75}
 .sources{margin-top:85px;padding-top:34px;border-top:1px solid var(--line)}.sources-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;gap:20px}.sources h3{font-size:29px}.sources p{font-size:12px}.sources-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.sources-grid a{border:1px solid var(--line);border-radius:9px;padding:15px 17px;text-decoration:none;display:flex;justify-content:space-between;align-items:center;font-size:12px;background:#02030666;transition:border-color .2s,background .2s}.sources-grid a:hover{border-color:#c7aa7077;background:#121315}.sources-grid span{color:var(--gold)}details.boundaries{border-top:1px solid var(--line);margin-top:24px;padding:21px 0}summary{cursor:pointer;font-size:13px;color:var(--muted);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:20px;min-height:24px}summary::-webkit-details-marker{display:none}summary:after{content:'+';color:var(--gold);font-size:18px;font-weight:200}details[open] summary:after{content:'−'}details.boundaries p{margin-top:17px;font-size:13px;max-width:980px;line-height:1.85}footer{display:flex;justify-content:space-between;align-items:center;gap:30px;border-top:1px solid var(--line);padding:28px 0 40px;margin-top:20px;font-size:10px;color:var(--dim)}footer a{text-decoration:none;color:var(--gold);letter-spacing:.1em}footer div{display:flex;gap:20px}.live-optional{display:none}.live-optional.visible{display:inline}
-@keyframes travel{to{stroke-dashoffset:-372}}@keyframes breathe{50%{opacity:.35}}.paused *,.reduced *{animation-play-state:paused!important}body.reduced .poster{display:block}body.reduced video{visibility:hidden}
+@keyframes breathe{50%{opacity:.35}}.paused *,.paused *::before,.paused *::after,.reduced *,.reduced *::before,.reduced *::after{animation-play-state:paused!important}body.reduced .poster{display:block}body.reduced video{visibility:hidden}
 @media(min-width:1550px){.wrap{width:min(1360px,calc(100% - 100px))}.hero{min-height:725px}.hero h1{font-size:108px}.hero-art{height:570px}.hero-art video,.hero-art img.poster{height:560px;width:466px}.map{grid-template-rows:240px 240px 240px;gap:72px 88px}.node h3{font-size:25px}.node p{font-size:14px}.node-token h3{font-size:38px}}
 @media(max-width:1100px){.wrap{width:calc(100% - 48px)}.mast{gap:20px}nav{gap:15px}nav a{font-size:11px}.hero{gap:10px;min-height:610px}.hero h1{font-size:72px}.hero p.lead{font-size:16px}.hero-art{height:460px}.hero-art video,.hero-art img.poster{width:350px;height:420px}.hero-coordinate{font-size:8px;right:12px}.fact{padding-left:18px}.fact strong{font-size:27px}.fact .eyebrow{font-size:9px}.map{padding:28px;gap:60px 42px;grid-template-rows:239px 250px 235px}.node{padding:19px}.node h3{font-size:22px}.node-top{margin-bottom:15px}.node .meta{font-size:8px}.node p{font-size:13px}.node-state{font-size:7px}.node-token h3{font-size:29px}.detail{gap:30px;padding:27px}.detail h3{font-size:24px}.map-key{gap:10px}.allocation{padding:30px;gap:35px}.allocation-row{grid-template-columns:70px 1fr;gap:18px}.allocation-row strong{font-size:35px}.lp-plan{grid-template-columns:1fr 1fr}.depth-lab{gap:30px}.tier-grid{gap:15px}.tier b{font-size:14px}}
 @media(max-width:900px) and (min-width:761px){.mast{gap:13px}.brand{font-size:10px;letter-spacing:.1em}nav{gap:12px}nav a{font-size:10px}.motion{font-size:9px;padding:8px 10px}.hero h1{font-size:62px}.hero{grid-template-columns:1.2fr 1fr}.hero-art video,.hero-art img.poster{width:310px;height:372px}.hero-coordinate{display:none}.hero-art{height:390px}.art-note p{font-size:10px}.hero-foot{font-size:8px;gap:8px}.map{padding:22px 28px;gap:52px 31px;grid-template-rows:256px 246px 247px}.node{padding:17px}.node h3{font-size:21px}.node-top{margin-bottom:16px}.node-state{font-size:7px;letter-spacing:.06em}.node-icon{width:20px}.node p{font-size:13px}.node .meta{letter-spacing:.08em;font-size:8px}.map-bottom{display:block}.map-key{margin-bottom:13px}#route-reading{text-align:left;max-width:none}.bigfloor strong{font-size:86px}.supply-intro{gap:30px}.detail{grid-template-columns:.85fr 1.3fr}.detail ul{grid-template-columns:1fr;gap:14px}.detail h3{font-size:23px}.pool-stats strong{font-size:21px}.tiers summary b{margin-left:10px}}
@@ -38,6 +38,14 @@ header{position:sticky;top:0;z-index:20;background:#080a0ddd;backdrop-filter:blu
 @media(min-width:761px){.node:not(.node-token) h3{min-height:2.24em}.node-token{justify-content:center;align-items:center}}
 
 .flow-base.soft{stroke:#a0a5afad}.flow-trail.soft{stroke:#d4d7de;filter:drop-shadow(0 0 2px #a9afb9)}.flow-port.soft{stroke:#a0a5af77}.flow.active .flow-base.soft{stroke:#d4d7de}.flow.active .flow-port.soft{fill:#d4d7de;stroke:#d4d7de}.map-key i.evidence{background:#a0a5af}@media(max-width:760px){.map-key{display:none}}
+
+/* A legible map at every width: full routed canvas or a connected, expandable index. */
+@media(min-width:801px){.map{grid-template-rows:250px 250px 250px;gap:92px 76px;padding:40px 48px}.node{padding:21px}.node p{font-size:13px}.node h3{font-size:23px}.node-token h3{font-size:34px}.node-top{margin-bottom:19px}}
+@media(min-width:801px) and (max-width:1200px){.map{grid-template-rows:274px 274px 274px;gap:92px 64px;padding:32px 44px}.node{padding:18px}.node h3{font-size:21px}.node-top{margin-bottom:16px}.node .meta{letter-spacing:.06em}.node-token h3{font-size:30px}}
+@media(min-width:761px) and (max-width:800px){.map-shell{border-radius:17px}.map-context{padding:16px 18px;font-size:10px}.map-context-label{font-size:8px}.map-context>span:last-child{max-width:145px;text-align:right}.map{display:flex;flex-direction:column;gap:16px;padding:23px 17px 23px 39px}.map:before{content:'';position:absolute;top:45px;bottom:45px;width:1px;left:19px;background:linear-gradient(#c7aa7020,#c7aa7077,#b4cbd065)}.node{min-height:151px;padding:18px 20px;order:0;backdrop-filter:none}.node:before{content:'';position:absolute;left:-21px;top:50%;width:20px;height:1px;background:#c7aa7055}.node:after{content:'';position:absolute;left:-24px;top:calc(50% - 3px);width:6px;height:6px;border:1px solid #c7aa7080;background:#0a0c10;border-radius:50%}.node[aria-pressed=true]:after{background:var(--gold);box-shadow:0 0 12px #c7aa7040}.node-top{position:absolute;right:17px;top:15px;margin:0}.node-icon{display:none}.node-state{font-size:7px;letter-spacing:.04em}.node-state:before{width:3px;height:3px}.node .meta{font-size:8px;letter-spacing:.04em;margin-bottom:13px;max-width:65%}.node h3{font-size:22px;margin-bottom:9px}.node h3 br{display:none}.node p{font-size:13px;max-width:none;padding-right:8px;line-height:1.6}.node-platform{order:0}.node-game{order:1}.node-token{order:2;min-height:172px}.node-community{order:3}.node-mints{order:4}.node-reserve{order:5}.node-burn{order:6}.node-liquidity{order:7}.node-proof{order:8}.node-token .meta{max-width:none;font-size:8px;margin:0}.node-token h3{font-size:32px;margin-top:7px}.node-token p{font-size:11px;padding:0}.token-emblem{width:32px;height:32px;margin-bottom:12px}.node.faded{display:none}.node-open{font-size:16px;bottom:8px;right:13px}.map-svg{display:none}.map-bottom{padding:17px 18px;display:block;font-size:9px}.map-key{justify-content:space-between;gap:9px;margin-bottom:11px}.map-key i{width:13px;margin-right:4px}#route-reading{text-align:left;max-width:none;font-size:10px}.detail{display:none}.map>.detail{display:block;padding:20px 19px;margin:0;z-index:4;border-color:#c7aa7040;min-height:0;border-radius:13px}.detail-close{display:block;border:0;border-bottom:1px solid #ffffff0c;background:transparent;font-size:11px;color:var(--gold);padding:0 0 12px;margin-bottom:16px;min-height:32px;width:100%;text-align:right}.detail h3{font-size:25px}.detail p{font-size:13px}.detail ul{grid-template-columns:1fr;gap:15px;margin-top:21px}.detail li{font-size:13px}.detail a{margin-top:15px}.map{padding:30px 28px 30px 53px;gap:18px}.map:before{left:29px}.node{padding:23px 25px;min-height:163px}.node:before{left:-24px;width:23px}.node:after{left:-27px}.node h3{font-size:26px;min-height:0}.node p{font-size:14px;max-width:520px}.node .meta{font-size:10px;margin-bottom:12px}.node-top{top:20px;right:24px}.node-state{font-size:9px}.node-token{min-height:185px}.node-token h3{font-size:34px}.node-token p{font-size:13px}.detail ul{grid-template-columns:1fr 1fr}.map-key{display:none}}
+.flow-head{fill:none;stroke:#c7aa70bb;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}.flow-head.depth{stroke:#b4cbd0bb}.flow-head.soft{stroke:#a0a5afbb}.flow.active .flow-head{stroke:#e8cf9b}.flow.active .flow-head.depth{stroke:var(--silver)}.flow.active .flow-head.soft{stroke:#d4d7de}.flow-base{stroke-linecap:round;stroke-linejoin:round}.flow-trail{animation:none;stroke-width:2;opacity:.8}.flow.active .flow-trail{opacity:1}.flow.active .flow-base{stroke-width:1.2}.node-icon{width:28px;height:28px;stroke-width:1.5}.node-token .token-emblem{stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+.node-platform .node-icon{width:24px;height:26px;stroke-width:1.1}
 
 </style>
 <link rel="stylesheet" href="/bullen-focus.css">
@@ -53,16 +61,16 @@ header{position:sticky;top:0;z-index:20;background:#080a0ddd;backdrop-filter:blu
 <div class="snapshotline"><span>Audited snapshot · 22 September 2026, 14:12 UTC · figures rounded for display</span><span><a href="https://bullenciaga.com/supply" target="_blank" rel="noopener">Inspect current supply ↗</a><span id="live-supply" class="live-optional"></span></span></div>
 <section class="chapter" id="mechanism"><div class="section-head"><div><p class="eyebrow">01 / Follow the connections</p><h2>Different routes.<br>One ecosystem.</h2></div><p>Select a route. Follow its funding, token movement and public evidence.</p></div>
 <div class="tabs" role="group" aria-label="Highlight a mechanism"><button type="button" data-mode="all" aria-pressed="true">Whole system</button><button type="button" data-mode="supply" aria-pressed="false">Token supply</button><button type="button" data-mode="funding" aria-pressed="false">Revenue</button><button type="button" data-mode="depth" aria-pressed="false">Liquidity</button></div>
-<div class="map-shell"><div class="map-context"><span class="map-context-label">THE FLOW OF VALUE</span><span>Choose a tile to explore its role <span aria-hidden="true">↙</span></span></div><div class="map" id="map"><svg class="map-svg" id="paths" aria-hidden="true"><defs><marker id="arrow-gold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10" fill="#c7a765"/></marker><marker id="arrow-silver" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10" fill="#b5d4c9"/></marker><marker id="arrow-proof" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10" fill="#979ca6"/></marker></defs><g id="flows"></g></svg>
-<button type="button" class="node node-platform" data-node="platform" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 28 30" aria-hidden="true"><path d="M6 4H3v20h3M22 4h3v20h-3M11 8h6v12h-6z"/></svg><span class="node-state is-proposed">Proposed</span></span><span class="meta">01 / Platform</span><h3>Revenue, <br>reinvested.</h3><p>25% of realized net for BULLEN buybacks and burns.</p><span class="node-open" aria-hidden="true">+</span></button>
-<button type="button" class="node node-reserve" data-node="reserve" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 28 30" aria-hidden="true"><rect x="5" y="11" width="18" height="14" rx="3"/><path d="M9 11V7a5 5 0 0 1 10 0v4M14 17v3"/></svg><span class="node-state ">Committed</span></span><span class="meta">02 / Volume reserve</span><h3>Reserved for <br>milestones.</h3><p>237.5M remains in the published volume-burn schedule.</p><span class="node-open" aria-hidden="true">+</span></button>
-<button type="button" class="node node-game" data-node="game" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 28 30" aria-hidden="true"><path d="m14 3 10 6v12l-10 6-10-6V9zm0 0v12m10-6-10 6L4 9m10 6v12"/></svg><span class="node-state ">Building</span></span><span class="meta">03 / BULLENSAGA</span><h3>Build the game.</h3><p>Preorders and support fund production and defined token allocations.</p><span class="node-open" aria-hidden="true">+</span></button>
-<button type="button" class="node node-community" data-node="community" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 28 30" aria-hidden="true"><circle cx="14" cy="7" r="3"/><circle cx="5" cy="20" r="3"/><circle cx="23" cy="20" r="3"/><path d="m12 10-5 7m9-7 5 7M8 20h12"/></svg><span class="node-state ">Active</span></span><span class="meta">04 / The House</span><h3>Share the fees.</h3><p>Eligible trading fees support rewards, outreach and operations.</p><span class="node-open" aria-hidden="true">+</span></button>
-<button type="button" class="node node-token" data-node="token" aria-pressed="true" aria-controls="mechanism-detail"><span class="token-ring"></span><svg class="token-emblem" viewBox="0 0 64 64" aria-hidden="true"><path d="M29 12v40M35 12v40M29 15H18c-13 0-13 17 0 17h11M29 32H17c-13 0-13 17 0 17h12M35 15h11c13 0 13 17 0 17H35M35 32h12c13 0 13 17 0 17H35"/></svg><span class="meta">The common thread</span><h3>$BULLEN</h3><p>Trading · collecting · participation</p><span class="node-open" aria-hidden="true">+</span></button>
-<button type="button" class="node node-mints" data-node="mints" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 28 30" aria-hidden="true"><rect x="3" y="6" width="16" height="20" rx="2"/><path d="M9 3h14a2 2 0 0 1 2 2v17M7 20l4-5 4 5M7 11h.01"/></svg><span class="node-state ">Active</span></span><span class="meta">05 / Collectibles</span><h3>Collect. Commit. <br>Burn.</h3><p>Paid claims place BULLEN in escrow for later destruction.</p><span class="node-open" aria-hidden="true">+</span></button>
-<button type="button" class="node node-liquidity" data-node="liquidity" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 28 30" aria-hidden="true"><path d="M3 7c4-5 7 5 11 0s7 5 11 0M3 14c4-5 7 5 11 0s7 5 11 0M3 21c4-5 7 5 11 0s7 5 11 0"/></svg><span class="node-state is-proposed">Proposed</span></span><span class="meta">06 / Market depth</span><h3>Fund market <br>depth.</h3><p>Available reinvestment funds a separate liquidity budget.</p><span class="node-open" aria-hidden="true">+</span></button>
-<button type="button" class="node node-burn" data-node="burn" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 28 30" aria-hidden="true"><path d="M16 2c0 6 8 8 8 15a10 10 0 0 1-20 0c0-4 3-7 5-9 0 4 2 6 4 6-2-5 3-8 3-12Z"/><path d="M13 18c-5 4-2 8 1 8s5-4 2-6"/></svg><span class="node-state ">On-chain</span></span><span class="meta">07 / Destruction</span><h3>Reduce the supply.</h3><p>Finalized burns destroy tokens. Proposed stopping point: 100M.</p><span class="node-open" aria-hidden="true">+</span></button>
-<button type="button" class="node node-proof" data-node="proof" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 28 30" aria-hidden="true"><path d="M7 3h11l5 5v17H7zM18 3v6h5M3 8v14M11 15l3 3 5-6"/></svg><span class="node-state ">Public</span></span><span class="meta">08 / Evidence</span><h3>Check the receipts.</h3><p>Verify supply, inventory, custody and completed burns.</p><span class="node-open" aria-hidden="true">+</span></button>
+<div class="map-shell"><div class="map-context"><span class="map-context-label">THE FLOW OF VALUE</span><span>Select a tile to follow the flow</span></div><div class="map" id="map"><svg class="map-svg" id="paths" aria-hidden="true"><g id="flows"></g></svg>
+<button type="button" class="node node-platform" data-node="platform" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 28 30" aria-hidden="true"><path d="M6 4H3v20h3M22 4h3v20h-3M11 8h6v12h-6z"/></svg><span class="node-state is-proposed">Proposed</span></span><span class="meta">Platform</span><h3>Revenue, <br>reinvested.</h3><p>25% of realized net for BULLEN buybacks and burns.</p><span class="node-open" aria-hidden="true">+</span></button>
+<button type="button" class="node node-game" data-node="game" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(0 -1.5)"><path d="M11 9.5h10a5.5 5.5 0 0 1 5.4 4.3l2 8.4a3 3 0 0 1-5 2.9l-3.7-3.6h-7.4l-3.7 3.6a3 3 0 0 1-5-2.9l2-8.4A5.5 5.5 0 0 1 11 9.5Z"/><path d="M8.5 15.5h6M11.5 12.5v6"/><circle cx="21" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="24" cy="17" r="1" fill="currentColor" stroke="none"/></g></svg><span class="node-state ">Building</span></span><span class="meta">BULLENSAGA</span><h3>Build the game.</h3><p>Preorders and support fund production and defined token allocations.</p><span class="node-open" aria-hidden="true">+</span></button>
+<button type="button" class="node node-token" data-node="token" aria-pressed="true" aria-controls="mechanism-detail"><span class="token-ring"></span><svg class="token-emblem" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 8v16M14.5 8H10c-3.6 0-5.5 1.7-5.5 4s1.9 4 5.5 4h4.5M14.5 16H9.5c-3.7 0-5.7 1.7-5.7 4s2 4 5.7 4h5M17.5 8v16M17.5 8H22c3.6 0 5.5 1.7 5.5 4s-1.9 4-5.5 4h-4.5M17.5 16h5c3.7 0 5.7 1.7 5.7 4s-2 4-5.7 4h-5"/></svg><span class="meta">The common thread</span><h3>$BULLEN</h3><p>Trading · collecting · participation</p><span class="node-open" aria-hidden="true">+</span></button>
+<button type="button" class="node node-community" data-node="community" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="8.5" r="3.5"/><path d="M9.5 26v-3a6.5 6.5 0 0 1 13 0v3Z"/><circle cx="6.5" cy="11.5" r="2.5"/><circle cx="25.5" cy="11.5" r="2.5"/><path d="M6.5 18a4.5 4.5 0 0 0-4 4.5V25h3.5M25.5 18a4.5 4.5 0 0 1 4 4.5V25H26"/></svg><span class="node-state ">Active</span></span><span class="meta">The House</span><h3>Share the fees.</h3><p>Eligible trading fees support rewards, outreach and operations.</p><span class="node-open" aria-hidden="true">+</span></button>
+<button type="button" class="node node-mints" data-node="mints" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.5" y="7.5" width="17" height="21" rx="2.5"/><path d="M11 3.5h13a2.5 2.5 0 0 1 2.5 2.5v16"/><path d="m14 12.5 4.5 5-4.5 5-4.5-5Z"/><path d="M11.5 25h5"/></svg><span class="node-state ">Active</span></span><span class="meta">Collectibles</span><h3>Collect. Commit. <br>Burn.</h3><p>Paid claims place BULLEN in escrow for later destruction.</p><span class="node-open" aria-hidden="true">+</span></button>
+<button type="button" class="node node-reserve" data-node="reserve" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 12.5V9a5 5 0 0 1 10 0v3.5"/><rect x="6.5" y="12.5" width="19" height="15" rx="3"/><circle cx="16" cy="19" r="1.5"/><path d="M16 20.5v2"/></svg><span class="node-state ">Committed</span></span><span class="meta">Volume reserve</span><h3>Reserved for <br>milestones.</h3><p>237.5M remains in the published volume-burn schedule.</p><span class="node-open" aria-hidden="true">+</span></button>
+<button type="button" class="node node-burn" data-node="burn" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.75 3.5c0 6 8.75 8.5 8.75 15.75 0 5.4-4.25 9.25-9.5 9.25s-9.5-3.85-9.5-9.25c0-3.85 1.7-6.65 4.25-9.25-.25 3.25 1.25 5.25 3.25 6-1.5-5 2.75-7.5 2.75-12.5Z"/><path d="M16 17.5c.9 1.6 3.25 3 3.25 4.75a3.25 3.25 0 0 1-6.5 0c0-1.75 2.35-3.15 3.25-4.75Z"/></svg><span class="node-state ">On-chain</span></span><span class="meta">Destruction</span><h3>Reduce the supply.</h3><p>Finalized burns destroy tokens. Proposed stopping point: 100M.</p><span class="node-open" aria-hidden="true">+</span></button>
+<button type="button" class="node node-liquidity" data-node="liquidity" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5c4-4 8-4 12 0s8 4 12 0M4 16c4-4 8-4 12 0s8 4 12 0M4 22.5c4-4 8-4 12 0s8 4 12 0"/></svg><span class="node-state is-proposed">Proposed</span></span><span class="meta">Market depth</span><h3>Fund market <br>depth.</h3><p>Available reinvestment funds a separate liquidity budget.</p><span class="node-open" aria-hidden="true">+</span></button>
+<button type="button" class="node node-proof" data-node="proof" aria-pressed="false" aria-controls="mechanism-detail"><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.5 4.5H9a2 2 0 0 0-2 2v19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V11Z"/><path d="M18.5 4.5V11H25M11.5 18.5l3.5 3.5 6-7"/></svg><span class="node-state ">Public</span></span><span class="meta">Evidence</span><h3>Check the receipts.</h3><p>Verify supply, inventory, custody and completed burns.</p><span class="node-open" aria-hidden="true">+</span></button>
 </div><div class="map-bottom"><div class="map-key"><span><i></i>Token route</span><span><i class="cool"></i>Capital / depth</span><span><i class="evidence"></i>Evidence</span><span><i class="dashed"></i>Proposed route</span></div><p id="route-reading">Select a tile to inspect its connections.</p></div></div>
 <noscript><p class="disclosure">Enable JavaScript to explore individual routes and the impact model. The audited ledger and policy explanations below remain readable.</p></noscript><article class="detail glass" id="mechanism-detail" aria-live="polite" aria-atomic="true"><button type="button" class="detail-close" aria-label="Close mechanism details">Close details ×</button><div><p class="eyebrow" id="detail-kicker">The common thread</p><h3 id="detail-title">A token with places to go.</h3><p id="detail-intro">Use, revenue and destruction are distinct steps. The record keeps them separate.</p><a id="detail-link" href="https://bullenciaga.com/whitepaper" target="_blank" rel="noopener">Read the mechanism ↗</a></div><ul id="detail-list"><li><b>Fixed issuance:</b> 1B BULLEN originally; mint and freeze authority revoked.</li><li><b>Collecting:</b> paid claims commit tokens for later destruction.</li><li><b>Market activity:</b> eligible trades produce creator fees.</li><li><b>Distinct effects:</b> burns outside the pool do not change its reserve-ratio spot price.</li></ul></article></section>
 <section class="chapter" id="supply"><div class="section-head"><div><p class="eyebrow">02 / Supply, without double counting</p><h2>Less supply.<br>More precision.</h2></div><p>A lock changes availability. Escrow records a commitment. A finalized burn reduces total supply.</p></div>
@@ -91,246 +99,51 @@ header{position:sticky;top:0;z-index:20;background:#080a0ddd;backdrop-filter:blu
 <footer><a href="https://bullenciaga.com">BULLENCIAGA / THE HOUSE IN MOTION</a><div><span>Public mechanisms. Proposed next chapter.</span><a href="#main">Back to top ↑</a></div></footer>
 </main>
 <script>
-/**
- * Small, deterministic orthogonal connector router. No DOM or dependencies.
- *
- * routeConnection(
- *   {x, y, side: 'left'|'right'|'top'|'bottom', node: 'source-id'},
- *   {x, y, side: 'left'|'right'|'top'|'bottom', node: 'target-id'},
- *   [{id, left, top, right, bottom}],
- *   {bounds: {width, height}, clearance: 12, radius: 12, bendPenalty: 28,
- *    inset: 8, stub: 8, via: [{x, y}]}
- * ) -> {d, points, length, routed, reason?}
- *
- * Supply ports outside the actual card edge by at least `clearance` pixels.
- * The exact port positions are retained. `side` is the outward-facing side of
- * each card. Arrows therefore leave the source outward and enter the target
- * inward. `length` is the Manhattan length before rounded corner trimming.
- * `via` optionally directs a connector through free-space corridor points.
- * An impossible route returns an empty path, never a line through a card.
- */
-function routeConnection(start, end, rects, options = {}) {
-  const EPS = 1e-7;
-  const directions = {right: [1, 0, 0], bottom: [0, 1, 1], left: [-1, 0, 2], top: [0, -1, 3]};
-  const failed = reason => ({d: '', points: [], length: 0, routed: false, reason});
-  const finite = value => typeof value === 'number' && Number.isFinite(value);
-  const pointValid = point => point && finite(point.x) && finite(point.y);
-  const numeric = (value, fallback, minimum = 0) => finite(value) ? Math.max(minimum, value) : fallback;
-  const clearance = numeric(options.clearance, 12);
-  const radius = numeric(options.radius, 12);
-  const bendPenalty = numeric(options.bendPenalty, 28);
-  const stub = numeric(options.stub, 8, 1);
-  const inset = numeric(options.inset, 8);
-  const width = options.bounds?.width;
-  const height = options.bounds?.height;
-  if (!pointValid(start) || !pointValid(end) || !directions[start.side] || !directions[end.side]) return failed('invalid-port');
-  if (!finite(width) || !finite(height) || width <= inset * 2 || height <= inset * 2) return failed('invalid-bounds');
-  if (!Array.isArray(rects) || rects.some(r => !r || ![r.left, r.top, r.right, r.bottom].every(finite) || r.right < r.left || r.bottom < r.top)) return failed('invalid-rectangles');
-  if (options.via != null && (!Array.isArray(options.via) || !options.via.every(pointValid))) return failed('invalid-waypoint');
-  const via = options.via || [];
-  const bounds = {left: inset, top: inset, right: width - inset, bottom: height - inset};
-  const inflate = amount => rects.map(r => ({id: r.id, left: r.left - amount, top: r.top - amount, right: r.right + amount, bottom: r.bottom + amount}));
-  const forbidden = inflate(clearance);
-  const inBounds = p => p.x >= bounds.left - EPS && p.x <= bounds.right + EPS && p.y >= bounds.top - EPS && p.y <= bounds.bottom + EPS;
-  const inside = (p, r) => p.x > r.left + EPS && p.x < r.right - EPS && p.y > r.top + EPS && p.y < r.bottom - EPS;
-  const blocked = (a, b, obstacles) => obstacles.some(r => {
-    if (Math.abs(a.y - b.y) < EPS) return a.y > r.top + EPS && a.y < r.bottom - EPS && Math.max(Math.min(a.x, b.x), r.left) < Math.min(Math.max(a.x, b.x), r.right) - EPS;
-    if (Math.abs(a.x - b.x) < EPS) return a.x > r.left + EPS && a.x < r.right - EPS && Math.max(Math.min(a.y, b.y), r.top) < Math.min(Math.max(a.y, b.y), r.bottom) - EPS;
-    return true;
-  });
-  const direction = (a, b) => Math.abs(b.x - a.x) > EPS ? (b.x > a.x ? 0 : 2) : (b.y > a.y ? 1 : 3);
-  const distance = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-  const equal = (a, b) => distance(a, b) < EPS;
-  if (![start, end, ...via].every(inBounds)) return failed('port-or-waypoint-outside-bounds');
-  if ([start, end, ...via].some(p => forbidden.some(r => inside(p, r)))) return failed('port-or-waypoint-inside-clearance');
-  if (equal(start, end)) return failed('coincident-ports');
+// Deliberately composed orthogonal paths. Every arrow has a straight final approach.
+function roundedRoute(points, radius=12){
+ const p=points.filter((v,i,a)=>!i||Math.hypot(v.x-a[i-1].x,v.y-a[i-1].y)>.1);
+ let d=`M ${p[0].x} ${p[0].y}`;
+ for(let i=1;i<p.length-1;i++){
+  const a=p[i-1],b=p[i],c=p[i+1],ab=Math.hypot(b.x-a.x,b.y-a.y),bc=Math.hypot(c.x-b.x,c.y-b.y);
+  const r=Math.max(0,Math.min(radius,ab/2,bc/2,i===p.length-2?bc-18:radius)),u={x:(b.x-a.x)/ab,y:(b.y-a.y)/ab},v={x:(c.x-b.x)/bc,y:(c.y-b.y)/bc};
+  if(Math.abs(u.x*v.y-u.y*v.x)<.01){d+=` L ${b.x} ${b.y}`;continue;}
+  d+=` L ${b.x-u.x*r} ${b.y-u.y*r} Q ${b.x} ${b.y} ${b.x+v.x*r} ${b.y+v.y*r}`;
+ }
+ const end=p[p.length-1];return d+` L ${end.x} ${end.y}`;
+}
+function composedRoutes(r,width){
+ const p=(x,y)=>({x,y}),cx=id=>(r[id].left+r[id].right)/2,cy=id=>(r[id].top+r[id].bottom)/2;
+ const top=(id,dx=0)=>p(cx(id)+dx,r[id].top-10),bottom=(id,dx=0)=>p(cx(id)+dx,r[id].bottom+10);
+ const left=(id,dy=0)=>p(r[id].left-10,cy(id)+dy),right=(id,dy=0)=>p(r[id].right+10,cy(id)+dy);
+ const gap1=r.token.top-r.reserve.bottom,gap2=r.burn.top-r.token.bottom;
+ const upper=r.reserve.bottom+gap1*.52,lower=r.token.bottom+gap2*.54;
+ const laneL=(r.community.right+r.token.left)/2,laneR=(r.token.right+r.mints.left)/2,outer=width-18;
+ const spread=Math.min(55,(r.token.right-r.token.left)*.23);
+ let a,b;
+ return [
+  (a=bottom('platform'),b=top('token',-spread),[a,p(a.x,upper),p(b.x,upper),b]),
+  (a=bottom('game'),b=top('token',spread),[a,p(a.x,upper),p(b.x,upper),b]),
+  [left('token'),right('community')],
+  [right('token'),left('mints')],
+  (a=bottom('mints'),b=top('burn',spread),[a,p(a.x,lower),p(b.x,lower),b]),
+  [bottom('token'),top('burn')],
+  (a=left('platform'),b=left('liquidity'),[a,p(10,a.y),p(10,b.y),b]),
+  (a=right('liquidity'),b=left('token',58),[a,p(laneL,a.y),p(laneL,b.y),b]),
+  [right('burn'),left('proof')],
+  (a=right('reserve',22),b=right('burn',-53),[a,p(laneR,a.y),p(laneR,r.reserve.bottom+gap1*.30),p(outer,r.reserve.bottom+gap1*.30),p(outer,r.token.bottom+gap2*.28),p(laneR,r.token.bottom+gap2*.28),p(laneR,b.y),b])
+ ];
+}
 
-  // The additional corner padding allows a rounded elbow while preserving
-  // the requested minimum clearance, even as the curve cuts its square turn.
-  // Smaller padding is retried only for genuinely narrow layouts.
-  let result = null;
-  for (const cornerPadding of [...new Set([radius, radius / 2, 0])]) {
-    const obstacles = inflate(clearance + cornerPadding);
-    const makeLead = port => {
-      const [dx, dy] = directions[port.side];
-      const own = obstacles.find(r => r.id === port.node);
-      const p = {x: port.x + dx * stub, y: port.y + dy * stub};
-      if (own) {
-        if (dx > 0) p.x = Math.max(p.x, own.right);
-        if (dx < 0) p.x = Math.min(p.x, own.left);
-        if (dy > 0) p.y = Math.max(p.y, own.bottom);
-        if (dy < 0) p.y = Math.min(p.y, own.top);
-      }
-      return p;
-    };
-    const source = makeLead(start);
-    const target = makeLead(end);
-    if (![source, target, ...via].every(p => inBounds(p) && !obstacles.some(r => inside(p, r)))) continue;
-    if (blocked(start, source, forbidden) || blocked(target, end, forbidden)) continue;
-    const stops = [source, ...via, target];
-    const xs = unique([bounds.left, bounds.right, ...stops.map(p => p.x), ...obstacles.flatMap(r => [r.left, r.right])].filter(x => x >= bounds.left - EPS && x <= bounds.right + EPS));
-    const ys = unique([bounds.top, bounds.bottom, ...stops.map(p => p.y), ...obstacles.flatMap(r => [r.top, r.bottom])].filter(y => y >= bounds.top - EPS && y <= bounds.bottom + EPS));
-    const grid = new Map();
-    const vertices = [];
-    for (let yi = 0; yi < ys.length; yi++) for (let xi = 0; xi < xs.length; xi++) {
-      const p = {x: xs[xi], y: ys[yi]};
-      if (obstacles.some(r => inside(p, r))) continue;
-      grid.set(`${xi},${yi}`, vertices.length);
-      vertices.push({...p, xi, yi, links: []});
-    }
-    for (const p of vertices) {
-      // Connect adjacent visible vertices, not every pair. This keeps the
-      // visibility graph small (quadratic coordinate grid, linear edges).
-      for (const [dx, dy] of [[1, 0], [0, 1]]) {
-        const adjacent = grid.get(`${p.xi + dx},${p.yi + dy}`);
-        if (adjacent == null) continue;
-        const q = vertices[adjacent];
-        if (blocked(p, q, obstacles)) continue;
-        const from = grid.get(`${p.xi},${p.yi}`);
-        const dir = direction(p, q);
-        const length = distance(p, q);
-        p.links.push({to: adjacent, dir, length});
-        q.links.push({to: from, dir: (dir + 2) % 4, length});
-      }
-    }
-    const vertexFor = p => grid.get(`${xs.findIndex(x => Math.abs(x - p.x) < EPS)},${ys.findIndex(y => Math.abs(y - p.y) < EPS)}`);
-    let initialDirection = directions[start.side][2];
-    const endDirection = (directions[end.side][2] + 2) % 4;
-    const assembled = [{x: start.x, y: start.y}, source];
-    let complete = true;
-    for (let i = 0; i < stops.length - 1; i++) {
-      const from = vertexFor(stops[i]);
-      const to = vertexFor(stops[i + 1]);
-      if (from == null || to == null) { complete = false; break; }
-      const route = shortestPath(vertices, from, to, initialDirection, i === stops.length - 2 ? endDirection : null);
-      if (!route) { complete = false; break; }
-      assembled.push(...route.points.slice(1));
-      initialDirection = route.finalDirection;
-    }
-    if (!complete) continue;
-    assembled.push({x: end.x, y: end.y});
-    const points = simplify(assembled);
-    if (points.some((p, i) => i && blocked(points[i - 1], p, forbidden))) continue;
-    if (direction(points[0], points[1]) !== directions[start.side][2] || direction(points.at(-2), points.at(-1)) !== endDirection) continue;
-    result = points;
-    break;
-  }
-  if (!result) return failed('no-clear-route');
-  return {d: roundedPath(result), points: result, length: result.slice(1).reduce((sum, p, i) => sum + distance(result[i], p), 0), routed: true};
-
-  function unique(values) {
-    return values.sort((a, b) => a - b).filter((n, i, all) => i === 0 || Math.abs(n - all[i - 1]) > EPS);
-  }
-
-  function simplify(points) {
-    const clean = [];
-    for (const point of points) {
-      const p = {x: point.x, y: point.y};
-      if (clean.length && equal(clean.at(-1), p)) continue;
-      while (clean.length > 1) {
-        const a = clean.at(-2), b = clean.at(-1);
-        if (direction(a, b) !== direction(b, p)) break;
-        clean.pop();
-      }
-      clean.push(p);
-    }
-    return clean;
-  }
-
-  function shortestPath(vertices, from, to, firstDirection, lastDirection) {
-    const count = vertices.length * 4;
-    const costs = new Float64Array(count).fill(Infinity);
-    const previous = new Int32Array(count).fill(-1);
-    const origin = from * 4 + firstDirection;
-    const heap = [];
-    let serial = 0;
-    let best = Infinity;
-    let bestState = -1;
-    costs[origin] = 0;
-    push({state: origin, g: 0, f: distance(vertices[from], vertices[to]), serial: serial++});
-    while (heap.length) {
-      const current = pop();
-      if (current.g > costs[current.state] + EPS) continue;
-      if (current.f >= best - EPS) break;
-      const index = Math.floor(current.state / 4);
-      const dir = current.state % 4;
-      if (index === to) {
-        if (lastDirection != null && (dir + 2) % 4 === lastDirection) continue;
-        const finalCost = current.g + (lastDirection != null && dir !== lastDirection ? bendPenalty : 0);
-        if (finalCost < best) { best = finalCost; bestState = current.state; }
-        continue;
-      }
-      for (const link of vertices[index].links) {
-        if ((dir + 2) % 4 === link.dir) continue;
-        const next = link.to * 4 + link.dir;
-        const cost = current.g + link.length + (dir === link.dir ? 0 : bendPenalty);
-        if (cost >= costs[next] - EPS) continue;
-        costs[next] = cost;
-        previous[next] = current.state;
-        push({state: next, g: cost, f: cost + distance(vertices[link.to], vertices[to]), serial: serial++});
-      }
-    }
-    if (bestState < 0) return null;
-    const indices = [];
-    for (let state = bestState; state >= 0; state = previous[state]) indices.push(Math.floor(state / 4));
-    indices.reverse();
-    return {points: indices.map(i => ({x: vertices[i].x, y: vertices[i].y})), finalDirection: bestState % 4};
-
-    function before(a, b) { return a.f < b.f - EPS || Math.abs(a.f - b.f) < EPS && a.serial < b.serial; }
-    function push(entry) {
-      let at = heap.length;
-      heap.push(entry);
-      while (at > 0) {
-        const parent = (at - 1) >> 1;
-        if (!before(entry, heap[parent])) break;
-        heap[at] = heap[parent];
-        at = parent;
-      }
-      heap[at] = entry;
-    }
-    function pop() {
-      const first = heap[0];
-      const tail = heap.pop();
-      if (heap.length) {
-        let at = 0;
-        while (at * 2 + 1 < heap.length) {
-          let child = at * 2 + 1;
-          if (child + 1 < heap.length && before(heap[child + 1], heap[child])) child++;
-          if (!before(heap[child], tail)) break;
-          heap[at] = heap[child];
-          at = child;
-        }
-        heap[at] = tail;
-      }
-      return first;
-    }
-  }
-
-  function roundedPath(points) {
-    const fmt = n => String(Math.round(n * 1e9) / 1e9);
-    const xy = p => `${fmt(p.x)} ${fmt(p.y)}`;
-    let d = `M ${xy(points[0])}`;
-    for (let i = 1; i < points.length - 1; i++) {
-      const before = points[i - 1], corner = points[i], after = points[i + 1];
-      let r = Math.min(radius, distance(before, corner) / 2, distance(corner, after) / 2);
-      let a, b;
-      while (r > 0.25) {
-        const incoming = distance(before, corner);
-        const outgoing = distance(corner, after);
-        a = {x: corner.x + (before.x - corner.x) * r / incoming, y: corner.y + (before.y - corner.y) * r / incoming};
-        b = {x: corner.x + (after.x - corner.x) * r / outgoing, y: corner.y + (after.y - corner.y) * r / outgoing};
-        // A quadratic stays within its control-point bounding box. Checking
-        // that box is conservative and guarantees the curve cannot clip a
-        // card or enter its clearance, including on a fallback narrow route.
-        const box = {left: Math.min(a.x, b.x, corner.x), right: Math.max(a.x, b.x, corner.x), top: Math.min(a.y, b.y, corner.y), bottom: Math.max(a.y, b.y, corner.y)};
-        if (!forbidden.some(obstacle => Math.max(box.left, obstacle.left) < Math.min(box.right, obstacle.right) - EPS && Math.max(box.top, obstacle.top) < Math.min(box.bottom, obstacle.bottom) - EPS)) break;
-        r /= 2;
-      }
-      if (r <= 0.25) d += ` L ${xy(corner)}`;
-      else d += ` L ${xy(a)} Q ${xy(corner)} ${xy(b)}`;
-    }
-    return `${d} L ${xy(points.at(-1))}`;
-  }
+// Grade-separated crossings: no accidental junction between independent routes.
+function routeCrossings(a,b){
+ const hits=[];
+ for(let i=1;i<a.length;i++)for(let j=1;j<b.length;j++){
+  const a0=a[i-1],a1=a[i],b0=b[j-1],b1=b[j];
+  const ah=Math.abs(a0.y-a1.y)<.1,bh=Math.abs(b0.y-b1.y)<.1;if(ah===bh)continue;
+  const h0=ah?a0:b0,h1=ah?a1:b1,v0=ah?b0:a0,v1=ah?b1:a1,x=v0.x,y=h0.y;
+  if(x>Math.min(h0.x,h1.x)+5&&x<Math.max(h0.x,h1.x)-5&&y>Math.min(v0.y,v1.y)+5&&y<Math.max(v0.y,v1.y)-5)hits.push({x,y});
+ }
+ return hits;
 }
 
 'use strict';
@@ -346,62 +159,97 @@ const mechanisms={
  proof:{k:'Public evidence / Independent records',title:'Check the receipts.',intro:'Supply, custody, inventory and execution each have a public source.',link:'#evidence',route:'Finalized burns → receipts. Supply and inventory records reconcile the full picture.',rows:['<b>Supply:</b> total, circulating and verified non-circulating amounts. A lock is not destruction.','<b>Burn receipts:</b> executed burns matched to finalized chain signatures.','<b>Collectible inventory:</b> paid claims, awards, available stock and pending commitments.','<b>Future allocations:</b> buybacks and liquidity positions need separate dated execution and custody records.']}
 };
 const edges=[
- {a:'platform',b:'token',mode:['funding','supply'],kind:'depth',from:'right',to:'top',endOffset:-35,proposed:true},
- {a:'game',b:'token',mode:['funding','supply'],kind:'depth',from:'left',to:'top',endOffset:35},
- {a:'token',b:'community',mode:['funding'],kind:'depth',from:'left',to:'right'},
- {a:'token',b:'mints',mode:['supply'],kind:'gold',from:'right',to:'left'},
- {a:'mints',b:'burn',mode:['supply'],kind:'gold',from:'bottom',to:'right',endOffset:23},
- {a:'token',b:'burn',mode:['supply','funding'],kind:'gold',from:'bottom',to:'top'},
- {a:'platform',b:'liquidity',mode:['depth','funding'],kind:'depth',from:'left',to:'left',outside:true,proposed:true},
- {a:'liquidity',b:'token',mode:['depth'],kind:'depth',from:'right',to:'left',endOffset:40,proposed:true},
- {a:'burn',b:'proof',mode:['supply'],kind:'soft',from:'right',to:'left',startOffset:-25},
- {a:'reserve',b:'burn',mode:['supply'],kind:'gold',from:'right',to:'right',startOffset:36,endOffset:-46,reserve:true}
+ {a:'platform',b:'token',mode:['funding','supply'],kind:'depth',proposed:true},
+ {a:'game',b:'token',mode:['funding','supply'],kind:'depth'},
+ {a:'token',b:'community',mode:['funding'],kind:'depth'},
+ {a:'token',b:'mints',mode:['supply'],kind:'gold'},
+ {a:'mints',b:'burn',mode:['supply'],kind:'gold'},
+ {a:'token',b:'burn',mode:['supply','funding'],kind:'gold'},
+ {a:'platform',b:'liquidity',mode:['depth','funding'],kind:'depth',proposed:true},
+ {a:'liquidity',b:'token',mode:['depth'],kind:'depth',proposed:true},
+ {a:'burn',b:'proof',mode:['supply'],kind:'soft'},
+ {a:'reserve',b:'burn',mode:['supply'],kind:'gold'}
 ];
+const COMPACT_MAP=800;
 let currentMode='all',selectedNode='token',hoverNode=null,routeFrame=0;
 const map=document.getElementById('map'),flowGroup=document.getElementById('flows'),detail=document.getElementById('mechanism-detail');
 const buttons=[...document.querySelectorAll('[data-node]')];
 const modeNodes={all:Object.keys(mechanisms),supply:['platform','reserve','game','token','mints','burn','proof'],funding:['platform','game','token','community','burn','liquidity'],depth:['platform','token','liquidity']};
-function stylePaths(){const focus=hoverNode||selectedNode;flowGroup.querySelectorAll('.flow').forEach(g=>{const adjacent=g.dataset.a===focus||g.dataset.b===focus;g.classList.toggle('active',adjacent);g.classList.toggle('context-dim',!adjacent);});document.getElementById('route-reading').textContent=mechanisms[focus].route;}
-function drawPaths(){
- routeFrame=0;flowGroup.replaceChildren();if(innerWidth<=760)return;
- const bounds=map.getBoundingClientRect(),svg=document.getElementById('paths'),ns='http://www.w3.org/2000/svg';
- svg.setAttribute('viewBox',`0 0 ${bounds.width} ${bounds.height}`);
- const rects=buttons.map(b=>{const r=b.getBoundingClientRect();return{id:b.dataset.node,left:r.left-bounds.left,top:r.top-bounds.top,right:r.right-bounds.left,bottom:r.bottom-bounds.top};});
- function port(id,side,offset=0){const r=rects.find(r=>r.id===id);return{node:id,side,x:side==='left'?r.left-14:side==='right'?r.right+14:(r.left+r.right)/2+offset,y:side==='top'?r.top-14:side==='bottom'?r.bottom+14:(r.top+r.bottom)/2+offset};}
- for(const e of edges){
-  const a=port(e.a,e.from,e.startOffset),b=port(e.b,e.to,e.endOffset),options={bounds:{width:bounds.width,height:bounds.height},clearance:10,radius:10,bendPenalty:30,inset:5,stub:5};
-  if(e.outside)options.via=[{x:8,y:a.y},{x:8,y:b.y}];
-  // Reserve custody has a dedicated right-hand corridor, never through the token.
-  if(e.reserve){const rr=rects.find(r=>r.id==='reserve'),br=rects.find(r=>r.id==='burn');options.via=[{x:bounds.width-8,y:rr.bottom+26},{x:bounds.width-8,y:br.top-26}];}
-  const result=routeConnection(a,b,rects,options);
-  const group=document.createElementNS(ns,'g');group.setAttribute('class','flow'+(e.proposed?' is-proposed':'')+(currentMode!=='all'&&!e.mode.includes(currentMode)?' faded':''));group.dataset.a=e.a;group.dataset.b=e.b;group.dataset.routed=String(result.routed);
-  if(result.routed){for(const cls of ['flow-base','flow-trail']){const path=document.createElementNS(ns,'path');path.setAttribute('d',result.d);path.setAttribute('class',cls+' '+e.kind);if(cls==='flow-base')path.setAttribute('marker-end','url(#arrow-'+(e.kind==='depth'?'silver':e.kind==='soft'?'proof':'gold')+')');path.style.animationDelay=(-edges.indexOf(e)*.53)+'s';group.append(path);}const dot=document.createElementNS(ns,'circle');dot.setAttribute('cx',a.x);dot.setAttribute('cy',a.y);dot.setAttribute('r','2');dot.setAttribute('class','flow-port '+e.kind);group.append(dot);}
-  flowGroup.append(group);
- }
- stylePaths();
+const ns='http://www.w3.org/2000/svg',flowStates=[];
+let beamFrame=0,beamTime=0,beamsVisible=false;
+function svgElement(tag,attrs={}){const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e;}
+function ensurePaths(){
+ if(flowStates.length)return;
+ edges.forEach((e,i)=>{
+  const group=svgElement('g',{class:'flow'+(e.proposed?' is-proposed':'')});group.dataset.a=e.a;group.dataset.b=e.b;
+  const base=svgElement('path',{class:'flow-base '+e.kind}),trail=svgElement('path',{class:'flow-trail '+e.kind});
+  const head=svgElement('path',{class:'flow-head '+e.kind}),dot=svgElement('circle',{r:'2',class:'flow-port '+e.kind});
+  group.append(base,trail,head,dot);flowGroup.append(group);
+  flowStates.push({edge:e,group,base,trail,head,dot,phase:(i*.173+.19)%1,speed:29,pitch:178,length:0});
+ });
 }
+function stylePaths(){
+ const focus=hoverNode||selectedNode;
+ flowStates.forEach(s=>{const adjacent=s.edge.a===focus||s.edge.b===focus;s.group.classList.toggle('active',adjacent);s.group.classList.toggle('context-dim',!adjacent);s.group.classList.toggle('faded',currentMode!=='all'&&!s.edge.mode.includes(currentMode));});
+ document.getElementById('route-reading').textContent=mechanisms[focus].route;
+}
+function drawPaths(){
+ routeFrame=0;ensurePaths();if(innerWidth<=COMPACT_MAP){wakeBeams();return;}
+ const bounds=map.getBoundingClientRect(),svg=document.getElementById('paths');svg.setAttribute('viewBox',`0 0 ${bounds.width} ${bounds.height}`);
+ const rects=Object.fromEntries(buttons.map(b=>{const r=b.getBoundingClientRect();return[b.dataset.node,{left:r.left-bounds.left,top:r.top-bounds.top,right:r.right-bounds.left,bottom:r.bottom-bounds.top}];}));
+ const routes=composedRoutes(rects,bounds.width);
+ let defs=svg.querySelector('defs');if(!defs){defs=svgElement('defs');svg.prepend(defs);}
+ let mask=defs.querySelector('#reserve-crossings');if(!mask){mask=svgElement('mask',{id:'reserve-crossings',maskUnits:'userSpaceOnUse'});defs.append(mask);}
+ mask.replaceChildren(svgElement('rect',{x:0,y:0,width:bounds.width,height:bounds.height,fill:'white'}));
+ routes.slice(0,9).forEach(r=>routeCrossings(routes[9],r).forEach(hit=>mask.append(svgElement('circle',{cx:hit.x,cy:hit.y,r:5,fill:'black'}))));
+ flowStates[9].group.setAttribute('mask','url(#reserve-crossings)');
+ flowStates.forEach((s,i)=>{
+  const points=routes[i],d=roundedRoute(points),end=points.at(-1),prev=points.at(-2),angle=Math.atan2(end.y-prev.y,end.x-prev.x)*180/Math.PI;
+  // SVG objects survive hover, focus, filtering and resize; only geometry changes.
+  s.base.setAttribute('d',d);s.trail.setAttribute('d',d);s.length=s.base.getTotalLength();s.pitch=Math.min(178,s.length+20);
+  s.trail.setAttribute('stroke-dasharray',`7 ${s.pitch-7}`);s.trail.setAttribute('stroke-dashoffset',-s.phase*s.pitch);
+  s.head.setAttribute('d','M -5 -3.5 L 0 0 L -5 3.5');s.head.setAttribute('transform',`translate(${end.x} ${end.y}) rotate(${angle})`);
+  s.dot.setAttribute('cx',points[0].x);s.dot.setAttribute('cy',points[0].y);s.group.dataset.routed='true';s.group.dataset.points=JSON.stringify(points);
+ });
+ stylePaths();wakeBeams();
+}
+function beamsCanRun(){return innerWidth>COMPACT_MAP&&beamsVisible&&!document.hidden&&!document.body.classList.contains('paused')&&!document.body.classList.contains('reduced');}
+function tickBeams(now){
+ beamFrame=0;if(!beamsCanRun()){beamTime=0;return;}
+ const dt=beamTime?Math.min((now-beamTime)/1000,.05):0;beamTime=now;
+ for(const s of flowStates){
+  const accelerated=hoverNode&&(s.edge.a===hoverNode||s.edge.b===hoverNode),target=accelerated?63:29;
+  s.speed+=(target-s.speed)*(1-Math.exp(-dt*7));
+  s.phase=(s.phase+s.speed*dt/s.pitch)%1;s.trail.setAttribute('stroke-dashoffset',-s.phase*s.pitch);
+ }
+ beamFrame=requestAnimationFrame(tickBeams);
+}
+function wakeBeams(){if(beamsCanRun()&&!beamFrame){beamTime=0;beamFrame=requestAnimationFrame(tickBeams);}else if(!beamsCanRun()&&beamFrame){cancelAnimationFrame(beamFrame);beamFrame=0;beamTime=0;}}
 function schedulePaths(){if(!routeFrame)routeFrame=requestAnimationFrame(drawPaths);}
-function dockDetail(){if(detail.parentElement===map){document.querySelector('.map-shell').after(detail);detail.style.order='';}}
+function syncExpanded(){buttons.forEach(b=>b.setAttribute('aria-expanded',String(b.dataset.node===selectedNode&&(innerWidth>COMPACT_MAP||detail.parentElement===map))));}
+function dockDetail(){if(detail.parentElement===map){document.querySelector('.map-shell').after(detail);detail.style.order='';}syncExpanded();}
 function selectNode(id){
  const d=mechanisms[id];selectedNode=id;
- buttons.forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.node===id));b.setAttribute('aria-expanded',String(b.dataset.node===id&&(innerWidth>760||detail.parentElement===map)));});
+ buttons.forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.node===id));b.setAttribute('aria-expanded',String(b.dataset.node===id&&(innerWidth>COMPACT_MAP||detail.parentElement===map)));});
  document.getElementById('detail-kicker').textContent=d.k;document.getElementById('detail-title').textContent=d.title;document.getElementById('detail-intro').textContent=d.intro;document.getElementById('detail-list').innerHTML=d.rows.map(x=>'<li>'+x+'</li>').join('');
  const a=document.getElementById('detail-link');a.href=d.link;if(d.link.startsWith('#'))a.removeAttribute('target');else a.target='_blank';stylePaths();
 }
 buttons.forEach(b=>{
- b.addEventListener('click',()=>{if(innerWidth<=760){b.after(detail);detail.style.order=getComputedStyle(b).order;}selectNode(b.dataset.node);});
+ b.addEventListener('click',()=>{if(innerWidth<=COMPACT_MAP){b.after(detail);detail.style.order=getComputedStyle(b).order;}selectNode(b.dataset.node);});
+ b.addEventListener('focus',()=>{hoverNode=b.dataset.node;stylePaths();});
+ b.addEventListener('blur',()=>{hoverNode=null;stylePaths();});
  b.addEventListener('pointerenter',()=>{hoverNode=b.dataset.node;stylePaths();});
  b.addEventListener('pointerleave',()=>{hoverNode=null;b.style.removeProperty('--px');b.style.removeProperty('--py');stylePaths();});
  b.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||document.body.classList.contains('reduced'))return;const r=b.getBoundingClientRect();b.style.setProperty('--px',((e.clientX-r.left)/r.width*100).toFixed(1)+'%');b.style.setProperty('--py',((e.clientY-r.top)/r.height*100).toFixed(1)+'%');});
 });
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{currentMode=b.dataset.mode;hoverNode=null;dockDetail();document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));buttons.forEach(x=>x.classList.toggle('faded',!modeNodes[currentMode].includes(x.dataset.node)));selectNode({all:'token',supply:'burn',funding:'platform',depth:'liquidity'}[currentMode]);schedulePaths();}));
 document.querySelector('.detail-close').addEventListener('click',()=>{dockDetail();buttons.forEach(b=>b.setAttribute('aria-expanded','false'));document.querySelector('[data-node="'+selectedNode+'"]').focus({preventScroll:true});});
-window.addEventListener('resize',()=>{if(innerWidth>760)dockDetail();schedulePaths();},{passive:true});
+window.addEventListener('resize',()=>{if(innerWidth>COMPACT_MAP)dockDetail();syncExpanded();schedulePaths();},{passive:true});
 new ResizeObserver(schedulePaths).observe(map);document.fonts.ready.then(schedulePaths);
-new IntersectionObserver(es=>map.classList.toggle('offscreen',!es[0].isIntersecting),{rootMargin:'150px'}).observe(map);
+new IntersectionObserver(es=>{beamsVisible=es[0].isIntersecting;map.classList.toggle('offscreen',!beamsVisible);wakeBeams();},{rootMargin:'150px'}).observe(map);
 selectNode('token');
 const motion=document.getElementById('motion'),video=document.querySelector('video'),pref=matchMedia('(prefers-reduced-motion:reduce)');let paused=pref.matches,visible=true;
-function syncMotion(){document.body.classList.toggle('paused',paused||document.hidden);document.body.classList.toggle('reduced',pref.matches);motion.disabled=pref.matches;motion.setAttribute('aria-pressed',String(paused));motion.innerHTML=pref.matches?'Motion reduced':paused?'<b>▶</b> Resume motion':'<b>Ⅱ</b> Pause motion';if(paused||pref.matches||document.hidden||!visible)video.pause();else video.play().catch(()=>{});document.documentElement.style.scrollBehavior=paused||pref.matches?'auto':'smooth';}
+function syncMotion(){document.body.classList.toggle('paused',paused||document.hidden);document.body.classList.toggle('reduced',pref.matches);motion.disabled=pref.matches;motion.setAttribute('aria-pressed',String(paused));motion.innerHTML=pref.matches?'Motion reduced':paused?'<b>▶</b> Resume motion':'<b>Ⅱ</b> Pause motion';if(paused||pref.matches||document.hidden||!visible)video.pause();else video.play().catch(()=>{});document.documentElement.style.scrollBehavior=paused||pref.matches?'auto':'smooth';wakeBeams();}
 motion.addEventListener('click',()=>{paused=!paused;syncMotion();});pref.addEventListener('change',()=>{paused=pref.matches;syncMotion();});new IntersectionObserver(es=>{visible=es[0].isIntersecting;syncMotion();},{threshold:.08}).observe(video);document.addEventListener('visibilitychange',syncMotion);syncMotion();
 const sections=[...document.querySelectorAll('main>section[id]')],navLinks=[...document.querySelectorAll('header nav a')];let readingFrame=0;
 function updateReading(){readingFrame=0;const threshold=innerWidth<=760?170:180;let active='';for(const s of sections)if(s.getBoundingClientRect().top<=threshold)active=s.id;navLinks.forEach(a=>{const yes=a.hash==='#'+active;a.classList.toggle('active',yes);if(yes)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');});const max=document.documentElement.scrollHeight-innerHeight;document.querySelector('.reading-progress i').style.transform='scaleX('+Math.min(1,Math.max(0,scrollY/Math.max(1,max)))+')';}
