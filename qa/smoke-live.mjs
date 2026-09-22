@@ -36,12 +36,13 @@ const pageChecks = [
   ['/lock', /<title>BULLENCIAGA — Burn Reserve/i],
   ['/ledger', /<title>BULLENCIAGA — Living Ledger/i],
   ['/passport', /<title>BULLENCIAGA — Wallet Passport/i],
+  ['/flywheel', /<title>The House in motion · BULLENCIAGA<\/title>/i],
 ];
 const effectivePageChecks = smokePhase === 'preflight'
   // Preflight proves the currently deployed release. Pages introduced by the
   // candidate cannot exist until after promotion, so require them only in the
   // post-release smoke test.
-  ? pageChecks.filter(([path]) => !['/buy', '/giveaways', '/tape', '/patchnotes', '/patchnotes-001', '/patchnotes-002', '/lock', '/ledger', '/passport'].includes(path))
+  ? pageChecks.filter(([path]) => !['/buy', '/giveaways', '/tape', '/patchnotes', '/patchnotes-001', '/patchnotes-002', '/lock', '/ledger', '/passport', '/flywheel'].includes(path))
   : pageChecks;
 
 const apiChecks = [
