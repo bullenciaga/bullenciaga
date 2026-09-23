@@ -298,6 +298,31 @@ html.flywheel-font-fallback header .brand span,html.flywheel-font-fallback heade
 .live-slot--inline>.live-loading{font-size:11px}
 @media(prefers-reduced-motion:reduce){html.flywheel-ready body,[data-live],[data-live-group],.live-slot>.live-loading{transition:none!important}}
 
+
+/* Keep the proposal and its conditions together at every reading width. */
+#supply>.section-head{display:block;margin-bottom:28px}
+#supply>.section-head>p{max-width:62ch;margin-top:18px;line-height:1.75}
+#supply .supply-intro{grid-template-columns:minmax(220px,300px) minmax(0,660px);justify-content:start;gap:clamp(28px,4vw,56px);padding:30px 32px;margin-bottom:24px;align-items:center}
+#supply .bigfloor{flex-direction:column;align-items:flex-start;gap:12px;min-width:0}
+#supply .bigfloor strong{font-size:clamp(72px,7vw,100px);line-height:1;letter-spacing:-.065em}
+#supply .bigfloor span{font-size:13px;line-height:1.5;color:var(--muted)}
+#supply .supply-target-copy{border-left:1px solid #c7aa7038;padding-left:32px;min-width:0}
+#supply .supply-target-copy p{font-size:14px;line-height:1.75;max-width:60ch}
+#supply .supply-reduction{margin-bottom:12px;color:var(--text)}
+#supply .supply-reduction b{font-weight:500;color:var(--bright);white-space:nowrap}
+#supply .supply-target-next{margin-top:12px;color:var(--dim)}
+@media(max-width:900px){
+ #supply .supply-intro{grid-template-columns:minmax(200px,.85fr) minmax(0,1.3fr);gap:24px;padding:26px}
+ #supply .supply-target-copy{padding-left:24px}
+}
+@media(max-width:640px){
+ #supply>.section-head{margin-bottom:24px}
+ #supply>.section-head>p{margin-top:16px;font-size:14px}
+ #supply .supply-intro{grid-template-columns:minmax(0,1fr);gap:22px;padding:24px 22px}
+ #supply .bigfloor{gap:10px}
+ #supply .bigfloor strong{font-size:80px}
+ #supply .supply-target-copy{border-left:0;border-top:1px solid #c7aa7038;padding:20px 0 0}
+}
 </style>
 <link rel="stylesheet" href="/bullen-focus.css">
 <script src="/bullen-focus.js" defer></script>
@@ -334,7 +359,10 @@ html.flywheel-font-fallback header .brand span,html.flywheel-font-fallback heade
 <noscript><p class="disclosure">The full supply ledger and explanations are below. Enable JavaScript to explore the interactive map.</p></noscript>
 </section>
 <section class="chapter" id="supply"><div class="section-head"><div><p class="eyebrow">02 / Supply, without double counting</p><h2>Less supply.<br>More precision.</h2></div><p>A lock changes availability. Escrow records a commitment. A finalized burn reduces total supply.</p></div>
-<div class="supply-intro"><div><div class="bigfloor"><strong>100M</strong><span>proposed remaining<br>total supply</span></div><p class="tiny" style="margin-top:14px">Modelled reduction: 900M / 90% of the original billion.</p></div><p>Reaching this proposed stopping point depends on revenue, participation and execution. The current programs do not enforce it. The verified breakdown below shows the remaining capacity.</p></div>
+<div class="supply-intro glass" aria-label="Proposed supply target">
+<div class="bigfloor"><strong>100M</strong><span>Proposed remaining total supply</span></div>
+<div class="supply-target-copy"><p class="supply-reduction">Modelled reduction: <b>900M / 90%</b> of the original billion.</p><p>Reaching this proposed stopping point depends on revenue, participation and execution. The current programs do not enforce it.</p><p class="supply-target-next">The verified breakdown below shows the remaining capacity.</p></div>
+</div>
 <div class="supply-board glass"><p class="eyebrow">The entire original billion, accounted for</p><div class="composition" data-live-group="accounting" role="group" aria-label="Explore the supply breakdown"><button type="button" class="done" data-segment="done" data-live-flex="destroyed" data-live-label="Already destroyed" aria-label="Already destroyed" aria-pressed="false"></button><button type="button" class="reserved" data-segment="reserved" data-live-flex="volume-remaining" data-live-label="Volume reserve remaining" aria-label="Volume reserve remaining" aria-pressed="false"></button><button type="button" class="herd" data-segment="herd" data-live-flex="herd-future" data-live-label="Remaining HERD capacity" aria-label="Remaining HERD capacity" aria-pressed="false"></button><button type="button" class="objects" data-segment="objects" data-live-flex="objects-future" data-live-label="Remaining Object capacity" aria-label="Remaining Object capacity" aria-pressed="false"></button><button type="button" class="objects" data-segment="pending" data-live-flex="pending-escrow" data-live-label="Issued claims awaiting burn" data-live-show="pending-escrow" aria-label="Issued claims awaiting burn" aria-pressed="false" hidden></button><button type="button" class="room" data-segment="room" data-live-flex="headroom" data-live-label="Shared variable headroom" aria-label="Shared variable headroom" aria-pressed="false"></button><button type="button" class="floor" data-segment="floor" data-live-flex="floor" data-live-label="Proposed remaining supply" aria-label="Proposed remaining supply" aria-pressed="false"></button></div>
 <div class="composition-caption"><span id="composition-label">One billion tokens. Every route accounted for.</span><span>BULLEN / ORIGINAL ISSUANCE</span></div><div class="ledger"><div class="ledger-item" data-ledger="done" style="--swatch:#766348"><span>Already destroyed</span><strong data-live="destroyed" data-live-format="millions"></strong><p>All finalized burns since launch.</p></div><div class="ledger-item" data-ledger="reserved" style="--swatch:#796840"><span>Volume reserve remaining</span><strong data-live="volume-remaining" data-live-format="millions"></strong><p data-live="reserve-custody"></p></div><div class="ledger-item" data-ledger="herd" style="--swatch:#bea268"><span>Remaining HERD capacity</span><strong data-live="herd-future" data-live-format="millions"></strong><p data-live-group="accounting"><span data-live="herd-remaining" data-live-format="count"></span> unminted pieces × 250,000.</p></div><div class="ledger-item" data-ledger="objects" style="--swatch:#ead197"><span>Remaining Object capacity</span><strong data-live="objects-future" data-live-format="millions"></strong><p data-live-group="accounting"><span data-live="objects-remaining" data-live-format="count"></span> unissued objects × 100,000, including temporary reservations; maximum paid-claim case.</p></div><div class="ledger-item" data-ledger="pending" data-live-show="pending-escrow" style="--swatch:#baa47c;display:none" hidden><span>Issued claims awaiting burn</span><strong data-live="pending-escrow" data-live-format="millions"></strong><p>Identified deposits already committed by issued claims. Their collection slots are excluded from future capacity.</p></div><div class="ledger-item" data-ledger="room" style="--swatch:#85aaa0"><span>Shared variable headroom</span><strong data-live="headroom" data-live-format="millions"></strong><p>Platform + game + other future burns. One shared allowance.</p></div><div class="ledger-item" data-ledger="floor" style="--swatch:#dce0de"><span>Proposed remaining supply</span><strong>100.00M</strong><p>Tokens in wallets and pools, in total.</p></div></div>
 <div class="equation" data-live-group="accounting"><p data-live-group="accounting"><b>After existing commitments.</b> <span data-live="total" data-live-format="millions"></span> existing − <span data-live="volume-remaining" data-live-format="millions"></span> reserve − <span data-live="herd-future" data-live-format="millions"></span> HERD − <span data-live="objects-future" data-live-format="millions"></span> Objects − <span data-live="pending-escrow" data-live-format="millions"></span> issued-claim escrow − 100M remaining.</p><strong>= <span data-live="headroom" data-live-format="millions"></span></strong></div></div>
