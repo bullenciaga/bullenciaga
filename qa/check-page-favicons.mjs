@@ -21,6 +21,7 @@ const pages = new Map([
   ['ledger.html', 'ledger.svg'],
   ['passport.html', 'passport.svg'],
   ['rooms.html', 'rooms.svg'],
+  ['flywheel.html', 'flywheel.svg'],
 ]);
 
 const references = new Set();
