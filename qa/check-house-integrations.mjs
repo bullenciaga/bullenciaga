@@ -47,7 +47,7 @@ assert.match(index, /badge\.textContent = 'BULLENSAGA'/);
 assert.match(index, /function isCompanionRecord\(entry\)/);
 assert.match(index, /url\.startsWith\('\/'\)/);
 assert.match(index, /function houseStatusLine\(entry\)/);
-assert.match(index, /fetch\('\/volume', \{ cache:'no-store' \}\)/);
+assert.match(index, /fetch\('\/volume', \{ cache:'no-store'(?:, signal:AbortSignal\.timeout\(12000\))? \}\)/);
 assert.match(index, /House Pair I complete · paired status follows this wallet/);
 assert.match(index, /Enhanced by House Pair I · Signet \+ Cufflinks verified in this wallet/);
 assert.match(redirects, /^\/whitepaper\s+\/whitepaper\.pdf\s+302$/m);
@@ -64,7 +64,7 @@ assert.match(stats, /method:'getSignaturesForAddress'/);
 assert.match(stats, /await attachOnChainCreatedTimes\(candidates\)/);
 assert.match(stats, /await attachOnChainCreatedTimes\(fresh\)/);
 assert.match(stats, /Math\.min\(\.\.\.blockTimes\) \* 1000/);
-assert.match(stats, /fetch\('\/volume', \{ cache:'no-store' \}\)/);
+assert.match(stats, /fetch\('\/volume', \{ cache:'no-store'(?:, signal:AbortSignal\.timeout\(12000\))? \}\)/);
 
 assert.doesNotMatch(chart, /house-burn-registry\.js|HOUSE OBJECT BURN COMMITMENTS/i);
 assert.match(chart, /\/api\/public-activity/);

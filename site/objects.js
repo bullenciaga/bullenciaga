@@ -60,7 +60,7 @@
   }
 
   function updateClaimButton() {
-    $('beginClaim').disabled = claimBusy || !wallet || availability[selectedId] === 0;
+    $('beginClaim').disabled = claimBusy || !wallet || (!reviewMode && !(availability[selectedId] > 0));
   }
 
   function getProvider() {
@@ -90,7 +90,7 @@
       $('walletAddress').textContent = wallet;
       updateClaimButton();
       activateStep('wallet', true);
-      if (!await resumePendingClaim()) setStatus('Wallet proved. The selected object is ready to reserve.');
+      if (!await resumePendingClaim()) setStatus(availability[selectedId] > 0 || reviewMode ? 'Wallet connected. The selected object is ready to reserve.' : 'Wallet connected. Waiting for verified availability.');
     } catch (error) { setStatus((error && error.message) || 'Connection cancelled.', true); }
   }
 
@@ -279,9 +279,15 @@
   async function loadInventory() {
     if (reviewMode) return;
     try {
-      var response = await fetch(apiBase + '/api/house-objects/inventory', { cache: 'no-store' });
-      if (!response.ok) return;
+      var response = await fetch(apiBase + '/api/house-objects/inventory', { cache: 'no-store', signal:AbortSignal.timeout(12000) });
+      if (!response.ok) throw new Error('Inventory unavailable');
       var data = await response.json();
+      for (var id of Object.keys(names)) {
+        var record = data.collectibles && data.collectibles[id];
+        if (!record || !Number.isInteger(record.available) || record.available < 0 || record.available > record.editionCap) throw new Error('Invalid inventory');
+      }
+      if (data.generatedAt && (!Number.isFinite(Date.parse(data.generatedAt)) || Date.now()-Date.parse(data.generatedAt)>120000)) throw new Error('Stale inventory');
+      if (!data.access || !['public','holders','not_open'].includes(data.access.phase)) throw new Error('Invalid access state');
       document.querySelectorAll('[data-object-id]').forEach(function (card) {
         var live = data.collectibles && data.collectibles[card.dataset.objectId];
         if (!live) return;
@@ -303,7 +309,13 @@
         : data.access.phase === 'public'
           ? 'PUBLIC CLAIM WINDOW'
           : 'HOUSE OBJECTS · CLAIM WINDOW NOT OPEN';
-    } catch (error) { /* the static issue counts remain visible */ }
+      $('reviewRibbon').textContent += ' · CHECKED ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    } catch (error) {
+      availability = {};
+      document.querySelectorAll('[data-available]').forEach(node => node.textContent = 'Unavailable');
+      $('reviewRibbon').textContent = 'INVENTORY UNAVAILABLE · RETRYING AUTOMATICALLY';
+      updateClaimButton();
+    }
   }
 
   document.querySelectorAll('[data-select-object]').forEach(function (button) { button.addEventListener('click', function () { selectObject(button.dataset.selectObject); }); });

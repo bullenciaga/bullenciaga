@@ -323,6 +323,25 @@ html.flywheel-font-fallback header .brand span,html.flywheel-font-fallback heade
  #supply .bigfloor strong{font-size:80px}
  #supply .supply-target-copy{border-left:0;border-top:1px solid #c7aa7038;padding:20px 0 0}
 }
+/* Expanded reading scale follows the available screen, including the detail panel. */
+@media(min-width:801px){
+ .explorer{--reading-scale:1}
+ .explorer .detail-lead h3{font-size:calc(36px * var(--reading-scale));max-width:calc(420px * var(--reading-scale))}
+ .explorer .detail-lead p{font-size:calc(14px * var(--reading-scale));max-width:calc(490px * var(--reading-scale))}
+ .explorer .detail li{font-size:calc(13px * var(--reading-scale))}
+ .explorer .detail ul{gap:calc(18px * var(--reading-scale))}
+ .explorer .detail-route{font-size:calc(10px * var(--reading-scale))}
+ .explorer .detail #detail-link{font-size:calc(12px * var(--reading-scale))}
+ .explorer .detail-toolbar .eyebrow{font-size:calc(8px * var(--reading-scale))}
+ .explorer .detail-footer button{font-size:calc(10px * var(--reading-scale));min-height:calc(33px * var(--reading-scale))}
+ .explorer .detail-footer>span{font-size:calc(9px * var(--reading-scale))}
+ .explorer .detail-lead #detail-icon,.explorer #detail-icon svg{width:calc(30px * var(--reading-scale));height:calc(30px * var(--reading-scale))}
+ .explorer .explorer-heading h2{font-size:calc(31px * var(--reading-scale))}
+ .explorer .tabs button{font-size:calc(12px * var(--reading-scale))}
+ .explorer .map-key{font-size:calc(9px * var(--reading-scale))}
+ .explorer #route-reading{font-size:calc(11px * var(--reading-scale));max-width:calc(560px * var(--reading-scale))}
+ .explorer .map-expand,.explorer #map-instruction{font-size:calc(11px * var(--reading-scale))}
+}
 </style>
 <link rel="stylesheet" href="/bullen-focus.css">
 <script src="/bullen-focus.js" defer></script>
@@ -489,7 +508,23 @@ function stylePaths(){
 // The heading is typeset once. Resizing moves/scales that same layer, never swaps
 // labels or reflows its lines. Reuse the connector geometry pass, with no new loop.
 const tileLayers=buttons.map(button=>({button,title:button.querySelector('h3'),icon:button.querySelector('.node-top,.token-emblem'),category:button.querySelector('.tile-category'),summary:button.querySelector('.tile-summary'),state:button.querySelector('.node-state')}));
-let typeMetricsReady=false;
+let typeMetricsReady=false,readingScale=1,readingFrameId=0,typeGeometry=null;
+function scaleForScreen(){
+ return explorer.classList.contains('is-expanded')&&innerWidth>800?Math.max(1,Math.min(1.85,innerWidth/1380,innerHeight/780)):1;
+}
+function updateReadingScale(animate=true){
+ if(readingFrameId)cancelAnimationFrame(readingFrameId);
+ const start=readingScale,target=scaleForScreen(),began=performance.now();
+ const duration=animate&&!document.body.classList.contains('reduced')&&!document.body.classList.contains('paused')?360:0;
+ function frame(now){
+  const t=duration?Math.min(1,(now-began)/duration):1;
+  readingScale=start+(target-start)*(1-Math.pow(1-t,3));
+  explorer.style.setProperty('--reading-scale',readingScale.toFixed(4));
+  if(typeGeometry)layoutTileType(...typeGeometry);
+  readingFrameId=t<1?requestAnimationFrame(frame):0;
+ }
+ readingFrameId=requestAnimationFrame(frame);
+}
 function measureTileType(){
  for(const item of tileLayers){item.width=Math.max(item.title.offsetWidth,item.title.scrollWidth);item.height=item.title.offsetHeight;item.baseFont=parseFloat(getComputedStyle(item.title).fontSize);}
  typeMetricsReady=true;lastGeometry='';schedulePaths();
@@ -504,26 +539,28 @@ function layoutTileType(rects,mapWidth,stageWidth){
  for(const item of tileLayers){
   const {button,title,icon,category,summary,state}=item,r=rects[button.dataset.node];
   const w=r.right-r.left-2,h=r.bottom-r.top-2,token=button.dataset.node==='token';
-  const pad=fullWidth>290?20:14,rich=innerWidth>800&&h>=137&&fullWidth>=205;
-  const hasIcon=h>=82,iconSize=token?34:22,iconGap=8;
-  const maxFont=token?(rich?37:25):rich?(h>=185?28:22):innerWidth>800?20:15;
+  const s=readingScale,pad=(fullWidth>290?20:14)*s,rich=innerWidth>800&&h>=137&&fullWidth>=205;
+  const hasIcon=h>=82,iconSize=(token?34:22)*s,iconGap=8*s;
+  const maxFont=(token?(rich?37:25):rich?(h>=185?28:22):innerWidth>800?20:15)*s;
   const baseFont=item.baseFont;
   const fullScale=Math.min(maxFont/baseFont,(fullWidth-pad*2)/item.width);
-  const targetMax=token?25:19;
+  const targetMax=(token?25:19)*s;
   const fitScale=Math.min(fullScale,(w-20)/item.width,mix(maxFont,targetMax,progress)/baseFont,(h-16-(hasIcon?iconSize+iconGap:0))/item.height);
   const titleH=item.height*fitScale,titleW=item.width*fitScale;
   const compactY=(h-titleH-(hasIcon?iconSize+iconGap:0))/2+(hasIcon?iconSize+iconGap:0);
-  const fullY=token&&rich?(h-titleH)/2+12:rich?pad+(h>=185?47:36):compactY;
+  const fullY=token&&rich?(h-titleH)/2+12*s:rich?pad+(h>=185?47:36)*s:compactY;
   const x=token||!rich?(w-titleW)/2:mix(pad,(w-titleW)/2,progress);
   const y=mix(fullY,compactY,progress);
   title.style.transform=`translate(${x}px,${y}px) scale(${fitScale})`;
   const iconX=token||!rich?(w-iconSize)/2:mix(pad,(w-iconSize)/2,progress);
-  const fullIconY=token&&rich?fullY-43:rich?pad:compactY-iconSize-iconGap;
+  const fullIconY=token&&rich?fullY-43*s:rich?pad:compactY-iconSize-iconGap;
+  icon.style.width=icon.style.height=iconSize+'px';
+  const iconSvg=icon.querySelector('svg');if(iconSvg)iconSvg.style.width=iconSvg.style.height=iconSize+'px';
   icon.style.transform=`translate(${iconX}px,${mix(fullIconY,compactY-iconSize-iconGap,progress)}px)`;
   button.dataset.rich=String(rich);button.dataset.icon=String(hasIcon);
-  if(category){category.style.transform=`translate(${token?10:pad}px,${token?fullY-11:pad+(h>=185?30:25)}px)`;category.style.width=token?`${w-20}px`:'auto';}
-  if(summary){summary.style.width=`${fullWidth-pad*2}px`;summary.style.fontSize=token?'10px':h>=185?'12px':'11px';summary.style.transform=`translate(${token?(w-fullWidth+pad*2)/2:pad}px,${token?fullY+titleH+12:Math.max(h-(h>=185?53:42),fullY+item.height*fullScale+8)}px)`;}
-  if(state){state.style.transform=`translate(${fullWidth-pad*2-iconSize}px,0)`;}
+  if(category){category.style.fontSize=(token?7:8)*s+'px';category.style.transform=`translate(${token?10:pad}px,${token?fullY-11*s:pad+(h>=185?30:25)*s}px)`;category.style.width=token?`${w-20}px`:'auto';}
+  if(summary){summary.style.width=`${fullWidth-pad*2}px`;summary.style.fontSize=(token?10:h>=185?12:11)*s+'px';summary.style.transform=`translate(${token?(w-fullWidth+pad*2)/2:pad}px,${token?fullY+titleH+12*s:Math.max(h-(h>=185?53:42)*s,fullY+item.height*fullScale+8*s)}px)`;}
+  if(state){state.style.fontSize=8*s+'px';state.style.height=iconSize+'px';state.style.transform=`translate(${fullWidth-pad*2-iconSize}px,0)`;}
  }
 }
 
@@ -539,7 +576,7 @@ function drawPaths(){
  if(innerWidth<=800)for(const item of tileLayers){item.width=Math.max(item.title.offsetWidth,item.title.scrollWidth);item.height=item.title.offsetHeight;item.baseFont=parseFloat(getComputedStyle(item.title).fontSize);}
  const geometry=JSON.stringify([width,height,stageWidth,innerWidth,...Object.values(rects).map(r=>Object.values(r).map(v=>Math.round(v*100)/100))]);
  if(geometry===lastGeometry)return;lastGeometry=geometry;
- layoutTileType(rects,bounds.width,stageWidth);
+ typeGeometry=[rects,bounds.width,stageWidth];layoutTileType(...typeGeometry);
  svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
  const routes=composedRoutes(rects,width);
  let defs=svg.querySelector('defs');if(!defs){defs=svgElement('defs');svg.prepend(defs);}
@@ -618,7 +655,7 @@ document.addEventListener('keydown',e=>{
  const trap=detailOpen&&isOverlay()?detail:explorer.classList.contains('is-expanded')?explorer:null;
  if(e.key==='Tab'&&trap){const items=[...trap.querySelectorAll('button:not([disabled]),a[href],input')].filter(x=>!x.closest('[inert]')&&x.getClientRects().length),first=items[0],last=items.at(-1);if(e.shiftKey&&(document.activeElement===first||document.activeElement===trap)){e.preventDefault();last.focus();}else if(!e.shiftKey&&(document.activeElement===last||document.activeElement===trap)){e.preventDefault();first.focus();}}
 });
-function toggleExpand(){const yes=!explorer.classList.contains('is-expanded');explorer.classList.toggle('is-expanded',yes);document.body.classList.toggle('explorer-expanded',yes);document.querySelector('.map-expand').setAttribute('aria-pressed',String(yes));document.querySelector('.map-expand').innerHTML=(yes?'Exit':'Expand')+' <span aria-hidden="true">⛶</span>';document.querySelector('.map-expand').setAttribute('aria-label',yes?'Exit full-screen flywheel':'Expand flywheel to full screen');trackLayout();}
+function toggleExpand(){const yes=!explorer.classList.contains('is-expanded');explorer.classList.toggle('is-expanded',yes);document.body.classList.toggle('explorer-expanded',yes);document.querySelector('.map-expand').setAttribute('aria-pressed',String(yes));document.querySelector('.map-expand').innerHTML=(yes?'Exit':'Expand')+' <span aria-hidden="true">⛶</span>';document.querySelector('.map-expand').setAttribute('aria-label',yes?'Exit full-screen flywheel':'Expand flywheel to full screen');updateReadingScale();trackLayout();}
 document.querySelector('.map-expand').addEventListener('click',toggleExpand);
 let overlayLayout=isOverlay(),layoutHandoffFrame=0;
 window.addEventListener('resize',()=>{
@@ -633,7 +670,7 @@ window.addEventListener('resize',()=>{
    layoutHandoffFrame=0;shell.classList.remove('is-switching-layout');
   });});
  }
- syncAccessibility();measureTileType();trackLayout();
+ syncAccessibility();updateReadingScale(false);measureTileType();trackLayout();
 },{passive:true});
 // Apply resize geometry before paint so transformed titles cannot trail a shrinking tile by one frame.
 new ResizeObserver(()=>{if(routeFrame)cancelAnimationFrame(routeFrame);drawPaths();}).observe(map);measureTileType();

@@ -9,7 +9,7 @@
   const endpoint = isLocal ? localEndpoint : productionEndpoint;
   let pending = null;
 
-  const format = value => Number(value || 0).toLocaleString('en-US');
+  const format = value => Number(value).toLocaleString('en-US');
   const escapeHtml = value => String(value == null ? '' : value).replace(/[&<>"']/g, character => ({
     '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;',
   })[character]);
@@ -21,11 +21,12 @@
   function displayValue(path, value){
     if (path === 'totals.committedBullen') return format(value) + ' $BULLEN';
     if (/available|reserved|issuedAllSources|burnClaims|editionCap/.test(path)) return format(value);
-    return value == null ? '--' : String(value);
+    return value == null ? 'Unavailable' : String(value);
   }
 
   function render(root, payload){
     root.dataset.state = 'ready';
+    root.title = 'Ledger recorded ' + new Date(payload.generatedAt).toLocaleString();
     root.querySelectorAll('[data-house-burn-value]').forEach(node => {
       const path = node.dataset.houseBurnValue;
       node.textContent = displayValue(path, read(path, payload));
@@ -37,6 +38,7 @@
       } else {
         status.textContent = 'registry live · no public House Object burn claims yet';
       }
+      status.append(document.createTextNode(' · ' + new Date(payload.generatedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})));
     }
   }
 
@@ -64,13 +66,19 @@
   }
 
   function load(){
-    if (!pending) pending = fetch(endpoint, {cache:'no-store'})
+    if (!pending) pending = fetch(endpoint, {cache:'no-store', signal:AbortSignal.timeout(12000)})
       .then(response => {
         if (!response.ok) throw new Error('HOUSE_BURN_REGISTRY_HTTP_' + response.status);
         return response.json();
       })
       .then(payload => {
-        if (!payload || payload.schemaVersion !== 1 || !payload.totals) throw new Error('HOUSE_BURN_REGISTRY_INVALID');
+        if (!payload || payload.schemaVersion !== 1 || !payload.totals || !Array.isArray(payload.recent) || !Number.isFinite(Date.parse(payload.generatedAt)) || Date.now()-Date.parse(payload.generatedAt)>120000) throw new Error('HOUSE_BURN_REGISTRY_INVALID');
+        for (const root of document.querySelectorAll('[data-house-burn-registry]')) {
+          for (const node of root.querySelectorAll('[data-house-burn-value]')) {
+            const value = read(node.dataset.houseBurnValue, payload);
+            if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) throw new Error('HOUSE_BURN_REGISTRY_INVALID');
+          }
+        }
         document.querySelectorAll('[data-house-burn-registry]').forEach(root => render(root, payload));
         document.querySelectorAll('[data-house-burn-recent]').forEach(root => renderRecent(root, payload));
         window.dispatchEvent(new CustomEvent('bullen:house-burns', {detail:payload}));
@@ -79,16 +87,20 @@
       .catch(error => {
         document.querySelectorAll('[data-house-burn-registry]').forEach(root => {
           root.dataset.state = 'unavailable';
+          root.querySelectorAll('[data-house-burn-value]').forEach(node => node.textContent = 'Unavailable');
           const status = root.querySelector('[data-house-burn-status]');
           if (status) status.textContent = isLocal
             ? 'start the local BULLENSAGA review server on port 4178 to load the registry'
             : 'registry temporarily unavailable · on-chain supply figures remain authoritative';
         });
+        document.querySelectorAll('[data-house-burn-recent]').forEach(root => root.textContent = 'Recent commitments unavailable · retrying');
         throw error;
-      });
+      }).finally(() => { pending = null; });
     return pending;
   }
 
+  document.querySelectorAll('[data-house-burn-value]').forEach(node => node.textContent = 'Loading…');
+  window.setInterval(() => { if(!document.hidden) load().catch(() => {}); },60000);
   window.BullenHouseBurns = { load, endpoint };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { load().catch(() => {}); });
   else load().catch(() => {});
