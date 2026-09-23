@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import vm from 'node:vm';
+const source=await readFile(new URL('../site/burn-schedule-status.js',import.meta.url),'utf8');
+let body,calls=0,failed=false;
+const context={window:{},AbortSignal,Date,fetch:async()=>{calls++;if(failed)throw Error('offline');return {ok:true,json:async()=>structuredClone(body)};}};
+vm.runInNewContext(source,context);
+const load=()=>context.window.BullenBurnSchedule.load();
+const tier=(amount,char='1')=>({kind:'tier',amount,sig:char.repeat(88)});
+body={ok:true,count:1,burns:[tier(12500000)]};
+const [first,parallel]=await Promise.all([load(),load()]);assert.equal(calls,1);assert.equal(first,parallel);assert.equal(first.burned,12500000);assert.equal(first.count,1);
+// Crossing any trading threshold without another receipt cannot confirm a burn.
+body.volume=1e12;assert.equal((await load()).count,1);
+body={ok:true,count:2,burns:[tier(12500000),tier(12500000)]};await assert.rejects(load(),/Invalid burn/);
+body={ok:true,count:1,burns:[tier(25000000)]};await assert.rejects(load(),/Unrecognized/);
+body={ok:true,count:2,burns:[tier(12500000)]};await assert.rejects(load(),/Incomplete/);
+failed=true;await assert.rejects(load(),/offline/);failed=false;
+body={ok:true,count:2,burns:[tier(12500000),tier(25000000,'2')]};assert.equal((await load()).burned,37500000);
+body={ok:true,count:0,burns:[]};assert.equal((await load()).burned,0);
+console.log('Burn schedule: receipt validation, deduplication, threshold distinction and outage recovery passed.');
