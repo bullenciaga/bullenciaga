@@ -116,19 +116,85 @@ test('pool discriminator, mint and vault owner are validated',()=>{
 test('negative virtual reserve is not treated as spendable SOL',()=>{
  const c=clone();const b=Buffer.from(c.chain.result.value[2].data[0],'base64');b[260]=255;c.chain.result.value[2].data[0]=b.toString('base64');assert.throws(()=>mod.validatePool(c.chain,now,now),/flags/);
 });
-test('fallback stays explicitly dated and formatted without invented zeros',()=>{
- assert.equal(mod.FALLBACK.status,'snapshot');assert.equal(mod.values(mod.FALLBACK).status,'Dated accounting');
- assert.equal(mod.formatNumber(NaN),'—');assert.equal(mod.formatNumber(169.181012751,'exact',9),'169.181012751');
+test('initial state contains no snapshot, pool estimate or placeholder number',()=>{
+ assert.equal(mod.INITIAL.status,'loading'); assert.equal(mod.api.state.numbers,null); assert.equal(mod.api.state.pool,null);
+ const initial=mod.values(mod.INITIAL);
+ assert.equal(initial.status,'Checking live records…');assert.equal(initial.total,undefined);assert.equal(initial['pool-base'],undefined);
+ assert.equal(initial['object-stock'],'');assert.equal(initial['as-of'],'');assert.equal(initial['tier-1-status'],'');
+ assert.equal(mod.formatNumber(NaN),'');assert.equal(mod.formatNumber(169.181012751,'exact',9),'169.181012751');
 });
-test('DOM updates use textContent and never interpolate API markup',()=>{
- const attrs={'data-live':'total','data-live-format':'millions'};const el={textContent:'',innerHTML:'unchanged',getAttribute:k=>attrs[k]??null};
- mod.api.applyTo({querySelectorAll:s=>s==='[data-live]'?[el]:[]});assert.equal(el.textContent,'818.15M');assert.equal(el.innerHTML,'unchanged');
+function node(attrs={}) {
+ return {attrs:{...attrs},textContent:'old',innerHTML:'unchanged',style:{},getAttribute(k){return this.attrs[k]??null;},setAttribute(k,v){this.attrs[k]=String(v);},removeAttribute(k){delete this.attrs[k];}};
+}
+test('DOM clears stale content and makes unavailable figures inaccessible',()=>{
+ const el=node({'data-live':'total','data-live-format':'millions'});
+ const group=node({'data-live-group':'accounting'});
+ const flex=node({'data-live-flex':'destroyed','data-live-label':'Destroyed'});
+ const width=node({'data-live-width':'herd-progress'});
+ mod.api.applyTo({querySelectorAll:s=>({'[data-live]':[el],'[data-live-group]':[group],'[data-live-flex]':[flex],'[data-live-width]':[width]})[s]||[]});
+ assert.equal(el.textContent,'');assert.equal(el.innerHTML,'unchanged');assert.equal(el.attrs['data-live-ready'],'false');
+ assert.equal(group.attrs['aria-busy'],'true');assert.equal(group.attrs.inert,'');assert.equal(group.attrs['aria-hidden'],'true');
+ assert.equal(flex.style.flex,'0');assert.equal(flex.disabled,true);assert.equal(flex.attrs['aria-label'],'Destroyed');assert.equal(width.style.width,'0%');
 });
-test('one request cohort at a time; failure preserves dated numbers',async()=>{
+test('one request cohort at a time; unavailable sources never reveal dated numbers',async()=>{
  let calls=0;let release;const gate=new Promise(r=>release=r);
  const m=load({fetch:async()=>{calls++;await gate;throw Error('offline');}});
- const a=m.api.refresh(),b=m.api.refresh();assert.equal(a,b);assert.equal(calls,5);release();await a;
- assert.equal(m.api.state.status,'stale');assert.equal(m.api.state.reason,'unavailable');assert.equal(m.api.state.numbers.total,mod.FALLBACK.numbers.total);
+ const a=m.api.refresh(),b=m.api.refresh();assert.equal(a,b);assert.equal(calls,5);assert.equal(m.api.state.numbers,null);release();await a;
+ assert.equal(m.api.state.status,'unavailable');assert.equal(m.api.state.reason,'unavailable');assert.equal(m.api.state.numbers,null);assert.equal(m.api.state.pool,null);
+});
+function runtime(getFixture=clone,fail=()=>false,extra={}) {
+ let clock=now;
+ const Clock=class extends Date { constructor(...args){super(...(args.length?args:[clock]));} static now(){return clock;} };
+ const keys=new Map(Object.entries(mod.URLS).map(([k,v])=>[v,k==='rpc'?'chain':k]));
+ const m=load({Date:Clock,fetch:async url=>{const key=keys.get(url);if(fail(key))throw Error('offline');return {ok:true,json:async()=>getFixture()[key]};},...extra});
+ return {...m,advance(ms){clock+=ms;},now(){return clock;}};
+}
+test('valid accounting and independent pool publish together with source expiry',async()=>{
+ const m=runtime();await m.api.refresh();
+ assert.equal(m.api.state.status,'live');assert.equal(m.api.state.numbers.total,baseline.numbers.total);assert.equal(m.api.state.pool.status,'live');
+ assert.equal(m.api.state.expiresAt,Math.min(Date.parse(fixture.supply.updatedAt)+180000,fixture.minted.at+600000,Date.parse(fixture.objects.generatedAt)+180000,now+180000));
+ const el=node({'data-live':'total','data-live-format':'millions'}),group=node({'data-live-group':'accounting',inert:'','aria-hidden':'true'});
+ m.api.applyTo({querySelectorAll:s=>s==='[data-live]'?[el]:s==='[data-live-group]'?[group]:[]});
+ assert.equal(el.textContent,'818.15M');assert.equal(el.attrs['data-live-ready'],'true');assert.equal(group.attrs['aria-busy'],'false');assert.equal(group.attrs.inert,undefined);
+});
+test('a failed registry cannot suppress separately verified pool data',async()=>{
+ const m=runtime(clone,key=>key==='objects');await m.api.refresh();
+ assert.equal(m.api.state.numbers,null);assert.equal(m.api.state.pool.status,'live');assert.equal(m.api.state.pool.base,100288797.331245);
+});
+test('invalid pool never prevents valid supply accounting or becomes a fake estimate',async()=>{
+ const m=runtime(()=>{const c=clone();c.chain.result.value[2].owner='wrong';return c;});await m.api.refresh();
+ assert.equal(m.api.state.status,'live');assert.equal(m.api.state.numbers.total,baseline.numbers.total);assert.equal(m.api.state.pool,null);assert.equal(m.api.state.poolStatus,'unavailable');
+});
+test('contradictory records clear previous numbers and later coherent retry recovers',async()=>{
+ let current=clone();const m=runtime(()=>current);await m.api.refresh();assert.ok(m.api.state.numbers);
+ herd(current);await m.api.refresh();assert.equal(m.api.state.numbers,null);assert.equal(m.api.state.reason,'settling');assert.ok(m.api.state.pool);
+ pending(current,250000);await m.api.refresh();assert.equal(m.api.state.status,'live');assert.equal(m.api.state.numbers['herd-minted'],557);assert.equal(m.api.state.numbers['pending-escrow'],250000);
+});
+test('expired accounting is removed immediately while fresh pool remains independent',async()=>{
+ const m=runtime();await m.api.refresh();const expires=m.api.state.expiresAt;
+ m.api.expire(expires);assert.equal(m.api.state.numbers,null);assert.equal(m.api.state.asOf,null);assert.equal(m.api.state.status,'unavailable');assert.ok(m.api.state.pool);
+ m.api.expire(now+180000);assert.equal(m.api.state.pool,null);assert.equal(m.api.state.poolStatus,'unavailable');
+ const v=m.values(m.api.state);assert.equal(v.total,undefined);assert.equal(v['pool-slot'],undefined);assert.equal(v['pool-lp-status'],'');
+});
+test('late source expiration while requests are pending never restores old values',async()=>{
+ const m=runtime();await m.api.refresh();m.advance(181000);await m.api.refresh();
+ assert.equal(m.api.state.numbers,null);assert.equal(m.api.state.reason,'settling');assert.equal(m.api.state.pool.status,'live');
+});
+test('browser lifecycle retries unavailable data and independently expires verified cohorts',async()=>{
+ const timers=new Map();let id=0,fail=false;
+ const document={readyState:'loading',hidden:false,querySelectorAll:()=>[],documentElement:{setAttribute(){}},addEventListener(){}};
+ const m=runtime(clone,()=>fail,{document,location:{protocol:'https:',hostname:'bullenciaga.com'},addEventListener(){},setTimeout(fn,delay){timers.set(++id,{fn,delay});return id;},clearTimeout(id){timers.delete(id);}});
+ m.api.start();await m.api.refresh();
+ assert.ok([...timers.values()].some(t=>t.delay===90000),'healthy refresh cadence');
+ const expiry=[...timers.values()].find(t=>t.delay===m.api.state.expiresAt-m.now());assert.ok(expiry,'freshness deadline timer');
+ m.advance(expiry.delay);expiry.fn();assert.equal(m.api.state.numbers,null);assert.ok(m.api.state.pool);
+ fail=true;await m.api.refresh();assert.equal(m.api.state.pool,null);
+ assert.ok([...timers.values()].some(t=>t.delay===30000),'failure retry cadence');
+});
+test('all dynamic cohort values remain finite when available',()=>{
+ const v=mod.values({...baseline,pool:mod.validatePool(fixture.chain,now,now),poolStatus:'live'});
+ for(const [key,value]of Object.entries(v))if(typeof value==='number')assert.ok(Number.isFinite(value),key);
+ assert.equal(v['pool-lp'],0);assert.equal(v['pool-lp-status'],'No outstanding LP tokens at this read.');
 });
 let passed=0;
 for(const [name,fn] of tests){try{await fn();passed++;console.log('PASS '+name);}catch(e){console.error('FAIL '+name,e);process.exitCode=1;}}

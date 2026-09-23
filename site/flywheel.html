@@ -9,6 +9,22 @@
 <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/flywheel.svg">
 <meta name="twitter:card" content="summary_large_image"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="BULLENCIAGA: The House in motion. A glass monolith and a connected ecosystem of collecting, revenue, burns and proposed liquidity.">
 <meta property="og:title" content="The House in motion. BULLENCIAGA."><meta property="og:description" content="One ecosystem. Distinct routes. Every reduction accounted for."><meta property="og:type" content="website"><meta property="og:url" content="https://bullenciaga.com/flywheel"><meta property="og:image" content="https://bullenciaga.com/assets/flywheel/flywheel-share.png">
+<link rel="preload" href="/fonts/house-872e862918591a9e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/house-e0c8e616bda27642.woff2" as="font" type="font/woff2" crossorigin>
+<script>
+// Choose typography once, then reveal the finished layout. Late fonts cannot replay it.
+(function(){
+ const root=document.documentElement;root.classList.add('flywheel-booting');let settled=false;
+ const timer=setTimeout(()=>finish(false),matchMedia('(max-width:800px)').matches?1800:1200);
+ function finish(fontsReady){
+  if(settled)return;settled=true;clearTimeout(timer);
+  if(!fontsReady)root.classList.add('flywheel-font-fallback');
+  const reveal=()=>{window.__FLYWHEEL_LAYOUT?.();root.classList.remove('flywheel-booting');root.classList.add('flywheel-ready');};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reveal,{once:true});else reveal();
+ }
+ window.__FLYWHEEL_PAINT=finish;
+})();
+</script>
 <style>
 @font-face{font-family:House;src:url('/fonts/house-872e862918591a9e.woff2') format('woff2');font-display:swap;font-weight:600}
 :root{--bg:#060606;--glass:rgba(7,7,7,.94);--text:#f2f0eb;--muted:#b0b0b0;--dim:#8c8c8c;--gold:#c7aa70;--bright:#ead3a3;--silver:#c6c6c6;--line:#ffffff16;--radius:20px;--display:House,Arial,sans-serif;--body:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
@@ -256,18 +272,38 @@ header .motion:hover{color:#e8d9ae;border-color:#c7a86970}
  .explorer.is-expanded .detail-dock>.detail{top:8px}
 }
 
+/* A single settled first paint; data has its own independent, verified reveal. */
+html.flywheel-booting body{opacity:0}
+html.flywheel-ready body{opacity:1;transition:opacity .24s ease}
+html.flywheel-font-fallback{--display:Arial,sans-serif}
+html.flywheel-font-fallback header .brand span,html.flywheel-font-fallback header nav a,html.flywheel-font-fallback header .motion{font-family:ui-monospace,monospace}
+[data-live],[data-live-group]{transition:opacity .28s ease}
+[data-live]:not([data-live-ready="true"]),[data-live-group]:not([data-live-ready="true"]){opacity:0!important;visibility:hidden;pointer-events:none}
+[data-live-ready="true"]{visibility:visible}
+[data-live-format]{font-variant-numeric:tabular-nums}
+.fact strong,.ledger-item strong,.pool-stats strong,.depth-result strong{min-height:1.3em}
+.snapshotline{min-height:20px}
+.snapshot-meta{display:inline-block;min-height:1.65em}
+[data-live]:empty:before{content:'\00a0'}
+.progress-meta,.mint-math{min-height:1.65em}
+.live-notice{font-size:11px;color:var(--dim);line-height:1.6;margin:10px 0}
+#tokens-out{min-height:1.65em}
+@media(max-width:800px){.snapshotline{min-height:38px}}
+@media(prefers-reduced-motion:reduce){html.flywheel-ready body,[data-live],[data-live-group]{transition:none}}
+
 </style>
 <link rel="stylesheet" href="/bullen-focus.css">
 <script src="/bullen-focus.js" defer></script>
 </head>
 <body>
+<noscript><p class="wrap live-notice">Current figures require JavaScript. Use the source links below to inspect the public records.</p></noscript>
 <a class="skip" href="#main">Skip to the flywheel</a>
 <header><div class="wrap mast"><a class="brand" href="https://bullenciaga.com">BULLENCIAGA<span> /</span></a><nav aria-label="Page sections"><a href="#mechanism">System</a><a href="#supply">Supply</a><a href="#collecting">Collecting</a><a href="#revenue">Revenue</a><a href="#liquidity">Liquidity</a><a href="#evidence">Evidence</a></nav><button type="button" class="motion" id="motion" aria-pressed="false"><b>Ⅱ</b> Pause motion</button></div><div class="reading-progress" aria-hidden="true"><i></i></div></header>
 <main id="main" class="wrap">
 <section class="hero"><div class="hero-copy"><p class="eyebrow">The House in motion / 01</p><h1>The House,<br><em>in motion.</em></h1><p class="lead">Collectible art, a game in development and a new platform. See how each connects to $BULLEN, where the money goes and what reduces supply.</p><div class="hero-actions"><a class="primary" href="#mechanism">Explore the flywheel <span>↘</span></a><a class="text-link" href="#supply">Follow the numbers</a></div><div class="hero-foot"><span>EXISTING MECHANISMS</span><span>+</span><span class="gold">PROPOSED REVENUE POLICY</span></div></div>
 <div class="hero-art" aria-label="Original platinum and glass monolith, representing an unnamed platform"><span class="hero-coordinate">A NEW CHAPTER · IDENTITY TO FOLLOW</span><img class="poster" src="/assets/flywheel/platform-monolith-poster-7ae1d865dc02.jpg" alt="" width="800" height="960"><video muted loop playsinline preload="metadata" poster="/assets/flywheel/platform-monolith-poster-7ae1d865dc02.jpg" aria-hidden="true"><source src="/assets/flywheel/platform-monolith-loop-983947d4e9d9.mp4" type="video/mp4"></video><div class="art-note"><svg class="platform-mark" viewBox="0 0 72 72" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="5"><path d="M18 11H9v50h9M54 11h9v50h-9"/><path d="M29 22h14v28H29z"/></g></svg><div><span>The platform</span><p>A proposed revenue route.</p></div></div></div></section>
-<div class="facts" aria-label="Reconciled supply accounting"><div class="fact"><p class="eyebrow">Original supply</p><strong>1,000M</strong><span>BULLEN at launch</span></div><div class="fact"><p class="eyebrow">Already destroyed</p><strong data-live="destroyed" data-live-format="millions">181.85M</strong><span>Finalized on-chain reductions</span></div><div class="fact"><p class="eyebrow">Still in existence</p><strong data-live="total" data-live-format="millions">818.15M</strong><span>Includes <span data-live="locked" data-live-format="millions">237.50M</span> locked</span></div><div class="fact"><p class="eyebrow">Proposed stopping point</p><strong class="gold">100M</strong><span>For ecosystem-managed burns</span></div></div>
-<div class="snapshotline" data-live-status><span><b data-live="status">Dated accounting</b> · <span data-live="as-of">22 Sep 2026, 14:12 UTC</span> · rounded for display</span><span><a href="https://bullenciaga.com/supply" target="_blank" rel="noopener">Inspect supply ↗</a></span></div>
+<div class="facts" aria-label="Reconciled supply accounting"><div class="fact"><p class="eyebrow">Original supply</p><strong>1,000M</strong><span>BULLEN at launch</span></div><div class="fact"><p class="eyebrow">Already destroyed</p><strong data-live="destroyed" data-live-format="millions"></strong><span>Finalized on-chain reductions</span></div><div class="fact"><p class="eyebrow">Still in existence</p><strong data-live="total" data-live-format="millions"></strong><span data-live-group="accounting">Includes <span data-live="locked" data-live-format="millions"></span> locked</span></div><div class="fact"><p class="eyebrow">Proposed stopping point</p><strong class="gold">100M</strong><span>For ecosystem-managed burns</span></div></div>
+<div class="snapshotline" data-live-status><span><b data-live="status" data-live-ready="true">Checking current records…</b><span class="snapshot-meta" data-live-group="accounting"> · <span data-live="as-of"></span> · rounded for display</span></span><span><a href="https://bullenciaga.com/supply" target="_blank" rel="noopener">Inspect supply ↗</a></span></div>
 <section class="chapter explorer" id="mechanism" aria-label="Interactive ecosystem map">
 <div class="explorer-heading"><div><p class="eyebrow">01 / The interactive flywheel</p><h2>Follow the value.</h2></div><div class="tabs" role="group" aria-label="Highlight a mechanism"><button type="button" data-mode="all" aria-pressed="true">All routes</button><button type="button" data-mode="supply" aria-pressed="false">Supply</button><button type="button" data-mode="funding" aria-pressed="false">Revenue</button><button type="button" data-mode="depth" aria-pressed="false">Liquidity</button></div></div>
 <div class="map-shell"><div class="map-context"><span class="map-context-label">THE FLOW OF VALUE</span><span id="map-instruction">Choose a tile. See what it does.</span><button class="map-expand" type="button" aria-label="Expand flywheel to full screen" aria-pressed="false">Expand <span aria-hidden="true">⛶</span></button></div>
@@ -277,7 +313,7 @@ header .motion:hover{color:#e8d9ae;border-color:#c7a86970}
 <button type="button" class="node node-token" data-node="token" aria-pressed="true" aria-controls="mechanism-detail"><span class="token-ring"></span><svg class="token-emblem" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 8v16M14.5 8H10c-3.6 0-5.5 1.7-5.5 4s1.9 4 5.5 4h4.5M14.5 16H9.5c-3.7 0-5.7 1.7-5.7 4s2 4 5.7 4h5M17.5 8v16M17.5 8H22c3.6 0 5.5 1.7 5.5 4s-1.9 4-5.5 4h-4.5M17.5 16h5c3.7 0 5.7 1.7 5.7 4s-2 4-5.7 4h-5"/></svg><span class="tile-category">The common thread</span><h3>$BULLEN</h3><p class="tile-summary">Trading · collecting · participation</p><span class="node-open" aria-hidden="true">+</span></button>
 <button type="button" class="node node-community" data-node="community" aria-pressed="false" aria-controls="mechanism-detail" aria-label="The House: Share the fees."><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="8.5" r="3.5"/><path d="M9.5 26v-3a6.5 6.5 0 0 1 13 0v3Z"/><circle cx="6.5" cy="11.5" r="2.5"/><circle cx="25.5" cy="11.5" r="2.5"/><path d="M6.5 18a4.5 4.5 0 0 0-4 4.5V25h3.5M25.5 18a4.5 4.5 0 0 1 4 4.5V25H26"/></svg><span class="node-state ">Active</span></span><span class="tile-category">04 / The House</span><h3><span class="tile-title">Share the <br>fees.</span></h3><p class="tile-summary">Eligible trading fees support rewards, outreach and operations.</p><span class="node-open" aria-hidden="true">+</span></button>
 <button type="button" class="node node-mints" data-node="mints" aria-pressed="false" aria-controls="mechanism-detail" aria-label="Collectibles: Collect. Commit. Burn."><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.5" y="7.5" width="17" height="21" rx="2.5"/><path d="M11 3.5h13a2.5 2.5 0 0 1 2.5 2.5v16"/><path d="m14 12.5 4.5 5-4.5 5-4.5-5Z"/><path d="M11.5 25h5"/></svg><span class="node-state ">Active</span></span><span class="tile-category">05 / Collectibles</span><h3><span class="tile-title">Collect. Commit. <br>Burn.</span></h3><p class="tile-summary">Paid claims commit BULLEN to escrow for later destruction.</p><span class="node-open" aria-hidden="true">+</span></button>
-<button type="button" class="node node-reserve" data-node="reserve" aria-pressed="false" aria-controls="mechanism-detail" aria-label="Volume reserve: Reserved for milestones."><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 12.5V9a5 5 0 0 1 10 0v3.5"/><rect x="6.5" y="12.5" width="19" height="15" rx="3"/><circle cx="16" cy="19" r="1.5"/><path d="M16 20.5v2"/></svg><span class="node-state ">Committed</span></span><span class="tile-category">02 / Volume reserve</span><h3><span class="tile-title">Reserved for <br>milestones.</span></h3><p class="tile-summary"><span data-live="volume-remaining" data-live-format="millions" data-live-digits="1">237.5M</span> remains in the published volume-burn schedule.</p><span class="node-open" aria-hidden="true">+</span></button>
+<button type="button" class="node node-reserve" data-node="reserve" aria-pressed="false" aria-controls="mechanism-detail" aria-label="Volume reserve: Reserved for milestones."><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 12.5V9a5 5 0 0 1 10 0v3.5"/><rect x="6.5" y="12.5" width="19" height="15" rx="3"/><circle cx="16" cy="19" r="1.5"/><path d="M16 20.5v2"/></svg><span class="node-state ">Committed</span></span><span class="tile-category">02 / Volume reserve</span><h3><span class="tile-title">Reserved for <br>milestones.</span></h3><p class="tile-summary" data-live-group="accounting"><span data-live="volume-remaining" data-live-format="millions" data-live-digits="1"></span> remains in the published volume-burn schedule.</p><span class="node-open" aria-hidden="true">+</span></button>
 <button type="button" class="node node-burn" data-node="burn" aria-pressed="false" aria-controls="mechanism-detail" aria-label="Token burns: Reduce the supply."><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.75 3.5c0 6 8.75 8.5 8.75 15.75 0 5.4-4.25 9.25-9.5 9.25s-9.5-3.85-9.5-9.25c0-3.85 1.7-6.65 4.25-9.25-.25 3.25 1.25 5.25 3.25 6-1.5-5 2.75-7.5 2.75-12.5Z"/><path d="M16 17.5c.9 1.6 3.25 3 3.25 4.75a3.25 3.25 0 0 1-6.5 0c0-1.75 2.35-3.15 3.25-4.75Z"/></svg><span class="node-state ">On-chain</span></span><span class="tile-category">07 / Token burns</span><h3><span class="tile-title">Reduce the <br>supply.</span></h3><p class="tile-summary">Finalized burns destroy tokens. Proposed stopping point: 100M.</p><span class="node-open" aria-hidden="true">+</span></button>
 <button type="button" class="node node-liquidity" data-node="liquidity" aria-pressed="false" aria-controls="mechanism-detail" aria-label="Market depth: Fund market depth."><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5c4-4 8-4 12 0s8 4 12 0M4 16c4-4 8-4 12 0s8 4 12 0M4 22.5c4-4 8-4 12 0s8 4 12 0"/></svg><span class="node-state is-proposed">Proposed</span></span><span class="tile-category">06 / Market depth</span><h3><span class="tile-title">Fund market <br>depth.</span></h3><p class="tile-summary">Proposed reinvestment can fund a separate liquidity budget.</p><span class="node-open" aria-hidden="true">+</span></button>
 <button type="button" class="node node-proof" data-node="proof" aria-pressed="false" aria-controls="mechanism-detail" aria-label="Evidence: Check the receipts."><span class="node-top"><svg class="node-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.5 4.5H9a2 2 0 0 0-2 2v19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V11Z"/><path d="M18.5 4.5V11H25M11.5 18.5l3.5 3.5 6-7"/></svg><span class="node-state ">Public</span></span><span class="tile-category">08 / Evidence</span><h3><span class="tile-title">Check the <br>receipts.</span></h3><p class="tile-summary">Verify supply, inventory, custody and completed burns.</p><span class="node-open" aria-hidden="true">+</span></button>
@@ -291,28 +327,28 @@ header .motion:hover{color:#e8d9ae;border-color:#c7a86970}
 <noscript><p class="disclosure">The full supply ledger and explanations are below. Enable JavaScript to explore the interactive map.</p></noscript>
 </section>
 <section class="chapter" id="supply"><div class="section-head"><div><p class="eyebrow">02 / Supply, without double counting</p><h2>Less supply.<br>More precision.</h2></div><p>A lock changes availability. Escrow records a commitment. A finalized burn reduces total supply.</p></div>
-<div class="supply-intro"><div><div class="bigfloor"><strong>100M</strong><span>proposed remaining<br>total supply</span></div><p class="tiny" style="margin-top:14px">Modelled reduction: 900M / 90% of the original billion.</p></div><p>Mathematically possible under this accounting. Reaching it depends on revenue, participation and execution. The stopping rule is proposed and is not enforced by the current programs.</p></div>
-<div class="supply-board glass"><p class="eyebrow">The entire original billion, accounted for</p><div class="composition" role="group" aria-label="Explore the supply breakdown"><button type="button" class="done" data-segment="done" data-live-flex="destroyed" data-live-label="Already destroyed" style="flex:181.851569" aria-label="Already destroyed: 181.851569M BULLEN" aria-pressed="false"></button><button type="button" class="reserved" data-segment="reserved" data-live-flex="volume-remaining" data-live-label="Volume reserve remaining" style="flex:237.5" aria-label="Volume reserve remaining: 237.50M BULLEN" aria-pressed="false"></button><button type="button" class="herd" data-segment="herd" data-live-flex="herd-future" data-live-label="Remaining HERD capacity" style="flex:111" aria-label="Remaining HERD capacity: 111.00M BULLEN" aria-pressed="false"></button><button type="button" class="objects" data-segment="objects" data-live-flex="objects-future" data-live-label="Remaining Object capacity" style="flex:17.3" aria-label="Remaining Object capacity: 17.30M BULLEN" aria-pressed="false"></button><button type="button" class="objects" data-segment="pending" data-live-flex="pending-escrow" data-live-label="Issued claims awaiting burn" data-live-show="pending-escrow" style="display:none;flex:0" aria-label="Issued claims awaiting burn: 0 BULLEN" aria-pressed="false" hidden></button><button type="button" class="room" data-segment="room" data-live-flex="headroom" data-live-label="Shared variable headroom" style="flex:352.348431" aria-label="Shared variable headroom: 352.348431M BULLEN" aria-pressed="false"></button><button type="button" class="floor" data-segment="floor" data-live-flex="floor" data-live-label="Proposed remaining supply" style="flex:100" aria-label="Proposed remaining supply: 100.00M BULLEN" aria-pressed="false"></button></div>
-<div class="composition-caption"><span id="composition-label">One billion tokens. Every route accounted for.</span><span>BULLEN / ORIGINAL ISSUANCE</span></div><div class="ledger"><div class="ledger-item" data-ledger="done" style="--swatch:#766348"><span>Already destroyed</span><strong data-live="destroyed" data-live-format="millions">181.85M</strong><p>All finalized burns since launch.</p></div><div class="ledger-item" data-ledger="reserved" style="--swatch:#796840"><span>Volume reserve remaining</span><strong data-live="volume-remaining" data-live-format="millions">237.50M</strong><p data-live="reserve-custody">The existing volume allocation stays reserved. Published milestones and custody cliffs still apply; see the lock page for current custody.</p></div><div class="ledger-item" data-ledger="herd" style="--swatch:#bea268"><span>Remaining HERD capacity</span><strong data-live="herd-future" data-live-format="millions">111.00M</strong><p><span data-live="herd-remaining" data-live-format="count">444</span> unminted pieces × 250,000.</p></div><div class="ledger-item" data-ledger="objects" style="--swatch:#ead197"><span>Remaining Object capacity</span><strong data-live="objects-future" data-live-format="millions">17.30M</strong><p><span data-live="objects-remaining" data-live-format="count">173</span> unissued objects × 100,000, including temporary reservations; maximum paid-claim case.</p></div><div class="ledger-item" data-ledger="pending" data-live-show="pending-escrow" style="--swatch:#baa47c;display:none" hidden><span>Issued claims awaiting burn</span><strong data-live="pending-escrow" data-live-format="millions">0.00M</strong><p>Identified deposits already committed by issued claims. Their collection slots are excluded from future capacity.</p></div><div class="ledger-item" data-ledger="room" style="--swatch:#85aaa0"><span>Shared variable headroom</span><strong data-live="headroom" data-live-format="millions">352.35M</strong><p>Platform + game + other future burns. One shared allowance.</p></div><div class="ledger-item" data-ledger="floor" style="--swatch:#dce0de"><span>Proposed remaining supply</span><strong>100.00M</strong><p>Tokens in wallets and pools, in total.</p></div></div>
-<div class="equation"><p><b>After existing commitments.</b> <span data-live="total" data-live-format="millions">818.15M</span> existing − <span data-live="volume-remaining" data-live-format="millions">237.50M</span> reserve − <span data-live="herd-future" data-live-format="millions">111.00M</span> HERD − <span data-live="objects-future" data-live-format="millions">17.30M</span> Objects − <span data-live="pending-escrow" data-live-format="millions">0.00M</span> issued-claim escrow − 100M remaining.</p><strong>= <span data-live="headroom" data-live-format="millions">352.35M</span></strong></div></div>
-<p class="disclosure">After the reserved routes, <span data-live="post-fixed" data-live-format="millions">452.35M</span> would remain. The further <span data-live="headroom" data-live-format="millions">352.35M</span> is shared capacity for platform, game and other future burns—not tokens already owned. Independent burns also consume that room. Unlocking the volume reserve does not cancel its commitment.</p>
-<details class="tiers"><summary><span>Volume schedule <b>250M lifetime allocation</b></span></summary><div class="tiers-top"><span>Cumulative volume → incremental burn</span></div><div class="tier-grid"><div class="tier"><b>$250K → 12.5M</b><span>First tranche</span><small data-live="tier-1-status">EXECUTED</small></div><div class="tier"><b>$1M → 25M</b><span>Second tranche</span><small data-live="tier-2-status">MILESTONE + CLIFF</small></div><div class="tier"><b>$5M → 37.5M</b><span>Third tranche</span><small data-live="tier-3-status">MILESTONE + CLIFF</small></div><div class="tier"><b>$20M → 62.5M</b><span>Fourth tranche</span><small data-live="tier-4-status">MILESTONE + CLIFF</small></div><div class="tier"><b>$50M → 112.5M</b><span>Final tranche</span><small data-live="tier-5-status">MILESTONE + CLIFF</small></div></div></details><p class="supply-note"><b>One shared limit.</b> Reserve accepted claims before discretionary burns and reconcile every managed route. Independent holders can still burn their own tokens; the existing programs do not enforce a global floor.</p></section>
+<div class="supply-intro"><div><div class="bigfloor"><strong>100M</strong><span>proposed remaining<br>total supply</span></div><p class="tiny" style="margin-top:14px">Modelled reduction: 900M / 90% of the original billion.</p></div><p>Reaching this proposed stopping point depends on revenue, participation and execution. The current programs do not enforce it. The verified breakdown below shows the remaining capacity.</p></div>
+<div class="supply-board glass"><p class="eyebrow">The entire original billion, accounted for</p><div class="composition" data-live-group="accounting" role="group" aria-label="Explore the supply breakdown"><button type="button" class="done" data-segment="done" data-live-flex="destroyed" data-live-label="Already destroyed" aria-label="Already destroyed" aria-pressed="false"></button><button type="button" class="reserved" data-segment="reserved" data-live-flex="volume-remaining" data-live-label="Volume reserve remaining" aria-label="Volume reserve remaining" aria-pressed="false"></button><button type="button" class="herd" data-segment="herd" data-live-flex="herd-future" data-live-label="Remaining HERD capacity" aria-label="Remaining HERD capacity" aria-pressed="false"></button><button type="button" class="objects" data-segment="objects" data-live-flex="objects-future" data-live-label="Remaining Object capacity" aria-label="Remaining Object capacity" aria-pressed="false"></button><button type="button" class="objects" data-segment="pending" data-live-flex="pending-escrow" data-live-label="Issued claims awaiting burn" data-live-show="pending-escrow" aria-label="Issued claims awaiting burn" aria-pressed="false" hidden></button><button type="button" class="room" data-segment="room" data-live-flex="headroom" data-live-label="Shared variable headroom" aria-label="Shared variable headroom" aria-pressed="false"></button><button type="button" class="floor" data-segment="floor" data-live-flex="floor" data-live-label="Proposed remaining supply" aria-label="Proposed remaining supply" aria-pressed="false"></button></div>
+<div class="composition-caption"><span id="composition-label">One billion tokens. Every route accounted for.</span><span>BULLEN / ORIGINAL ISSUANCE</span></div><div class="ledger"><div class="ledger-item" data-ledger="done" style="--swatch:#766348"><span>Already destroyed</span><strong data-live="destroyed" data-live-format="millions"></strong><p>All finalized burns since launch.</p></div><div class="ledger-item" data-ledger="reserved" style="--swatch:#796840"><span>Volume reserve remaining</span><strong data-live="volume-remaining" data-live-format="millions"></strong><p data-live="reserve-custody"></p></div><div class="ledger-item" data-ledger="herd" style="--swatch:#bea268"><span>Remaining HERD capacity</span><strong data-live="herd-future" data-live-format="millions"></strong><p data-live-group="accounting"><span data-live="herd-remaining" data-live-format="count"></span> unminted pieces × 250,000.</p></div><div class="ledger-item" data-ledger="objects" style="--swatch:#ead197"><span>Remaining Object capacity</span><strong data-live="objects-future" data-live-format="millions"></strong><p data-live-group="accounting"><span data-live="objects-remaining" data-live-format="count"></span> unissued objects × 100,000, including temporary reservations; maximum paid-claim case.</p></div><div class="ledger-item" data-ledger="pending" data-live-show="pending-escrow" style="--swatch:#baa47c;display:none" hidden><span>Issued claims awaiting burn</span><strong data-live="pending-escrow" data-live-format="millions"></strong><p>Identified deposits already committed by issued claims. Their collection slots are excluded from future capacity.</p></div><div class="ledger-item" data-ledger="room" style="--swatch:#85aaa0"><span>Shared variable headroom</span><strong data-live="headroom" data-live-format="millions"></strong><p>Platform + game + other future burns. One shared allowance.</p></div><div class="ledger-item" data-ledger="floor" style="--swatch:#dce0de"><span>Proposed remaining supply</span><strong>100.00M</strong><p>Tokens in wallets and pools, in total.</p></div></div>
+<div class="equation" data-live-group="accounting"><p data-live-group="accounting"><b>After existing commitments.</b> <span data-live="total" data-live-format="millions"></span> existing − <span data-live="volume-remaining" data-live-format="millions"></span> reserve − <span data-live="herd-future" data-live-format="millions"></span> HERD − <span data-live="objects-future" data-live-format="millions"></span> Objects − <span data-live="pending-escrow" data-live-format="millions"></span> issued-claim escrow − 100M remaining.</p><strong>= <span data-live="headroom" data-live-format="millions"></span></strong></div></div>
+<p class="disclosure" data-live-group="accounting">After the reserved routes, <span data-live="post-fixed" data-live-format="millions"></span> would remain. The further <span data-live="headroom" data-live-format="millions"></span> is shared capacity for platform, game and other future burns—not tokens already owned. Independent burns also consume that room. Unlocking the volume reserve does not cancel its commitment.</p>
+<details class="tiers"><summary><span>Volume schedule <b>250M lifetime allocation</b></span></summary><div class="tiers-top"><span>Cumulative volume → incremental burn</span></div><div class="tier-grid"><div class="tier"><b>$250K → 12.5M</b><span>First tranche</span><small data-live="tier-1-status"></small></div><div class="tier"><b>$1M → 25M</b><span>Second tranche</span><small data-live="tier-2-status"></small></div><div class="tier"><b>$5M → 37.5M</b><span>Third tranche</span><small data-live="tier-3-status"></small></div><div class="tier"><b>$20M → 62.5M</b><span>Fourth tranche</span><small data-live="tier-4-status"></small></div><div class="tier"><b>$50M → 112.5M</b><span>Final tranche</span><small data-live="tier-5-status"></small></div></div></details><p class="supply-note"><b>One shared limit.</b> Reserve accepted claims before discretionary burns and reconcile every managed route. Independent holders can still burn their own tokens; the existing programs do not enforce a global floor.</p></section>
 <section class="chapter" id="collecting"><div class="section-head"><div><p class="eyebrow">03 / The full mint picture</p><h2>Every piece.<br>Every commitment.</h2></div><p>Mint totals belong in the same supply budget. Custom pieces and earned awards must not quietly become additional burn claims.</p></div>
-<div class="mint-grid"><article class="mint-card glass"><div class="top"><p class="eyebrow">The HERD / Original collection</p><span class="pill">Active</span></div><h3>1,000 pieces. <br>250M BULLEN.</h3><p>Each public mint commits 250,000 BULLEN. At full completion, the original collection accounts for 250M tokens.</p><div class="progress-line"><span data-live-width="herd-progress" style="width:55.6%"></span></div><div class="progress-meta"><span><span data-live="herd-minted" data-live-format="count">556</span> minted · <span data-live="herd-committed" data-live-format="millions">139.00M</span> committed</span><span><span data-live="herd-remaining" data-live-format="count">444</span> remaining</span></div><div class="mint-math"><span data-live="herd-committed" data-live-format="millions">139.00M</span> + <span data-live="herd-future" data-live-format="millions">111.00M</span> = 250M</div><small>Issued claim commitments reconcile to finalized escrow burns plus identified deposits awaiting destruction. Three qualifying referred public HERD mints earn a custom 1-of-1 under the referral rules. Customs sit outside the original 1,000 and do not create another standard 250,000-token obligation.</small></article>
-<article class="mint-card glass"><div class="top"><p class="eyebrow">House Objects / Signet + Cufflinks</p><span class="pill">Active</span></div><h3>200 objects. <br><span data-live="objects-ceiling" data-live-format="millions" data-live-digits="1">18.8M</span> current ceiling.</h3><p>Public claims commit 100,000 BULLEN each. Awards use the same numbered stock, without a second paid deposit.</p><div class="progress-line"><span data-live-width="objects-progress" style="width:13.5%"></span></div><div class="progress-meta"><span><span data-live="objects-issued" data-live-format="count">27</span> issued · <span data-live="objects-paid" data-live-format="count">15</span> paid + <span data-live="objects-awards" data-live-format="count">12</span> awards</span><span data-live="object-stock">173 available</span></div><div class="mint-math"><span data-live="objects-committed" data-live-format="millions" data-live-digits="1">1.5M</span> + <span data-live="objects-future" data-live-format="millions" data-live-digits="1">17.3M</span> = <span data-live="objects-ceiling" data-live-format="millions" data-live-digits="1">18.8M</span></div><small>The original all-paid ceiling was 20M. <span data-live="objects-awards" data-live-format="count">12</span> awards have used stock, leaving a maximum of <span data-live="objects-ceiling" data-live-format="millions" data-live-digits="1">18.8M</span>. Further awards reduce the available paid-claim ceiling again.</small></article></div>
+<div class="mint-grid"><article class="mint-card glass"><div class="top"><p class="eyebrow">The HERD / Original collection</p><span class="pill">Active</span></div><h3>1,000 pieces. <br>250M BULLEN.</h3><p>Each public mint commits 250,000 BULLEN. At full completion, the original collection accounts for 250M tokens.</p><div class="progress-line" data-live-group="accounting"><span data-live-width="herd-progress"></span></div><div class="progress-meta" data-live-group="accounting"><span><span data-live="herd-minted" data-live-format="count"></span> minted · <span data-live="herd-committed" data-live-format="millions"></span> committed</span><span><span data-live="herd-remaining" data-live-format="count"></span> remaining</span></div><div class="mint-math" data-live-group="accounting"><span data-live="herd-committed" data-live-format="millions"></span> + <span data-live="herd-future" data-live-format="millions"></span> = 250M</div><small>Issued claim commitments reconcile to finalized escrow burns plus identified deposits awaiting destruction. Three qualifying referred public HERD mints earn a custom 1-of-1 under the referral rules. Customs sit outside the original 1,000 and do not create another standard 250,000-token obligation.</small></article>
+<article class="mint-card glass"><div class="top"><p class="eyebrow">House Objects / Signet + Cufflinks</p><span class="pill">Active</span></div><h3>200 objects. <br><span data-live-group="accounting"><span data-live="objects-ceiling" data-live-format="millions" data-live-digits="1"></span> current ceiling.</span></h3><p>Public claims commit 100,000 BULLEN each. Awards use the same numbered stock, without a second paid deposit.</p><div class="progress-line" data-live-group="accounting"><span data-live-width="objects-progress"></span></div><div class="progress-meta" data-live-group="accounting"><span><span data-live="objects-issued" data-live-format="count"></span> issued · <span data-live="objects-paid" data-live-format="count"></span> paid + <span data-live="objects-awards" data-live-format="count"></span> awards</span><span data-live="object-stock"></span></div><div class="mint-math" data-live-group="accounting"><span data-live="objects-committed" data-live-format="millions" data-live-digits="1"></span> + <span data-live="objects-future" data-live-format="millions" data-live-digits="1"></span> = <span data-live="objects-ceiling" data-live-format="millions" data-live-digits="1"></span></div><small data-live-group="accounting">The original all-paid ceiling was 20M. <span data-live="objects-awards" data-live-format="count"></span> awards have used stock, leaving a maximum of <span data-live="objects-ceiling" data-live-format="millions" data-live-digits="1"></span>. Further awards reduce the available paid-claim ceiling again.</small></article></div>
 <div class="settlement"><span><b>BULLEN</b> paid claim</span><i>→</i><span><b>Escrow</b> commitment</span><i>→</i><span><b>Final burn</b> receipt</span></div>
 <div class="object-extras"><article><h4>The Key is earned.</h4><p>An eligible Signet and Cufflinks pair can earn a Key, subject to claim rules and the 100-Key cap. No extra BULLEN payment. The Key opens the private Salon.</p></article><article> <h4>Founding records are benefits.</h4><p>The Promise and The Triad belong to eligible game preorders. Their issuance does not add a separate token-burn charge to the preorder allocation.</p></article><article><h4>Schedules settle commitments.</h4><p>Burning tokens collected into escrow completes an existing claim. It is not a second burn allocation to add to the collection total.</p></article></div></section>
 <section class="chapter" id="revenue"><div class="section-head"><div><p class="eyebrow">04 / A new source of fuel</p><h2>Revenue with<br>a return route.</h2></div><p>Proposed allocation of future realized net revenue. Revenue and payment availability are not assumed.</p></div>
 <div class="allocation glass"><div><span class="pill proposed">Proposed platform policy</span><h3>Earn. Reinvest. <br>Repeat.</h3><p>Software, promotion and transaction fees may fund this route where payment paths are enabled. Only realized, reconciled net is allocated.</p><div class="net-definition"><b>THE BASE: DISTRIBUTABLE NET</b><p>Funds remaining after operating, payment and network costs, refunds, taxes and existing obligations. Trading volume is not platform revenue.</p></div><p class="allocation-note">No assumed revenue, token price or completion date is used in the supply accounting.</p></div><div class="allocation-rows"><div class="allocation-row"><strong>25%</strong><div><h4>Buybacks &amp; burns</h4><p>Purchase BULLEN, then burn the acquired tokens within the shared allowance.</p></div></div><div class="allocation-row"><strong>25%</strong><div><h4>Marketing allocation</h4><p>Fund outreach and distribution. Additional spend can come from reinvestment.</p></div></div><div class="allocation-row"><strong>50%</strong><div><h4>Reinvestment</h4><p>Further development, operating reserves and possible liquidity funding. Allocation remains need-led.</p></div></div></div></div>
 <div class="other-fees"><article><h3>The game has its own allocations.</h3><p>Card preorders allocate 20% to BULLEN buyback/burn. Eligible original crypto editions allocate $7.50 / $15 / $25 at their $25 / $50 / $100 prices. Direct support allocates 10% of eligible receipts excluding tax, before payment fees; historical payment terms remain attached to their orders. The remaining funding supports production. A game-funded HERD giveaway uses an existing mint slot and its burn; that burn is not counted again as an additional game route.</p><a href="https://bullensaga.com/funding/terms" target="_blank" rel="noopener">Funding &amp; allocation terms ↗</a></article><article><h3>Creator fees keep the House moving.</h3><p>Eligible referrals receive 50% of measured creator fees on qualifying buys. The Drop uses 25% of qualifying buy creator fees. Ten designated NFTs share 20% after the marketing allocation; published marketing-backer participation is up to 25%. These use different bases and eligibility rules, so they are not one additive percentage split. Requested secondary NFT royalties are separate again; they are not guaranteed receipts.</p><a href="https://bullenciaga.com/whitepaper" target="_blank" rel="noopener">Rewards, access &amp; creator-fee rules ↗</a></article></div></section>
 <section class="chapter" id="liquidity"><div class="section-head"><div><p class="eyebrow">05 / Protect the ability to trade</p><h2>Supply and depth.<br>Different jobs.</h2></div><p>Burns reduce supply. Liquidity supports execution. Buying moves pool reserves; burning those tokens does not move them a second time.</p></div>
-<div class="depth-panel glass"><div class="depth-head"><h3>Understand the market <br>before funding more depth.</h3><p>The primary BULLEN / SOL pool uses actual and virtual reserves for pricing. Its current deposit compatibility must be resolved before new capital is assigned to liquidity.</p></div><div class="pool-stats"><div><strong data-live="pool-base" data-live-format="millions" data-live-digits="3">100.286M</strong><span>BULLEN in the pool</span></div><div><strong><span data-live="pool-quote" data-live-format="decimal" data-live-digits="3">169.186</span> SOL</strong><span>Quote reserve</span></div><div><strong><span data-live="pool-virtual" data-live-format="decimal" data-live-digits="3">17.585</span> SOL</strong><span>Virtual quote reserve · not cash</span></div></div><p class="disclosure"><span data-live="pool-status">Dated finalized pool</span> · <span data-live="pool-as-of">22 Sep 2026, 14:15 UTC</span> · slot <span data-live="pool-slot" data-live-format="count">449402988</span>. Effective pricing reserve: <span data-live="pool-effective" data-live-format="exact" data-live-digits="9">186.770084388</span> SOL = <span data-live="pool-quote" data-live-format="exact" data-live-digits="9">169.18557901</span> actual + <span data-live="pool-virtual" data-live-format="exact" data-live-digits="9">17.584505378</span> virtual. <span data-live="pool-lp-status">No outstanding LP tokens at this read.</span> Virtual reserves are not withdrawable cash.</p>
-<div class="depth-lab"><div class="lab-controls"><p class="eyebrow" style="margin-bottom:18px">Explore the mechanics / hypothetical trade</p><div class="range-title"><label for="trade-size">Buy size</label><output id="trade-value" for="trade-size">1 SOL</output></div><input id="trade-size" type="range" min="1" max="200" value="10" step="1" aria-describedby="lab-assumptions"><p id="tokens-out" class="silver" style="font-size:15px;margin:10px 0">Estimated token output before fees.</p><p>This models a single buy at the recorded reserves. The acquired tokens could then be burned; that second step does not move the pool again.</p></div><div class="depth-results"><div class="depth-result"><span>AVERAGE EXECUTION IMPACT</span><strong id="impact-now">0.54%</strong></div><div class="depth-result"><span>SPOT CHANGE AFTER THE BUY</span><strong id="impact-after">+1.07%</strong></div><div class="depth-bars" aria-hidden="true"><div><i id="bar-now"></i></div><div><i id="bar-after"></i></div></div><p class="lab-explain" id="lab-assumptions">Illustration from the effective reserves shown above, not a swap quote. Average impact compares execution with the starting spot; end-spot change measures the reserve ratio after the buy. Both ignore fees, rounding, routing, MEV and other trades. Actual execution requires a fresh quote.</p></div></div></div>
+<div class="depth-panel glass"><div class="depth-head"><h3>Understand the market <br>before funding more depth.</h3><p>The primary BULLEN / SOL pool uses actual and virtual reserves for pricing. Its current deposit compatibility must be resolved before new capital is assigned to liquidity.</p></div><div class="pool-stats" data-live-group="pool"><div><strong data-live="pool-base" data-live-format="millions" data-live-digits="3"></strong><span>BULLEN in the pool</span></div><div><strong><span data-live="pool-quote" data-live-format="decimal" data-live-digits="3"></span> SOL</strong><span>Quote reserve</span></div><div><strong><span data-live="pool-virtual" data-live-format="decimal" data-live-digits="3"></span> SOL</strong><span>Virtual quote reserve · not cash</span></div></div><p class="disclosure"><span data-live="pool-status" data-live-ready="true">Checking current pool…</span><span data-live-group="pool"> · <span data-live="pool-as-of"></span> · slot <span data-live="pool-slot" data-live-format="count"></span>. Effective pricing reserve: <span data-live="pool-effective" data-live-format="exact" data-live-digits="9"></span> SOL = <span data-live="pool-quote" data-live-format="exact" data-live-digits="9"></span> actual + <span data-live="pool-virtual" data-live-format="exact" data-live-digits="9"></span> virtual. <span data-live="pool-lp-status"></span> Virtual reserves are not withdrawable cash.</span></p>
+<div class="depth-lab" data-live-group="pool" inert><div class="lab-controls"><p class="eyebrow" style="margin-bottom:18px">Explore the mechanics / hypothetical trade</p><div class="range-title"><label for="trade-size">Buy size</label><output id="trade-value" for="trade-size">1 SOL</output></div><input id="trade-size" disabled type="range" min="1" max="200" value="10" step="1" aria-describedby="lab-assumptions"><p id="tokens-out" class="silver" style="font-size:15px;margin:10px 0"></p><p>This models a single buy at the recorded reserves. The acquired tokens could then be burned; that second step does not move the pool again.</p></div><div class="depth-results"><div class="depth-result"><span>AVERAGE EXECUTION IMPACT</span><strong id="impact-now"></strong></div><div class="depth-result"><span>SPOT CHANGE AFTER THE BUY</span><strong id="impact-after"></strong></div><div class="depth-bars" aria-hidden="true"><div><i id="bar-now"></i></div><div><i id="bar-after"></i></div></div><p class="lab-explain" id="lab-assumptions">Illustration from the effective reserves shown above, not a swap quote. Average impact compares execution with the starting spot; end-spot change measures the reserve ratio after the buy. Both ignore fees, rounding, routing, MEV and other trades. Actual execution requires a fresh quote.</p></div></div></div>
 <div class="lp-plan"><article><span class="num">01 / RESERVE</span><h4>Reserve capital.</h4><p>Use available reinvestment after the proposed burn and marketing allocations. Preserve operating reserves.</p></article><article><span class="num">02 / VERIFY</span><h4>Verify the venue.</h4><p>Establish a supported deposit path. If unavailable, assess a separate full-range pool.</p></article><article><span class="num">03 / INTEGRATE</span><h4>Pair and integrate.</h4><p>Fund both assets within execution limits. Connect any new venue to fee, referral, giveaway and volume accounting.</p></article><article><span class="num">04 / REVIEW</span><h4>Publish and review.</h4><p>Disclose deposits, position custody, fees and withdrawals. Compare executable quotes before expanding.</p></article></div>
 <p class="supply-note"><b>Liquidity is working capital.</b> LP positions remain withdrawable unless locked. Providing liquidity does not burn BULLEN, and fees do not guarantee protection from inventory losses.</p>
 <details class="boundaries pool-notes"><summary>Pool mechanics &amp; implementation conditions</summary><p>The official program definition lists restrictions for boost pools. This pool has virtual reserves, and a supported deposit path has not been verified. A separate full-range Raydium CPMM pool is a candidate, subject to Token-2022 compatibility, routing and House accounting integration. Concentrated positions require active range management.</p><p>A new pool can split liquidity and creator-fee income. Protect the committed burn reserve and paid-mint escrow. Pool-held BULLEN is included in circulating supply. A 100M total must accommodate all pool and holder balances; purchases can change their distribution. Never remove liquidity simply to burn its token side.</p><p>A policy for unspent future burn allocations must be agreed before the proposed stopping rule is adopted.</p></details></section>
 <section class="sources" id="evidence"><div class="sources-head"><div><p class="eyebrow" style="margin-bottom:9px">06 / Follow the evidence</p><h3>Built to be checked.</h3></div><p>Reconciled records and proposed policy are distinguished. Every current figure carries a source time.</p></div><div class="sources-grid"><a href="https://bullenciaga.com/supply" target="_blank" rel="noopener">Supply record <span>↗</span></a><a href="https://bullenciaga.com/supply/minted" target="_blank" rel="noopener">HERD mint count <span>↗</span></a><a href="https://bullenciaga.com/supply/proof" target="_blank" rel="noopener">Burn receipts <span>↗</span></a><a href="https://bullenciaga.com/lock" target="_blank" rel="noopener">Reserve &amp; lock schedule <span>↗</span></a><a href="https://bullenciaga.com/whitepaper" target="_blank" rel="noopener">Token &amp; collection rules <span>↗</span></a><a href="https://bullensaga.com/api/house-objects/inventory" target="_blank" rel="noopener">House Object inventory <span>↗</span></a><a href="https://solscan.io/account/9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ" target="_blank" rel="noopener">Primary pool account <span>↗</span></a><a href="https://bullensaga.com/funding/terms" target="_blank" rel="noopener">Game funding terms <span>↗</span></a><a href="https://github.com/pump-fun/pump-public-docs/blob/main/docs/PUMP_SWAP_README.md" target="_blank" rel="noopener">AMM &amp; LP mechanics <span>↗</span></a><a href="https://raw.githubusercontent.com/pump-fun/pump-public-docs/main/idl/pump_amm.json" target="_blank" rel="noopener">Pool deposit rules <span>↗</span></a></div>
-<details class="boundaries"><summary>Accounting and proposal notes</summary><p>The 25% platform buyback/burn allocation, 25% declared platform marketing allocation, 100M stopping rule and additional liquidity program are proposals. Existing mint, preorder, referral, creator-fee and custody terms continue to govern their own routes. This page does not change those terms or authorize any transaction.</p><p>Reconciled total supply is <span data-live="total" data-live-format="exact">818,148,430.922664</span> BULLEN; finalized destruction is <span data-live="destroyed" data-live-format="exact">181,851,569.077336</span>. Shared variable-route capacity is <span data-live="headroom" data-live-format="exact">352,348,430.922664</span> after protecting <span data-live="volume-remaining" data-live-format="millions">237.50M</span> for the volume schedule, <span data-live="herd-future" data-live-format="millions">111.00M</span> for remaining HERD claims, <span data-live="objects-future" data-live-format="millions">17.30M</span> for unissued Object claims, <span data-live="pending-escrow" data-live-format="exact">0</span> in identified issued-claim escrow and 100M to remain. Temporarily reserved stock stays in the maximum paid-claim case; awards reduce that maximum. Sources are reconciled across separate reads, not one atomic multi-program transaction.</p><p>A floor requires coordinated claim admission, reserved capacity and burn execution checks. It cannot stop independent token owners from burning. Liquidity provision requires capital, carries impermanent-loss and custody risk, and does not create guaranteed price support. At the floor, committed obligations and the policy for unspent allocations must be resolved before new managed burns or claims are accepted.</p><p><span data-live="status-detail">Audited accounting from 22 Sep 2026, 14:12 UTC. Live reconciliation runs on the website.</span> Supply, mint count, Object stock, schedule receipts and finalized escrow are checked together every 90 seconds while this page is visible. Deposits are included only when issued claims explain the finalized escrow balance exactly. Unknown deposits or contradictory records keep the previous complete cohort, marked dated. Pool reserves refresh separately with their own finalized slot and time. No wallet connection is needed.</p></details></section>
+<details class="boundaries"><summary>Accounting and proposal notes</summary><p>The 25% platform buyback/burn allocation, 25% declared platform marketing allocation, 100M stopping rule and additional liquidity program are proposals. Existing mint, preorder, referral, creator-fee and custody terms continue to govern their own routes. This page does not change those terms or authorize any transaction.</p><p data-live-group="accounting">Reconciled total supply is <span data-live="total" data-live-format="exact"></span> BULLEN; finalized destruction is <span data-live="destroyed" data-live-format="exact"></span>. Shared variable-route capacity is <span data-live="headroom" data-live-format="exact"></span> after protecting <span data-live="volume-remaining" data-live-format="millions"></span> for the volume schedule, <span data-live="herd-future" data-live-format="millions"></span> for remaining HERD claims, <span data-live="objects-future" data-live-format="millions"></span> for unissued Object claims, <span data-live="pending-escrow" data-live-format="exact"></span> in identified issued-claim escrow and 100M to remain. Temporarily reserved stock stays in the maximum paid-claim case; awards reduce that maximum. Sources are reconciled across separate reads, not one atomic multi-program transaction.</p><p>A floor requires coordinated claim admission, reserved capacity and burn execution checks. It cannot stop independent token owners from burning. Liquidity provision requires capital, carries impermanent-loss and custody risk, and does not create guaranteed price support. At the floor, committed obligations and the policy for unspent allocations must be resolved before new managed burns or claims are accepted.</p><p><span data-live="status-detail"></span> Supply, mint count, Object stock, schedule receipts and finalized escrow are checked together every 90 seconds while this page is visible. Deposits are included only when issued claims explain the finalized escrow balance exactly. Unverified or expired records are withheld until a complete current cohort reconciles. Pool reserves refresh separately with their own finalized slot and time. No wallet connection is needed.</p></details></section>
 <footer><a href="https://bullenciaga.com">BULLENCIAGA / THE HOUSE IN MOTION</a><div><span>Public mechanisms. Proposed next chapter.</span><a href="#main">Back to top ↑</a></div></footer>
 </main>
 <script>
@@ -368,11 +404,11 @@ function routeCrossings(a,b){
 const mechanisms={
  token:{k:'The common thread',title:'A token with places to go.',intro:'Trading, collecting and supply reduction connect here. Each has a different effect.',link:'https://bullenciaga.com/whitepaper',route:'Capital buys BULLEN. Collecting commits it. Finalized burns destroy it.',rows:['<b>Fixed issuance:</b> 1B originally; mint and freeze authority revoked. Burned supply cannot be replaced.','<b>Collecting:</b> paid claims commit tokens for later destruction. Holders can use tokens they already own.','<b>Trading:</b> eligible activity generates creator fees under the pool’s rules.','<b>Price and supply:</b> a burn outside the pool does not change its spot reserve ratio.']},
  platform:{k:'Proposed / Future realized revenue',title:'Earn. Reinvest. Repeat.',intro:'A proposed allocation of realized net revenue, after costs and existing obligations.',link:'#revenue',route:'Platform → BULLEN buybacks → burns. Reinvestment may also fund liquidity.',rows:['<b>25% buybacks and burns:</b> purchase BULLEN and destroy it within the shared allowance.','<b>25% marketing:</b> fund outreach; extra spend can come from reinvestment.','<b>50% reinvestment:</b> development, operating reserves and possible liquidity. Spending remains need-led.','<b>Proposed, not assumed:</b> no revenue amount or completion date is built into this model.']},
- reserve:{k:'Committed / Volume schedule',title:'Already reserved. Not burned yet.',intro:'The outstanding reserve belongs to the existing 250M lifetime volume allocation. It does not need funding a second time.',link:'https://bullenciaga.com/lock',route:'Existing volume reserve → milestone and cliff conditions → finalized burns.',rows:['<b><span data-live="volume-completed" data-live-format="millions">12.50M</span> completed:</b> executed tranches are already included in historical destruction.','<b><span data-live="volume-remaining" data-live-format="millions">237.50M</span> outstanding:</b> the existing allocation remains protected even after custody locks expire.','<b>Conditions still apply:</b> published cumulative-volume milestones and custody cliffs govern execution.','<b>Reserved once:</b> unlocking changes availability; it does not cancel this supply commitment.']},
+ reserve:{k:'Committed / Volume schedule',title:'Already reserved. Not burned yet.',intro:'The outstanding reserve belongs to the existing 250M lifetime volume allocation. It does not need funding a second time.',link:'https://bullenciaga.com/lock',route:'Existing volume reserve → milestone and cliff conditions → finalized burns.',rows:['<b><span data-live="volume-completed" data-live-format="millions"></span> completed:</b> executed tranches are already included in historical destruction.','<b><span data-live="volume-remaining" data-live-format="millions"></span> outstanding:</b> the existing allocation remains protected even after custody locks expire.','<b>Conditions still apply:</b> published cumulative-volume milestones and custody cliffs govern execution.','<b>Reserved once:</b> unlocking changes availability; it does not cancel this supply commitment.']},
  game:{k:'BULLENSAGA / In development',title:'Build the game. Fund its future.',intro:'Preorders and support fund production and defined token allocations under their own terms.',link:'https://bullensaga.com/funding/terms',route:'Eligible preorders and support → production + defined BULLEN allocations.',rows:['<b>Card preorders:</b> 20% allocated to buyback/burn. Remaining funds support development and payment costs.','<b>Original crypto editions:</b> $7.50 / $15 / $25 allocated at $25 / $50 / $100 edition prices. Other offers retain their own terms.','<b>Direct support:</b> 10% of eligible received amounts, excluding tax and before provider fees.','<b>Count once:</b> a game-funded HERD giveaway uses its existing collection slot and burn; benefits add no second token payment.']},
  community:{k:'The House / Existing fee programs',title:'Share the fees.',intro:'Each program has its own eligibility and fee base. These percentages are not one additive pie.',link:'https://bullenciaga.com/whitepaper',route:'Eligible trading → creator fees → rewards, outreach and House operations.',rows:['<b>Referrals:</b> 50% of measured creator fees from eligible buys after binding; weekly SOL settlement.','<b>The Drop:</b> 25% of qualifying buy creator fees funds the pot, subject to its entry and sell-adjustment rules.','<b>Ten designated NFTs:</b> collectively share 20% after the marketing allocation, subject to ownership and eligibility.','<b>Marketing and operations:</b> published backer participation up to 25%; reconciled residual funds the House.']},
- mints:{k:'Collectibles / Existing commitments',title:'Collect. Commit. Burn.',intro:'Paid claims transfer BULLEN into escrow. Final destruction settles that same commitment.',link:'#collecting',route:'BULLEN → paid claim → escrow → one finalized burn. Awards consume stock.',rows:['<b>The HERD:</b> <span data-live="herd-minted" data-live-format="count">556</span> minted; <span data-live="herd-committed" data-live-format="millions">139.00M</span> committed. The remaining <span data-live="herd-remaining" data-live-format="count">444</span> could commit <span data-live="herd-future" data-live-format="millions">111.00M</span>.','<b>House Objects:</b> <span data-live="objects-paid" data-live-format="count">15</span> paid claims + <span data-live="objects-awards" data-live-format="count">12</span> awards issued. <span data-live="objects-remaining" data-live-format="count">173</span> unissued; paid-claim lifetime ceiling: <span data-live="objects-ceiling" data-live-format="millions" data-live-digits="1">18.8M</span>.','<b>Full capacity reserved:</b> future paid claims are accounted for before discretionary burns.','<b>No invented charge:</b> customs, earned Keys and preorder benefits do not add another standard mint burn.']},
- burn:{k:'Destruction / One shared budget',title:'Destroy once. Count once.',intro:'A finalized burn reduces total supply. The proposed managed stopping point is 100M.',link:'#supply',route:'Collectible claims + the volume reserve + variable burns share one supply budget.',rows:['<b><span data-live="destroyed" data-live-format="millions">181.85M</span> destroyed:</b> historical reduction across all routes, already counted.','<b><span data-live="fixed-future" data-live-format="millions" data-live-digits="1">365.8M</span> reserved:</b> <span data-live="volume-remaining" data-live-format="millions" data-live-digits="1">237.5M</span> volume + <span data-live="herd-future" data-live-format="millions" data-live-digits="1">111.0M</span> HERD + up to <span data-live="objects-future" data-live-format="millions" data-live-digits="1">17.3M</span> Objects + <span data-live="pending-escrow" data-live-format="millions" data-live-digits="2">0.00M</span> issued-claim escrow.','<b><span data-live="headroom" data-live-format="millions">352.35M</span> shared room:</b> capacity for platform, game and other future burns; not tokens already owned.','<b>Proposed boundary:</b> current programs do not enforce it. Independent holders can still burn their tokens.']},
+ mints:{k:'Collectibles / Existing commitments',title:'Collect. Commit. Burn.',intro:'Paid claims transfer BULLEN into escrow. Final destruction settles that same commitment.',link:'#collecting',route:'BULLEN → paid claim → escrow → one finalized burn. Awards consume stock.',rows:['<b>The HERD:</b> <span data-live="herd-minted" data-live-format="count"></span> minted; <span data-live="herd-committed" data-live-format="millions"></span> committed. The remaining <span data-live="herd-remaining" data-live-format="count"></span> could commit <span data-live="herd-future" data-live-format="millions"></span>.','<b>House Objects:</b> <span data-live="objects-paid" data-live-format="count"></span> paid claims + <span data-live="objects-awards" data-live-format="count"></span> awards issued. <span data-live="objects-remaining" data-live-format="count"></span> unissued; paid-claim lifetime ceiling: <span data-live="objects-ceiling" data-live-format="millions" data-live-digits="1"></span>.','<b>Full capacity reserved:</b> future paid claims are accounted for before discretionary burns.','<b>No invented charge:</b> customs, earned Keys and preorder benefits do not add another standard mint burn.']},
+ burn:{k:'Destruction / One shared budget',title:'Destroy once. Count once.',intro:'A finalized burn reduces total supply. The proposed managed stopping point is 100M.',link:'#supply',route:'Collectible claims + the volume reserve + variable burns share one supply budget.',rows:['<b><span data-live="destroyed" data-live-format="millions"></span> destroyed:</b> historical reduction across all routes, already counted.','<b><span data-live="fixed-future" data-live-format="millions" data-live-digits="1"></span> reserved:</b> <span data-live="volume-remaining" data-live-format="millions" data-live-digits="1"></span> volume + <span data-live="herd-future" data-live-format="millions" data-live-digits="1"></span> HERD + up to <span data-live="objects-future" data-live-format="millions" data-live-digits="1"></span> Objects + <span data-live="pending-escrow" data-live-format="millions" data-live-digits="2"></span> issued-claim escrow.','<b><span data-live="headroom" data-live-format="millions"></span> shared room:</b> capacity for platform, game and other future burns; not tokens already owned.','<b>Proposed boundary:</b> current programs do not enforce it. Independent holders can still burn their tokens.']},
  liquidity:{k:'Market depth / Proposed program',title:'Fund the ability to trade.',intro:'Paired capital supports execution. The deposited tokens remain in supply.',link:'#liquidity',route:'Available platform reinvestment → paired liquidity → trading depth. This is not a burn.',rows:['<b>Separate budget:</b> use available reinvestment after the proposed burn and marketing allocations.','<b>Verify the venue:</b> the current virtual-reserve pool’s supported deposit path is not yet established.','<b>Integrate first:</b> any new pool needs Token-2022 support, routing and House accounting coverage.','<b>Publish custody:</b> disclose deposits, fees and withdrawals. Positions remain withdrawable unless locked.']},
  proof:{k:'Public evidence / Independent records',title:'Check the receipts.',intro:'Supply, custody, inventory and execution each have a public source.',link:'#evidence',route:'Finalized burns → receipts. Supply and inventory records reconcile the full picture.',rows:['<b>Supply:</b> total, circulating and verified non-circulating amounts. A lock is not destruction.','<b>Burn receipts:</b> executed burns matched to finalized chain signatures.','<b>Collectible inventory:</b> paid claims, awards, available stock and pending commitments.','<b>Future allocations:</b> buybacks and liquidity positions need separate dated execution and custody records.']}
 };
@@ -516,7 +552,7 @@ function presentDetail(moveFocus=false){
 }
 function selectNode(id,moveFocus=true){
  const d=mechanisms[id];if(!d)return;const wasOpen=detailOpen;selectedNode=id;detailOpen=true;hoverNode=null;
- document.getElementById('detail-kicker').textContent=d.k;document.getElementById('detail-title').textContent=d.title;document.getElementById('detail-intro').textContent=d.intro;document.getElementById('detail-list').innerHTML=d.rows.map(x=>'<li>'+x+'</li>').join('');
+ document.getElementById('detail-kicker').textContent=d.k;document.getElementById('detail-title').textContent=d.title;document.getElementById('detail-intro').textContent=d.intro;document.getElementById('detail-list').innerHTML=d.rows.map(x=>'<li'+(x.includes('data-live=')?' data-live-group="accounting"':'')+'>'+x+'</li>').join('');
  const original=document.querySelector('[data-node="'+id+'"] svg'),glyph=original.cloneNode(true);glyph.removeAttribute('style');glyph.removeAttribute('class');document.getElementById('detail-icon').replaceChildren(glyph);
  const crumbs=document.getElementById('detail-route');crumbs.replaceChildren();simpleRoutes[id].forEach((text,i)=>{if(i){const arrow=document.createElement('i');arrow.textContent='→';arrow.setAttribute('aria-hidden','true');crumbs.append(arrow);}const span=document.createElement('span');span.textContent=text;crumbs.append(span);});
  document.getElementById('detail-position').textContent=String(nodeOrder.indexOf(id)+1).padStart(2,'0')+' / 09';
@@ -565,7 +601,9 @@ window.addEventListener('resize',()=>{
  syncAccessibility();measureTileType();trackLayout();
 },{passive:true});
 // Apply resize geometry before paint so transformed titles cannot trail a shrinking tile by one frame.
-new ResizeObserver(()=>{if(routeFrame)cancelAnimationFrame(routeFrame);drawPaths();}).observe(map);measureTileType();document.fonts.ready.then(measureTileType);
+new ResizeObserver(()=>{if(routeFrame)cancelAnimationFrame(routeFrame);drawPaths();}).observe(map);measureTileType();
+window.__FLYWHEEL_LAYOUT=()=>{measureTileType();if(routeFrame)cancelAnimationFrame(routeFrame);drawPaths();};
+if(document.fonts?.load)Promise.all([document.fonts.load('600 16px House'),document.fonts.load('400 10px HouseMono')]).then(faces=>window.__FLYWHEEL_PAINT(faces.every(face=>face.length>0)),()=>window.__FLYWHEEL_PAINT(false));else window.__FLYWHEEL_PAINT(false);
 new IntersectionObserver(es=>{beamsVisible=es[0].isIntersecting;map.classList.toggle('offscreen',!beamsVisible);wakeBeams();},{rootMargin:'100px'}).observe(map);
 syncAccessibility();stylePaths();
 const motion=document.getElementById('motion'),video=document.querySelector('video'),pref=matchMedia('(prefers-reduced-motion:reduce)');let paused=pref.matches,visible=true;
@@ -577,15 +615,34 @@ function updateReading(){readingFrame=0;const threshold=innerWidth<=760?170:180;
 document.addEventListener('scroll',()=>{if(!readingFrame)readingFrame=requestAnimationFrame(updateReading);},{passive:true});window.addEventListener('resize',updateReading,{passive:true});updateReading();
 const segmentButtons=[...document.querySelectorAll('[data-segment]')];document.getElementById('composition-label').setAttribute('aria-live','polite');
 segmentButtons.forEach(b=>b.addEventListener('click',()=>{const active=b.getAttribute('aria-pressed')!=='true';segmentButtons.forEach(x=>x.setAttribute('aria-pressed',String(active&&x===b)));document.querySelector('.ledger').classList.toggle('has-selected',active);document.querySelectorAll('[data-ledger]').forEach(x=>x.classList.toggle('selected',active&&x.dataset.ledger===b.dataset.segment));document.getElementById('composition-label').textContent=active?b.getAttribute('aria-label'):'One billion tokens. Every route accounted for.';}));
-const pool={base:100286319.242201,rawQuote:169.18557901,virtualQuote:17.584505378,effectiveQuote:186.770084388};
-function calcDepth(){const q=Number(document.getElementById('trade-size').value)/10,z=pool.effectiveQuote,now=q/z*100,after=((1+q/z)**2-1)*100,out=pool.base*q/(z+q);document.getElementById('trade-value').textContent=q.toFixed(q%1?1:0)+' SOL';document.getElementById('trade-size').setAttribute('aria-valuetext',q.toFixed(1)+' SOL');document.getElementById('impact-now').textContent=now.toFixed(2)+'%';document.getElementById('impact-after').textContent='+'+after.toFixed(2)+'%';document.getElementById('bar-now').style.width=Math.min(100,now/24*100)+'%';document.getElementById('bar-after').style.width=Math.min(100,after/24*100)+'%';document.getElementById('tokens-out').textContent='Model output: '+Math.round(out).toLocaleString('en-GB')+' BULLEN before fees.';return{q,now,after,out};}
+let pool=null;
+function calcDepth(){
+ const slider=document.getElementById('trade-size');slider.disabled=!pool;
+ const q=Number(slider.value)/10;
+ document.getElementById('trade-value').textContent=q.toFixed(q%1?1:0)+' SOL';
+ slider.setAttribute('aria-valuetext',q.toFixed(1)+' SOL');
+ if(!pool){
+  for(const id of ['impact-now','impact-after','tokens-out'])document.getElementById(id).textContent='';
+  for(const id of ['bar-now','bar-after'])document.getElementById(id).style.width='0%';
+  return null;
+ }
+ const z=pool.effectiveQuote,now=q/z*100,after=((1+q/z)**2-1)*100,out=pool.base*q/(z+q);
+ document.getElementById('impact-now').textContent=now.toFixed(2)+'%';
+ document.getElementById('impact-after').textContent='+'+after.toFixed(2)+'%';
+ document.getElementById('bar-now').style.width=Math.min(100,now/24*100)+'%';
+ document.getElementById('bar-after').style.width=Math.min(100,after/24*100)+'%';
+ document.getElementById('tokens-out').textContent='Model output: '+Math.round(out).toLocaleString('en-GB')+' BULLEN before fees.';
+ return{q,now,after,out};
+}
 document.getElementById('trade-size').addEventListener('input',calcDepth);calcDepth();
+window.addEventListener('flywheel:data',event=>{
+ pool=event.detail?.pool||null;calcDepth();
+ const selected=document.querySelector('[data-segment][aria-pressed="true"]');
+ document.getElementById('composition-label').textContent=selected&&event.detail?.numbers?selected.getAttribute('aria-label'):'One billion tokens. Every route accounted for.';
+});
 
-
-window.addEventListener('flywheel:data',event=>{const next=event.detail?.pool;if(next){Object.assign(pool,next);calcDepth();}const selected=document.querySelector('[data-segment][aria-pressed="true"]');if(selected)document.getElementById('composition-label').textContent=selected.getAttribute('aria-label');});
-
-/* Public, read-only flywheel accounting. Claim commitments and supply move together.
-   If the independent ledgers have not caught up, retain the last complete cohort. */
+/* Public, read-only flywheel accounting. Only fresh, reconciled cohorts reach the page.
+   Supply and claim records publish together; pool reserves validate independently. */
 (function (global) {
   'use strict';
   const MINT = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
@@ -610,7 +667,6 @@ window.addEventListener('flywheel:data',event=>{const next=event.detail?.pool;if
   const HERD_COST = 250000;
   const OBJECT_COST = 100000;
   const TIER_TRANCHES = [12500000, 25000000, 37500000, 62500000, 112500000];
-  const SNAPSHOT_AT = '2026-09-22T14:12:28.492Z';
   const MAX_SOURCE_AGE = 10 * 60 * 1000;
   const MAX_FAST_AGE = 3 * 60 * 1000;
   const MAX_FUTURE = 60 * 1000;
@@ -700,7 +756,7 @@ window.addEventListener('flywheel:data',event=>{const next=event.detail?.pool;if
       && near(s.circulatingSupply + locked, total), 'supply sources differ');
     const pendingRaw = asset(result.value[1], TOKEN, MINT, 6);
     // Pending escrow is accepted only when issued claims explain it exactly.
-    // Unknown deposits awaiting issuance keep the previous coherent cohort.
+    // Unknown deposits awaiting issuance withhold the accounting cohort.
     const minted = count(m.minted, 1000, 'HERD minted');
     invariant(count(m.remaining, 1000, 'HERD remaining') === 1000 - minted && m.burnedViaMints === minted * HERD_COST, 'HERD contract');
     invariant(o.schemaVersion === 1 && o.state === 'committed_to_burn_escrow' && o.mechanism?.unitCostBullen === OBJECT_COST
@@ -743,6 +799,7 @@ window.addEventListener('flywheel:data',event=>{const next=event.detail?.pool;if
       status: 'live', asOf: new Date(Math.min(supplyAt, mintedAt, objectsAt, chainAt)).toISOString(), checkedAt: new Date(now).toISOString(),
       numbers, sourceTimes: { supply: new Date(supplyAt).toISOString(), minted: new Date(mintedAt).toISOString(), objects: new Date(objectsAt).toISOString(), chain: new Date(chainAt).toISOString() },
       slot: result.context.slot, rawTotal: totalRaw.toString(), volumeTiersCompleted: tiers.length,
+      expiresAt: Math.min(supplyAt + MAX_FAST_AGE, mintedAt + MAX_SOURCE_AGE, objectsAt + MAX_FAST_AGE, chainAt + MAX_FAST_AGE),
       reason: '', pool: null
     });
   }
@@ -777,24 +834,20 @@ window.addEventListener('flywheel:data',event=>{const next=event.detail?.pool;if
     invariant(baseRaw > 0n && baseRaw <= ORIGINAL_RAW && quoteRaw > 0n && quoteRaw < 100000000000000000n, 'pool reserves');
     return freeze({ status: 'live', base: tokens(baseRaw), rawQuote: Number(quoteRaw) / 1e9, virtualQuote: Number(virtualRaw) / 1e9,
       effectiveQuote: Number(quoteRaw + virtualRaw) / 1e9, lpSupply: Number(lpRaw) / 1e9,
-      slot: result.context.slot, asOf: new Date(chainAt).toISOString() });
+      slot: result.context.slot, asOf: new Date(chainAt).toISOString(), expiresAt: chainAt + MAX_FAST_AGE });
   }
 
-  const fallbackNumbers = accounting({ totalRaw: 818148430922664n, locked: 237500000, minted: 556,
-    objects: { available: 173, reserved: 0, issuedAllSources: 27, burnClaims: 15,
-      series: { signet: { issuedAllSources: 13 }, cufflinks: { issuedAllSources: 14 } } }, volumeCompleted: 12500000 });
-  const FALLBACK = freeze({ status: 'snapshot', asOf: SNAPSHOT_AT, checkedAt: null, numbers: fallbackNumbers,
-    sourceTimes: { supply: SNAPSHOT_AT, minted: '2026-09-22T14:11:33.490Z', objects: '2026-09-22T14:12:30.511Z', chain: '2026-09-22T14:15:45.331Z' },
-    slot: 449402988, rawTotal: '818148430922664', volumeTiersCompleted: 1, reason: '',
-    pool: { status: 'snapshot', base: 100286319.242201, rawQuote: 169.18557901, virtualQuote: 17.584505378,
-      effectiveQuote: 186.770084388, lpSupply: 0, slot: 449402988, asOf: '2026-09-22T14:15:45.331Z' } });
-  let state = FALLBACK;
+  const INITIAL = freeze({ status: 'loading', asOf: null, checkedAt: null, numbers: null,
+    sourceTimes: {}, slot: null, rawTotal: null, volumeTiersCompleted: null, expiresAt: null,
+    reason: '', pool: null, poolStatus: 'loading' });
+  let state = INITIAL;
   let inFlight = null;
   let timer = null;
+  let expiryTimer = null;
   let started = false;
-  function utc(value) { return value ? new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }).format(new Date(value)) + ' UTC' : 'Not refreshed'; }
+  function utc(value) { return value ? new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }).format(new Date(value)) + ' UTC' : ''; }
   function formatNumber(value, format = 'count', digits) {
-    if (!Number.isFinite(value)) return '—';
+    if (!Number.isFinite(value)) return '';
     const precision = digits !== undefined && /^\d$/.test(String(digits)) ? Number(digits) : undefined;
     if (format === 'millions') return (value / 1e6).toFixed(precision ?? 2) + 'M';
     if (format === 'exact') return value.toLocaleString('en-GB', { maximumFractionDigits: precision ?? 6 });
@@ -804,22 +857,22 @@ window.addEventListener('flywheel:data',event=>{const next=event.detail?.pool;if
   }
   function statusDetail(s) {
     if (s.status === 'live') return 'Supply, claims and burn receipts reconciled. Records through ' + utc(s.asOf) + '.';
-    if (s.reason === 'unavailable') return 'Couldn’t refresh every source. Showing the last complete accounting from ' + utc(s.asOf) + '.';
-    if (s.reason === 'settling') return 'Records are catching up. Showing the last complete accounting from ' + utc(s.asOf) + '.';
-    return 'Audited accounting from ' + utc(s.asOf) + '. Live reconciliation runs on the website.';
+    if (s.status === 'loading') return 'Checking current supply, claims and finalized burn receipts.';
+    if (s.reason === 'settling') return 'Records are catching up. Figures appear once supply, claims and burn receipts agree.';
+    return 'Current records are unavailable. Figures appear after the sources can be verified.';
   }
   function values(s) {
     const p = s.pool;
-    return { ...s.numbers, status: s.status === 'live' ? 'Live accounting' : 'Dated accounting', 'status-detail': statusDetail(s),
-      'as-of': utc(s.asOf), 'checked-at': utc(s.checkedAt), 'source-minted-at': utc(s.sourceTimes.minted),
-      'supply-as-of': utc(s.sourceTimes.supply), 'objects-as-of': utc(s.sourceTimes.objects),
-      'pool-base': p.base, 'pool-quote': p.rawQuote, 'pool-virtual': p.virtualQuote, 'pool-effective': p.effectiveQuote,
-      'pool-lp': p.lpSupply, 'pool-slot': p.slot, 'pool-as-of': utc(p.asOf),
-      'pool-status': p.status === 'live' ? 'Live finalized pool' : 'Dated finalized pool',
-      'pool-lp-status': p.lpSupply === 0 ? 'No outstanding LP tokens at this read.' : 'Outstanding LP tokens exist at this read.',
+    return { ...(s.numbers || {}), status: s.status === 'live' ? 'Live accounting' : s.status === 'loading' ? 'Checking live records…' : 'Live records unavailable',
+      'status-detail': statusDetail(s), 'as-of': utc(s.asOf), 'checked-at': utc(s.checkedAt),
+      'source-minted-at': utc(s.sourceTimes.minted), 'supply-as-of': utc(s.sourceTimes.supply), 'objects-as-of': utc(s.sourceTimes.objects),
+      'pool-base': p?.base, 'pool-quote': p?.rawQuote, 'pool-virtual': p?.virtualQuote, 'pool-effective': p?.effectiveQuote,
+      'pool-lp': p?.lpSupply, 'pool-slot': p?.slot, 'pool-as-of': utc(p?.asOf),
+      'pool-status': p ? 'Live finalized pool' : s.poolStatus === 'loading' ? 'Checking pool reserves…' : 'Live pool reserves unavailable',
+      'pool-lp-status': p ? (p.lpSupply === 0 ? 'No outstanding LP tokens at this read.' : 'Outstanding LP tokens exist at this read.') : '',
       'reserve-custody': 'The existing volume allocation stays reserved. Published milestones and custody cliffs still apply; see the lock page for current custody.',
-      ...Object.fromEntries(TIER_TRANCHES.map((_, i) => ['tier-' + (i + 1) + '-status', i < s.volumeTiersCompleted ? 'EXECUTED' : 'MILESTONE + CLIFF'])),
-      'object-stock': s.numbers['objects-available'] + ' available' + (s.numbers['objects-reserved'] ? ' + ' + s.numbers['objects-reserved'] + ' temporarily reserved' : '')
+      ...Object.fromEntries(TIER_TRANCHES.map((_, i) => ['tier-' + (i + 1) + '-status', s.numbers ? (i < s.volumeTiersCompleted ? 'EXECUTED' : 'MILESTONE + CLIFF') : ''])),
+      'object-stock': s.numbers ? s.numbers['objects-available'] + ' available' + (s.numbers['objects-reserved'] ? ' + ' + s.numbers['objects-reserved'] + ' temporarily reserved' : '') : ''
     };
   }
   function select(root, selector) {
@@ -827,36 +880,71 @@ window.addEventListener('flywheel:data',event=>{const next=event.detail?.pool;if
     if (root.matches?.(selector)) found.unshift(root);
     return found;
   }
+  function ready(el, value) { el.setAttribute('data-live-ready', String(value)); }
   function applyTo(root = global.document) {
     if (!root?.querySelectorAll) return state;
     const data = values(state);
     select(root, '[data-live]').forEach(el => {
-      const key = el.getAttribute('data-live');
-      if (!Object.prototype.hasOwnProperty.call(data, key)) return;
-      const value = data[key];
-      el.textContent = typeof value === 'number' ? formatNumber(value, el.getAttribute('data-live-format') || 'count', el.getAttribute('data-live-digits') ?? undefined) : String(value ?? '—');
+      const value = data[el.getAttribute('data-live')];
+      const available = typeof value === 'number' ? Number.isFinite(value) : typeof value === 'string' && value.length > 0;
+      const text = available ? (typeof value === 'number' ? formatNumber(value, el.getAttribute('data-live-format') || 'count', el.getAttribute('data-live-digits') ?? undefined) : value) : '';
+      if (el.textContent !== text) el.textContent = text;
+      ready(el, available);
     });
     select(root, '[data-live-width]').forEach(el => {
       const value = data[el.getAttribute('data-live-width')];
-      if (Number.isFinite(value)) el.style.width = Math.max(0, Math.min(100, value)) + '%';
+      const available = Number.isFinite(value);
+      el.style.width = (available ? Math.max(0, Math.min(100, value)) : 0) + '%';
+      ready(el, available);
     });
     select(root, '[data-live-flex]').forEach(el => {
       const value = data[el.getAttribute('data-live-flex')];
-      if (Number.isFinite(value) && value >= 0) {
-        el.style.flex = String(value / 1e6);
-        const label = el.getAttribute('data-live-label');
-        if (label) el.setAttribute('aria-label', label + ': ' + formatNumber(value, 'exact') + ' BULLEN');
-      }
+      const available = Number.isFinite(value) && value >= 0;
+      el.style.flex = available ? String(value / 1e6) : '0';
+      const label = el.getAttribute('data-live-label');
+      if (label) el.setAttribute('aria-label', label + (available ? ': ' + formatNumber(value, 'exact') + ' BULLEN' : ''));
+      el.disabled = !available;
+      if (!available) el.setAttribute('aria-pressed', 'false');
+      ready(el, available);
     });
     select(root, '[data-live-show]').forEach(el => {
       const show = Number(data[el.getAttribute('data-live-show')]) > 0; el.hidden = !show; el.style.display = show ? '' : 'none';
     });
+    select(root, '[data-live-group]').forEach(el => {
+      const available = el.getAttribute('data-live-group') === 'pool' ? !!state.pool : !!state.numbers;
+      ready(el, available); el.setAttribute('aria-busy', String(!available));
+      if (available) { el.removeAttribute('inert'); el.removeAttribute('aria-hidden'); }
+      else { el.setAttribute('inert', ''); el.setAttribute('aria-hidden', 'true'); }
+    });
     select(root, '[data-live-status]').forEach(el => el.setAttribute('data-live-state', state.status));
-    if (root === global.document && root.documentElement) root.documentElement.setAttribute('data-live-state', state.status);
+    if (root === global.document && root.documentElement) {
+      root.documentElement.setAttribute('data-live-state', state.status);
+      root.documentElement.setAttribute('data-pool-state', state.poolStatus);
+    }
     return state;
   }
+  function unavailable(reason, checkedAt = null) {
+    return { ...INITIAL, status: 'unavailable', reason, checkedAt, poolStatus: 'unavailable' };
+  }
+  function expire(now = Date.now()) {
+    const accountingExpired = state.numbers && now >= state.expiresAt;
+    const poolExpired = state.pool && now >= state.pool.expiresAt;
+    if (accountingExpired || poolExpired) {
+      publish({ ...(accountingExpired ? unavailable('expired', state.checkedAt) : state),
+        pool: poolExpired ? null : state.pool, poolStatus: poolExpired ? 'unavailable' : state.poolStatus });
+    }
+    return state;
+  }
+  function armExpiry() {
+    if (expiryTimer !== null) global.clearTimeout(expiryTimer);
+    expiryTimer = null;
+    // Timers exist only in the browser lifecycle. Pure validation remains deterministic.
+    if (!started) return;
+    const deadlines = [state.numbers ? state.expiresAt : null, state.pool?.expiresAt].filter(Number.isFinite);
+    if (deadlines.length) expiryTimer = global.setTimeout(() => { expiryTimer = null; expire(); }, Math.max(1, Math.min(...deadlines) - Date.now()));
+  }
   function publish(next) {
-    state = freeze(next); applyTo();
+    state = freeze(next); applyTo(); armExpiry();
     if (typeof global.dispatchEvent === 'function' && typeof global.CustomEvent === 'function') global.dispatchEvent(new global.CustomEvent('flywheel:data', { detail: state }));
   }
   async function getJSON(url, options = {}) {
@@ -867,37 +955,39 @@ window.addEventListener('flywheel:data',event=>{const next=event.detail?.pool;if
       return await response.json();
     } finally { global.clearTimeout(timeout); }
   }
+  function scheduleRefresh() {
+    if (timer !== null) global.clearTimeout(timer);
+    timer = null;
+    if (!started || global.document?.hidden) return;
+    const delay = state.status === 'live' && state.pool ? 90000 : 30000;
+    timer = global.setTimeout(() => { timer = null; refresh(); }, delay);
+  }
   function refresh() {
     if (inFlight) return inFlight;
-    if (state.status === 'live' && Date.now() - Date.parse(state.sourceTimes.supply) > MAX_FAST_AGE) {
-      publish({ ...state, status: 'stale', reason: 'unavailable', pool: { ...state.pool, status: 'stale' } });
-    }
+    expire();
     inFlight = (async () => {
-      try {
-        // Finalized mint, escrow and pool accounts share one slot. Separate
-        // read-only registries are reconciled to those accounts before display.
-        const results = await Promise.allSettled([
-          getJSON(URLS.supply), getJSON(URLS.minted), getJSON(URLS.objects), getJSON(URLS.proof),
-          getJSON(URLS.rpc, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
-            jsonrpc: '2.0', id: 1, method: 'getMultipleAccounts', params: [ACCOUNTS, { encoding: 'jsonParsed', commitment: 'finalized' }]
-          }) }).then(chain => ({ chain, chainAt: Date.now() }))
-        ]);
-        invariant(results.every(result => result.status === 'fulfilled'), 'source unavailable');
-        const [supply, minted, objects, proof, chainRead] = results.map(result => result.value);
-        const now = Date.now();
-        let pool = { ...state.pool, status: 'stale' };
-        try { pool = validatePool(chainRead.chain, chainRead.chainAt, now); } catch (_) { /* Preserve separately dated pool if schema changes. */ }
-        try {
-          const accepted = validateCohort({ supply, minted, objects, proof, ...chainRead }, now);
-          publish({ ...accepted, pool });
-        } catch (_) {
-          publish({ ...state, status: 'stale', checkedAt: new Date(now).toISOString(), reason: 'settling', pool });
-        }
-      } catch (_) {
-        publish({ ...state, status: 'stale', checkedAt: new Date().toISOString(), reason: 'unavailable', pool: { ...state.pool, status: 'stale' } });
+      // Finalized mint, escrow and pool accounts share one slot. Supply and claim
+      // registries must reconcile before any accounting number is published.
+      const results = await Promise.allSettled([
+        getJSON(URLS.supply), getJSON(URLS.minted), getJSON(URLS.objects), getJSON(URLS.proof),
+        getJSON(URLS.rpc, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+          jsonrpc: '2.0', id: 1, method: 'getMultipleAccounts', params: [ACCOUNTS, { encoding: 'jsonParsed', commitment: 'finalized' }]
+        }) }).then(chain => ({ chain, chainAt: Date.now() }))
+      ]);
+      const now = Date.now(); const checkedAt = new Date(now).toISOString();
+      const chainRead = results[4].status === 'fulfilled' ? results[4].value : null;
+      let pool = null;
+      // A registry outage cannot turn valid independent pool reserves into a fallback.
+      if (chainRead) { try { pool = validatePool(chainRead.chain, chainRead.chainAt, now); } catch (_) { /* No unverified pool figures. */ } }
+      let accepted = unavailable('unavailable', checkedAt);
+      if (results.every(result => result.status === 'fulfilled')) {
+        const [supply, minted, objects, proof] = results.map(result => result.value);
+        try { accepted = validateCohort({ supply, minted, objects, proof, ...chainRead }, now); }
+        catch (_) { accepted = unavailable('settling', checkedAt); }
       }
+      publish({ ...accepted, pool, poolStatus: pool ? 'live' : 'unavailable' });
       return state;
-    })().finally(() => { inFlight = null; });
+    })().finally(() => { inFlight = null; scheduleRefresh(); });
     return inFlight;
   }
   function start() {
@@ -906,14 +996,20 @@ window.addEventListener('flywheel:data',event=>{const next=event.detail?.pool;if
     const loc = global.location;
     const allowed = loc && /^https?:$/.test(loc.protocol) && (loc.hostname === 'bullenciaga.com' || loc.hostname.endsWith('.bullenciaga.com')
       || loc.hostname === 'localhost' || loc.hostname === '127.0.0.1' || loc.hostname === 'bullenciaga-staging.bullenciaga-e5c.workers.dev');
-    if (!allowed || typeof global.fetch !== 'function') return;
-    refresh(); timer = global.setInterval(() => { if (!global.document.hidden) refresh(); }, 90000);
-    global.document.addEventListener('visibilitychange', () => { if (!global.document.hidden) refresh(); });
-    global.addEventListener('offline', () => { publish({ ...state, status: 'stale', reason: 'unavailable', pool: { ...state.pool, status: 'stale' } }); });
+    if (!allowed || typeof global.fetch !== 'function') { publish(unavailable('unavailable')); return; }
+    refresh();
+    global.document.addEventListener('visibilitychange', () => {
+      expire();
+      if (!global.document.hidden) refresh();
+      else if (timer !== null) { global.clearTimeout(timer); timer = null; }
+    });
+    global.addEventListener('pageshow', () => { expire(); if (!global.document.hidden) refresh(); });
+    global.addEventListener('online', () => refresh());
+    global.addEventListener('offline', () => { publish({ ...unavailable('unavailable'), poolStatus: 'unavailable' }); });
   }
-  const api = { refresh, applyTo, start, get state() { return state; } };
+  const api = { refresh, applyTo, start, expire, get state() { return state; } };
   Object.freeze(api); global.FlywheelLive = api;
-  if (typeof module !== 'undefined' && module.exports) module.exports = { validateCohort, validatePool, accounting, formatNumber, values, FALLBACK, URLS, ACCOUNTS, api };
+  if (typeof module !== 'undefined' && module.exports) module.exports = { validateCohort, validatePool, accounting, formatNumber, values, INITIAL, URLS, ACCOUNTS, api };
   if (global.document) {
     if (global.document.readyState === 'loading') global.document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
