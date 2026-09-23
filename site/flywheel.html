@@ -240,6 +240,8 @@ body:before{background:none}
 }
 /* A responsive dock/overlay handoff is a layout change, not a panel opening. */
 .map-shell.is-switching-layout .map-stage,.map-shell.is-switching-layout .map,.map-shell.is-switching-layout .detail-dock>.detail{transition:none!important}
+/* Expand/Exit is an immediate size change; regular tile interactions keep their motion. */
+.explorer.is-changing-size,.explorer.is-changing-size *,.explorer.is-changing-size *:before,.explorer.is-changing-size *:after{transition:none!important}
 
 /* House header language, with this tool's section navigation kept intact. */
 @font-face{font-family:HouseMono;src:url('/fonts/house-e0c8e616bda27642.woff2') format('woff2');font-display:swap;font-weight:400}
@@ -508,22 +510,13 @@ function stylePaths(){
 // The heading is typeset once. Resizing moves/scales that same layer, never swaps
 // labels or reflows its lines. Reuse the connector geometry pass, with no new loop.
 const tileLayers=buttons.map(button=>({button,title:button.querySelector('h3'),icon:button.querySelector('.node-top,.token-emblem'),category:button.querySelector('.tile-category'),summary:button.querySelector('.tile-summary'),state:button.querySelector('.node-state')}));
-let typeMetricsReady=false,readingScale=1,readingFrameId=0,typeGeometry=null;
+let typeMetricsReady=false,readingScale=1,typeGeometry=null,sizeChangeFrame=0;
 function scaleForScreen(){
  return explorer.classList.contains('is-expanded')&&innerWidth>800?Math.max(1,Math.min(1.85,innerWidth/1380,innerHeight/780)):1;
 }
-function updateReadingScale(animate=true){
- if(readingFrameId)cancelAnimationFrame(readingFrameId);
- const start=readingScale,target=scaleForScreen(),began=performance.now();
- const duration=animate&&!document.body.classList.contains('reduced')&&!document.body.classList.contains('paused')?360:0;
- function frame(now){
-  const t=duration?Math.min(1,(now-began)/duration):1;
-  readingScale=start+(target-start)*(1-Math.pow(1-t,3));
-  explorer.style.setProperty('--reading-scale',readingScale.toFixed(4));
-  if(typeGeometry)layoutTileType(...typeGeometry);
-  readingFrameId=t<1?requestAnimationFrame(frame):0;
- }
- readingFrameId=requestAnimationFrame(frame);
+function updateReadingScale(){
+ readingScale=scaleForScreen();
+ explorer.style.setProperty('--reading-scale',readingScale.toFixed(4));
 }
 function measureTileType(){
  for(const item of tileLayers){item.width=Math.max(item.title.offsetWidth,item.title.scrollWidth);item.height=item.title.offsetHeight;item.baseFont=parseFloat(getComputedStyle(item.title).fontSize);}
@@ -655,7 +648,22 @@ document.addEventListener('keydown',e=>{
  const trap=detailOpen&&isOverlay()?detail:explorer.classList.contains('is-expanded')?explorer:null;
  if(e.key==='Tab'&&trap){const items=[...trap.querySelectorAll('button:not([disabled]),a[href],input')].filter(x=>!x.closest('[inert]')&&x.getClientRects().length),first=items[0],last=items.at(-1);if(e.shiftKey&&(document.activeElement===first||document.activeElement===trap)){e.preventDefault();last.focus();}else if(!e.shiftKey&&(document.activeElement===last||document.activeElement===trap)){e.preventDefault();first.focus();}}
 });
-function toggleExpand(){const yes=!explorer.classList.contains('is-expanded');explorer.classList.toggle('is-expanded',yes);document.body.classList.toggle('explorer-expanded',yes);document.querySelector('.map-expand').setAttribute('aria-pressed',String(yes));document.querySelector('.map-expand').innerHTML=(yes?'Exit':'Expand')+' <span aria-hidden="true">⛶</span>';document.querySelector('.map-expand').setAttribute('aria-label',yes?'Exit full-screen flywheel':'Expand flywheel to full screen');updateReadingScale();trackLayout();}
+function toggleExpand(){
+ const yes=!explorer.classList.contains('is-expanded');
+ if(sizeChangeFrame)cancelAnimationFrame(sizeChangeFrame);
+ explorer.classList.add('is-changing-size');
+ explorer.classList.toggle('is-expanded',yes);document.body.classList.toggle('explorer-expanded',yes);
+ const control=document.querySelector('.map-expand');
+ control.setAttribute('aria-pressed',String(yes));control.innerHTML=(yes?'Exit':'Expand')+' <span aria-hidden="true">⛶</span>';
+ control.setAttribute('aria-label',yes?'Exit full-screen flywheel':'Expand flywheel to full screen');
+ updateReadingScale();
+ // Commit text, tiles and existing routes together before the next paint.
+ if(routeFrame)cancelAnimationFrame(routeFrame);
+ lastGeometry='';drawPaths();
+ sizeChangeFrame=requestAnimationFrame(()=>{sizeChangeFrame=requestAnimationFrame(()=>{
+  sizeChangeFrame=0;explorer.classList.remove('is-changing-size');
+ });});
+}
 document.querySelector('.map-expand').addEventListener('click',toggleExpand);
 let overlayLayout=isOverlay(),layoutHandoffFrame=0;
 window.addEventListener('resize',()=>{
@@ -670,7 +678,7 @@ window.addEventListener('resize',()=>{
    layoutHandoffFrame=0;shell.classList.remove('is-switching-layout');
   });});
  }
- syncAccessibility();updateReadingScale(false);measureTileType();trackLayout();
+ syncAccessibility();updateReadingScale();measureTileType();trackLayout();
 },{passive:true});
 // Apply resize geometry before paint so transformed titles cannot trail a shrinking tile by one frame.
 new ResizeObserver(()=>{if(routeFrame)cancelAnimationFrame(routeFrame);drawPaths();}).observe(map);measureTileType();
