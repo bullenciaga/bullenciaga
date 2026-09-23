@@ -3066,13 +3066,16 @@
           });
         }
       }
-      // Paint the hidden state first, including a cached image or history return.
+      // Paint the hidden state before the first reveal, including a cached image.
       requestAnimationFrame(() => requestAnimationFrame(() => {
         if (current === generation) hero.classList.remove('hero-image-pending');
       }));
     };
     reveal();
-    addEventListener('pageshow', event => { if (event.persisted) reveal(); });
+    // Resume unfinished entry only; a restored visible hero must not fade out again.
+    addEventListener('pageshow', event => {
+      if (event.persisted && hero.classList.contains('hero-image-pending')) reveal();
+    });
   })();
   </script>
   <div class="hero-scrim"></div>

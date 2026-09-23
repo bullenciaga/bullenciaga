@@ -222,6 +222,8 @@ body:before{background:none}
  .detail-dock:before{content:'';position:absolute;inset:12px 14px 12px 0;border:1px solid #ffffff24;border-radius:17px;background:linear-gradient(145deg,#ffffff04,transparent 70%),#0e0e0e;box-shadow:inset 0 1px 0 #ffffff07;pointer-events:none}
  .map-stage .detail-dock>.detail{position:absolute;inset:13px auto 13px 1px;width:calc(46.80851064cqw - 16px);height:auto;max-height:none;margin:0;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;opacity:1;visibility:visible;translate:0 0;transition:none}
 }
+/* A responsive dock/overlay handoff is a layout change, not a panel opening. */
+.map-shell.is-switching-layout .map-stage,.map-shell.is-switching-layout .map,.map-shell.is-switching-layout .detail-dock>.detail{transition:none!important}
 
 /* House header language, with this tool's section navigation kept intact. */
 @font-face{font-family:HouseMono;src:url('/fonts/house-e0c8e616bda27642.woff2') format('woff2');font-display:swap;font-weight:400}
@@ -547,8 +549,21 @@ document.addEventListener('keydown',e=>{
 });
 function toggleExpand(){const yes=!explorer.classList.contains('is-expanded');explorer.classList.toggle('is-expanded',yes);document.body.classList.toggle('explorer-expanded',yes);document.querySelector('.map-expand').setAttribute('aria-pressed',String(yes));document.querySelector('.map-expand').innerHTML=(yes?'Exit':'Expand')+' <span aria-hidden="true">⛶</span>';document.querySelector('.map-expand').setAttribute('aria-label',yes?'Exit full-screen flywheel':'Expand flywheel to full screen');trackLayout();}
 document.querySelector('.map-expand').addEventListener('click',toggleExpand);
-let overlayLayout=isOverlay();
-window.addEventListener('resize',()=>{if(overlayLayout!==isOverlay()){overlayLayout=isOverlay();presentDetail();}syncAccessibility();measureTileType();trackLayout();},{passive:true});
+let overlayLayout=isOverlay(),layoutHandoffFrame=0;
+window.addEventListener('resize',()=>{
+ if(overlayLayout!==isOverlay()){
+  overlayLayout=isOverlay();
+  // The desktop article stays visible inside a clipped dock. Do not animate
+  // that visibility into an overlay when a closed dock loses its clipping.
+  shell.classList.add('is-switching-layout');
+  if(layoutHandoffFrame)cancelAnimationFrame(layoutHandoffFrame);
+  presentDetail();
+  layoutHandoffFrame=requestAnimationFrame(()=>{layoutHandoffFrame=requestAnimationFrame(()=>{
+   layoutHandoffFrame=0;shell.classList.remove('is-switching-layout');
+  });});
+ }
+ syncAccessibility();measureTileType();trackLayout();
+},{passive:true});
 // Apply resize geometry before paint so transformed titles cannot trail a shrinking tile by one frame.
 new ResizeObserver(()=>{if(routeFrame)cancelAnimationFrame(routeFrame);drawPaths();}).observe(map);measureTileType();document.fonts.ready.then(measureTileType);
 new IntersectionObserver(es=>{beamsVisible=es[0].isIntersecting;map.classList.toggle('offscreen',!beamsVisible);wakeBeams();},{rootMargin:'100px'}).observe(map);

@@ -130,9 +130,97 @@ if (reserveAt < 0 || firstAwait < 0 || reserveAt > firstAwait) {
   failures.push('stats.html must reserve the static burn schedule before its first network await');
 }
 
+// Run the real image-entry helper, including BFCache restores. The document
+// reveal is already settled on restoration: hiding its photograph again flashes.
+const homepage = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
+const heroSource = [...homepage.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)]
+  .map(match => match[1]).find(source => source.includes("const hero = document.querySelector('.hero-bg')"));
+assert(heroSource, 'homepage must retain its decode-gated hero helper');
+const microtasks = () => new Promise(resolve => setImmediate(resolve));
+const heroHarness = () => {
+  const classes = new Set(), frames = [], decodes = [], events = new Map(), imageEvents = new Map();
+  const image = {
+    complete: false,
+    decode: () => new Promise((resolve, reject) => decodes.push({resolve, reject})),
+    addEventListener: (name, handler) => {
+      if (!imageEvents.has(name)) imageEvents.set(name, new Set());
+      imageEvents.get(name).add(handler);
+    },
+    removeEventListener: (name, handler) => imageEvents.get(name)?.delete(handler),
+  };
+  const hero = { querySelector: () => image, classList: {
+    add: name => classes.add(name), remove: name => classes.delete(name), contains: name => classes.has(name),
+  } };
+  vm.runInNewContext(heroSource, {
+    document: {querySelector: () => hero}, requestAnimationFrame: handler => frames.push(handler),
+    addEventListener: (name, handler) => events.set(name, handler),
+  });
+  return {
+    image, decodes, imageEvents,
+    pending: () => classes.has('hero-image-pending'),
+    frame: () => frames.splice(0).forEach(handler => handler()),
+    restore: persisted => events.get('pageshow')?.({persisted}),
+    imageEvent: name => [...(imageEvents.get(name) || [])].forEach(handler => handler()),
+  };
+};
+const finishHeroDecode = async (hero, index) => {
+  hero.image.complete = true;
+  hero.decodes[index].resolve();
+  await microtasks();
+  hero.frame();
+  hero.frame();
+};
+
+const hero = heroHarness();
+assert(hero.pending(), 'first entry waits for image decoding');
+hero.frame(); hero.frame();
+assert(hero.pending(), 'frames alone must not reveal an undecoded image');
+hero.restore(false);
+assert.equal(hero.decodes.length, 1, 'ordinary pageshow must not restart entry');
+await finishHeroDecode(hero, 0);
+assert(!hero.pending(), 'decoded image becomes visible');
+for (let restore = 0; restore < 3; restore++) {
+  hero.restore(true);
+  assert(!hero.pending(), 'BFCache must never hide an already-visible hero');
+  assert.equal(hero.decodes.length, 1, 'restoring a visible hero needs no new decode');
+  await microtasks(); hero.frame(); hero.frame();
+  assert(!hero.pending(), 'restored hero remains visible after queued work');
+}
+
+const unfinished = heroHarness();
+unfinished.restore(true);
+assert.equal(unfinished.decodes.length, 2, 'unfinished entry resumes on restore');
+await finishHeroDecode(unfinished, 0);
+assert(unfinished.pending(), 'stale pre-restoration callback cannot reveal the current entry');
+await finishHeroDecode(unfinished, 1);
+assert(!unfinished.pending(), 'resumed entry reveals when its decode completes');
+unfinished.restore(true);
+assert(!unfinished.pending(), 'later restores preserve the completed entry');
+
+for (const outcome of ['load', 'error', 'complete']) {
+  const fallback = heroHarness();
+  fallback.image.complete = outcome === 'complete';
+  fallback.decodes[0].reject(new Error('decode unavailable'));
+  await microtasks();
+  if (outcome !== 'complete') {
+    assert(fallback.pending(), 'failed decode waits for the image load/error fallback');
+    assert.equal(fallback.imageEvents.get('load')?.size, 1);
+    assert.equal(fallback.imageEvents.get('error')?.size, 1);
+    fallback.image.complete = true;
+    fallback.imageEvent(outcome);
+    await microtasks();
+    assert.equal(fallback.imageEvents.get('load').size, 0, 'fallback removes load listener');
+    assert.equal(fallback.imageEvents.get('error').size, 0, 'fallback removes error listener');
+  }
+  fallback.frame(); fallback.frame();
+  assert(!fallback.pending(), `${outcome}: settled image must not stay hidden`);
+  fallback.restore(true);
+  assert(!fallback.pending(), `${outcome}: history restore preserves settled visibility`);
+}
+
 if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
 }
 
-console.log(`first paint: ${htmlFiles.length} page shells stabilize before reveal`);
+console.log(`first paint: ${htmlFiles.length} page shells stabilize before reveal; hero entry and history restoration pass`);
