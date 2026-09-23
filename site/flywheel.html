@@ -192,6 +192,27 @@ body:before{background:none}
 
 @media(max-width:800px){#map .node h3{font-size:14px;width:calc(100% - 16px);white-space:normal;text-wrap:wrap;text-align:center}#map .node-token h3{font-size:24px;width:max-content;white-space:nowrap}}
 
+/* V09: make room, then reveal; keep mobile geometry independent of browser bars. */
+#map .node{overflow:clip}
+.map-stage>.detail,.has-detail .map-stage>.detail{opacity:0;visibility:hidden;translate:8px 0;transition:opacity .2s ease,translate .2s ease,visibility 0s .2s;transition-delay:0s,0s,.2s}
+.detail-visible .map-stage>.detail{opacity:1;visibility:visible;translate:0 0;transition-delay:0s}
+.detail-scroll{min-width:0;overflow-x:hidden;overflow-y:auto;touch-action:pan-y pinch-zoom;overflow-wrap:anywhere}
+.detail-lead #detail-icon{width:30px;height:30px;contain:layout paint;flex:none}
+#detail-icon svg{display:block;position:static;transform:none;translate:none;margin:0;max-width:100%}
+@media(max-width:800px){
+ #mechanism{height:auto;min-height:0;max-height:none}
+ #mechanism .map-shell{flex:none}
+ #mechanism .map-stage{flex:none;min-width:0}
+ #mechanism #map{height:auto;grid-template-rows:repeat(3,auto);align-items:start;align-content:start;padding:17px 22px;gap:33px 26px;transition:opacity .28s}
+ #map .node{aspect-ratio:1;min-height:0}
+ #map .node h3{line-height:1.12}
+ .explorer.is-expanded#mechanism{height:100dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+ .detail-toolbar .detail-close{width:38px;height:38px;min-height:38px}
+ .detail-footer button{min-height:36px}
+}
+@media(max-width:400px){#mechanism #map{padding:16px 17px;gap:31px 22px}}
+@media(prefers-reduced-motion:reduce){.map-stage>.detail{transition:none!important}}
+
 </style>
 <link rel="stylesheet" href="/bullen-focus.css">
 <script src="/bullen-focus.js" defer></script>
@@ -439,24 +460,42 @@ function trackLayout(){schedulePaths();}
 function isOverlay(){return innerWidth<1200;}
 function syncAccessibility(){
  buttons.forEach(b=>{const chosen=detailOpen&&b.dataset.node===selectedNode;b.setAttribute('aria-pressed',String(chosen));b.setAttribute('aria-expanded',String(chosen));});
- const modal=detailOpen&&isOverlay();map.inert=modal;detail.inert=!detailOpen;detail.setAttribute('aria-hidden',String(!detailOpen));detail.setAttribute('role',modal?'dialog':'region');
+ const modal=detailOpen&&isOverlay(),revealed=detailOpen&&shell.classList.contains('detail-visible');map.inert=modal;detail.inert=!revealed;detail.setAttribute('aria-hidden',String(!revealed));detail.setAttribute('role',modal?'dialog':'region');
  if(modal)detail.setAttribute('aria-modal','true');else detail.removeAttribute('aria-modal');
+}
+// Desktop makes room before revealing the panel; closing clears the panel first.
+// Await the actual CSS transition rather than a timeout, including reversals and
+// reduced motion. Mobile retains its immediate overlay presentation.
+let presentationRevision=0;
+async function presentDetail(moveFocus=false){
+ const revision=++presentationRevision;
+ if(detailOpen){
+  shell.classList.add('has-detail');
+  if(!isOverlay())await Promise.all(map.parentElement.getAnimations().map(a=>a.finished.catch(()=>{})));
+  if(revision!==presentationRevision||!detailOpen)return;
+  shell.classList.add('detail-visible');syncAccessibility();
+  if(moveFocus)detail.focus({preventScroll:true});
+ }else{
+  shell.classList.remove('detail-visible');syncAccessibility();
+  if(!isOverlay())await Promise.all(detail.getAnimations().map(a=>a.finished.catch(()=>{})));
+  if(revision!==presentationRevision||detailOpen)return;
+  shell.classList.remove('has-detail');trackLayout();
+ }
 }
 function selectNode(id,moveFocus=true){
  const d=mechanisms[id];if(!d)return;const wasOpen=detailOpen;selectedNode=id;detailOpen=true;hoverNode=null;
  document.getElementById('detail-kicker').textContent=d.k;document.getElementById('detail-title').textContent=d.title;document.getElementById('detail-intro').textContent=d.intro;document.getElementById('detail-list').innerHTML=d.rows.map(x=>'<li>'+x+'</li>').join('');
- const original=document.querySelector('[data-node="'+id+'"] svg');document.getElementById('detail-icon').replaceChildren(original.cloneNode(true));
+ const original=document.querySelector('[data-node="'+id+'"] svg'),glyph=original.cloneNode(true);glyph.removeAttribute('style');glyph.removeAttribute('class');document.getElementById('detail-icon').replaceChildren(glyph);
  const crumbs=document.getElementById('detail-route');crumbs.replaceChildren();simpleRoutes[id].forEach((text,i)=>{if(i){const arrow=document.createElement('i');arrow.textContent='→';arrow.setAttribute('aria-hidden','true');crumbs.append(arrow);}const span=document.createElement('span');span.textContent=text;crumbs.append(span);});
  document.getElementById('detail-position').textContent=String(nodeOrder.indexOf(id)+1).padStart(2,'0')+' / 09';
  const a=document.getElementById('detail-link');a.href=d.link;if(d.link.startsWith('#'))a.removeAttribute('target');else a.target='_blank';
- shell.classList.add('has-detail');syncAccessibility();stylePaths();if(!wasOpen)trackLayout();
+ presentDetail(moveFocus);syncAccessibility();stylePaths();if(!wasOpen)trackLayout();
  const scroll=detail.querySelector('.detail-scroll');scroll.scrollTop=0;scroll.classList.remove('is-changing');if(wasOpen&&!document.body.classList.contains('reduced')){void scroll.offsetWidth;scroll.classList.add('is-changing');}
  window.FlywheelLive?.applyTo?.(detail);
- if(moveFocus)requestAnimationFrame(()=>detail.focus({preventScroll:true}));
  document.getElementById('map-instruction').textContent='Exploring '+shortNames[id]+'.';
 }
 function closeDetail(restore=true){
- const id=selectedNode;detailOpen=false;selectedNode=null;hoverNode=null;shell.classList.remove('has-detail');syncAccessibility();stylePaths();trackLayout();
+ const id=selectedNode;detailOpen=false;selectedNode=null;hoverNode=null;presentDetail();syncAccessibility();stylePaths();trackLayout();
  document.getElementById('map-instruction').textContent='Choose a tile. See what it does.';
  if(restore&&id)document.querySelector('[data-node="'+id+'"]').focus({preventScroll:true});
 }
@@ -478,7 +517,8 @@ document.addEventListener('keydown',e=>{
 });
 function toggleExpand(){const yes=!explorer.classList.contains('is-expanded');explorer.classList.toggle('is-expanded',yes);document.body.classList.toggle('explorer-expanded',yes);document.querySelector('.map-expand').setAttribute('aria-pressed',String(yes));document.querySelector('.map-expand').innerHTML=(yes?'Exit':'Expand')+' <span aria-hidden="true">⛶</span>';document.querySelector('.map-expand').setAttribute('aria-label',yes?'Exit full-screen flywheel':'Expand flywheel to full screen');trackLayout();}
 document.querySelector('.map-expand').addEventListener('click',toggleExpand);
-window.addEventListener('resize',()=>{syncAccessibility();measureTileType();trackLayout();},{passive:true});
+let overlayLayout=isOverlay();
+window.addEventListener('resize',()=>{if(overlayLayout!==isOverlay()){overlayLayout=isOverlay();presentDetail();}syncAccessibility();measureTileType();trackLayout();},{passive:true});
 new ResizeObserver(schedulePaths).observe(map);measureTileType();document.fonts.ready.then(measureTileType);
 new IntersectionObserver(es=>{beamsVisible=es[0].isIntersecting;map.classList.toggle('offscreen',!beamsVisible);wakeBeams();},{rootMargin:'100px'}).observe(map);
 syncAccessibility();stylePaths();
