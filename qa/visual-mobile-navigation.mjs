@@ -55,7 +55,12 @@ try {
       assert.deepEqual(nav, jump, `${pathname} at ${width}: hamburger must match Jump To surface/type/insets`);
       assert.equal(await page.locator('.jumpto-btn').getAttribute('aria-expanded'), 'false', 'only one dropdown opens');
       const links = page.locator('.bullen-mobile-nav-directory a');
-      assert.equal(await links.count(), 11);
+      assert.equal(await links.count(), 13);
+      assert.deepEqual((await links.allTextContents()).slice(0, 2), ['Buy $BULLEN', 'Flywheel']);
+      const flywheel = page.locator('.bullen-mobile-nav-directory a[href="/flywheel"]');
+      assert(await flywheel.isVisible(), 'Flywheel is reachable directly below Buy');
+      assert.equal(await page.locator('.bullen-site-nav > .bullen-desktop-nav-link').isVisible(), false, 'compact navigation has no duplicate Flywheel row');
+      assert.equal(await flywheel.evaluate(el => getComputedStyle(el).color), await page.locator('.bullen-site-nav > .bullen-site-sister').evaluate(el => getComputedStyle(el).color), 'Flywheel uses the approved gold navigation accent');
       if (pathname === '/') await page.screenshot({ path:path.join(output, `hamburger-${width}.png`) });
       await page.locator('.bullen-site-nav > .bullen-site-sister').scrollIntoViewIfNeeded();
       assert(await page.locator('.bullen-site-nav > .bullen-site-sister').evaluate(link => {

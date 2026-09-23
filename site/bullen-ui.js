@@ -22,6 +22,7 @@
     ledger: 'Living Ledger',
     passport: 'Wallet Passport',
     rooms: 'Inner Rooms',
+    flywheel: 'Flywheel',
     bullensaga: 'BULLENSAGA',
   };
   const destinations = [
@@ -39,6 +40,7 @@
     ['ledger', '/ledger.html'],
     ['passport', '/passport.html'],
     ['rooms', '/rooms.html'],
+    ['flywheel', '/flywheel'],
     ['bullensaga', 'https://bullensaga.com/'],
   ];
   const navigationGroups = [
@@ -46,7 +48,7 @@
     ['Market', ['buy', 'stats', 'chart', 'tape', 'curve']],
     ['Explore', ['refer', 'thedrop', 'ledger', 'passport']],
   ];
-  const mobileNavigationKeys = ['buy', 'objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
+  const mobileNavigationKeys = ['buy', 'flywheel', 'objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
   const destinationByKey = new Map(destinations);
 
   root.dataset.bullenPage = page;
@@ -75,6 +77,7 @@
       const link = document.createElement('a');
       link.href = href;
       link.textContent = labels[key];
+      if (key === 'flywheel') link.className = 'bullen-site-featured';
       if (key === 'bullensaga') {
         link.className = 'bullen-site-sister';
         link.setAttribute('aria-label', 'Visit BULLENSAGA');
@@ -99,6 +102,9 @@
     for (const key of mobileNavigationKeys) mobileDirectory.append(buildLink(key));
     nav.append(mobileDirectory);
     nav.append(buildLink('rooms'));
+    const flywheelLink = buildLink('flywheel');
+    flywheelLink.classList.add('bullen-desktop-nav-link');
+    nav.append(flywheelLink);
     nav.append(buildLink('bullensaga'));
     return nav;
   };
