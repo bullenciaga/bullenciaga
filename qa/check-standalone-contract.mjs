@@ -46,7 +46,7 @@ if (!shell.includes('const navigationGroups') || !shell.includes("['House', ['ob
     || !shell.includes("['Explore', ['refer', 'thedrop', 'ledger', 'passport']]")) {
   failures.push('desktop public navigation is not grouped into stable House, Market and Explore menus');
 }
-if (!shell.includes("const mobileNavigationKeys = ['buy', 'flywheel', 'objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport']")) {
+if (!shell.includes("const mobileNavigationKeys = ['buy', 'flywheel', 'bullensaga', 'giveaways', 'objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport']")) {
   failures.push('mobile public navigation is not kept in its approved ungrouped order');
 }
 if (!shell.includes("['bullensaga', 'https://bullensaga.com/']")) failures.push('BULLENSAGA sister-site navigation missing');

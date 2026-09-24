@@ -646,7 +646,7 @@ body.lightbox-open {
 /* Use the same controls and dropdown surfaces whenever the navigation is
    collapsed, including tablet and split-window widths above the phone layout. */
 @media (max-width: 1100px) {
-  /* The compact directory owns its Flywheel row immediately after Buy. */
+  /* The compact directory owns its Flywheel and BULLENSAGA rows. */
   .bullen-site-shell .bullen-site-nav > .bullen-desktop-nav-link { display: none; }
 
   .bullen-nav-toggle {

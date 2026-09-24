@@ -48,7 +48,7 @@
     ['Market', ['buy', 'stats', 'chart', 'tape', 'curve']],
     ['Explore', ['refer', 'thedrop', 'ledger', 'passport']],
   ];
-  const mobileNavigationKeys = ['buy', 'flywheel', 'objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
+  const mobileNavigationKeys = ['buy', 'flywheel', 'bullensaga', 'giveaways', 'objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
   const destinationByKey = new Map(destinations);
 
   root.dataset.bullenPage = page;
@@ -99,13 +99,19 @@
     }
     const mobileDirectory = document.createElement('div');
     mobileDirectory.className = 'bullen-mobile-nav-directory';
-    for (const key of mobileNavigationKeys) mobileDirectory.append(buildLink(key));
+    for (const key of mobileNavigationKeys) {
+      const link = buildLink(key);
+      if (key === 'buy') link.classList.add('bullen-site-featured');
+      mobileDirectory.append(link);
+    }
     nav.append(mobileDirectory);
     nav.append(buildLink('rooms'));
     const flywheelLink = buildLink('flywheel');
     flywheelLink.classList.add('bullen-desktop-nav-link');
     nav.append(flywheelLink);
-    nav.append(buildLink('bullensaga'));
+    const sagaLink = buildLink('bullensaga');
+    sagaLink.classList.add('bullen-desktop-nav-link');
+    nav.append(sagaLink);
     return nav;
   };
 

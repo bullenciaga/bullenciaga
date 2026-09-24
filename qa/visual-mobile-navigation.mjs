@@ -22,7 +22,7 @@ await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const base = process.env.VISUAL_BASE_URL || `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ headless:true, executablePath:process.env.CHROMIUM_PATH });
 try {
-  for (const width of [320, 390, 430]) {
+  for (const width of [320, 390, 430, 1024]) {
     const context = await browser.newContext({ viewport:{width,height:844}, reducedMotion:'reduce' });
     await context.route('**/*', route => {
       const u = new URL(route.request().url());
@@ -51,19 +51,21 @@ try {
       const jump = await inspect('.jumpto-menu', '.jumpto-item');
       await page.locator('.bullen-nav-toggle').click();
       await page.locator('.bullen-site-shell.nav-open .bullen-site-nav').waitFor({ state:'visible' });
-      const nav = await inspect('.bullen-site-nav', '.bullen-mobile-nav-directory a:not([aria-current])');
+      const nav = await inspect('.bullen-site-nav', '.bullen-mobile-nav-directory a:not([aria-current]):not(.bullen-site-featured):not(.bullen-site-sister)');
       assert.deepEqual(nav, jump, `${pathname} at ${width}: hamburger must match Jump To surface/type/insets`);
       assert.equal(await page.locator('.jumpto-btn').getAttribute('aria-expanded'), 'false', 'only one dropdown opens');
       const links = page.locator('.bullen-mobile-nav-directory a');
-      assert.equal(await links.count(), 13);
-      assert.deepEqual((await links.allTextContents()).slice(0, 2), ['Buy $BULLEN', 'Flywheel']);
+      assert.equal(await links.count(), 15);
+      assert.deepEqual((await links.allTextContents()).slice(0, 4), ['Buy $BULLEN', 'Flywheel', 'BULLENSAGA', 'Giveaways']);
       const flywheel = page.locator('.bullen-mobile-nav-directory a[href="/flywheel"]');
       assert(await flywheel.isVisible(), 'Flywheel is reachable directly below Buy');
-      assert.equal(await page.locator('.bullen-site-nav > .bullen-desktop-nav-link').isVisible(), false, 'compact navigation has no duplicate Flywheel row');
-      assert.equal(await flywheel.evaluate(el => getComputedStyle(el).color), await page.locator('.bullen-site-nav > .bullen-site-sister').evaluate(el => getComputedStyle(el).color), 'Flywheel uses the approved gold navigation accent');
+      for (const link of await page.locator('.bullen-site-nav > .bullen-desktop-nav-link').all()) assert.equal(await link.isVisible(), false, 'compact navigation has no duplicate featured row');
+      const gold = await flywheel.evaluate(el => getComputedStyle(el).color);
+      for (const href of ['/buy', 'https://bullensaga.com/']) assert.equal(await page.locator(`.bullen-mobile-nav-directory a[href="${href}"]`).evaluate(el => getComputedStyle(el).color), gold, 'Buy and BULLENSAGA use the approved gold navigation accent');
+      assert.notEqual(await page.locator('.bullen-mobile-nav-directory a[href="/giveaways.html"]').evaluate(el => getComputedStyle(el).color), gold, 'Giveaways retains the normal navigation style');
       if (pathname === '/') await page.screenshot({ path:path.join(output, `hamburger-${width}.png`) });
-      await page.locator('.bullen-site-nav > .bullen-site-sister').scrollIntoViewIfNeeded();
-      assert(await page.locator('.bullen-site-nav > .bullen-site-sister').evaluate(link => {
+      await page.locator('.bullen-site-nav > a[href="/rooms.html"]').scrollIntoViewIfNeeded();
+      assert(await page.locator('.bullen-site-nav > a[href="/rooms.html"]').evaluate(link => {
         const b = link.getBoundingClientRect(), panel = link.closest('nav').getBoundingClientRect();
         return b.top >= panel.top && b.bottom <= panel.bottom + 1;
       }), 'last destination is reachable within the scrollable menu');
