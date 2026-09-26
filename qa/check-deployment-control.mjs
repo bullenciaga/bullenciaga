@@ -26,7 +26,7 @@ const stagingConfig = parseJsonc(stagingConfigText);
 assert.equal(stagingConfig.name, 'bullenciaga-staging');
 assert.equal(stagingConfig.workers_dev, true, 'staging must use workers.dev');
 assert.equal(stagingConfig.preview_urls, true, 'staging preview URLs must be enabled');
-for (const forbidden of ['route', 'routes', 'kv_namespaces', 'r2_buckets', 'services', 'triggers']) {
+for (const forbidden of ['route', 'routes', 'kv_namespaces', 'r2_buckets', 'triggers']) {
   assert(!(forbidden in stagingConfig), `staging config must not define ${forbidden}`);
 }
 
@@ -91,3 +91,6 @@ assert.equal(stagingConfig.d1_databases[0].database_name, 'bullen-platform-previ
 assert.equal(productionConfig.d1_databases[0].database_name, 'bullen-platform-preview');
 assert.notEqual(stagingConfig.d1_databases[0].database_id, productionConfig.d1_databases[0].database_id, 'signup staging must never write to production');
 assert.notEqual(stagingConfig.ratelimits[0].namespace_id, productionConfig.ratelimits[0].namespace_id);
+
+assert.deepEqual(stagingConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy-staging"}], "staging owner authentication stays in staging");
+assert.deepEqual(productionConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy"}], "only the existing owner authorization service is bound");

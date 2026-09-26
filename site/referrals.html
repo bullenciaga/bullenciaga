@@ -14,7 +14,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>!function(d,p){var e=d.documentElement,f=(p.split('/').pop()||'index').toLowerCase().replace(/\.html$/,'')||'index';e.dataset.bullenPage=f;var m=matchMedia('(max-width: 820px)').matches;e.classList.add('bullen-booting');window.__BULLEN_REVEAL=function(ready){if(!e.classList.contains('bullen-booting'))return;clearTimeout(window.__BULLEN_BOOT_TIMER);if(m&&!ready)d.querySelectorAll('link[data-bullen-fonts]').forEach(function(l){l.disabled=true});e.classList.remove('bullen-booting');e.classList.add('bullen-ready')};window.__BULLEN_BOOT_TIMER=setTimeout(function(){if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',function(){window.__BULLEN_REVEAL(false)},{once:true});else window.__BULLEN_REVEAL(false)},m?4000:1600)}(document,location.pathname);</script>
-<style data-bullen-boot>html.bullen-booting body > :not(.bullen-site-shell):not(.bullen-skip){opacity:0;visibility:hidden}</style>
+<style data-bullen-boot>html.bullen-booting body > :not(.bullen-site-shell):not(.bullen-skip){opacity:0;visibility:hidden}
+  #deliveryDialog{width:min(520px,calc(100% - 28px));max-height:calc(100dvh - 32px);overflow:auto;background:var(--panel);color:var(--text);border:1px solid var(--gold);padding:24px;font:inherit;}
+  #deliveryDialog::backdrop{background:rgba(0,0,0,.8);}
+  #deliveryDialog h2{font-size:16px;color:var(--gold);margin-top:0;}
+  #deliveryDialog input{width:100%;padding:12px;background:#050505;color:var(--text);border:1px solid var(--line);font:inherit;}
+  #deliveryDialog label{display:block;margin:16px 0 6px;font-size:11px;color:var(--dim);}
+  #deliveryWallet{overflow-wrap:anywhere;font-size:12px;}
+  #deliveryStatus{font-size:12px;min-height:2em;overflow-wrap:anywhere;}
+  .delivery-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:20px;flex-wrap:wrap;}
+</style>
 <link data-bullen-fonts rel="stylesheet" href="/fonts/house-fonts.css">
 <link rel="preload" href="/fonts/house-872e862918591a9e.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/house-e0c8e616bda27642.woff2" as="font" type="font/woff2" crossorigin>
@@ -131,7 +140,7 @@
 <div class="bar" style="margin-top:18px;">
   <div style="flex:1 1 260px;">
     <label>Admin secret &mdash; never saved; cleared after each admin action</label>
-    <input type="password" id="secret" style="width:100%;" placeholder="REFERRAL_ADMIN_SECRET"
+    <input type="password" id="secret" style="width:100%;" placeholder="Referral admin secret or Control Room key"
            autocomplete="off" autocapitalize="off" spellcheck="false">
   </div>
 </div>
@@ -142,6 +151,18 @@
   vault is absent falls back to 0.785% and is flagged. Sends stay manual &mdash; this page
   cannot move funds.
 </div>
+
+<dialog id="deliveryDialog" aria-labelledby="deliveryTitle">
+  <form id="deliveryForm">
+    <h2 id="deliveryTitle">Record custom delivery</h2>
+    <p id="deliveryWallet"></p>
+    <p class="note">Record a piece you have already sent. This does not mint or transfer anything. A new delivery record is announced in Telegram.</p>
+    <label for="deliveryMint">Asset address or Solscan token link (optional)</label>
+    <input id="deliveryMint" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <p id="deliveryStatus" role="status" aria-live="polite"></p>
+    <div class="delivery-actions"><button type="button" class="ghost" id="deliveryCancel">Cancel</button><button type="submit" id="deliverySave">Record delivered</button></div>
+  </form>
+</dialog>
 
 <div class="build">&mdash; session-only admin secret</div>
 
@@ -560,7 +581,7 @@
           '&#9670; CUSTOM EARNED &mdash; ' + g.mints + ' mints ' +
           '<button type="button" class="grantBtn" data-ref="' + ref + '" ' +
           'style="font-size:9px; letter-spacing:0.1em; padding:2px 6px; margin-left:6px; cursor:pointer;">' +
-          'MARK GRANTED</button></div>';
+          'MARK DELIVERED</button></div>';
       }
       html += '<tr><td>' + ref + customBlock +
               '<details style="margin-top:6px;"><summary style="font-size:10px; color:var(--dim); cursor:pointer;">' +
@@ -605,6 +626,7 @@
     if (!lastRows) return;
     var secret = readAdminSecret();
     if (!secret){ say('paste the admin secret first', true); return; }
+    try { await checkAdmin(secret); } catch(error) { say(error.message,true); secret=''; return; }
 
     var byRef = {};
     lastRows.forEach(function(r){
@@ -641,50 +663,59 @@
     }
   });
 
-  // Delegated, because the rows are rebuilt on every run and a handler bound
-  // to a button that no longer exists is a silent dead click.
+  var deliveryRef = '', deliveryKey = '', deliveryBusy = false;
+  async function checkAdmin(secret) {
+    var response = await fetch('/refbind/authorize', {method:'POST', headers:{Authorization:secret}, signal:AbortSignal.timeout(12000)});
+    var data = await response.json();
+    if (!response.ok || !data.ok) throw new Error(data.error || 'Could not verify admin access. Try again.');
+  }
+  function delivered(ref, record) {
+    customMap[ref] = {at:record.at, mint:record.mint || '', note:''};
+    if (lastRows) render(lastRows, bounds());
+  }
   $('out').addEventListener('click', async function(e){
     var btn = e.target.closest ? e.target.closest('.grantBtn') : null;
-    if (!btn || btn.disabled) return;
-    var ref = btn.getAttribute('data-ref');
-    if (!ref) return;
-
+    if (!btn || btn.disabled || deliveryBusy) return;
     var secret = readAdminSecret();
-    if (!secret){ say('admin secret required to mark a piece granted.', true); return; }
-
-    // Optional. If the asset address is given the record points at something
-    // checkable rather than only asserting the piece was sent.
-    var mint = prompt('Asset address of the piece sent to\n' + ref +
-                      '\n\nLeave blank to record it without one.');
-    if (mint === null) return;
-    mint = String(mint || '').trim();
-
-    if (!confirm('Mark the custom piece as GRANTED for\n' + ref +
-                 '\n\nOnly do this AFTER the piece has been sent. ' +
-                 'It will be announced in Telegram.')) return;
-
-    forgetAdminSecret();
-    btn.disabled = true;
+    if (!secret) { say('Enter your referral admin secret or Control Room key below first.',true); $('secret').focus(); return; }
+    deliveryBusy = true; btn.disabled = true;
+    say('checking admin access…');
     try {
-      var res = await fetch(window.location.origin + '/refbind/custom', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': secret },
-        body: JSON.stringify({ referrer: ref, mint: mint, note: 'custom piece' }),
-      });
-      var j = await res.json();
-      if (j.ok){
-        customMap[ref] = { at: j.at, mint: j.mint || '', note: '' };
-        say('recorded and announced. re-run to see it settled.');
-      } else {
-        say(j.error || 'could not record', true);
-        btn.disabled = false;
-      }
-    } catch (err){
-      say('could not record: ' + ((err && err.message) || err), true);
-      btn.disabled = false;
-    } finally {
-      secret = '';
+      await checkAdmin(secret);
+      deliveryKey = secret; deliveryRef = btn.getAttribute('data-ref');
+      forgetAdminSecret();
+      $('deliveryWallet').textContent = deliveryRef;
+      $('deliveryMint').value = '';
+      $('deliveryStatus').textContent = 'Admin access verified. Enter the delivered piece, then confirm.';
+      $('deliveryDialog').showModal();
+      $('deliveryMint').focus();
+      say('admin access verified.');
+    } catch(error) { say(error.message || 'Could not verify admin access.',true); $('secret').focus(); }
+    finally { secret = ''; deliveryBusy = false; btn.disabled = false; }
+  });
+  $('deliveryCancel').addEventListener('click',function(){ if (!deliveryBusy) $('deliveryDialog').close(); });
+  $('deliveryDialog').addEventListener('cancel',function(event){ if (deliveryBusy) event.preventDefault(); });
+  $('deliveryDialog').addEventListener('close',function(){deliveryKey='';deliveryRef='';$('deliveryMint').value='';});
+  window.addEventListener('pagehide',function(){deliveryKey='';deliveryRef='';});
+  $('deliveryForm').addEventListener('submit',async function(event){
+    event.preventDefault(); if (deliveryBusy || !deliveryKey || !deliveryRef) return;
+    var mint = $('deliveryMint').value.trim();
+    if (/^https:\/\//i.test(mint)) {
+      try { var url=new URL(mint); if (url.hostname !== 'solscan.io' || !/^\/token\/[^/]+\/?$/.test(url.pathname)) throw Error(); mint=url.pathname.split('/')[2]; }
+      catch { $('deliveryStatus').textContent='Use a Solana asset address or a solscan.io/token/… link.';return; }
     }
+    if (mint && !/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(mint)) { $('deliveryStatus').textContent='That is not a valid Solana asset address.';return; }
+    deliveryBusy=true;$('deliverySave').disabled=true;$('deliveryCancel').disabled=true;
+    $('deliveryStatus').textContent='Saving delivery…';
+    try {
+      var response=await fetch('/refbind/custom',{method:'POST',headers:{'Content-Type':'application/json',Authorization:deliveryKey},body:JSON.stringify({referrer:deliveryRef,mint:mint,note:'custom piece'}),signal:AbortSignal.timeout(20000)});
+      var record=await response.json();
+      if (!response.ok || !record.ok) throw new Error(record.error || 'Delivery could not be recorded.');
+      delivered(deliveryRef,record);$('deliveryDialog').close();
+      say(record.alreadyRecorded ? 'Delivery was already recorded. The row is now updated.' : 'Delivery recorded. The row is now updated.');
+    } catch(error) {
+      $('deliveryStatus').textContent=(error.message || 'Save could not be confirmed.')+' You can retry; an existing delivery will not be announced again.';
+    } finally {deliveryBusy=false;$('deliverySave').disabled=false;$('deliveryCancel').disabled=false;}
   });
 
   $('runBtn').addEventListener('click', run);
