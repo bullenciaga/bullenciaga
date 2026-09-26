@@ -36,7 +36,7 @@ export async function platformSignup(request, env) {
     try { input = await readInput(request); } catch (error) { return reply(error.message === 'large' ? 413 : 400, 'Please check your details and try again.'); }
     if (!input || typeof input !== 'object' || Array.isArray(input)) return reply(400, 'Please check your details.');
     if (input.website) return reply(200); // Invisible honeypot: do not store automated submissions.
-    if (input.consent !== true) return reply(400, 'Please agree to be contacted about early access.');
+    if (input.consent !== true) return reply(400, 'Please agree to receive beta availability and testing updates.');
     const method = input.method;
     let contact = typeof input.contact === 'string' ? input.contact.trim() : '';
     if (method === 'email') {
@@ -48,7 +48,7 @@ export async function platformSignup(request, env) {
     } else return reply(400, 'Choose email or X.');
     // Identical response for new and existing contacts. Never expose membership.
     await env.PLATFORM_SIGNUPS.prepare('INSERT INTO preview_signups (id, method, contact, created_at, consent_version) VALUES (?, ?, ?, ?, ?) ON CONFLICT(method, contact) DO NOTHING')
-      .bind(crypto.randomUUID(), method, contact, new Date().toISOString(), 'preview-2026-09-26').run();
+      .bind(crypto.randomUUID(), method, contact, new Date().toISOString(), 'beta-notification-2026-09-26').run();
     return reply(200);
   } catch {
     // Do not log request bodies, email addresses or handles.

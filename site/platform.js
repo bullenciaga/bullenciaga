@@ -28,7 +28,7 @@
     if (method === 'x') contact.pattern = '@?[A-Za-z0-9_]{1,15}'; else contact.removeAttribute('pattern');
     contact.placeholder = method === 'email' ? 'you@example.com' : '@yourhandle';
     $('contact-label').textContent = method === 'email' ? 'Email address' : 'X handle';
-    $('contact-help').textContent = method === 'email' ? 'We’ll only use it for early access and testing updates.' : 'Use a handle you control and allow messages so we can reach you.';
+    $('contact-help').textContent = method === 'email' ? 'We’ll only use it for beta availability and testing updates.' : 'Use a handle you control and allow messages so we can reach you.';
     contact.value = drafts[method]; $('form-status').textContent = '';
   });
   form.addEventListener('submit', async event => {
@@ -47,7 +47,7 @@
     } catch (error) {
       $('form-status').textContent = error.name === 'AbortError' ? 'That took longer than expected. Please retry; duplicate requests are safely ignored.' : error instanceof TypeError ? 'Connection interrupted. Please try again.' : error.message;
     } finally {
-      clearTimeout(timeout); busy = false; form.removeAttribute('aria-busy'); $('submit-signup').disabled = false; $('submit-signup').textContent = 'Join the preview list ↗';
+      clearTimeout(timeout); busy = false; form.removeAttribute('aria-busy'); $('submit-signup').disabled = false; $('submit-signup').textContent = 'Join the notification list ↗';
     }
   });
   const video = $('monolith'), motion = $('motion'), reduce = matchMedia('(prefers-reduced-motion: reduce)');
