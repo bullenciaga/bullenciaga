@@ -1,3 +1,4 @@
+import { marketAth } from './market-ath.mjs';
 import { platformSignup } from './platform-signup.mjs';
 
 // Keep short-domain visits on the established origin for wallets and sessions.
@@ -89,7 +90,7 @@ const iphoneNavigation = `<style data-bullen-navigation>
 </script>`;
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (aliases.has(url.hostname)) {
       return new Response(null, {
@@ -100,6 +101,7 @@ export default {
         },
       });
     }
+    if (url.pathname === '/market/ath') return marketAth(request, ctx);
     if (url.pathname === '/platform/signup') return platformSignup(request, env);
     const userAgent = request.headers.get('User-Agent') || '';
     const iphoneChrome = /\biPhone\b/i.test(userAgent) && /\bCriOS\//i.test(userAgent);

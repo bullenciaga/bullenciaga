@@ -660,6 +660,24 @@
     max-width:900px;
     margin:0 auto;
   }
+  .ath-row{max-width:900px;margin:0 auto;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px 28px;padding:20px 24px;border:1px solid var(--line);border-top:0;background:var(--black);text-align:left;box-sizing:border-box;}
+  .ath-label{font:11px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);}
+  .ath-reading{display:flex;align-items:baseline;justify-content:center;gap:12px;min-width:0;min-height:30px;transition:opacity .16s ease;}
+  .ath-reading.is-changing{opacity:0;}
+  .ath-date,.ath-source{font:11px 'Space Mono',monospace;color:rgba(245,243,238,.58);line-height:1.6;}
+  .ath-source{white-space:nowrap;text-decoration:none;transition:color .2s;}
+  .ath-source:hover{color:var(--gold);}
+  #athPrice{font-variant-numeric:tabular-nums;white-space:nowrap;}
+  @media(max-width:640px){
+    .ath-row{grid-template-columns:1fr auto;gap:8px 12px;padding:18px 16px;}
+    .ath-reading{display:contents;}
+    #athPrice{text-align:right;min-height:26px;}
+    .ath-date{grid-column:1;grid-row:2;min-height:18px;}
+    .ath-source{grid-column:2;grid-row:2;text-align:right;}
+    .ath-reading.is-changing > *{opacity:0;}
+    .ath-reading > *{transition:opacity .16s ease;}
+  }
+  @media(prefers-reduced-motion:reduce){.ath-reading,.ath-reading > *{transition:none;}}
   .stats-grid.two-col{
     grid-template-columns:repeat(2, 1fr);
   }
@@ -2978,6 +2996,7 @@
 <link rel="stylesheet" href="/mobile-buy.css">
 <script src="/mobile-buy.js"></script>
 <script defer src="/house-burn-registry.js"></script>
+<script defer src="/home-ath.js"></script>
 <link rel="stylesheet" href="/collector-tools.css">
 <script src="/collector-tools.js"></script>
 <link rel="stylesheet" href="/bullen-focus.css">
@@ -3199,6 +3218,15 @@
       <div class="stat-name">24h Change</div>
     </div>
   </div>
+  <div class="ath-row" id="athRecord">
+    <span class="ath-label">All-time high</span>
+    <div class="ath-reading" aria-live="polite" aria-atomic="true" aria-busy="true">
+      <span class="stat-value" id="athPrice" data-reading="pending">Loading…</span>
+      <span class="ath-date" id="athDate"></span>
+    </div>
+    <a class="ath-source" href="https://www.coingecko.com/en/coins/bullen" target="_blank" rel="noopener noreferrer" aria-label="Verify BULLEN all-time high on CoinGecko">CoinGecko ↗</a>
+  </div>
+  <noscript><p class="stats-note">View the all-time high on CoinGecko using the link above.</p></noscript>
   <div class="stats-actions">
     <a class="stats-btn" href="/chart" target="_blank" rel="noopener">Open Chart</a>
     <a class="stats-btn" href="/tape" target="_blank" rel="noopener">Open The Tape</a>
