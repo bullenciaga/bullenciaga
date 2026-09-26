@@ -1,5 +1,7 @@
 # Anonymous early-preview signup
 
+The page collects interest for a later beta notification. It does not grant immediate access or guarantee an invitation. New submissions record consent revision `beta-notification-2026-09-26`; existing consent records remain unchanged.
+
 Public surface: `/platform`, POST `/platform/signup`. Static assets and all requests remain on the BULLENCIAGA origin. No account creation, wallet connection, external authentication or email delivery occurs. A submitted X handle is a contact request, not verified account ownership.
 
 The copied sculpture loop/poster are immutable local media under `site/assets/platform`. Product identity and the original app domain must never enter public copy, URLs, metadata or client code. The original app repositories are untouched.
