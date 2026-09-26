@@ -26,7 +26,7 @@ const stagingConfig = parseJsonc(stagingConfigText);
 assert.equal(stagingConfig.name, 'bullenciaga-staging');
 assert.equal(stagingConfig.workers_dev, true, 'staging must use workers.dev');
 assert.equal(stagingConfig.preview_urls, true, 'staging preview URLs must be enabled');
-for (const forbidden of ['route', 'routes', 'kv_namespaces', 'd1_databases', 'r2_buckets', 'services', 'triggers']) {
+for (const forbidden of ['route', 'routes', 'kv_namespaces', 'r2_buckets', 'services', 'triggers']) {
   assert(!(forbidden in stagingConfig), `staging config must not define ${forbidden}`);
 }
 
@@ -85,3 +85,9 @@ assert(production.indexOf('Smoke-test short-domain redirects') > production.inde
 assert(!production.includes('triggers deploy'), 'code-release token must not require zone route writes');
 assert.match(production, /node qa\/smoke-domain-aliases.mjs/);
 assert(staging.includes('"src/**"'));
+
+assert.equal(stagingConfig.d1_databases.length, 1);
+assert.equal(stagingConfig.d1_databases[0].database_name, 'bullen-platform-preview-staging');
+assert.equal(productionConfig.d1_databases[0].database_name, 'bullen-platform-preview');
+assert.notEqual(stagingConfig.d1_databases[0].database_id, productionConfig.d1_databases[0].database_id, 'signup staging must never write to production');
+assert.notEqual(stagingConfig.ratelimits[0].namespace_id, productionConfig.ratelimits[0].namespace_id);

@@ -1,3 +1,5 @@
+import { platformSignup } from './platform-signup.mjs';
+
 // Keep short-domain visits on the established origin for wallets and sessions.
 const aliases = new Set(['bullen.app', 'www.bullen.app']);
 
@@ -98,6 +100,7 @@ export default {
         },
       });
     }
+    if (url.pathname === '/platform/signup') return platformSignup(request, env);
     const userAgent = request.headers.get('User-Agent') || '';
     const iphoneChrome = /\biPhone\b/i.test(userAgent) && /\bCriOS\//i.test(userAgent);
     const documentPath = !url.pathname.split('/').pop().includes('.') || /\.html$/i.test(url.pathname);
