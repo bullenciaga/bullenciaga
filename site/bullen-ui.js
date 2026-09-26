@@ -22,6 +22,7 @@
     ledger: 'Living Ledger',
     passport: 'Wallet Passport',
     rooms: 'Inner Rooms',
+    platform: 'The platform',
     flywheel: 'Flywheel',
     bullensaga: 'BULLENSAGA',
   };
@@ -40,6 +41,7 @@
     ['ledger', '/ledger.html'],
     ['passport', '/passport.html'],
     ['rooms', '/rooms.html'],
+    ['platform', '/platform'],
     ['flywheel', '/flywheel'],
     ['bullensaga', 'https://bullensaga.com/'],
   ];
@@ -48,7 +50,7 @@
     ['Market', ['buy', 'stats', 'chart', 'tape', 'curve']],
     ['Explore', ['refer', 'thedrop', 'ledger', 'passport']],
   ];
-  const mobileNavigationKeys = ['buy', 'flywheel', 'bullensaga', 'giveaways', 'objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
+  const mobileNavigationKeys = ['buy', 'platform', 'flywheel', 'bullensaga', 'giveaways', 'objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
   const destinationByKey = new Map(destinations);
 
   root.dataset.bullenPage = page;
@@ -77,6 +79,10 @@
       const link = document.createElement('a');
       link.href = href;
       link.textContent = labels[key];
+      if (key === 'platform') {
+        link.className = 'bullen-site-platform';
+        link.innerHTML = '<span>The platform</span>';
+      }
       if (key === 'flywheel') link.className = 'bullen-site-featured';
       if (key === 'bullensaga') {
         link.className = 'bullen-site-sister';
@@ -106,6 +112,9 @@
     }
     nav.append(mobileDirectory);
     nav.append(buildLink('rooms'));
+    const platformLink = buildLink('platform');
+    platformLink.classList.add('bullen-desktop-nav-link');
+    nav.append(platformLink);
     const flywheelLink = buildLink('flywheel');
     flywheelLink.classList.add('bullen-desktop-nav-link');
     nav.append(flywheelLink);
