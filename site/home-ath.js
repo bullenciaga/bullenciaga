@@ -31,7 +31,7 @@
     if (busy || document.hidden) return;
     busy = true;
     try {
-      const response = await fetch('/market/ath', { cache: 'no-store', signal: AbortSignal.timeout(10000) });
+      const response = await fetch('/volume/ath', { cache: 'no-store', signal: AbortSignal.timeout(10000) });
       if (!response.ok) throw new Error('Unavailable');
       const data = await response.json();
       const now = Date.now(), at = Date.parse(data.athAt), fetched = Date.parse(data.fetchedAt), end = Date.parse(data.expiresAt);
