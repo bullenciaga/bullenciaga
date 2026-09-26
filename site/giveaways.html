@@ -14,7 +14,7 @@
   <script defer src="/bullen-ui.js"></script>
   <title>BULLENCIAGA — Giveaways</title>
   <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/giveaways.svg">
-  <meta name="description" content="Active, upcoming and completed BULLENCIAGA giveaways with public snapshots and reproducible results.">
+  <meta name="description" content="Active, upcoming and completed BULLENCIAGA giveaways, final recipients and public campaign records.">
 
   <link rel="stylesheet" href="/bullen-ui.css">
   <link rel="stylesheet" href="/follow500.css">
@@ -63,6 +63,7 @@
     .campaign-media[data-media="video"] { min-height: 0; aspect-ratio: 16 / 9; align-self: center; }
     .ghost-campaign { grid-column:1/-1; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:28px 36px; }
     .ghost-campaign .golden-runtime { grid-column:1/-1; min-width:0; }
+    .ghost-campaign .golden-runtime:empty { display:none; }
     .ghost-campaign .campaign-media, .ghost-campaign .campaign-media[data-media="video"] { width:100%; aspect-ratio:4/5; min-height:0; align-self:start; margin:0; }
     .ghost-campaign .campaign-media video { object-fit:contain; }
     .ghost-campaign .campaign-copy { align-self:center; }
@@ -71,6 +72,10 @@
     .ghost-prizes { display:grid; gap:14px; padding:20px 0; border-block:1px solid var(--bullen-border); }
     .ghost-prizes span { display:block; color:var(--bullen-muted); font-size:10px; text-transform:uppercase; letter-spacing:.08em; }
     .ghost-prizes b { display:block; color:var(--bullen-brand-light); font:600 20px/1.5 var(--bullen-font-display); }
+    .ghost-results { list-style:none; margin:0; padding:0; border-top:1px solid var(--bullen-border); }
+    .ghost-results li { display:grid; grid-template-columns:6.5em minmax(0,1fr); gap:12px; padding:13px 0; border-bottom:1px solid var(--bullen-border); }
+    .ghost-results b { color:var(--bullen-brand-light); font:600 16px/1.45 var(--bullen-font-display); }
+    .ghost-results span { overflow-wrap:anywhere; color:var(--bullen-text); font:400 13px/1.55 var(--bullen-font-data); }
     .ghost-intro h4 { margin:24px 0 8px; font:600 20px/1.3 var(--bullen-font-display); }
     .ghost-entry { font:400 18px/1.55 var(--bullen-font-display); margin:0; }
     .ghost-small { font:400 14px/1.6 var(--bullen-font-display); color:var(--bullen-muted); margin:12px 0; }
@@ -137,8 +142,8 @@
 
 <meta property="og:title" content="BULLENCIAGA — Giveaways">
 <meta name="twitter:title" content="BULLENCIAGA — Giveaways">
-<meta property="og:description" content="Active, upcoming and completed BULLENCIAGA giveaways with public snapshots and reproducible results.">
-<meta name="twitter:description" content="Active, upcoming and completed BULLENCIAGA giveaways with public snapshots and reproducible results.">
+<meta property="og:description" content="Active, upcoming and completed BULLENCIAGA giveaways, final recipients and public campaign records.">
+<meta name="twitter:description" content="Active, upcoming and completed BULLENCIAGA giveaways, final recipients and public campaign records.">
 <meta property="og:image" content="https://bullenciaga.com/assets/social/giveaways-19e09be95cf4.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -159,7 +164,7 @@
   <main id="main-content">
     <div class="eyebrow">The public campaign ledger</div>
     <h1>Nothing drawn in the dark.</h1>
-    <p class="lede">One source records every live, gated and completed campaign. Snapshots are published before seeds are fetched; results remain reproducible after the draw.</p>
+    <p class="lede">One place for live, upcoming and completed House campaigns. See final recipients and inspect the published campaign records.</p>
 
     <div class="summary" aria-live="polite">
       <div><b id="activeCount">—</b><span>active now</span></div>
@@ -169,7 +174,7 @@
 
     <div id="campaigns" aria-live="polite"></div>
 
-    <p class="proof-note"><strong>Nothing is drawn in the dark.</strong> The entry snapshot is published before the seed exists, and every completed result stays reproducible from the public record.</p>
+    <p class="proof-note"><strong>Campaign records stay public.</strong> Published snapshots and selection records remain available alongside final results.</p>
   </main>
 
   <script type="module">
@@ -290,18 +295,15 @@
           <div class="golden-runtime" aria-live="polite"></div>
           ${media}
           <div class="campaign-copy ghost-intro">
-            <div class="status">Checking live status</div>
+            <div class="status">${campaign.finalResults?.length ? 'Completed' : 'Checking live status'}</div>
             <h3>The Ghost Dripper.</h3>
-            <p class="ghost-lede">Five pieces. One competition.</p>
-            <div class="ghost-prizes"><div><span>Largest net buyer</span><b>#517 · Ghost Dripper</b></div><div><span>Second place</span><b>HERD #613</b></div><div><span>Three prize draws</span><b>#699 · #61 · #961</b></div></div>
-            <h4>How to enter</h4>
-            <p class="ghost-entry">Buy and hold $BULLEN. Every <strong>50,000 qualifying tokens</strong> earns one draw ticket. Your purchases add up.</p>
-            <p class="ghost-small">Keep your qualifying tokens until the draw. Selling or transferring out can reduce your tickets and ranking. One prize per wallet.</p>
+            <p class="ghost-lede">${campaign.finalResults?.length ? 'Final results' : 'Five pieces. One competition.'}</p>
+            ${campaign.finalResults?.length ? `<ul class="ghost-results" aria-label="Final recipients">${campaign.finalResults.map(result=>`<li><b>HERD #${escapeHtml(result.position)}</b><span>${escapeHtml(result.wallet)}</span></li>`).join('')}</ul>` : `<div class="ghost-prizes"><div><span>Largest net buyer</span><b>#517 · Ghost Dripper</b></div><div><span>Second place</span><b>HERD #613</b></div><div><span>Three prize draws</span><b>#699 · #61 · #961</b></div></div><h4>How to enter</h4><p class="ghost-entry">Buy and hold $BULLEN. Every <strong>50,000 qualifying tokens</strong> earns one draw ticket. Your purchases add up.</p><p class="ghost-small">Keep your qualifying tokens until the draw. Selling or transferring out can reduce your tickets and ranking. One prize per wallet.</p>`}
             <div class="actions"></div>
           </div>
           <div class="ghost-details">
             <details><summary>Full rules</summary><ul class="rules">${campaign.eligibility.map(rule=>`<li>${escapeHtml(rule)}</li>`).join('')}</ul></details>
-            <details><summary>Rankings and draw verification</summary><div class="ghost-evidence"></div></details>
+            <details><summary>Original selection record</summary><div class="ghost-evidence"></div></details>
           </div>
         </article>`;
         const traits = campaign.prizes && campaign.prizes.traits;

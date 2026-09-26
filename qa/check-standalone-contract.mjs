@@ -156,7 +156,19 @@ const golden = authority.campaigns.find(c => c.id === 'golden-jacket-699-613-517
 if (trophy?.status !== 'completed' || trophy?.replacedBy !== golden?.id || !trophy?.originalEligibility?.length
     || trophy?.trigger?.url !== 'https://x.com/bullenciagax/status/2093018896466923945'
     || golden?.prizes?.positions?.join(',') !== '517,613,699,61,961' || typeof golden?.automation?.enabled !== 'boolean') {
-  failures.push('Golden Jacket replacement must preserve naming-campaign history, corrected prize order and inactive predeploy state');
+  failures.push('Golden Jacket replacement must preserve naming-campaign history and prize order');
+}
+const finalRecipients = [
+  [517, 'BkcjSkdwzbswMUPuaPtu1tPPTbs5XrXN2Y1JgxUrqQep'],
+  [613, 'EQ3P1ueeu171Kq7wd5KURJ413FqyaS97nwWaJem42rzf'],
+  [699, 'At6eLYvJEaC65uBD6wTn4std4mSaEFGxs9tkuyu1wPgn'],
+  [61, 'BY2cjrXeqMnPkinCLZqkrTyos8njFyUZj1E3wgwXaUum'],
+  [961, '3AgyXSNoPZrKQW2gK6oEQPubouCJsUjQ3MWQjoLbh5Er'],
+];
+if (golden?.status !== 'completed' || golden?.finalResults?.length !== finalRecipients.length
+    || finalRecipients.some(([position, wallet], index) => golden.finalResults[index]?.position !== position
+      || golden.finalResults[index]?.wallet !== wallet)) {
+  failures.push('Ghost Dripper final recipients must match the approved five-piece result in prize order');
 }
 const round3 = authority.campaigns.find((campaign) => campaign.id === 'mint-round-3');
 if (round3?.round !== 3 || round3?.trigger?.target !== 650 || round3?.status !== 'upcoming'
