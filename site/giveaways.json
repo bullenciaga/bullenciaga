@@ -22,9 +22,16 @@
       "id": "golden-jacket-699-613-517-61-961",
       "title": "The Ghost Dripper \u2014 Five pieces. One competition.",
       "kind": "buy-hold",
-      "status": "upcoming",
+      "status": "completed",
       "displayOrder": 1,
       "featured": true,
+      "finalResults": [
+        { "position": 517, "wallet": "BkcjSkdwzbswMUPuaPtu1tPPTbs5XrXN2Y1JgxUrqQep" },
+        { "position": 613, "wallet": "EQ3P1ueeu171Kq7wd5KURJ413FqyaS97nwWaJem42rzf" },
+        { "position": 699, "wallet": "At6eLYvJEaC65uBD6wTn4std4mSaEFGxs9tkuyu1wPgn" },
+        { "position": 61, "wallet": "BY2cjrXeqMnPkinCLZqkrTyos8njFyUZj1E3wgwXaUum" },
+        { "position": 961, "wallet": "3AgyXSNoPZrKQW2gK6oEQPubouCJsUjQ3MWQjoLbh5Er" }
+      ],
       "trigger": {
         "label": "The draw unlocks at 100,000,000 $BULLEN in cumulative buys.",
         "target": 100000000,
