@@ -29,5 +29,23 @@
     "binding": "ASSETS",
     "run_worker_first": true
   },
-  "main": "src/website.mjs"
+  "main": "src/website.mjs",
+  "d1_databases": [
+    {
+      "binding": "PLATFORM_SIGNUPS",
+      "database_name": "bullen-platform-preview",
+      "database_id": "3ca8afd0-91dc-4f2e-80ac-a28c2cf71a11",
+      "migrations_dir": "migrations/platform"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "PLATFORM_LIMIT",
+      "namespace_id": "9262601",
+      "simple": {
+        "limit": 10,
+        "period": 60
+      }
+    }
+  ]
 }

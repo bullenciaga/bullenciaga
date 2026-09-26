@@ -23,7 +23,7 @@
       "title": "The Ghost Dripper \u2014 Five pieces. One competition.",
       "kind": "buy-hold",
       "status": "completed",
-      "displayOrder": 1,
+      "displayOrder": 0,
       "featured": true,
       "finalResults": [
         { "position": 517, "wallet": "BkcjSkdwzbswMUPuaPtu1tPPTbs5XrXN2Y1JgxUrqQep" },
@@ -103,6 +103,7 @@
       "title": "The vTURBO Trophy \u2014 HERD #699",
       "kind": "skill",
       "status": "completed",
+      "display": false,
       "displayOrder": 10,
       "featured": false,
       "trigger": {
@@ -244,7 +245,7 @@
       "title": "The Herd Buy + Hold Draw",
       "kind": "buy-hold",
       "status": "completed",
-      "displayOrder": 0,
+      "displayOrder": 1,
       "featured": true,
       "trigger": {
         "label": "72-hour window closed \u00b7 result publicly reproducible",

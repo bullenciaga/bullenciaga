@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { DatabaseSync } from 'node:sqlite';
+import { platformSignup } from '../src/platform-signup.mjs';
+const db = new DatabaseSync(':memory:');
+db.exec(readFileSync(new URL('../migrations/platform/0001_signups.sql', import.meta.url), 'utf8'));
+const env = { PLATFORM_LIMIT: { limit: async () => ({success:true}) }, PLATFORM_SIGNUPS: { prepare(sql) { return { bind(...params) { return {run:async()=>db.prepare(sql).run(...params)}; } }; } } };
+const origin = 'https://bullenciaga.com';
+const body = { method:'email', contact:' Test@Example.com ', consent:true, website:'' };
+const req = (data=body, headers={}, method='POST') => new Request(origin+'/platform/signup', {method,headers:{Origin:origin,'Content-Type':'application/json',...headers},...(method==='POST'?{body:JSON.stringify(data)}:{})});
+assert.equal((await platformSignup(req(),env)).status,200);
+assert.equal((await platformSignup(req(),env)).status,200);
+assert.equal(db.prepare('SELECT COUNT(*) AS n FROM preview_signups').get().n,1);
+assert.equal(db.prepare('SELECT contact FROM preview_signups').get().contact,'test@example.com');
+assert.equal((await platformSignup(req({...body,method:'x',contact:'@My_Handle'}),env)).status,200);
+assert.equal(db.prepare("SELECT contact FROM preview_signups WHERE method='x'").get().contact,'my_handle');
+for(const patch of [{consent:false},{method:'wallet'},{contact:'x\n@evil.com'},{contact:'a..b@example.com'},{method:'x',contact:'https://x.com/user'},{method:'x',contact:'a'.repeat(16)}]) assert.equal((await platformSignup(req({...body,...patch}),env)).status,400);
+assert.equal((await platformSignup(req(body,{Origin:'https://evil.example'}),env)).status,403);
+assert.equal((await platformSignup(req(body,{'Content-Type':'text/plain'}),env)).status,415);
+assert.equal((await platformSignup(req(null,{},'GET'),env)).status,405);
+assert.equal((await platformSignup(req({...body,website:'bot'}),env)).status,200);
+assert.equal(db.prepare('SELECT COUNT(*) AS n FROM preview_signups').get().n,2);
+assert.equal((await platformSignup(req({...body,contact:'a'.repeat(3000)}),env)).status,413);
+const limited={...env,PLATFORM_LIMIT:{limit:async()=>({success:false})}};
+assert.equal((await platformSignup(req(),limited)).status,429);
+assert.equal((await platformSignup(req(),{})).status,503);
+assert.equal((await platformSignup(req(),{...env,PLATFORM_SIGNUPS:{prepare(){throw Error('database offline')}}})).status,503);
+const rows=db.prepare('SELECT * FROM preview_signups').all();
+assert.deepEqual(Object.keys(rows[0]),['id','method','contact','created_at','consent_version']);
+for(const file of ['platform.html','platform.css','platform.js']) {
+ const text=readFileSync(new URL('../site/'+file,import.meta.url),'utf8');
+ assert.doesNotMatch(text,/ondisplay|on display|supabase|xvhbsik|collect\/_expo/i,'anonymous page must not disclose product identity or backend');
+}
+console.log('platform signup: persisted, duplicate-safe, consent, bounds, rate limit, no public read, failure and identity isolation checks passed');

@@ -153,7 +153,7 @@ for (const id of ['vturbo-trophy-699', 'follow500', 'herd-buy-hold-680-625-308',
 }
 const trophy = authority.campaigns.find((campaign) => campaign.id === 'vturbo-trophy-699');
 const golden = authority.campaigns.find(c => c.id === 'golden-jacket-699-613-517-61-961');
-if (trophy?.status !== 'completed' || trophy?.replacedBy !== golden?.id || !trophy?.originalEligibility?.length
+if (trophy?.status !== 'completed' || trophy?.display !== false || trophy?.replacedBy !== golden?.id || !trophy?.originalEligibility?.length
     || trophy?.trigger?.url !== 'https://x.com/bullenciagax/status/2093018896466923945'
     || golden?.prizes?.positions?.join(',') !== '517,613,699,61,961' || typeof golden?.automation?.enabled !== 'boolean') {
   failures.push('Golden Jacket replacement must preserve naming-campaign history and prize order');
@@ -178,7 +178,7 @@ if (round3?.round !== 3 || round3?.trigger?.target !== 650 || round3?.status !==
 }
 const buyHold = authority.campaigns.find((campaign) => campaign.id === 'herd-buy-hold-680-625-308');
 if (buyHold?.status !== 'completed' || buyHold?.kind !== 'buy-hold'
-    || buyHold?.displayOrder !== 0
+    || buyHold?.displayOrder !== 1
     || buyHold?.qualification?.entryUnit !== 25_000 || buyHold?.qualification?.entryCap !== null
     || buyHold?.qualification?.mustHoldAtClose !== true || buyHold?.qualification?.transfersCount !== false
     || buyHold?.qualification?.salesReduceEntries !== true || buyHold?.qualification?.onePrizePerWallet !== true
