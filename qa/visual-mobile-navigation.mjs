@@ -51,14 +51,14 @@ try {
       const jump = await inspect('.jumpto-menu', '.jumpto-item');
       await page.locator('.bullen-nav-toggle').click();
       await page.locator('.bullen-site-shell.nav-open .bullen-site-nav').waitFor({ state:'visible' });
-      const nav = await inspect('.bullen-site-nav', '.bullen-mobile-nav-directory a:not([aria-current]):not(.bullen-site-featured):not(.bullen-site-sister)');
+      const nav = await inspect('.bullen-site-nav', '.bullen-mobile-nav-directory a:not([aria-current]):not(.bullen-site-featured):not(.bullen-site-sister):not(.bullen-site-platform)');
       assert.deepEqual(nav, jump, `${pathname} at ${width}: hamburger must match Jump To surface/type/insets`);
       assert.equal(await page.locator('.jumpto-btn').getAttribute('aria-expanded'), 'false', 'only one dropdown opens');
       const links = page.locator('.bullen-mobile-nav-directory a');
-      assert.equal(await links.count(), 15);
-      assert.deepEqual((await links.allTextContents()).slice(0, 4), ['Buy $BULLEN', 'Flywheel', 'BULLENSAGA', 'Giveaways']);
+      assert.equal(await links.count(), 16);
+      assert.deepEqual((await links.allTextContents()).slice(0, 5), ['Buy $BULLEN', 'The platform', 'Flywheel', 'BULLENSAGA', 'Giveaways']);
       const flywheel = page.locator('.bullen-mobile-nav-directory a[href="/flywheel"]');
-      assert(await flywheel.isVisible(), 'Flywheel is reachable directly below Buy');
+      assert(await flywheel.isVisible(), 'Flywheel is reachable below The platform');
       for (const link of await page.locator('.bullen-site-nav > .bullen-desktop-nav-link').all()) assert.equal(await link.isVisible(), false, 'compact navigation has no duplicate featured row');
       const gold = await flywheel.evaluate(el => getComputedStyle(el).color);
       for (const href of ['/buy', 'https://bullensaga.com/']) assert.equal(await page.locator(`.bullen-mobile-nav-directory a[href="${href}"]`).evaluate(el => getComputedStyle(el).color), gold, 'Buy and BULLENSAGA use the approved gold navigation accent');

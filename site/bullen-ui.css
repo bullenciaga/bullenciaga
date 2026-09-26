@@ -817,3 +817,26 @@ body.lightbox-open {
   .house-burn-registry--compact .house-burn-registry__metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .house-burn-registry__metric { padding: 12px; }
 }
+
+/* A restrained silver finish for the platform invitation. */
+.bullen-site-nav a.bullen-site-platform { color: #d7d7d7; }
+.bullen-site-nav a.bullen-site-platform::after { background: #d7d7d7; }
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .bullen-site-platform > span {
+    background-image: linear-gradient(110deg, #999 0%, #dedede 24%, #fff 45%, #aaa 68%, #e5e5e5 100%);
+    background-size: 200% 100%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    transition: background-position 400ms ease;
+  }
+  .bullen-site-platform:hover > span,
+  .bullen-site-platform:focus-visible > span { background-position: 100% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bullen-site-platform > span { transition: none; }
+}
+@media (forced-colors: active) {
+  .bullen-site-platform > span { background: none; color: LinkText; }
+}

@@ -4,68 +4,68 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#000000">
-<title>Early preview — BULLENCIAGA</title>
-<meta name="description" content="A new platform is still in development. Sign up to hear when its beta is ready for testers. Access comes later.">
+<title>early preview — bullenciaga</title>
+<meta name="description" content="a new platform is still in development. sign up to hear when its beta is ready for testers. access comes later.">
 <link rel="canonical" href="https://bullenciaga.com/platform">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Be here before the reveal.">
-<meta property="og:description" content="Join the beta notification list. We’ll let you know when it’s ready for testers; access comes later.">
+<meta property="og:title" content="be here before the reveal.">
+<meta property="og:description" content="join the beta notification list. we’ll let you know when it’s ready for testers; access comes later.">
 <meta property="og:url" content="https://bullenciaga.com/platform">
 <meta property="og:image" content="https://bullenciaga.com/assets/platform/monolith-poster.jpg">
-<meta property="og:image:alt" content="A silver and glass monolith against black.">
+<meta property="og:image:alt" content="a silver and glass monolith against black.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Be here before the reveal.">
-<meta name="twitter:description" content="Sign up for a notification when the beta is ready for testers. Access comes later.">
+<meta name="twitter:title" content="be here before the reveal.">
+<meta name="twitter:description" content="sign up for a notification when the beta is ready for testers. access comes later.">
 <meta name="twitter:image" content="https://bullenciaga.com/assets/platform/monolith-poster.jpg">
-<link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/home.svg">
+<link rel="icon" type="image/png" sizes="1024x1024" href="/assets/platform/favicon.png">
 <link rel="stylesheet" href="/bullen-focus.css">
 <script src="/bullen-focus.js" defer></script>
 <link rel="stylesheet" href="/platform.css">
 <script src="/platform.js" defer></script>
 </head>
 <body>
-<header><a class="brand" href="/" aria-label="BULLENCIAGA home">BULLENCIAGA <span>/</span></a><button class="motion" id="motion" type="button" aria-pressed="false" hidden>Pause motion</button></header>
+<header><a class="brand" href="/" aria-label="BULLENCIAGA home">BULLENCIAGA <span>/</span></a><button class="motion" id="motion" type="button" aria-pressed="false" hidden>pause motion</button></header>
 <main id="main">
   <div class="sculpture">
     <video id="monolith" muted loop playsinline preload="none" poster="/assets/platform/monolith-poster.jpg" aria-hidden="true" data-src="/assets/platform/monolith-loop.mp4"></video>
-    <img id="poster" src="/assets/platform/monolith-poster.jpg" width="800" height="960" alt="A suspended silver and glass monolith, reflected in the darkness." fetchpriority="high">
+    <img id="poster" src="/assets/platform/monolith-poster.jpg" width="800" height="960" alt="a suspended silver and glass monolith, reflected in the darkness." fetchpriority="high">
   </div>
   <div class="invitation">
-    <p class="eyebrow">A FIRST LOOK</p>
-    <h1>Be here before<br>the reveal.</h1>
-    <p class="intro">Something new is still taking shape.<br>Sign up to hear when the beta is ready for testers.</p>
-    <button type="button" class="primary" id="open-signup">Get notified about the beta <span aria-hidden="true">↗</span></button>
-    <p class="note">Joining the list doesn’t unlock access today.</p>
-    <noscript><p class="note">Enable JavaScript to use the signup form, or contact <a href="mailto:contact@bullenciaga.com">contact@bullenciaga.com</a>.</p></noscript>
+    <p class="eyebrow">a first look</p>
+    <h1>be here before<br>the reveal.</h1>
+    <p class="intro">something new is taking shape.<br>sign up to hear when the beta is ready for testers.</p>
+    <button type="button" class="primary" id="open-signup">get notified about the beta <span aria-hidden="true">↗</span></button>
+    <p class="note">joining the list doesn’t unlock access today.</p>
+    <noscript><p class="note">enable javascript to use the signup form, or contact <a href="mailto:contact@bullenciaga.com">contact@bullenciaga.com</a>.</p></noscript>
   </div>
 </main>
-<footer><span>THE NEXT CHAPTER</span><a href="#privacy" id="privacy-link">Your privacy</a></footer>
+<footer><span>the next chapter</span><a href="#privacy" id="privacy-link">your privacy</a></footer>
 <dialog id="signup" aria-labelledby="signup-title">
-  <button class="close" type="button" id="close-signup" aria-label="Close signup">×</button>
+  <button class="close" type="button" id="close-signup" aria-label="close signup">×</button>
   <div id="form-view">
-    <p class="eyebrow">BETA NOTIFICATIONS</p><h2 id="signup-title">Be first to hear.</h2>
-    <p class="dialog-intro">Leave your email or X handle.<br>We’ll notify you when the beta is ready for testers.</p>
+    <p class="eyebrow">beta notifications</p><h2 id="signup-title">be first to hear.</h2>
+    <p class="dialog-intro">leave your email or x handle.<br>we’ll notify you when the beta is ready for testers.</p>
     <form id="signup-form">
-      <fieldset class="contact-method"><legend>How should we reach you?</legend>
-        <label><input type="radio" name="method" value="email" checked><span>Email</span></label>
-        <label><input type="radio" name="method" value="x"><span>X handle</span></label>
+      <fieldset class="contact-method"><legend>how should we reach you?</legend>
+        <label><input type="radio" name="method" value="email" checked><span>email</span></label>
+        <label><input type="radio" name="method" value="x"><span>x handle</span></label>
       </fieldset>
-      <label class="field-label" id="contact-label" for="contact">Email address</label>
+      <label class="field-label" id="contact-label" for="contact">email address</label>
       <input class="contact" id="contact" name="contact" type="email" autocomplete="email" placeholder="you@example.com" maxlength="254" required aria-describedby="contact-help">
-      <p id="contact-help" class="field-help">We’ll only use it for beta availability and testing updates.</p>
-      <div class="trap" aria-hidden="true"><label for="website">Leave this field empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
-      <label class="consent"><input type="checkbox" name="consent" required><span>I agree to receive beta availability and testing updates.</span></label>
+      <p id="contact-help" class="field-help">we’ll only use it for beta availability and testing updates.</p>
+      <div class="trap" aria-hidden="true"><label for="website">leave this field empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+      <label class="consent"><input type="checkbox" name="consent" required><span>i agree to receive beta availability and testing updates.</span></label>
       <p id="form-status" class="status" role="status" aria-live="polite"></p>
-      <button class="primary submit" id="submit-signup" type="submit">Join the notification list <span aria-hidden="true">↗</span></button>
+      <button class="primary submit" id="submit-signup" type="submit">join the notification list <span aria-hidden="true">↗</span></button>
     </form>
-    <p class="small-note">This is a notification signup, not immediate beta access. Invitations will follow when it’s ready; a place isn’t guaranteed. No wallet or payment required.</p>
+    <p class="small-note">this is a notification signup, not immediate beta access. invitations will follow when it’s ready; a place isn’t guaranteed. no wallet or payment required.</p>
   </div>
   <div id="success-view" hidden tabindex="-1">
-    <span class="success-mark" aria-hidden="true">✓</span><p class="eyebrow">REQUEST RECEIVED</p><h2>You’re on the list.</h2>
-    <p class="dialog-intro">Your interest is registered.<br>We’ll let you know when the beta is ready for testers. Access comes later.</p>
-    <button class="primary" id="done" type="button">Back to the monolith</button>
+    <span class="success-mark" aria-hidden="true">✓</span><p class="eyebrow">request received</p><h2>you’re on the list.</h2>
+    <p class="dialog-intro">your interest is registered.<br>we’ll let you know when the beta is ready for testers. access comes later.</p>
+    <button class="primary" id="done" type="button">back to the monolith</button>
   </div>
-  <details id="privacy"><summary>How we use your details</summary><p>BULLENCIAGA stores your chosen email address or X handle, signup time and consent for beta availability notifications and testing updates. The list is private and hosted with Cloudflare in the EU. We don’t request a wallet or use this signup to send unrelated marketing.</p><p>You can withdraw consent or request access, correction or deletion at <a href="mailto:contact@bullenciaga.com">contact@bullenciaga.com</a>. Signup details are kept while needed for this preview and its testing, or until you ask us to remove them. Connection data is processed to deliver and protect the page; your IP address is not stored in the signup list.</p></details>
+  <details id="privacy"><summary>how we use your details</summary><p>bullenciaga stores your chosen email address or x handle, signup time and consent for beta availability notifications and testing updates. the list is private and hosted with cloudflare in the eu. we don’t request a wallet or use this signup to send unrelated marketing.</p><p>you can withdraw consent or request access, correction or deletion at <a href="mailto:contact@bullenciaga.com">contact@bullenciaga.com</a>. signup details are kept while needed for this preview and its testing, or until you ask us to remove them. connection data is processed to deliver and protect the page; your ip address is not stored in the signup list.</p></details>
 </dialog>
 </body>
 </html>

@@ -17,7 +17,7 @@ assert(Number.isFinite(initialRetryDelayMs) && initialRetryDelayMs >= 0 && initi
 const retryableStatuses = new Set([404, 408, 425, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524]);
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const pageChecks = [
-  ['/platform', /<title>Early preview — BULLENCIAGA/i],
+  ['/platform', /<title>early preview — bullenciaga/i],
   ['/buy', /<title>BULLENCIAGA — Buy \$BULLEN/i],
   ['/', /<title>BULLENCIAGA — A token with horns\./i],
   ['/stats', /<title>BULLENCIAGA — Live Dashboard/i],
