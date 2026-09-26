@@ -25,3 +25,7 @@ Withdrawal/deletion requests go to contact@bullenciaga.com. Verify the requester
 Production is promoted by the existing CI → route-free staging → exact-version production workflow. The two empty databases/schema were provisioned before the code release. Bindings contain database IDs, not credentials. Repository checks assert isolated staging/production storage.
 
 Revert the page/Worker change and redeploy, or roll back to the recorded pre-release Worker version, to disable signup immediately. Retain the production database during rollback so existing requests survive. Never drop it as part of a code rollback. The database addition does not change existing campaign, wallet, account or giveaway data.
+
+## Private Control Room signup list (26 September 2026)
+
+`GET /platform/signups` is a read-only, authenticated endpoint used by Control Room 2.1.0. It verifies the existing owner credential through the fixed RPC `/rpc/control-room/authorize` service-binding request before reading D1. The website stores no copy of that key. Production uses `rpc-proxy`; isolated staging uses `rpc-proxy-staging`. Responses are private/no-store with no browser CORS grant. Pages contain at most 100 contacts, ordered newest first with a keyset cursor. No contacts are exported to logs or release receipts. The native screen clears its in-memory list on backgrounding and appears under Tools → Money & people → Platform signups. It sends no notifications or invitations.

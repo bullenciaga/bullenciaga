@@ -1,3 +1,4 @@
+import { platformSignupsAdmin } from './platform-signups-admin.mjs';
 import { platformSignup } from './platform-signup.mjs';
 
 // Keep short-domain visits on the established origin for wallets and sessions.
@@ -100,6 +101,7 @@ export default {
         },
       });
     }
+    if (url.pathname === '/platform/signups') return platformSignupsAdmin(request, env);
     if (url.pathname === '/platform/signup') return platformSignup(request, env);
     const userAgent = request.headers.get('User-Agent') || '';
     const iphoneChrome = /\biPhone\b/i.test(userAgent) && /\bCriOS\//i.test(userAgent);
