@@ -1,0 +1,277 @@
+{
+  "checkedAt": "2026-09-27T13:54:25.429Z",
+  "mintedCollectionCount": 592,
+  "prizes": [
+    {
+      "number": 777,
+      "assetId": "EjHM2CvpMtDUfRtXM8jgC3Qz5oVCNbpMUBWbFeqVCUzy",
+      "name": "HERD #777",
+      "metadataUri": "https://gateway.irys.xyz/2HQM6X2aJpgPNLaxkfL6pgjPF818faiSWZ3ereEJQwLq",
+      "imageUri": "https://gateway.irys.xyz/DFxBmSmLxQmEjyWmgGYZzwuUoAhYqJ9omuRsKMzcmjB6",
+      "imageSha256": "ba29dabc58d4b5ab7a057c3c26bc994dc31670bcff30063371dfae4bbbe81f7e",
+      "owner": "GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd",
+      "delegated": false,
+      "frozen": false,
+      "traits": [
+        {
+          "trait_type": "Background",
+          "value": "Magenta",
+          "mintedCount": 15,
+          "catalogueCount": 27
+        },
+        {
+          "trait_type": "Bull",
+          "value": "Cyan",
+          "mintedCount": 28,
+          "catalogueCount": 45
+        },
+        {
+          "trait_type": "Horns",
+          "value": "Bright Aqua",
+          "mintedCount": 20,
+          "catalogueCount": 35
+        },
+        {
+          "trait_type": "Outerwear",
+          "value": "Bullet Time Coat",
+          "mintedCount": 2,
+          "catalogueCount": 4
+        },
+        {
+          "trait_type": "Eyes",
+          "value": "Inherited",
+          "mintedCount": 24,
+          "catalogueCount": 29
+        },
+        {
+          "trait_type": "Tier",
+          "value": "Legendary",
+          "mintedCount": 1,
+          "catalogueCount": 5
+        },
+        {
+          "trait_type": "Composition",
+          "value": "CMK",
+          "mintedCount": 1,
+          "catalogueCount": 1
+        }
+      ]
+    },
+    {
+      "number": 703,
+      "assetId": "mRaVMakV2YZ4ReDapMRxdYcsyDEVZ2AKGFpd8mNCP91",
+      "name": "HERD #703",
+      "metadataUri": "https://gateway.irys.xyz/GQtvVcxGtrxfbvk38vxDtfYXM9rHnvpLt6cBYmuc5k6h",
+      "imageUri": "https://gateway.irys.xyz/3tdAecfsjXVPnFc4vJms1Lp4FQiTFR3hcmz327sjVztL",
+      "imageSha256": "26e9817c9d9a287a1df774e02e906be1badb29ed5f6be9c960d0652f4a1fc4cd",
+      "owner": "GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd",
+      "delegated": false,
+      "frozen": false,
+      "traits": [
+        {
+          "trait_type": "Background",
+          "value": "Plum",
+          "mintedCount": 45,
+          "catalogueCount": 91
+        },
+        {
+          "trait_type": "Bull",
+          "value": "Grey",
+          "mintedCount": 98,
+          "catalogueCount": 180
+        },
+        {
+          "trait_type": "Horns",
+          "value": "Black Gold Chains",
+          "mintedCount": 16,
+          "catalogueCount": 34
+        },
+        {
+          "trait_type": "Outerwear",
+          "value": "Tech Jacket",
+          "mintedCount": 3,
+          "catalogueCount": 4
+        },
+        {
+          "trait_type": "Eyes",
+          "value": "Basic",
+          "mintedCount": 313,
+          "catalogueCount": 538
+        }
+      ]
+    },
+    {
+      "number": 159,
+      "assetId": "GjPTEUAjtbxoZVwwSwgqZdq38FguHpyJYqNJza85mtxr",
+      "name": "HERD #159",
+      "metadataUri": "https://gateway.irys.xyz/7Xtaz7PYyXMyTkArP6P7QsZjd2nUUh98FVSoYyiVDTUX",
+      "imageUri": "https://gateway.irys.xyz/52LoEtKxKicPVPXs1W3fWzvghC97WQMx2vLhKx9actbd",
+      "imageSha256": "693258d758ae80504e48bec2e85b619a162919cc2bdbb395bb3047510e739f4f",
+      "owner": "GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd",
+      "delegated": false,
+      "frozen": false,
+      "traits": [
+        {
+          "trait_type": "Background",
+          "value": "Butter Yellow",
+          "mintedCount": 48,
+          "catalogueCount": 83
+        },
+        {
+          "trait_type": "Bull",
+          "value": "Ghost",
+          "mintedCount": 28,
+          "catalogueCount": 44
+        },
+        {
+          "trait_type": "Horns",
+          "value": "Black",
+          "mintedCount": 207,
+          "catalogueCount": 347
+        },
+        {
+          "trait_type": "Midwear",
+          "value": "Black Turtleneck",
+          "mintedCount": 22,
+          "catalogueCount": 31
+        },
+        {
+          "trait_type": "Eyes",
+          "value": "Basic",
+          "mintedCount": 313,
+          "catalogueCount": 538
+        },
+        {
+          "trait_type": "Glasses And Headgear",
+          "value": "Black Glasses Blue Hued",
+          "mintedCount": 5,
+          "catalogueCount": 7
+        },
+        {
+          "trait_type": "Tags",
+          "value": "Left Ear White",
+          "mintedCount": 39,
+          "catalogueCount": 66
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "assetId": "rcCx9tq9Zdz85wCThoRYQfmyrECaeWD2aQ8yee2hGhV",
+      "name": "HERD #31",
+      "metadataUri": "https://gateway.irys.xyz/AcSt18bXgNckysPxBpANKTUu8mSZUAB2RH3Benzc9z4k",
+      "imageUri": "https://gateway.irys.xyz/9QnDETGfRv5YjgvrzM8x9EQrthStYa7JBvDoWEVrMLyx",
+      "imageSha256": "b76de8165be7c5de42c4c8e9ae8e4487d32a44c587e41487a2c8fb295607ac58",
+      "owner": "GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd",
+      "delegated": false,
+      "frozen": false,
+      "traits": [
+        {
+          "trait_type": "Background",
+          "value": "Seafoam Teal",
+          "mintedCount": 48,
+          "catalogueCount": 83
+        },
+        {
+          "trait_type": "Bull",
+          "value": "Black",
+          "mintedCount": 104,
+          "catalogueCount": 183
+        },
+        {
+          "trait_type": "Horns",
+          "value": "White",
+          "mintedCount": 201,
+          "catalogueCount": 347
+        },
+        {
+          "trait_type": "Innerwear",
+          "value": "White Tanktop",
+          "mintedCount": 32,
+          "catalogueCount": 61
+        },
+        {
+          "trait_type": "Outerwear",
+          "value": "Shirt & Vest",
+          "mintedCount": 16,
+          "catalogueCount": 23
+        },
+        {
+          "trait_type": "Eyes",
+          "value": "Black Hue",
+          "mintedCount": 131,
+          "catalogueCount": 247
+        },
+        {
+          "trait_type": "Jewelry",
+          "value": "Left Ear Double Golden Earring",
+          "mintedCount": 9,
+          "catalogueCount": 15
+        }
+      ]
+    },
+    {
+      "number": 959,
+      "assetId": "31UhmJoYpVzpuf3zZgukZEAYSQCiaoabRzZjoeAiWfTw",
+      "name": "HERD #959",
+      "metadataUri": "https://gateway.irys.xyz/CuaHqn9gd565H6WAfevRPBM12jtJcSfGBSLHLWJa7SPG",
+      "imageUri": "https://gateway.irys.xyz/3ESYst63hfgBYAtAMMmtZEdrm6Xwupz85PeVfrBnCvFb",
+      "imageSha256": "727c5a05bddcfc9d4b8e30af55e1986b5a7b577d24d0d637b03f8de978b68c93",
+      "owner": "GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd",
+      "delegated": false,
+      "frozen": false,
+      "traits": [
+        {
+          "trait_type": "Background",
+          "value": "Sky Tone",
+          "mintedCount": 17,
+          "catalogueCount": 26
+        },
+        {
+          "trait_type": "Bull",
+          "value": "Black",
+          "mintedCount": 104,
+          "catalogueCount": 183
+        },
+        {
+          "trait_type": "Horns",
+          "value": "Black",
+          "mintedCount": 207,
+          "catalogueCount": 347
+        },
+        {
+          "trait_type": "Innerwear",
+          "value": "Black Tanktop",
+          "mintedCount": 32,
+          "catalogueCount": 59
+        },
+        {
+          "trait_type": "Eyes",
+          "value": "Red",
+          "mintedCount": 76,
+          "catalogueCount": 129
+        },
+        {
+          "trait_type": "Branding",
+          "value": "Double Blue",
+          "mintedCount": 12,
+          "catalogueCount": 25
+        },
+        {
+          "trait_type": "Glasses And Headgear",
+          "value": "Black Basic Glasses",
+          "mintedCount": 102,
+          "catalogueCount": 178
+        },
+        {
+          "trait_type": "Tags",
+          "value": "Both Ears Logo",
+          "mintedCount": 36,
+          "catalogueCount": 65
+        }
+      ]
+    }
+  ],
+  "catalogueSize": 1000,
+  "catalogueSha256": "f0cd3affd81286f2ec7117485970cf560a4673af91ab8e211224570cdefa716d"
+}
