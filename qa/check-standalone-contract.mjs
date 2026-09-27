@@ -97,7 +97,7 @@ for (const section of ['MOBILE BUYING', 'ONE HOUSE', 'THE TAPE', 'HOUSE DESK', '
   if (!archiveSource.includes(section)) failures.push(`patchnotes-001.html: archived public release record omits ${section}`);
 }
 for (const proof of [
-  'https://lock.jup.ag/escrow/J6vSzqFLcTWYyg8aPfKSBpnMegvizygzvLKumEUhGATB',
+  'https://lock.jup.ag/escrow/GkrEDh76bcovVr3xPbxtUeXWEAJhfhTLQ2Z3oSVHCXB9',
   'https://lock.jup.ag/escrow/A6TLCJ8Kasy53pqzKwt2TtJ68JqCZgCi8p6Jo5g7VkuM',
   '25,000,000', '212,500,000', 'Vesting rate', 'Can cancel',
 ]) {
