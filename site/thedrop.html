@@ -227,7 +227,7 @@
   <p class="lede">
     a fixed <b id="ledeprize">2.5 SOL</b> goes to one wallet that bought during this round.
     the bar below fills with a share of the creator fees from buys, and only buys.
-    <b>there is no timer.</b> it fires when the bar fills.
+    <b>there is no timer.</b> at 100%, the counter resets and a new round begins.
   </p>
 
   <div class="barwrap">
@@ -269,7 +269,7 @@
     <li><b>later buys can earn fresh entries.</b> they do not restore a broken batch. an unfinished newest batch is used first on a sale, and its partial progress is discarded if touched. selling does not subtract fees already contributed to the pot.</li>
     <li><b>finalized records, in chain order.</b> the tracker checks buys and sells through the House pool. transfers do not earn entries. figures may briefly show “syncing” while new chain records are checked.</li>
     <li><b>the dev wallet and the pool are excluded</b>, by address.</li>
-    <li><b>the snapshot is published before the seed exists.</b> then the result. every time.</li>
+    <li><b>a fresh round at 100%.</b> the closing buy stays in the completed round. the counter and entries reset to zero; later buys count toward the new round.</li>
   </ul>
 
   <h2>What filled the bar</h2>
@@ -381,7 +381,7 @@
         : 'rebuilding this round from finalized chain receipts. pot and entry totals will appear once verified.';
     } else if (done){
       togo.className = 'togo done';
-      togo.innerHTML = '<b>the bar is full.</b> the snapshot goes up next, then the seed, then the winner.';
+      togo.innerHTML = '<b>the bar is full.</b> the next round is starting from zero.';
     } else {
       togo.className = 'togo';
       // A PERCENTAGE, NOT A SOL FIGURE. The gap is measured in fees, and
