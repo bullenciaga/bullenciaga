@@ -235,7 +235,7 @@
          aria-valuenow="0" aria-label="progress toward the drop"></div>
     <div class="figures">
       <div class="now"><span id="pot">—</span><span class="unit">SOL</span></div>
-      <div class="of">of <b id="target">—</b> SOL in fees<br><span id="pct">—</span></div>
+      <div class="of">of <b id="target">—</b> SOL allocated<br><span id="pct">—</span></div>
     </div>
   </div>
 
@@ -264,7 +264,9 @@
     <li><b>buying is entering.</b> nothing to connect, nothing to sign, nothing to register.</li>
     <li><b>one entry per <span id="unit">0.25</span> SOL of qualifying buys.</b> small buys add up. no cap. the amount is the SOL swap input at the House pool, including pool fees but excluding network and wallet/router fees.</li>
     <li><b>only buys count.</b> a sell earns nothing and fills nothing.</li>
-    <li><b>the bar is fees, not volume.</b> how much buying it takes depends on what those buys pay, and that rate moves.</li>
+    <li><b>the bar is fees, not volume.</b> qualifying buys of every size contribute. how much buying it takes depends on the creator fees those buys pay, and that rate moves.</li>
+    <li id="funding-rule" hidden></li>
+    <li id="next-funding-rule" hidden></li>
     <li><b>entries follow purchase batches, newest first.</b> each completed 0.25 SOL batch records the tokens it actually bought. selling any of those tokens removes that batch's entry. selling more from the same batch does not remove another entry; the next entry goes only when the sale reaches the next older batch.</li>
     <li><b>later buys can earn fresh entries.</b> they do not restore a broken batch. an unfinished newest batch is used first on a sale, and its partial progress is discarded if touched. selling does not subtract fees already contributed to the pot.</li>
     <li><b>finalized records, in chain order.</b> the tracker checks buys and sells through the House pool. transfers do not earn entries. figures may briefly show “syncing” while new chain records are checked.</li>
@@ -373,6 +375,20 @@
     $('unit').textContent = fmt(d.entrySol, 2);
     $('ledeprize').textContent = fmt(d.targetSol, 2) + ' SOL';
 
+    var share = Number(d.share), feeTarget = Number(d.targetSol) / share;
+    var funding = $('funding-rule'), next = d.nextRoundFunding;
+    funding.hidden = !(share > 0 && share <= 1 && isFinite(feeTarget) && feeTarget > 0);
+    funding.textContent = funding.hidden ? '' : 'this round: ' + fmt(feeTarget, 2)
+      + ' SOL in qualifying buy creator fees fills the bar. ' + parseFloat(fmt(share * 100, 4))
+      + '% of those fees funds the ' + fmt(d.targetSol, 2) + ' SOL prize.';
+    var nextFunding = $('next-funding-rule');
+    nextFunding.hidden = !(next && Number(next.round) === Number(d.round) + 1
+      && Number(next.feeTargetSol) > 0 && isFinite(Number(next.feeTargetSol))
+      && Number(next.targetSol) > 0 && isFinite(Number(next.targetSol)));
+    nextFunding.textContent = nextFunding.hidden ? '' : 'from round ' + next.round + ': '
+      + fmt(next.feeTargetSol, 2) + ' SOL in qualifying buy creator fees per drop. '
+      + 'the prize stays ' + fmt(next.targetSol, 2) + ' SOL. this round keeps its current rules.';
+
     var togo = $('togo');
     if (!verified) {
       togo.className = 'togo';
@@ -419,6 +435,8 @@
   }
 
   function fail(msg){
+    $('funding-rule').hidden = true;
+    $('next-funding-rule').hidden = true;
     ['pot', 'pct', 'wallets', 'tickets'].forEach(function(id){ $(id).textContent = '—'; });
     bar.removeAttribute('aria-valuenow');
     segs.forEach(function(seg){ seg.className = 'seg'; });
