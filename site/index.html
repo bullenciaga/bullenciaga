@@ -5764,6 +5764,7 @@
   let galleryManifest = [];
   let manifestNameSet = new Set(); // fast lookup: "is this on-chain name one of the 1,000 public-mint pieces?"
   let mintedNames = new Set();
+  let burnedGalleryNames = new Set();
   let mintedAssetIdByName = new Map(); // name -> asset address, for manifest-sourced entries that don't otherwise carry one
   let mintedOwnerByName = new Map();
   // name -> current owner. Manifest-sourced gallery entries carry no owner
@@ -6730,6 +6731,7 @@
     }
     try {
       const allNames = new Set();
+      const nextIds = new Map(), nextOwners = new Map(), burnedNames = new Set();
       let page = 1;
       while (page <= 5) { // safety cap -- shouldn't ever be needed at 1000 max items
         const res = await fetch(NFT_CONFIG.HELIUS_PROXY_URL, {
@@ -6741,16 +6743,17 @@
           })
         });
         const data = await res.json();
-        const items = (data && data.result && data.result.items) || [];
+        if (!res.ok || data.error || !Array.isArray(data.result?.items)) throw new Error('Collection response unavailable');
+        const items = data.result.items;
         items.forEach(item => {
-          if (item.burnt) return;
           const name = item.content && item.content.metadata && item.content.metadata.name;
-          if (name) {
-            allNames.add(name);
-            if (item.id) mintedAssetIdByName.set(name, item.id);
-            const ownerAddr = item.ownership && item.ownership.owner;
-            if (ownerAddr) mintedOwnerByName.set(name, ownerAddr);
-          }
+          if (!name) return;
+          // A burn does not return a numbered edition to the random mint pool.
+          allNames.add(name);
+          if (item.burnt) { burnedNames.add(name); return; }
+          if (item.id) nextIds.set(name, item.id);
+          const ownerAddr = item.ownership && item.ownership.owner;
+          if (ownerAddr) nextOwners.set(name, ownerAddr);
         });
         if (items.length < 1000) break;
         page++;
@@ -6759,6 +6762,11 @@
       // per-card "claimed" badge, since a manifest entry's name will only
       // ever match a real public mint of that exact piece anyway.
       mintedNames = allNames;
+      // Publish a complete snapshot together. Burned predecessors never
+      // overwrite a live replacement, regardless of DAS ordering.
+      mintedAssetIdByName = nextIds;
+      mintedOwnerByName = nextOwners;
+      burnedGalleryNames = new Set([...burnedNames].filter(name => !nextIds.has(name)));
 
       // Gallery names drive ownership badges; the guarded count is independent.
       await refreshPublicMintCount();
@@ -6992,16 +7000,17 @@
   function buildLightboxCardHtml(entry){
     const isHouseObject = entry.series === 'house-object';
     const isCompanion = isCompanionRecord(entry);
-    const claimed = isCompanion || mintedNames.has(entry.name);
+    const burned = !!entry.burnt || burnedGalleryNames.has(entry.name);
+    const claimed = burned || isCompanion || mintedNames.has(entry.name);
     // Vault entries carry .owner directly (live DAS fetch); manifest entries
     // don't, so fall back to the owner captured during refreshMintedState.
     // Declared here rather than further down: isMineByAddress() below needs
     // it, and `const` is in the temporal dead zone until its declaration --
     // referencing it earlier threw a ReferenceError that killed the whole
     // lightbox open, not just the ownership check.
-    const assetId = entry.id || mintedAssetIdByName.get(entry.name) || null;
-    const resolvedOwner = entry.owner || mintedOwnerByName.get(entry.name) || null;
-    const ownedByMe = isMineByAddress(assetId, resolvedOwner);
+    const assetId = burned ? null : (entry.id || mintedAssetIdByName.get(entry.name) || null);
+    const resolvedOwner = burned ? null : (entry.owner || mintedOwnerByName.get(entry.name) || null);
+    const ownedByMe = !burned && isMineByAddress(assetId, resolvedOwner);
     const special = isCompanion ? null : specialTierOf(entry.name);
     const houseStatus = houseStatusLine(entry);
 
@@ -7020,9 +7029,9 @@
     const marketLabel = !claimed
       ? null
       : (TRADING_ENABLED ? 'VIEW ON' : (ownedByMe ? 'SELL' : (listingFor(entry) ? 'BUY' : 'VIEW')));
-    const tensorHref = (claimed && assetId && NFT_CONFIG.TENSOR_URL)
+    const tensorHref = burned ? null : (claimed && assetId && NFT_CONFIG.TENSOR_URL)
       ? `https://www.tensor.trade/item/${assetId}` : NFT_CONFIG.TENSOR_URL;
-    const meHref = (claimed && assetId && NFT_CONFIG.MAGIC_EDEN_URL)
+    const meHref = burned ? null : (claimed && assetId && NFT_CONFIG.MAGIC_EDEN_URL)
       ? `https://magiceden.io/item-details/${assetId}` : NFT_CONFIG.MAGIC_EDEN_URL;
     // If the piece is listed, surface the price and send the buy action
     // straight to the Magic Eden item page. Deliberately a deep link, not an
@@ -7030,7 +7039,7 @@
     // mean this site takes responsibility for moving someone's assets, and
     // ME's own checkout already handles escrow, fees, and royalties
     // correctly. The link is the honest version of "buy".
-    const activeListing = isCompanion ? null : listingFor(entry);
+    const activeListing = burned || isCompanion ? null : listingFor(entry);
     const priceHtml = activeListing
       ? `<div class="lightbox-price">listed &mdash; ${fmtSol(activeListing.price)} SOL</div>`
       : '';
@@ -7054,7 +7063,7 @@
         </div>
         <div class="gallery-lightbox-status-block">
           <div class="gallery-lightbox-status-row">
-            <div class="gallery-lightbox-status">${holdStatusLine(entry) || (ownedByMe ? 'Owned by you' : (claimed ? 'Claimed' : 'Available'))}</div>
+            <div class="gallery-lightbox-status">${burned ? 'Burned' : (holdStatusLine(entry) || (ownedByMe ? 'Owned by you' : (claimed ? 'Claimed' : 'Available')))}</div>
           </div>
           ${houseStatus ? `<div class="gallery-lightbox-house-status">${houseStatus}</div>` : ''}
           <div class="lb-actions">
@@ -7488,8 +7497,9 @@
     const card = document.createElement('div');
     const isHouseObject = entry.series === 'house-object';
     const isBullensaga = entry.series === 'bullensaga';
-    const isClaimed = isCompanionRecord(entry) || mintedNames.has(entry.name);
-    const isOwnedByMe = isMine(entry);
+    const burned = !!entry.burnt || burnedGalleryNames.has(entry.name);
+    const isClaimed = burned || isCompanionRecord(entry) || mintedNames.has(entry.name);
+    const isOwnedByMe = !burned && isMine(entry);
     const cardTier = tierEffectOf(entry);
     card.className = 'gallery-card'
       + (isClaimed && !isOwnedByMe ? ' claimed' : '')
@@ -7509,6 +7519,11 @@
       const badge = document.createElement('div');
       badge.className = 'gallery-card-badge';
       badge.textContent = 'BULLENSAGA';
+      card.appendChild(badge);
+    } else if (burned) {
+      const badge = document.createElement('div');
+      badge.className = 'gallery-card-badge';
+      badge.textContent = 'BURNED';
       card.appendChild(badge);
     } else if (holdKind) {
       // Takes precedence over OWNED. Both are true, but WHICH pool a dev-held
