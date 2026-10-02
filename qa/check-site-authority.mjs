@@ -7,6 +7,7 @@ const site = path.join(root, 'site');
 const expectedIndexHash = '612f880eca6474d6b90401185c6202112dda33863199fb86067b655f19890cf2';
 const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs', 'proof.html'];
 const required = [
+  'what-if-i-held.html', 'what-if-i-held.css', 'what-if-i-held.js', 'holding-math.js', 'holding-study.json', 'assets/social/what-if-i-held.jpg',
   'buy.html', 'buy-page.css', 'buy-page.js', 'index.html', '_redirects', 'stats.html', 'deepdive.html', 'deepdive.css', 'deepdive.js', 'deepdive-snapshot.json', 'chart.html', 'curve.html',
   'transparency.html', 'whitepaper.pdf',
   'bullen-ui.css', 'bullen-ui.js', 'bullen-focus.css', 'bullen-focus.js', 'giveaways.html', 'giveaways.json', 'follow500.js', 'follow500.css',
