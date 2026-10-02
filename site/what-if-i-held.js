@@ -13,6 +13,11 @@ const short=w=>w.slice(0,6)+'…'+w.slice(-6);
 const date=(t,time=false)=>new Date(t*1000).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',...(time?{hour:'2-digit',minute:'2-digit',hour12:false}:{}),timeZone:'UTC'});
 const color=(id,n)=>{$(id).classList.remove('positive','negative','neutral');$(id).classList.add(n>1e-9?'positive':n< -1e-9?'negative':'neutral');};
 const result=w=>{const key=period+':'+w.wallet;if(!cache.has(key))cache.set(key,calculate(w,data.price,data.asOf));return cache.get(key);};
+function walletBusy(busy){
+  $('wallet-form').setAttribute('aria-busy',String(busy));$('wallet-card').setAttribute('aria-busy',String(busy));
+  $('refresh-wallet').disabled=busy;$('copy-comparison').disabled=busy;
+  document.querySelectorAll('[data-live-period]').forEach(b=>{b.disabled=busy||liveData?.wallet!==selected;});
+}
 function validAddress(value){if(!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value))return false;let n=0n;for(const c of value)n=n*58n+BigInt('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'.indexOf(c));let bytes=0;while(n){bytes++;n>>=8n;}return bytes+(value.match(/^1*/)?.[0].length||0)===32;}
 
 function renderGroup(){
@@ -35,6 +40,7 @@ function renderGroup(){
 
 function showWallet(w,isManual,r=result(w),asOf=data.asOf,window=period){
   selected=w.wallet;manual=isManual;journalLimit=25;activeResult=r;$('wallet-card').hidden=false;$('wallet-comparison').hidden=false;$('live-summary').hidden=!isManual;$('live-controls').hidden=!isManual;
+  $('wallet-card').dataset.period=window;
   set('wallet-label',isManual?'LIVE WALLET · '+(r.estimated?'ESTIMATED COMPARISON':'SOL COMPARISON'):'DATED STUDY EXAMPLE · 02 OCT 2026');
   set('wallet-link',short(w.wallet));$('wallet-link').title=w.wallet;$('wallet-link').href='https://solscan.io/account/'+w.wallet;
   set('wallet-window',(window==='full'?'Available priced history · ':'Seven-day comparison · ')+date(w.start,true)+' UTC → '+date(asOf,true)+' UTC');
@@ -59,7 +65,7 @@ function showWallet(w,isManual,r=result(w),asOf=data.asOf,window=period){
 }
 
 function example(kind){
-  scanController?.abort();liveData=null;$('live-controls').hidden=true;
+  scanController?.abort();liveData=null;walletBusy(false);$('live-controls').hidden=true;
   if(!data)return;
   let rows=group.filter(w=>{const r=result(w);return kind==='hold'?r.edge>1e-5:kind==='trade'?r.edge< -1e-5:r.pnl<0;});
   if(!rows.length){set('wallet-status','There is no matching example in this group. Try a different group or period.');return;}
@@ -68,7 +74,7 @@ function example(kind){
 }
 
 function displayLive(j){
-  liveData=j;const r=j.periods[livePeriod];
+  liveData=j;const r=j.periods[livePeriod];$('wallet-card').dataset.period=livePeriod;
   $('wallet-card').hidden=false;$('live-controls').hidden=false;$('live-summary').hidden=false;
   set('wallet-link',short(j.wallet));$('wallet-link').href='https://solscan.io/account/'+j.wallet;$('wallet-link').title=j.wallet;
   set('live-balance',num(j.balance,2)+' BULLEN currently held');set('live-value','Marked value: '+sol(j.balance*j.price));
@@ -88,35 +94,48 @@ function displayLive(j){
 }
 async function lookup(address,{refresh=false}={}){
   scanController?.abort();scanController=new AbortController();const signal=scanController.signal;
-  if(!validAddress(address)){set('wallet-status','Enter a valid Solana wallet address to compare it.');$('wallet-card').hidden=true;$('live-controls').hidden=true;selected=null;return;}
-  if(!refresh||selected!==address){$('wallet-card').hidden=true;liveData=null;}
-  manual=true;selected=address;$('live-controls').hidden=false;
-  set('wallet-status',refresh?'Checking for newer trades and balances…':'Scanning this wallet’s BULLEN history…');
-  $('refresh-wallet').disabled=true;$('wallet-form').setAttribute('aria-busy','true');
+  if(!validAddress(address)){selected=$('wallet-link').title||null;manual=liveData?.wallet===selected;walletBusy(false);set('wallet-status','Enter a valid Solana wallet address to compare it.');return;}
+  manual=true;selected=address;
+  const previous=!$('wallet-card').hidden&&$('wallet-link').title!==address?' Previous result stays visible.':'';
+  set('wallet-status',(refresh?'Checking for newer trades and balances…':'Scanning this wallet’s BULLEN history…')+previous);
+  walletBusy(true);
   try{
     for(;;){
       const res=await fetch('/supply/holding?wallet='+encodeURIComponent(address),{cache:'no-store',signal:AbortSignal.any([signal,AbortSignal.timeout(45000)])});
       const j=await res.json();if(signal.aborted)return;
       if(j.status==='loading'){
-        set('wallet-status',(j.phase==='index'?'Finding BULLEN movements… ':'Checking trades and transfers… ')+(j.total?j.processed+' of '+j.total+' transactions processed. ':'')+'You can leave this open while it finishes.');
+        set('wallet-status',(j.phase==='index'?'Finding BULLEN movements… ':'Checking trades and transfers… ')+(j.total?j.processed+' of '+j.total+' checked.':'')+previous);
         await new Promise(resolve=>setTimeout(resolve,1500));if(signal.aborted)return;continue;
       }
       if(!res.ok||j.status!=='ready'||j.wallet!==address)throw Error(j.message||'The history provider is temporarily unavailable. Try Refresh shortly.');
       displayLive(j);return;
     }
-  }catch(error){if(!signal.aborted)set('wallet-status',(error.name==='TimeoutError'?'The scan is taking longer than expected. Progress is saved; press Refresh to continue.':error.message||'The scan could not finish. Please try Refresh.')+(liveData?' The previous result keeps its original timestamp.':''));}
-  finally{if(!signal.aborted){$('refresh-wallet').disabled=false;$('wallet-form').setAttribute('aria-busy','false');}}
+  }catch(error){if(!signal.aborted)set('wallet-status',(error.name==='TimeoutError'?'The scan is taking longer than expected. Progress is saved; press Refresh to continue.':error.message||'The scan could not finish. Please try Refresh.')+(!$('wallet-card').hidden?' The previous result is still shown below.':''));}
+  finally{if(!signal.aborted)walletBusy(false);}
 }
 
 function drawChart(points){
-  const svg=$('return-chart'),values=points.flatMap(p=>[p.actual,p.hold]);let low=Math.min(0,...values),high=Math.max(0,...values);
-  if(high-low<1){low-=.5;high+=.5;}const pad=(high-low)*.08;low-=pad;high+=pad;
-  const first=points[0].time,last=points.at(-1).time,x=t=>85+885*(t-first)/Math.max(1,last-first),y=v=>215-185*(v-low)/(high-low);
-  const line=k=>points.map((p,i)=>(i?'L':'M')+x(p.time).toFixed(2)+' '+y(p[k]).toFixed(2)).join(' ');
-  const label=n=>Math.abs(n)>=10000?num(n/1000,0)+'k%':num(n,0)+'%';
-  const ticks=[0,low+pad,high-pad].filter((v,i,a)=>a.slice(0,i).every(other=>Math.abs(y(v)-y(other))>=24));
-  svg.innerHTML='<title>Recorded trading return '+pct(points.at(-1).actual)+'; holding return '+pct(points.at(-1).hold)+'</title>'+ticks.map(v=>'<line x1="85" x2="970" y1="'+y(v)+'" y2="'+y(v)+'" stroke="#303328"'+(v===0?' stroke-dasharray="5 5"':'')+'/><text x="70" y="'+(y(v)+6)+'" text-anchor="end" fill="#a3a69c" font-size="17" font-family="monospace">'+label(v)+'</text>').join('')+'<path d="'+line('hold')+'" fill="none" stroke="#c6ac6c" stroke-width="3"/><path d="'+line('actual')+'" fill="none" stroke="#82c7b1" stroke-width="3"/><text x="85" y="249" fill="#a3a69c" font-size="16" font-family="monospace">'+date(first)+'</text><text x="970" y="249" text-anchor="end" fill="#a3a69c" font-size="16" font-family="monospace">'+date(last)+'</text>';
+  if(!points?.length)return;
+  const svg=$('return-chart'),width=Math.max(240,svg.clientWidth),height=svg.clientHeight||280;
+  const ordered=[...points].sort((a,b)=>a.time-b.time),values=ordered.flatMap(p=>[p.actual,p.hold]);
+  const minimum=Math.min(0,...values),maximum=Math.max(0,...values),span=Math.max(1,maximum-minimum);
+  const rough=span/4,power=10**Math.floor(Math.log10(rough)),step=[1,2,2.5,5,10].find(n=>n*power>=rough)*power;
+  const low=minimum-span*.08,high=maximum+span*.08;
+  const label=n=>Math.abs(n)>=10000?num(n/1000,0)+'k%':num(n,step<1?Math.min(3,-Math.floor(Math.log10(step))):0)+'%';
+  const left=Math.max(44,...[low,high].map(n=>label(n).length*7+12)),right=width-12,top=16,bottom=height-36;
+  const first=ordered[0].time,last=ordered.at(-1).time,x=t=>last===first?(left+right)/2:left+(right-left)*(t-first)/(last-first),y=v=>bottom-(bottom-top)*(v-low)/(high-low);
+  const line=k=>ordered.map((p,i)=>(i?'L':'M')+x(p.time).toFixed(2)+' '+y(p[k]).toFixed(2)).join(' ');
+  const ticks=[];for(let n=Math.ceil(low/step)*step;n<=high+step*.001;n+=step)ticks.push(Math.abs(n)<step*.01?0:n);
+  const timeLabel=t=>new Date(t*1000).toLocaleString('en-GB',{day:'2-digit',month:'short',...(last-first<86400?{hour:'2-digit',minute:'2-digit',hour12:false}:{}),timeZone:'UTC'});
+  const times=last===first?[first]:width>=560?[first,(first+last)/2,last]:[first,last];
+  svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
+  svg.innerHTML='<title>Recorded trading return '+pct(points.at(-1).actual)+'; holding return '+pct(points.at(-1).hold)+'</title>'+
+    '<g class="chart-grid">'+ticks.map(v=>'<line x1="'+left+'" x2="'+right+'" y1="'+y(v)+'" y2="'+y(v)+'"'+(v===0?' class="chart-zero"':'')+'/><text x="'+(left-10)+'" y="'+(y(v)+4)+'" text-anchor="end">'+label(v)+'</text>').join('')+'</g>'+
+    '<g class="chart-series"><path class="chart-hold" d="'+line('hold')+'"/><path class="chart-actual" d="'+line('actual')+'"/></g>'+
+    '<g class="chart-endpoints">'+['hold','actual'].map(k=>'<circle class="chart-'+k+'" cx="'+x(last)+'" cy="'+y(ordered.at(-1)[k])+'" r="3"/>').join('')+'</g>'+
+    '<g class="chart-times">'+times.map((t,i)=>'<text x="'+x(t)+'" y="'+(height-8)+'" text-anchor="'+(times.length===1?'middle':i===0?'start':i===times.length-1?'end':'middle')+'">'+timeLabel(t)+'</text>').join('')+'</g>';
 }
+new ResizeObserver(()=>{if(activeResult?.points&&!$('wallet-comparison').hidden)drawChart(activeResult.points);}).observe($('return-chart'));
 
 function renderJournal(r){
   $('trade-rows').replaceChildren();
@@ -141,7 +160,7 @@ $('cohort').addEventListener('change',()=>{cohort=$('cohort').value;renderGroup(
 document.querySelectorAll('[data-example]').forEach(b=>b.addEventListener('click',()=>example(b.dataset.example)));
 $('wallet-form').addEventListener('submit',e=>{e.preventDefault();lookup($('wallet-input').value.trim());});
 $('more-trades').addEventListener('click',()=>{journalLimit+=50;if(activeResult)renderJournal(activeResult);});
-$('copy-comparison').addEventListener('click',async()=>{const url=new URL(location.href);url.hash=new URLSearchParams({wallet:selected,period:manual?livePeriod:period}).toString();try{await navigator.clipboard.writeText(url.href);set('wallet-status','Comparison link copied.');}catch{set('wallet-status',url.href);}});
+$('copy-comparison').addEventListener('click',async()=>{const url=new URL(location.href);url.hash=new URLSearchParams({wallet:$('wallet-link').title,period:$('wallet-card').dataset.period}).toString();try{await navigator.clipboard.writeText(url.href);set('wallet-status','Comparison link copied.');}catch{set('wallet-status',url.href);}});
 function fromHash(){const hash=new URLSearchParams(location.hash.slice(1));if(!validAddress(hash.get('wallet')||''))return;livePeriod=hash.get('period')==='recent'?'recent':'full';$('wallet-input').value=hash.get('wallet');lookup(hash.get('wallet'));}
 window.addEventListener('hashchange',fromHash);
 document.querySelectorAll('[data-live-period]').forEach(b=>b.addEventListener('click',()=>{livePeriod=b.dataset.livePeriod;if(liveData)displayLive(liveData);}));
