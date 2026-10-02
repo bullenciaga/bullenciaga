@@ -54,7 +54,8 @@ for(const [period,p]of Object.entries(data.periods)){
 const site=new URL('../site/',import.meta.url),html=fs.readFileSync(new URL('what-if-i-held.html',site),'utf8');
 assert.match(html,/<title>What if I held\? — BULLENCIAGA<\/title>/);
 assert.match(html,/Tokens you haven’t sold count too/);
-assert.match(html,/not a live wallet scan|dated research snapshot/);
+assert.match(html,/Any public Solana wallet can be scanned/);
+assert.match(html,/DATED GROUP STUDY/);
 assert.match(html,/realized/i);assert.match(html,/Unrealized profit/);
 assert.doesNotMatch(html,/<button(?![^>]*\btype=)[^>]*>/i);
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length);
