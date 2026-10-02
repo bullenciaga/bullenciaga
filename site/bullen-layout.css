@@ -1,0 +1,13 @@
+/* Share space across heading lines instead of stranding a short word at an
+   edge. Explicit editorial breaks remain in place; prose avoids short tails. */
+:where(h1, h2, h3, h4, .section-title, .section-heading) {
+  text-wrap: balance;
+}
+:where(p, li, dd) {
+  text-wrap: pretty;
+}
+.bullen-phrase {
+  display: inline-block;
+  max-width: 100%;
+  text-wrap: balance;
+}

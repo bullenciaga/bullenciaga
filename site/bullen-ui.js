@@ -346,7 +346,9 @@
     if (!anchor || anchor.hasAttribute('download')) return;
     let url;
     try { url = new URL(anchor.href, location.href); } catch (_) { return; }
-    if (url.origin !== location.origin || url.href === location.href || prefetched.has(url.href)) return;
+    if (url.origin !== location.origin || (url.pathname === location.pathname && url.search === location.search)) return;
+    url.hash = '';
+    if (prefetched.has(url.href)) return;
     if (!/^\/$|\.html$|^\/(?:objects|giveaways|stats|tape|chart|curve|refer|thedrop|patchnotes|lock|ledger|passport|rooms)\/?$/i.test(url.pathname)) return;
     prefetched.add(url.href);
     const hint = document.createElement('link');

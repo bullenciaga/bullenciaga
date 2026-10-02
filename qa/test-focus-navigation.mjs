@@ -73,6 +73,8 @@ for (const name of fs.readdirSync(site).filter(name => name.endsWith('.html'))) 
   const html = read(name);
   assert.equal((html.match(/href="\/bullen-focus\.css"/g)||[]).length,1,`${name}: shared focus CSS`);
   assert.equal((html.match(/src="\/bullen-focus\.js"/g)||[]).length,1,`${name}: shared policy`);
+  assert.equal((html.match(/href="\/bullen-layout\.css"/g)||[]).length,1,`${name}: shared responsive text layout`);
+  assert.equal((html.match(/src="\/bullen-navigation\.js"/g)||[]).length,name === 'shares.html' ? 0 : 1,`${name}: shared fragment navigation coverage`);
   documents++;
 }
 assert.equal(documents,28);

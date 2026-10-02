@@ -73,16 +73,16 @@ for (const engine of engines) {
       await persist();
     };
 
-    await check('home custom anchor easing', async () => {
+    await check('home quick shared anchor easing', async () => {
       await load('/');
       const before = await state();
       await page.locator('#contractBtn').click();
-      await page.waitForTimeout(400);
+      await page.waitForTimeout(70);
       const middle = await state();
       await page.waitForTimeout(1200);
       const after = await state();
       const targetY = await page.locator('#nft').evaluate(element => element.getBoundingClientRect().top);
-      return { before, middle, after, targetY, pass: middle.bodyY > 0 && after.bodyY > middle.bodyY && after.windowY === 0 && Math.abs(targetY) < 3 };
+      return { before, middle, after, targetY, pass: middle.bodyY > 0 && after.bodyY > middle.bodyY && after.windowY === 0 && Math.abs(targetY - after.header.height - 12) < 3 };
     });
     await check('initial gallery hash', async () => {
       await load('/#gallery');

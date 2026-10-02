@@ -270,7 +270,8 @@ for (const name of ['chart.html', 'refer.html', 'thedrop.html']) {
 const home = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
 if (home.includes('id="giveaway"') || home.includes("{ id: 'giveaway', label: 'Giveaway' }") || shell.includes('/#giveaway')) failures.push('completed giveaway remains on the homepage or in homepage section navigation');
 if (home.includes('data-bullen-home-nav')) failures.push('homepage retains the redundant mid-hero navigation strip');
-if (!home.includes("targetSelector === '#' || !targetSelector.startsWith('#')")) failures.push('homepage smooth scrolling can intercept the external mobile buy fallback');
+if (!fs.readFileSync(path.join(site, 'bullen-navigation.js'), 'utf8').includes("url.origin !== location.origin || url.pathname !== location.pathname || url.search !== location.search")) failures.push('fragment scrolling must leave other documents and external links to the browser');
+if (home.includes('function smoothScrollTo(')) failures.push('homepage must not compete with shared fragment navigation');
 for (const duplicate of ["giveaways.html', label: 'All Giveaways", "proof', label: 'Proof", "refer.html', label: 'Referrals", "thedrop', label: 'The Drop", "stats.html', label: 'Live Dashboard"]) {
   if (home.includes(duplicate)) failures.push(`homepage Jump To duplicates shared navigation: ${duplicate}`);
 }

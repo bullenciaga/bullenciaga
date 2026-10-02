@@ -344,9 +344,15 @@ html.flywheel-font-fallback header .brand span,html.flywheel-font-fallback heade
  .explorer #route-reading{font-size:calc(11px * var(--reading-scale));max-width:calc(560px * var(--reading-scale))}
  .explorer .map-expand,.explorer #map-instruction{font-size:calc(11px * var(--reading-scale))}
 }
+
+/* Give narrow section headings a full row; let compact map labels wrap as phrases. */
+@media(max-width:980px){.section-head{align-items:flex-start;flex-direction:column;gap:20px}}
+@media(max-width:800px){#map .node h3{text-wrap:balance}#map .node h3 br,.depth-head h3 br{display:none}}
 </style>
 <link rel="stylesheet" href="/bullen-focus.css">
+<link rel="stylesheet" href="/bullen-layout.css">
 <script src="/bullen-focus.js" defer></script>
+<script defer src="/bullen-navigation.js"></script>
 </head>
 <body>
 <noscript><p class="wrap live-notice">Current figures require JavaScript. Use the source links below to inspect the public records.</p></noscript>
