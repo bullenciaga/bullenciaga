@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>House Record 006 — social cover source</title>
+<!-- Render at 1200×630, device scale 1, after document.fonts.ready. Export JPEG quality 95. -->
+<style>
+  @font-face { font-family: Poppins; font-weight: 600; src: url('../../site/fonts/house-872e862918591a9e.woff2') format('woff2'); }
+  @font-face { font-family: Poppins; font-weight: 500; src: url('../../site/fonts/house-289e0afc8be731a8.woff2') format('woff2'); }
+  @font-face { font-family: Mono; font-weight: 400; src: url('../../site/fonts/house-e0c8e616bda27642.woff2') format('woff2'); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body { color: #f5f3ee; background: #070807; font-family: Poppins, sans-serif; }
+  .cover { position: relative; width: 1200px; height: 630px; padding: 48px 58px;
+    background: radial-gradient(ellipse at 92% 48%, #24201466, transparent 53%); border: 1px solid #c7a86933; }
+  header { display: flex; align-items: center; justify-content: space-between; }
+  .brand, .eyebrow, .date, footer { font-family: Mono, monospace; }
+  .brand { color: #c7a869; font-size: 16px; letter-spacing: 4px; }
+  .date { color: #aaa69a; font-size: 12px; letter-spacing: 2px; }
+  .rule { margin-top: 25px; width: 100%; height: 1px; background: #c7a86940; }
+  .eyebrow { margin: 39px 0 17px; font-size: 12px; letter-spacing: 3px; color: #c7a869; }
+  h1 { margin: 0; font-size: 85px; font-weight: 600; line-height: 1.08; letter-spacing: -5px; }
+  h1 span { display: block; }
+  h1 .gold { color: #ead9aa; }
+  .summary { margin: 25px 0 0; font-size: 21px; font-weight: 500; color: #c0beb5; letter-spacing: -.35px; }
+  .records { position: absolute; top: 155px; right: 70px; width: 274px; height: 278px; }
+  .sheet { position: absolute; inset: 0; border: 1px solid #c7a86950; background: #0e0e0b; }
+  .sheet.back { transform: translate(15px, -8px) rotate(5deg); background: #17160f; }
+  .sheet.middle { transform: translate(7px, -3px) rotate(2.5deg); background: #11110d; }
+  .sheet.front { display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(140deg, #201d14, #0c0d0a 72%); box-shadow: -18px 20px 40px #0006; }
+  .edition-label { font-family: Mono, monospace; color: #c7a869; font-size: 11px; letter-spacing: 2.5px; }
+  .number { color: #c7a869; font-size: 117px; font-weight: 500; letter-spacing: -9px; line-height: 1.35; margin-right: 7px; }
+  .edition-note { font-family: Mono, monospace; font-size: 10px; letter-spacing: 1.7px; color: #bdb7a5;
+    padding-top: 17px; width: 218px; border-top: 1px solid #c7a86940; text-align: center; }
+  .topics { position: absolute; left: 58px; bottom: 119px; display: flex; align-items: center; gap: 20px;
+    font-family: Mono, monospace; font-size: 12px; letter-spacing: 1.8px; color: #d1c197; }
+  .topics i { display: block; width: 3px; height: 3px; background: #c7a869; }
+  footer { position: absolute; bottom: 47px; left: 58px; right: 58px; padding-top: 23px;
+    border-top: 1px solid #c7a86940; display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: #b5b0a1; letter-spacing: 1px; }
+  footer .link { color: #d5c697; }
+</style>
+<main class="cover">
+  <header><span class="brand">BULLENCIAGA</span><span class="date">02 OCTOBER 2026</span></header>
+  <div class="rule"></div>
+  <p class="eyebrow">THE HOUSE RECORD</p>
+  <h1><span>The House</span><span class="gold">keeps moving.</span></h1>
+  <p class="summary">A green check. A first look. A new sound.</p>
+  <div class="records" aria-label="Public edition 006. The work adds up.">
+    <div class="sheet back"></div><div class="sheet middle"></div>
+    <div class="sheet front"><span class="edition-label">PUBLIC EDITION</span><span class="number">006</span><span class="edition-note">THE WORK ADDS UP.</span></div>
+  </div>
+  <div class="topics"><span>VERIFIED</span><i></i><span>NEW TOOLS</span><i></i><span>RENEWED LOCKS</span><i></i><span>MUSIC</span></div>
+  <footer><span>THE LATEST FROM THE HOUSE</span><span class="link">bullenciaga.com/patchnotes ↗</span></footer>
+</main>
+</html>
