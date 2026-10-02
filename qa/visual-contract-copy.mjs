@@ -44,7 +44,8 @@ try {
       await page.evaluate(() => document.fonts.ready);
       // Deterministic public labels, matching the supplied mobile screenshot.
       await page.evaluate(() => {
-        document.getElementById('jupVerifyLink').style.display = 'inline-flex';
+        const legacyVerificationLink = document.getElementById('jupVerifyLink');
+        if (legacyVerificationLink) legacyVerificationLink.style.display = 'inline-flex';
         document.getElementById('badgeMintText').textContent = 'Mint Authority — Revoked';
         document.getElementById('badgeFreezeText').textContent = 'Freeze Authority — Revoked';
         document.getElementById('dropBtn').textContent = 'The Drop · 32%';
