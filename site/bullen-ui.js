@@ -161,7 +161,6 @@
       ['/#faq', 'FAQ'],
     ];
     const elsewhere = [
-      ['https://bullenciaga.com/jupiter_vrfd', 'Jupiter Verification'],
       ['https://x.com/bullenciagax', 'X Profile'],
       ['https://bullenciaga.com/chat', 'X Chat'],
       ['/telegram', 'Telegram'],
