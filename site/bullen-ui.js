@@ -8,6 +8,7 @@
     index: 'Home',
     buy: 'Buy $BULLEN',
     stats: 'Stats',
+    deepdive: 'Deep Dive',
     tape: 'The Tape',
     chart: 'Chart',
     curve: 'Curve',
@@ -31,6 +32,7 @@
     ['objects', '/objects.html'],
     ['giveaways', '/giveaways.html'],
     ['stats', '/stats.html'],
+    ['deepdive', '/deepdive'],
     ['tape', '/tape.html'],
     ['chart', '/chart.html'],
     ['curve', '/curve.html'],
@@ -47,10 +49,10 @@
   ];
   const navigationGroups = [
     ['House', ['objects', 'lock', 'patchnotes', 'giveaways']],
-    ['Market', ['buy', 'stats', 'chart', 'tape', 'curve']],
+    ['Market', ['buy', 'stats', 'deepdive', 'chart', 'tape', 'curve']],
     ['Explore', ['refer', 'thedrop', 'ledger', 'passport']],
   ];
-  const mobileNavigationKeys = ['buy', 'platform', 'flywheel', 'bullensaga', 'giveaways', 'objects', 'patchnotes', 'lock', 'stats', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
+  const mobileNavigationKeys = ['buy', 'platform', 'flywheel', 'bullensaga', 'giveaways', 'objects', 'patchnotes', 'lock', 'stats', 'deepdive', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
   const destinationByKey = new Map(destinations);
 
   root.dataset.bullenPage = page;

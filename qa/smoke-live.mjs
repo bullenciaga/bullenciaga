@@ -21,6 +21,7 @@ const pageChecks = [
   ['/platform', /<title>early preview — bullenciaga/i],
   ['/buy', /<title>BULLENCIAGA — Buy \$BULLEN/i],
   ['/', /<title>BULLENCIAGA — A token with horns\./i],
+  ['/deepdive', /<title>Deep Dive — \$BULLEN, beyond the candle/i],
   ['/stats', /<title>BULLENCIAGA — Live Dashboard/i],
   ['/chart', /<title>BULLENCIAGA — \$BULLEN chart/i],
   ['/curve', /<title>BULLENCIAGA — the curve/i],
@@ -44,7 +45,7 @@ const effectivePageChecks = smokePhase === 'preflight'
   // Preflight proves the currently deployed release. Pages introduced by the
   // candidate cannot exist until after promotion, so require them only in the
   // post-release smoke test.
-  ? pageChecks.filter(([path]) => !['/dev', '/platform', '/buy', '/giveaways', '/tape', '/patchnotes', '/patchnotes-001', '/patchnotes-002', '/lock', '/ledger', '/passport', '/flywheel'].includes(path))
+  ? pageChecks.filter(([path]) => !['/deepdive', '/dev', '/platform', '/buy', '/giveaways', '/tape', '/patchnotes', '/patchnotes-001', '/patchnotes-002', '/lock', '/ledger', '/passport', '/flywheel'].includes(path))
   : pageChecks;
 
 const apiChecks = [
