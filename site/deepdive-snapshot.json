@@ -1,0 +1,5778 @@
+{
+  "ok": true,
+  "schemaVersion": 1,
+  "method": "account-net-inflow-fifo-v1",
+  "mint": "BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN",
+  "asOf": "2026-10-02T00:40:25.000Z",
+  "slot": 452451333,
+  "capturedAt": "2026-10-02T00:40:35.591Z",
+  "startedAt": "2026-10-02T00:40:35.591Z",
+  "cadenceHours": 6,
+  "source": "Finalized Solana accounts and Helius transaction history",
+  "supply": {
+    "total": 810626174.218096,
+    "launch": 1000000000,
+    "burned": 189373825.78190398,
+    "locked": 237500000,
+    "circulating": 573126174.218096,
+    "eligible": 501447224.818107,
+    "wallet": 501447224.818107,
+    "reserve": 237500000,
+    "dev": 6500,
+    "pool": 71672169.281697,
+    "escrow": 0,
+    "program": 280.118292
+  },
+  "coverage": {
+    "amount": 501447224.818107,
+    "unknown": 0,
+    "percent": 100,
+    "accounts": 468,
+    "verifiedAccounts": 468
+  },
+  "holderCount": 468,
+  "holdersAtLeastOne": 415,
+  "thresholds": [
+    {
+      "days": 7,
+      "amount": 443579787.296901,
+      "wallets": 318,
+      "percent": 88.45991469148191,
+      "circulatingPercent": 77.39653277955199
+    },
+    {
+      "days": 14,
+      "amount": 404093570.366886,
+      "wallets": 301,
+      "percent": 80.58546350784279,
+      "circulatingPercent": 70.50691253425694
+    },
+    {
+      "days": 30,
+      "amount": 374617315.662155,
+      "wallets": 246,
+      "percent": 74.70722682691925,
+      "circulatingPercent": 65.36384700510975
+    },
+    {
+      "days": 60,
+      "amount": 228842968.31148,
+      "wallets": 73,
+      "percent": 45.6365011082651,
+      "circulatingPercent": 39.928898487961334
+    }
+  ],
+  "buckets": [
+    57867437.521206,
+    39486216.930015,
+    29476254.704731,
+    145774347.350675,
+    228842968.31148
+  ],
+  "weightedAgeDays": 45.15652837296028,
+  "concentration": {
+    "top1": 6.288611739467408,
+    "top10": 38.709057691129125,
+    "top20": 59.068091763484134
+  },
+  "sizes": [
+    {
+      "min": 0,
+      "max": 1000,
+      "count": 178,
+      "amount": 38705.76091500002
+    },
+    {
+      "min": 1000,
+      "max": 10000,
+      "count": 130,
+      "amount": 530133.37416
+    },
+    {
+      "min": 10000,
+      "max": 100000,
+      "count": 49,
+      "amount": 1589882.2679429993
+    },
+    {
+      "min": 100000,
+      "max": 1000000,
+      "count": 44,
+      "amount": 15808708.828985
+    },
+    {
+      "min": 1000000,
+      "max": null,
+      "count": 67,
+      "amount": 483479794.5861039
+    }
+  ],
+  "wallets": [
+    {
+      "address": "agzq4fiG9abjk1Jjd8eJHqQtsMk24wh5wjrXH8bcerZ",
+      "amount": 31534069.047145,
+      "share": 6.288611739467408,
+      "aged": [
+        31534069.047145,
+        30395523.59211,
+        27064829.722316,
+        22614437.665873
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3AgyXSNoPZrKQW2gK6oEQPubouCJsUjQ3MWQjoLbh5Er",
+      "amount": 20976300.039994,
+      "share": 4.183152084968237,
+      "aged": [
+        16087411.655358,
+        15511451.246535,
+        13086981.661146,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HH4serienJHhyT3Qkzfm2FDjyX5YVa4GQjHJyFRAv4No",
+      "amount": 20275907.340966,
+      "share": 4.0434778252728,
+      "aged": [
+        20275907.340966,
+        20275907.340966,
+        20275907.340966,
+        14671338.459167
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CohRnrcs3u599MG7h2r4nRhwP7WmeRJ3shCVp1kWAXPk",
+      "amount": 18800044.771503,
+      "share": 3.7491572075849966,
+      "aged": [
+        18800044.771503,
+        18800044.771503,
+        18800044.771503,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7DqWHcEeRD7ysbCmLqg4B3esV9HbkfCb889ANq3KWZe7",
+      "amount": 18341689.222794,
+      "share": 3.6577506694642077,
+      "aged": [
+        12645486.943523,
+        11503893.394667,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2FJmmQowQEXMi3wnsHBLgTbq8GjcYmV8HhEenkj131MX",
+      "amount": 18214379.542601,
+      "share": 3.6323622190167693,
+      "aged": [
+        18214379.542601,
+        18214379.542601,
+        18214379.542601,
+        17070043.997405
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DMXmpiazPVwx6Z9tB8VYqNgo8ySy7iurcpbSiDVFw5kR",
+      "amount": 17543901.533174,
+      "share": 3.498653629908473,
+      "aged": [
+        17543901.533174,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5Aa6EBJdaHdo1dvo5Z7S8kqrrAbt3uPGc31FVFXD3A67",
+      "amount": 17302153.661277,
+      "share": 3.4504435970411675,
+      "aged": [
+        13332573.852769,
+        5104498.781177,
+        5104498.781177,
+        928245.746446
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9kmLFrGtZfJYaxHye4aZW9t93v5s4VF27ZxZP7UYidVh",
+      "amount": 16084267.118612,
+      "share": 3.207569275998355,
+      "aged": [
+        16084267.118612,
+        16084267.118612,
+        16084267.118612,
+        14910653.367502
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AhqNyru7aGdP16HM8ST1DvJhNMUdg1NtxC8KBffsgCUf",
+      "amount": 15032783.267341,
+      "share": 2.9978794424067123,
+      "aged": [
+        14591890.45274,
+        9742849.185639,
+        7131756.155949,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BY2cjrXeqMnPkinCLZqkrTyos8njFyUZj1E3wgwXaUum",
+      "amount": 13155400.547029,
+      "share": 2.6234865596875,
+      "aged": [
+        13096579.152729,
+        12931694.900637,
+        12560178.490282,
+        6616049.853413
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AfN2MiYsEsso5uSp4FEmuhxvMSX7ryg23wxEeuzQC1e9",
+      "amount": 12569483.689708,
+      "share": 2.506641390680227,
+      "aged": [
+        11597950.598824,
+        11597950.598824,
+        10530698.343762,
+        4551913.566155
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "67tEAonEi1C33P5fCFG9r3Mc3ViRcCJV2ifSCiQF7AG4",
+      "amount": 11556882.778753,
+      "share": 2.3047057011722614,
+      "aged": [
+        11510834.887046,
+        11510834.887046,
+        11510834.887046,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "At6eLYvJEaC65uBD6wTn4std4mSaEFGxs9tkuyu1wPgn",
+      "amount": 10775704.341029,
+      "share": 2.1489209248167116,
+      "aged": [
+        9205065.396003,
+        5266306.891382,
+        5266306.891382,
+        3958245.602895
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5AdVQqJbbjooLNaFqg4XQs8niw3U3ZW1KKGpAd3ZMLZX",
+      "amount": 10741451.199932,
+      "share": 2.142090068167854,
+      "aged": [
+        2786217.3393,
+        2786217.3393,
+        2786217.3393,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "E3765S7odLkbvaceCjQoMzLHziiNC2dH6E3FBVE6b9mN",
+      "amount": 9803926.018662,
+      "share": 1.9551261894446097,
+      "aged": [
+        9803926.018662,
+        9803926.018662,
+        8011974.664893,
+        1042237.066124
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "F1n18K7V3qx3iBRmNkpYsp2LLxm229337zUvGSzttSB5",
+      "amount": 9749492.190138,
+      "share": 1.94427084399051,
+      "aged": [
+        9493067.896124,
+        9280753.315148,
+        9280753.315148,
+        4928700.216972
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BV4rz333vXa4n17RpQXYbF9ndwqwpYGTLvRRvVC4bWf1",
+      "amount": 9050703.558674,
+      "share": 1.8049164719092854,
+      "aged": [
+        9050703.558674,
+        9050703.558674,
+        9050703.558674,
+        5444981.86501
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9EJfmP9MksWUvaYWJSYYt29pddmREiJ1H2dGP9sYs1wL",
+      "amount": 7508793.63858,
+      "share": 1.4974245078938686,
+      "aged": [
+        7461943.057307,
+        7286115.900765,
+        7068556.465235,
+        4687035.652837
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "ABRgnEtgrg35AhXURMcD64DTMVD9w9PV1mfX3BsDTF4u",
+      "amount": 7177973.393092,
+      "share": 1.4314514145921755,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AZWTMdZJ8k3oE9xP5iB7dS27XRMEaWHuhBeANdhd3nea",
+      "amount": 7095668.900321,
+      "share": 1.415038023771067,
+      "aged": [
+        7095668.900321,
+        7095668.900321,
+        7095668.900321,
+        1743891.529243
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "21MmopdfFxKhANhxZSFfAZZuamvjRWPYRYCqfoFsPuxC",
+      "amount": 6454110.910576,
+      "share": 1.2870967454086797,
+      "aged": [
+        6454110.910576,
+        6454110.910576,
+        6062915.016018,
+        5412537.810411
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "81r9CwbQej2w4fX7wBnmuwNJXNPXa3cLqnD76rvBkdbC",
+      "amount": 6194777.959943,
+      "share": 1.2353798472391726,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9cvVsafwzp48oxZfJhJRHeHXKM6Sz62pmcrtZ7KfWcS",
+      "amount": 6105729.145401,
+      "share": 1.2176214850158495,
+      "aged": [
+        6067151.599409,
+        5800727.744,
+        5166930.737872,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HQPnWnmzTq661UtBrqYvE5MrhjUKLBUY5MRMy8cfgWGY",
+      "amount": 6030129.231371,
+      "share": 1.2025451399313947,
+      "aged": [
+        6030129.231371,
+        6030129.231371,
+        6030129.231371,
+        6030129.231371
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7898Mbzyz7S4yhJZZYxSPXMK1ZKzpZyS2qJNKu4PR7DP",
+      "amount": 5816947.001051,
+      "share": 1.1600317467428436,
+      "aged": [
+        5816947.001051,
+        5816947.001051,
+        5774369.641519,
+        5198073.379484
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EbQm6Mr6CAAjRMHDLjccV4o8KFbh9Tu3XKyV7epGDg21",
+      "amount": 5686755.578555,
+      "share": 1.1340686112317784,
+      "aged": [
+        5686755.578555,
+        5686755.578555,
+        5686755.578555,
+        5444981.86501
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "75TeGJvosQDXcSaze3z3FVieD6RScX64dF3HgAhEm8ib",
+      "amount": 5644149.10005,
+      "share": 1.1255719088080178,
+      "aged": [
+        5358457.560739,
+        5358457.560739,
+        5294403.703571,
+        143052.60735
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6LkYr4dyWxnikoTeA2Vtpk2ESv8D1ZmG7oya1ozWSoo9",
+      "amount": 5624156.255594,
+      "share": 1.1215848801704076,
+      "aged": [
+        5624156.255594,
+        5624156.255594,
+        5624156.255594,
+        5344981.86501
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4x4LbQ2t3CcnZGSgfNS9YQ4L9JFFRe7kqFaHZCcVgT1L",
+      "amount": 5542899.96483,
+      "share": 1.1053805247083797,
+      "aged": [
+        5542899.96483,
+        5542899.96483,
+        5542899.96483,
+        5444981.86501
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Ep5YEcc18TS3WiadQrEfG4q3i44VoQEZScBLMQy3Qjks",
+      "amount": 5474936.029545,
+      "share": 1.0918269677394181,
+      "aged": [
+        5474936.029545,
+        5474936.029545,
+        5474936.029545,
+        5444981.86501
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EVN68LrHLdqAQyD3TJJ8hWVrdyNsswtmUcvh7mRkG4xW",
+      "amount": 5444981.86501,
+      "share": 1.0858534249511684,
+      "aged": [
+        5444981.86501,
+        5444981.86501,
+        5444981.86501,
+        5444981.86501
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HuBZH3t3E8PnqBRuCf76uRPRfSyg7z4Cjzq9iLcW7Hjp",
+      "amount": 5444981.86501,
+      "share": 1.0858534249511684,
+      "aged": [
+        5444981.86501,
+        5444981.86501,
+        5444981.86501,
+        5444981.86501
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7v7Z6AjGrbk3bqTQu8mQgFKQdzwYEGsXc7o4bvpzcudP",
+      "amount": 5444981.86501,
+      "share": 1.0858534249511684,
+      "aged": [
+        5444981.86501,
+        5444981.86501,
+        5444981.86501,
+        5444981.86501
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "26funJCvxF2cximwCuWydRdwim8YGC1RB1GTJkFFMjng",
+      "amount": 5444981.865009,
+      "share": 1.0858534249509688,
+      "aged": [
+        5444981.865009,
+        5444981.865009,
+        5444981.865009,
+        5444981.865009
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HBE6atHHCaDPGAiyEDpAkjxWJUSo8zLCgnT5zexAf1Kt",
+      "amount": 5444981.865009,
+      "share": 1.0858534249509688,
+      "aged": [
+        5444981.865009,
+        5444981.865009,
+        5444981.865009,
+        5444981.865009
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AZos1MFLKjFdny7FZsY8KsFyNJRJyUAYmZuR7VMNrdPA",
+      "amount": 5426243.411349,
+      "share": 1.0821165504141128,
+      "aged": [
+        4553684.351391,
+        4553684.351391,
+        4553684.351391,
+        4039510.176773
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2iLeUfaVz6P7VZfyb5qSCJ61iGs8moEHdbnWigvDTTSP",
+      "amount": 5219782.194678,
+      "share": 1.040943480457271,
+      "aged": [
+        5219782.194678,
+        5219782.194678,
+        5219782.194678,
+        5219782.194678
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EKuJUdwK47ed6morKUgWvJ9vbqMfL7LrLwtFrmjwoyYV",
+      "amount": 5198073.379484,
+      "share": 1.0366142481633094,
+      "aged": [
+        5198073.379484,
+        5198073.379484,
+        5198073.379484,
+        5198073.379484
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3zfojp4NuofeTwvFFiVTSudtL9knLqp8SCrsXKtp5Tvm",
+      "amount": 5198073.379484,
+      "share": 1.0366142481633094,
+      "aged": [
+        5198073.379484,
+        5198073.379484,
+        5198073.379484,
+        5198073.379484
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7FtS33vJn2xibTWyS8QQoJ2PCcNYcYUT5xygeysM6UiX",
+      "amount": 5198073.379484,
+      "share": 1.0366142481633094,
+      "aged": [
+        5198073.379484,
+        5198073.379484,
+        5198073.379484,
+        5198073.379484
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AfLyzkVMxr5UK7E8CgaXNHCu4qwkdAZCm2NSyZjYpvs1",
+      "amount": 5167961.173515,
+      "share": 1.0306091883128092,
+      "aged": [
+        5167961.173515,
+        5167961.173515,
+        5167961.173515,
+        5167961.173515
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "36aDjbeTnhyCx6h7D8PTXSyZzyFP791oiUfoXfwqrX4m",
+      "amount": 5012498.09246,
+      "share": 0.9996063083763628,
+      "aged": [
+        5012498.09246,
+        5012498.09246,
+        5012498.09246,
+        5012498.09246
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HKymDjsck2EukhAAnvUw3zo8gTv3FQ4kBsQcTYJyQyiT",
+      "amount": 4856522.901988,
+      "share": 0.9685013021559019,
+      "aged": [
+        4856522.901988,
+        4856522.901988,
+        4856522.901988,
+        4856522.901988
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8k6zP4o67P638zRKqaYZYKHXwEfzPQsX6zhVA728JkYm",
+      "amount": 4545433.700682,
+      "share": 0.9064630285531629,
+      "aged": [
+        4545433.700682,
+        4545433.700682,
+        4545433.700682,
+        4545433.700682
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FszUn2J7Cvbs5S2WD3jFkTMYm2nn1fRZxtkrnmwDndCq",
+      "amount": 4498073.379484,
+      "share": 0.8970183016000564,
+      "aged": [
+        4498073.379484,
+        4498073.379484,
+        4498073.379484,
+        4498073.379484
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8zmsjZvNyjw2FnBrjaWUMGD4YhwwpemfCH4UgqbfSS5T",
+      "amount": 4185635.93302,
+      "share": 0.8347111571987025,
+      "aged": [
+        4185635.93302,
+        4185635.93302,
+        4185635.93302,
+        3077147.932355
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "gbZvD88azDMyJ5d3LQ1UaaQAJnQmMkpCPkeJxBghYBW",
+      "amount": 3664820.862844,
+      "share": 0.7308487676192371,
+      "aged": [
+        3664820.862844,
+        3664820.862844,
+        3664820.862844,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "F5k2e3CXyaVkmacAgGrRps8ikUkaabzLfgjYh3LA1khW",
+      "amount": 3365746.216997,
+      "share": 0.6712064700762632,
+      "aged": [
+        3265154.15123,
+        2939384.572933,
+        2024252.907016,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "A8R3r4E2GN9g8FRrujHyFbsq9phL3yYxHwRQkGTiDMm8",
+      "amount": 2972287.403369,
+      "share": 0.5927418193304701,
+      "aged": [
+        2206582.965457,
+        2206582.965457,
+        1821856.307906,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BpyfbrDPjqTDnqmRepBiGLiCCP3aAbsWsSTxubgCJXmW",
+      "amount": 2830130.444542,
+      "share": 0.564392483290458,
+      "aged": [
+        2830130.444542,
+        2830130.444542,
+        2830130.444542,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6dLZhfsicKmHxRHUFY7UK2pg8yJNJznLATZUe74TerPb",
+      "amount": 2690959.401975,
+      "share": 0.5366386069742649,
+      "aged": [
+        669040.646723,
+        388500.563424,
+        388500.563424,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CGeY1BMe1mFSKiZqkkZfBdLySxXvmT2qdYNhfwfmaiLH",
+      "amount": 2430734.626778,
+      "share": 0.484743858670215,
+      "aged": [
+        1254240.423512,
+        1254240.423512,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AeTsGRedZGxmKKwiVkxeDTWQ38s27GeBpraB1CUS1y7a",
+      "amount": 2202987.265671,
+      "share": 0.4393258465973369,
+      "aged": [
+        2202987.265671,
+        2202987.265671,
+        2202987.265671,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6bLv8BrFrWumZkfcudTjbAdPTZnVqZkys9b5q91ghWs3",
+      "amount": 2143924.145154,
+      "share": 0.4275473148608367,
+      "aged": [
+        2143924.145154,
+        2143924.145154,
+        2012441.618614,
+        187717.58916
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "uPRoJgsE7cKoGuLyxetjQC5M1sW6bAqTf8Q3X31JUzk",
+      "amount": 1792938.891011,
+      "share": 0.3575528594582139,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2qA9TRJbEDHrHDC6wQYVnBi7oixQhem2MVfY56zJNLBs",
+      "amount": 1766354.901401,
+      "share": 0.3522514063253059,
+      "aged": [
+        1628045.451824,
+        1628045.451824,
+        1471377.569316,
+        1343604.527001
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "E2R41PZJfmS4NwErgomt9u9BS4Drn9Lq2qJL96njoqhL",
+      "amount": 1710767.77989,
+      "share": 0.3411660679766564,
+      "aged": [
+        283570.535642,
+        283570.535642,
+        283570.535642,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FvkdLnoUpNZdmEQm3jcrnM68Z3qGZcQ9pWNnJPDtYnVA",
+      "amount": 1700771.525805,
+      "share": 0.3391725871893959,
+      "aged": [
+        1114643.846516,
+        1114643.846516,
+        983338.668461,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7hzZFoj1UFBHzjvpZ696cfAh2HCkqCny1gwbM6HPM6ve",
+      "amount": 1647390.356285,
+      "share": 0.3285271659211132,
+      "aged": [
+        1647390.356285,
+        1647390.356285,
+        1647390.356285,
+        1647390.356285
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5xt7iDXw2yN1AQVMW6Y6Ke3Be9t7NFrCZERLGY7fTnuF",
+      "amount": 1556154.039103,
+      "share": 0.31033256583830393,
+      "aged": [
+        1556154.039103,
+        1556154.039103,
+        1556154.039103,
+        1351801.944381
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CBHowPrgt4uMo2K3Nzh6DujzhQSpzfVaJFVwuSvUENNV",
+      "amount": 1400360.379096,
+      "share": 0.2792637609279743,
+      "aged": [
+        1400360.379096,
+        1400360.379096,
+        1400360.379096,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "dseAxNSEv9bURK33Pc6hAPawtKsiVWN819JtFpFj2kG",
+      "amount": 1362692.018218,
+      "share": 0.2717518316533305,
+      "aged": [
+        1200000,
+        1200000,
+        1200000,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HuwwXRpWxxYrTaj98NHVVVYgM9uaXVq3E44xjGnYNoA6",
+      "amount": 1327842.118494,
+      "share": 0.26480196773960735,
+      "aged": [
+        1327842.118494,
+        1327842.118494,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DM8qW9cKneYezpxCYeh5SXh4gnv7bJcgruxxDg91Rhtb",
+      "amount": 1249097.394809,
+      "share": 0.24909847596865106,
+      "aged": [
+        677277.360906,
+        677277.360906,
+        677277.360906,
+        551648.941438
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FRsWH61q1rqmXX7xbCQoY2Ng7MJ4j1zAfxsAxAUxvVfn",
+      "amount": 1066737.220951,
+      "share": 0.21273170298986976,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BccdRjDfauGhWcSbLAYifg8fhmDk84taoxqM7W5kiJBa",
+      "amount": 1000250.364794,
+      "share": 0.19947270924808227,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "B2BTMqjVFnSQfXtVT52z215jgPZcUiikApkT47UkVSqR",
+      "amount": 947516.38274,
+      "share": 0.18895635190397123,
+      "aged": [
+        947516.38274,
+        947516.38274,
+        947516.38274,
+        947516.38274
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7ALcDJVwRVwBjfZqR9hMZjWswV8csjQKPR6byTFM5D7C",
+      "amount": 882111.297203,
+      "share": 0.17591308786741688,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CUF9qWbqeygS3FWi5adyJPJuec4ep8Bc243hx52owqge",
+      "amount": 834410.872568,
+      "share": 0.16640053654114267,
+      "aged": [
+        834410.872568,
+        834410.872568,
+        834410.872568,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "C39iAyc1j63VA4WaaA2n2kT5SMCcMfewYDnGZU2btERH",
+      "amount": 755029.970504,
+      "share": 0.15057017630875844,
+      "aged": [
+        755029.969434,
+        755029.969434,
+        755029.969434,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "39JJ1ow4dUqh5AtrirbcXaYi2kxa3guZeXTT7p2JVUde",
+      "amount": 723097.122728,
+      "share": 0.14420203900625703,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4w6MKjj8R7gtoPviXhpFvy22xK7w2MFMQKn91mj9LCXM",
+      "amount": 704584.999778,
+      "share": 0.1405102999689705,
+      "aged": [
+        646683.152555,
+        586172.130334,
+        370895.140766,
+        104317.918804
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "33EKBAWUHwwTaKdUtg8hkkwZuoCvLJELJYJop83EFo6v",
+      "amount": 633835.58426,
+      "share": 0.12640125478606748,
+      "aged": [
+        629632.329868,
+        629632.329868,
+        629632.329868,
+        539526.161619
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "93wFcdRmCJYb9HEaG1c77f9tcFWziUfidkkuBHQHQEkS",
+      "amount": 604738.067807,
+      "share": 0.12059854714050124,
+      "aged": [
+        604738.067807,
+        604738.067807,
+        604738.067807,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AFpZSzs4ytSHri6agNu7FnnYiuUmHctoJVHAr67ucYGJ",
+      "amount": 583163.685245,
+      "share": 0.11629612377584389,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8sJPvUWrtocwBbsXMdEMwe2d4LCLoFKP5LGSj9BYALuo",
+      "amount": 564044.255738,
+      "share": 0.11248327397615956,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "47MWHEYupBNBx9nfyBPqWpnRRAtJdXvuu6DhWtUYAgFk",
+      "amount": 562420.953894,
+      "share": 0.11215955060834375,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GDLqcpgcMR7mZceFUib4fTCdGwdBfreBTGvKdtKdrBDK",
+      "amount": 478934.717773,
+      "share": 0.09551049324218054,
+      "aged": [
+        478934.717773,
+        478934.717773,
+        478934.717773,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9UgiZb4pUwoaH1JmpJzVChtu5Zdnh3DPyZRzs8UFSA4t",
+      "amount": 467777.735478,
+      "share": 0.09328553680752344,
+      "aged": [
+        250250.377608,
+        250250.377608,
+        250250.377608,
+        250250.377608
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3y44SBqFyH7NXrGAqkv4wrwDF44eFfEFXvJ74GtAXsR5",
+      "amount": 453643.892115,
+      "share": 0.09046692646061667,
+      "aged": [
+        453643.892115,
+        453643.892115,
+        453643.892115,
+        416607.780334
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "23a2pJFfBqGbut3PoUtL8fyX4rAsjhyhHZRrECMZ1Wvq",
+      "amount": 420815.840644,
+      "share": 0.08392026514787176,
+      "aged": [
+        420815.840644,
+        420815.840644,
+        420815.840644,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8tGxMyRHxvjGsVUHqBBcbwBMAxRTrJirFQ43EQbj6Yce",
+      "amount": 397749.352395,
+      "share": 0.07932028191785846,
+      "aged": [
+        397749.352395,
+        397749.352395,
+        397749.348372,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6LY1JzAFVZsP2a2xKrtU6znQMQ5h4i7tocWdgrkZzkzF",
+      "amount": 362947.17,
+      "share": 0.07237993392657702,
+      "aged": [
+        362947.17,
+        362947.17,
+        362947.17,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5aBMUL1xL3kDoUk4QkKGrSjArxTZxi8G6kDZ8vbhwSEB",
+      "amount": 336990.282954,
+      "share": 0.06720353933083158,
+      "aged": [
+        336990.282954,
+        336990.282954,
+        336990.282954,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FbF1wcdsdRNTdCz6AJ4DUBZpgLCg2diuXmQSXhKtPNwU",
+      "amount": 326245.041063,
+      "share": 0.06506069331250977,
+      "aged": [
+        239655.264749,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HykrwgAehpy4XRJSmS1GQPY3LGHwzANrihPeS7JcuhYL",
+      "amount": 304468.794953,
+      "share": 0.060718013757767184,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CWjDaWvcGfbd712kCyk3YVtZ8V9hsDFFNcwwJ5H7geQC",
+      "amount": 303997.696609,
+      "share": 0.06062406601597425,
+      "aged": [
+        303997.696609,
+        303997.696609,
+        303997.696609,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6Nsm66g27tsxUZFpqJ1wUP7pXLqJrUtmbcsVqXCYS4yL",
+      "amount": 288653.003035,
+      "share": 0.057563984552851964,
+      "aged": [
+        288653.003035,
+        288653.003035,
+        288653.003035,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3Sg2H2w6EeqmnzboHYXz5knHB6CZh4z9GnAikSRWF3zc",
+      "amount": 285848.169114,
+      "share": 0.05700463677263094,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "D7kzwBAtUpMJo2WtK955DWdSC4dYjXiNwdJ1FTB144vX",
+      "amount": 273409.451896,
+      "share": 0.054524073195374737,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5WUjHiUVxmUuBnYZx3b5SyFiR7vW2N19VUhgCr2ZRZQ",
+      "amount": 247815.219485,
+      "share": 0.04942000019541269,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7FGr3kraREjTjcv3uUY2BezGdsApQtwGkfWJ4RUA8fqH",
+      "amount": 237913.352798,
+      "share": 0.047445342405534253,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "724AaEfAJdctqhYGq9QCotc35LTghxpPG8sb6LiG7eKw",
+      "amount": 234022.119362,
+      "share": 0.046669341812967106,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2om7Rt4VJmD8Kz5G7ukwpFvRPMeTxMRawk44211KMgLm",
+      "amount": 223216.190027,
+      "share": 0.0445143933358029,
+      "aged": [
+        223216.190027,
+        223216.190027,
+        223216.190027,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3Kg8mKaSYVPyAZAFuiBis6ARsr7TSxDWTDEqNpM6F3qw",
+      "amount": 216157.141889,
+      "share": 0.04310665832628907,
+      "aged": [
+        216157.141889,
+        216157.141889,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CwmrU1tbYdvA6njftgRAcq2Z3DDWcrrjuyqwPxhm5a1S",
+      "amount": 194981.86501,
+      "share": 0.03888382572677054,
+      "aged": [
+        194981.86501,
+        194981.86501,
+        194981.86501,
+        194981.86501
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "E4GVir3TqEFSZKmP3RDEPRoqA19wdE3UuqdPeH196wFm",
+      "amount": 194529.913594,
+      "share": 0.03879369631860322,
+      "aged": [
+        194529.913594,
+        194529.913594,
+        194529.909571,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4BwdEZWZdppC6LQPqD26ozxoKtWShj6LABKKsFVmEd1i",
+      "amount": 185758.454509,
+      "share": 0.03704446755615833,
+      "aged": [
+        185758.454509,
+        185758.454509,
+        185758.454509,
+        185758.454509
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CiqiK5vwbkpkPJVH5uvvR38qmD7aDwTaCu8CpszNHhLE",
+      "amount": 167496.747477,
+      "share": 0.03340266715759711,
+      "aged": [
+        134204.781177,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2om4dbgRvW1NfBYoeNirtPjFTnzuJ61g4C8LhCr3BTV6",
+      "amount": 165771.39603,
+      "share": 0.03305859277417105,
+      "aged": [
+        165771.39603,
+        165771.39603,
+        165771.39603,
+        165771.39603
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Ezy2n29at9t7xQxyx5kyh3tgDLG3U4FzH3ESRkDa6uXZ",
+      "amount": 151663.599958,
+      "share": 0.030245176850467934,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FpquGnqhthu7MZzAi9wAww1muXRuKe5xzFVu2XBqzxve",
+      "amount": 151266.930213,
+      "share": 0.03016607186685897,
+      "aged": [
+        151266.930213,
+        151266.930213,
+        151266.930213,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FKiS4h6evhZ9kgsMmU6TwEiLFdkrC2hhvQX8yypeXBCz",
+      "amount": 145866.632983,
+      "share": 0.029089129576080727,
+      "aged": [
+        145866.632983,
+        145866.632983,
+        145866.632983,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "APVovP71JUH1ztHREVtyszEa4gyeeCF7yaQ4MX1m9aYw",
+      "amount": 132170.737246,
+      "share": 0.026357855962597678,
+      "aged": [
+        132170.737246,
+        132170.737246,
+        132170.737246,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "66DcadbogUpDHcgmFFoma6BujiVhdiFqf29LhtmMiPY5",
+      "amount": 124122.61743,
+      "share": 0.02475287752864197,
+      "aged": [
+        55114.128334,
+        55114.128334,
+        55114.128334,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GGaEVfBjgLTqFr18kQRHMqDen8aXN6TUXT3uEWxscKMx",
+      "amount": 115835.320232,
+      "share": 0.023100201676062252,
+      "aged": [
+        115835.320232,
+        115835.320232,
+        115835.320232,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6Qt8a3Y6B4nekSRQ1p2e5yqP5bSCbE6HzUTdWwdfYXmR",
+      "amount": 111592.066303,
+      "share": 0.022254000177880828,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GnwtnVcEvFXQuf34Ft7fG8R8QKyhVfKCbK994cbSh3vv",
+      "amount": 109517.216014,
+      "share": 0.02184022776349512,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Gc2N1ynhsQuoDyWxaQUHE5mPbc6ejAtNa6yHBU6Cf8j5",
+      "amount": 102576.967931,
+      "share": 0.02045618419130914,
+      "aged": [
+        35653.662864,
+        35653.662864,
+        35653.662864,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2WdFKU8orK9Wk6xvcecmGxa2EmY1y8GpRjXu6h4RhQcf",
+      "amount": 100000,
+      "share": 0.01994227808046472,
+      "aged": [
+        100000,
+        100000,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "D6NtVS7CBEbEt7cDbx9Uj6CXj1qyR1otYNoFfdc7qdYn",
+      "amount": 87864.124233,
+      "share": 0.01752210798750985,
+      "aged": [
+        87864.124233,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AFV7y28BMtxvKCc3xaTj9doHpfwhUQabLZbaXACsqGDB",
+      "amount": 85573.833246,
+      "share": 0.017065371790030488,
+      "aged": [
+        85573.833246,
+        85573.833246,
+        85573.833246,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FdKxrJBizfF7ca9zJeQ6MZPpmu9wfm1hpPCvfLVaKWcK",
+      "amount": 78752.769716,
+      "share": 0.015705096332832725,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Fk65fXgzSTZjnPncCGSPgJmEjfNhSRyq77TW2maG5THh",
+      "amount": 76787.619851,
+      "share": 0.01531320068205655,
+      "aged": [
+        76787.619851,
+        76787.619851,
+        76787.619851,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BVTKvynQ8VBJKKA2uau4FC4mNoTmkmb1t4h1y8gMv3Gk",
+      "amount": 75143.263974,
+      "share": 0.014985278660432744,
+      "aged": [
+        75143.263974,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "25TsAd6f8o7NfTZBDNCp69zEqJuzWQTDNub4HFRJr6rV",
+      "amount": 67408.579038,
+      "share": 0.013442806281847809,
+      "aged": [
+        67408.579038,
+        67408.579038,
+        67408.579038,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8J2AyfGFGoyFXcV4ZVssbcKbARrS8qxMeXwjM1C9HmSK",
+      "amount": 63751.928896,
+      "share": 0.012713586942100463,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EdFoA1g8cM32MbEh2RYxh7wo3UkLVDjTddL4A6y4WH9",
+      "amount": 50000,
+      "share": 0.00997113904023236,
+      "aged": [
+        14299.559392,
+        14299.559392,
+        14299.559392,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HmGAsZvhUYb524PrG6SjF4z28XFzX7f5KHeHtjCgvouy",
+      "amount": 50000,
+      "share": 0.00997113904023236,
+      "aged": [
+        50000,
+        50000,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HdEYCvq6Bh1VqJ1SxUxZRQ9btcsHgpFp8XBAJDLD5xF2",
+      "amount": 47133.281319,
+      "share": 0.00939945002908271,
+      "aged": [
+        47133.281319,
+        47133.281319,
+        47133.281319,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GAYZcJ4G8dWAdgF9dhSMXvSY6CCkfwHB1yhy2APf29E2",
+      "amount": 45758.3634,
+      "share": 0.009125260074297592,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2snHHreXbpJ7UwZxPe37gnUNf7Wx7wv6UKDSR2JckKuS",
+      "amount": 38086.979079,
+      "share": 0.0075954112803826,
+      "aged": [
+        38086.979079,
+        38086.979079,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "72AK9892nepatfVDQPSK3DHh7b3SLDAbQKpjwwMzQyn1",
+      "amount": 37960.867719,
+      "share": 0.0075702618022803455,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BMyB7cp9ExAgJQX7jsJkd9bnWNAgsauaf8KLn6dh3Zre",
+      "amount": 37080.787107,
+      "share": 0.007394753679303048,
+      "aged": [
+        37080.787107,
+        37080.787107,
+        37080.787107,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Dk7mrjCbo7cAV1PMJ4w9jfiYyAfqQhYRn1WDi75uEePj",
+      "amount": 36668.686946,
+      "share": 0.007312571519226386,
+      "aged": [
+        36668.686946,
+        36668.686946,
+        12967.38044,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4fKvbDkoMgvzC8JQkSRV5hcM9JKsXfyHykSJSXvacZpf",
+      "amount": 36438.242987,
+      "share": 0.007266615744102973,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8aYAU4rqHL9wjJPKBmKD1sPH76isLNg4dQyYRSYDMDPF",
+      "amount": 35662.651158,
+      "share": 0.007111945064794432,
+      "aged": [
+        35662.651158,
+        35662.651158,
+        35662.651158,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BFagg3noWwVDKfvtTKzJae7g1cWNvGqxgTuxuxRgJ4A1",
+      "amount": 35261.458974,
+      "share": 0.0070319382038240615,
+      "aged": [
+        35261.458974,
+        35261.458974,
+        35261.458974,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3Th9PPFyNVAc86gxdrJuDgfAEHRsJzeiqBfXgoHZq3p8",
+      "amount": 33312.683707,
+      "share": 0.006643308020915603,
+      "aged": [
+        4891.477029,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FV3XRcmB6PSFVVQ4nLLiDMexjbyqpyrTkX3vu6AkkyCM",
+      "amount": 31474.735396,
+      "share": 0.0062767792577607786,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GP8StUXNYSZjPikyRsvkTbvRV1GBxMErb59cpeCJnDf1",
+      "amount": 30244.830613,
+      "share": 0.006031508225809982,
+      "aged": [
+        30244.830613,
+        30244.830613,
+        30244.830613,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Ffdq5EucicrzSgk8JBurWpYmxvcCrWiNe4BGNfHRv4qP",
+      "amount": 29542.024277,
+      "share": 0.005891352631917737,
+      "aged": [
+        29542.024277,
+        29542.024277,
+        29542.024277,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FMgCUK84Bwd124XEnzuPwHWXLzGxVsVLiV5zFLbbqZgx",
+      "amount": 27777.969463,
+      "share": 0.0055395599154180325,
+      "aged": [
+        27777.969463,
+        27777.969463,
+        27777.969463,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8HBgPwmizNtNcTUrBJMNo7Gx2xe4evCt3faR2dwsK2tQ",
+      "amount": 27170.812099,
+      "share": 0.005418478905503133,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5xDmBfsNxs9zjsqydPxD99T5UAgYdWuBqTFLJe1n6Jz8",
+      "amount": 26419.444808,
+      "share": 0.005268639150926259,
+      "aged": [
+        26419.444808,
+        26419.444808,
+        26419.444808,
+        26419.444808
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9MVFGna7erKVSzUu9Hxky1UyfpaMrQQc3ptVJk48WGZ",
+      "amount": 25184.227565,
+      "share": 0.005022308693429349,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8cLjyd4HsF93sKK5vRVgNJrozz65sZuUkv9yNJzMjJNq",
+      "amount": 24429.936035,
+      "share": 0.004871885778979356,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CUbT442r1C9UbHhZ1twkSFJJ9q1nq8m8c6V8nGf5X6FR",
+      "amount": 22050.333204,
+      "share": 0.004397338765210726,
+      "aged": [
+        22050.333204,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HU23r7UoZbqTUuh3vA7emAGztFtqwTeVips789vqxxBw",
+      "amount": 21554.542182,
+      "share": 0.004298466740905509,
+      "aged": [
+        21554.542182,
+        21554.542182,
+        21554.542182,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CBzwmohgju8jqprb27EgA1jziwUgFY3owAddHCjHioro",
+      "amount": 21016.751964,
+      "share": 0.00419121912014241,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DRBFXfjgn29E4g3P3aFhsmbEksZ7jVG1tMxMGk11SL84",
+      "amount": 20761.086422,
+      "share": 0.004140233586800843,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "J5gK55Q5gQfLV1waKYbSrnEPja6F5nN65NyEJekxJpKC",
+      "amount": 19866.688042,
+      "share": 0.003961870174714072,
+      "aged": [
+        19866.688042,
+        19866.688042,
+        19866.688042,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "A4EBXHtJQYxTCmqkcoWQC1Vz3zWKaErzYKuRWm3MY3aQ",
+      "amount": 19851.156023,
+      "share": 0.003958772736293581,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Dd53Tg8Bbi5UFmxgv5AwUoURh8sF7G4r7hiXCeX7zLKh",
+      "amount": 19612.603813,
+      "share": 0.003911199991208287,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GX6XFCCXLfLrsvh6PQ4n7dTPibnQb75A2uUzAWXsvs6",
+      "amount": 19180.544268,
+      "share": 0.0038250374752711964,
+      "aged": [
+        19180.544268,
+        19180.544268,
+        19180.544268,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BRji3H7gpx4JJcesZDz8JbvccbTkai54ZH98vtMRVHwF",
+      "amount": 18892.937975,
+      "share": 0.00376768222854422,
+      "aged": [
+        18892.937975,
+        18892.937975,
+        18892.937975,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "22QZ8jmdUHHtkeaTKEij5MCFTboCdd3PNxjGCY2LvmtV",
+      "amount": 16233.000142,
+      "share": 0.003237230029119873,
+      "aged": [
+        16233.000142,
+        16233.000142,
+        16233.000142,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "J1Ue5xY9u2Ajpu2QrnFoiJuCWarcyrVsjtqLXWrRuxic",
+      "amount": 15705.472545,
+      "share": 0.00313202900877494,
+      "aged": [
+        15705.472545,
+        15705.472545,
+        15705.472545,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "C7dm65piongzxVXdVrQ5fRg4NCBGLWXu2R3HbCchU8AE",
+      "amount": 14578.663829,
+      "share": 0.0029073176811953054,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GYDud4FYYUBF88rs8Dg2jnbGvo7GiYVzMvwfmpauLNQn",
+      "amount": 13916.502841,
+      "share": 0.002775267695627993,
+      "aged": [
+        13916.502841,
+        13916.502841,
+        13916.502841,
+        13916.502841
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AvtdhcJ6wSdAHgNiLtZ1BXKcDdJMCZ3tzUQboXGcHTfg",
+      "amount": 13508.168965,
+      "share": 0.0026938366185793334,
+      "aged": [
+        13508.168965,
+        13508.168965,
+        13508.168965,
+        13508.168965
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GGiuiHXsBvhGyA6qYx1fifstD4drxp5L5q5FWczXYL6H",
+      "amount": 13107.164163,
+      "share": 0.002613867125848476,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "ANm1nKxNf7xugJdV1t2EC7zmeNARxNBqRaPHarusYrps",
+      "amount": 13070.704533,
+      "share": 0.0026065962450467677,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7qTUkr7S2djviq3zocXFAWTco7Z123oZmyTC25iTZBjx",
+      "amount": 12445.08551,
+      "share": 0.0024818335597558213,
+      "aged": [
+        12445.08551,
+        12445.08551,
+        12445.08551,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Bh8BvJ9ZspmLM3EjZJd7UpznnDf9kycfrUzKzLay2GUR",
+      "amount": 11593.234006,
+      "share": 0.00231195496399552,
+      "aged": [
+        11593.234006,
+        11593.234006,
+        11593.234006,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3CgvbiM3op4vjrrjH2zcrQUwsqh5veNVRjFCB9N6sRoD",
+      "amount": 11224.735439,
+      "share": 0.0022384679550418525,
+      "aged": [
+        11224.735439,
+        11224.735439,
+        11224.735439,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CqTung6eeQpstN4y3Z4gARhQkANpQULvChp8JarurRF2",
+      "amount": 10621.355146,
+      "share": 0.0021181401791290693,
+      "aged": [
+        10621.355146,
+        10621.355146,
+        10621.355146,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7TKfXk4AfBd9MUYwDhiZt3GMQcq2Y7Ex7rBbLFftwBzM",
+      "amount": 10201.435325,
+      "share": 0.00203439860071026,
+      "aged": [
+        10201.435325,
+        10201.435325,
+        10201.435325,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8vUATuSxH3oz3siETJkfRbmKqc2zUXd6MZ9DaZbcUvck",
+      "amount": 10000,
+      "share": 0.0019942278080464716,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HRE5FDC2M6dMsz8CsCXLe2MgkYoGNigVniiBpt2ZZq8K",
+      "amount": 9504.88205,
+      "share": 0.0018954900096311757,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5tL9HqgCJdt25MYxvj3nk1bjzsLmMFuDrsYKzBAq4tiG",
+      "amount": 9384.783971,
+      "share": 0.0018715397167476996,
+      "aged": [
+        9384.783971,
+        9384.783971,
+        9384.783971,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Caqt3T4uyiD1aUnwiGtRPzL2S4izePLdQaGH8mC3G41y",
+      "amount": 9337.06816,
+      "share": 0.0018620240970297307,
+      "aged": [
+        9337.06816,
+        9337.06816,
+        9337.06816,
+        9337.06816
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "25R1Yu6NdAsAy6bjU7PucyEJkScouhKErm5bBqSwo4kC",
+      "amount": 9099.609014,
+      "share": 0.0018146693338069136,
+      "aged": [
+        9099.609014,
+        9099.609014,
+        9099.609014,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "rL4AGscb3AmASjT6Uw1EutwtBTV31BdyoNsr1V813AY",
+      "amount": 9007.537993,
+      "share": 0.0017963082747675706,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "D2DCY2rstATXgXr1HQhHFwysReMsYuMJnAyQUbaDCRgT",
+      "amount": 8733.798664,
+      "share": 0.0017417184165627925,
+      "aged": [
+        8733.798664,
+        8733.798664,
+        8733.798664,
+        8733.798664
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "vhHcymXbh6g2vGHarkoAyvfFALA66Wj5k95C7525utP",
+      "amount": 8506.578619,
+      "share": 0.0016964055633343356,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "953qnFvQ8wWXrwtTmn4Fdh2s7sj8amTcKvDd3sxubxmZ",
+      "amount": 8372.775705,
+      "share": 0.0016697222141446903,
+      "aged": [
+        8372.775705,
+        8372.775705,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CBqjNGLZqhsRBN8SH7e6aYTXiunHfAk4dHSGN8L4K7rB",
+      "amount": 8136.315887,
+      "share": 0.0016225667396905696,
+      "aged": [
+        8136.315887,
+        8136.315887,
+        8136.315887,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "J6mjNadeG7RUHbPyghkPZLFjfR7eQDqSgfgCWypZxsYB",
+      "amount": 8102.683207,
+      "share": 0.0016158596171190567,
+      "aged": [
+        8102.683207,
+        8102.683207,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3vYNGAo1jR7VneDdridebe6aGtgDiNrRXJ2NLkrBRkXu",
+      "amount": 7956.161261,
+      "share": 0.0015866398031988286,
+      "aged": [
+        7956.161261,
+        7956.161261,
+        7956.161261,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CfM6zJSCnzgzt4ZeE6Ccuhee2t63NNDKzLTFrJNSnENc",
+      "amount": 7686.889636,
+      "share": 0.0015329409069495422,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HVRu9Ru1YZ9Jy7jLSU7gKfAsT2jRH3xHuufXMyAcWQKo",
+      "amount": 7615.352427,
+      "share": 0.001518674757799759,
+      "aged": [
+        7615.352427,
+        7615.352427,
+        7615.352427,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "H8BW1UkwNagLDrgCmfNzDJxF2tSEdTtA5ktwSg782WQz",
+      "amount": 7602.075287,
+      "share": 0.0015160269936198264,
+      "aged": [
+        7602.075287,
+        7602.075287,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8daaoF5CSJ43dmv1RZBxMWAZn3zX8PVNBxVWxFZL7B1f",
+      "amount": 7521.761654,
+      "share": 0.0015000106255904425,
+      "aged": [
+        7521.761654,
+        7521.761654,
+        7521.761654,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4DC54JqYeUo7XkzDvEkGssTzzagP8R4kE9337JDXRtcq",
+      "amount": 7520.35988,
+      "share": 0.0014997310799213029,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "F8PiRyHfXYETteyiKBEP6BvP6gWL8jMJh5Y9kvpxS9JW",
+      "amount": 7510.280839,
+      "share": 0.001497721089537239,
+      "aged": [
+        6961.781195,
+        6961.781195,
+        6961.781195,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BM9CcyErJcu2mjrFvUsRRrD3snGeHDDVirJLvL6EjvMN",
+      "amount": 7434.380906,
+      "share": 0.0014825849138354926,
+      "aged": [
+        5411.35437,
+        5411.35437,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8eiuuVbWfHqSH3vVsh4CbFXzKHtNB5aTTQ4RWvaX55jt",
+      "amount": 7326.86676,
+      "share": 0.0014611441438643355,
+      "aged": [
+        7326.86676,
+        7326.86676,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DSN3j1ykL3obAVNv7ZX49VsFCPe4LqzxHnmtLiPwY6xg",
+      "amount": 7190.699097,
+      "share": 0.0014339892098532057,
+      "aged": [
+        7190.699097,
+        7190.699097,
+        7189.291189,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "En8Jz9L3F99HC9aPaYYpTwP1gJXWVBtumwX9XQyJGmG6",
+      "amount": 6950.88876,
+      "share": 0.0013861655655829658,
+      "aged": [
+        6950.88876,
+        6950.88876,
+        6950.88876,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DaocJazEQ7VbvUbZrAErffbbHMRjk3HjNxRM7rFBmu39",
+      "amount": 6775.630757,
+      "share": 0.0013512151272664368,
+      "aged": [
+        6775.630757,
+        6775.630757,
+        6775.630757,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "45EXnpzvZ9fQZRxg29tdRtbjcJcBWoB8DCckUcrRt1B4",
+      "amount": 6733.285453,
+      "share": 0.0013427705089887388,
+      "aged": [
+        6733.285453,
+        6733.285453,
+        6733.285453,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HsiqvEH5digJt3NpzaRqptHNjpEjFGWpqmyQvTdVn2WV",
+      "amount": 6722.556765,
+      "share": 0.0013406309641933933,
+      "aged": [
+        6722.556765,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2tkARmbDM9aqe6C59CrtkVjna2KdTkYs2DURVg2YgGBS",
+      "amount": 6382.959161,
+      "share": 0.0012729074656491178,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3LoAYHuSd7Gh8d7RTFnhvYtiTiefdZ5ByamU42vkzd76",
+      "amount": 6255.59902,
+      "share": 0.0012475089521672257,
+      "aged": [
+        6255.583991,
+        6255.583991,
+        6255.583991,
+        305.940031
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7Tqc7gDYGHd9dFu9Gbjnboz6eezNX4XFdBdA3hyNnT2R",
+      "amount": 6174.108155,
+      "share": 0.0012312578172587497,
+      "aged": [
+        6174.108155,
+        6174.108155,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HivCEFbTAEYpdDjqzPYYnY4VE1QP829viPvzv9EuKMHx",
+      "amount": 6015.783682,
+      "share": 0.0011996843105836594,
+      "aged": [
+        6015.783682,
+        6015.783682,
+        6015.783682,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AJ8tbE1b61kdqzSm78zoLpEjsaFxp7C1XZYLLM4xUKpx",
+      "amount": 5782.016189,
+      "share": 0.0011530657470678685,
+      "aged": [
+        5782.016189,
+        5782.016189,
+        5782.016189,
+        5782.016189
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "D2XG2HHMtH4WEzEjM2T5mnYFDGUgw5kpsHGedTA5mqy",
+      "amount": 5449.9992,
+      "share": 0.0010868539958471027,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6JQKGnpq8vskLBfrMUT3f6TY2xcm1pVC9RTg5ahKsSvP",
+      "amount": 5444.428476,
+      "share": 0.0010857430665759274,
+      "aged": [
+        5444.428476,
+        5444.428476,
+        5444.428476,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DgtTu6b7GUzJtLpqUzvttVKYm7T2CKbmFNrctRDV1fd3",
+      "amount": 5439.634855,
+      "share": 0.001084787109345984,
+      "aged": [
+        5439.634855,
+        5439.634855,
+        5439.634855,
+        5439.634855
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Fq6B7qGg6ydcEczZu1DRUUaQjcWfADo9Gyf2PDiwKR32",
+      "amount": 5359.973046,
+      "share": 0.0010689007298712752,
+      "aged": [
+        5359.973046,
+        5359.973046,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CLSNtUvPmxqvdG2AbpNTDtzp7TBGzbUZ49gtxQvwVt46",
+      "amount": 5320.652102,
+      "share": 0.0010610592378749314,
+      "aged": [
+        5320.652102,
+        5320.652102,
+        5320.652102,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6ooVBXhnqAXaF91cu49YmWhoFuE6WLdZWTwNYvTuhyBd",
+      "amount": 5318.938596,
+      "share": 0.001060717525743486,
+      "aged": [
+        5318.938596,
+        5318.938596,
+        5318.938596,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CCmDWdcTWmQh1Y7sJxEnn4bdkNsbbGz5oczYoSWD6Hgi",
+      "amount": 5315.988503,
+      "share": 0.0010601292099937936,
+      "aged": [
+        5315.988503,
+        5315.988503,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BsmX9MbuzGZXSruExBg8tHQgA8gVLRtDvvhKx7q4w8PN",
+      "amount": 5282.932873,
+      "share": 0.001053537164337944,
+      "aged": [
+        5282.932873,
+        5282.932873,
+        5282.932873,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2cUzHtjvHjtYtcTQxeaGHUGU8hAqBugShkn386Vx1Mok",
+      "amount": 5241.036033,
+      "share": 0.0010451819799982168,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Hw8s1wHjrqaL3nZmusBBg6zEoJ9my8H1xw1zwbk9EsSN",
+      "amount": 5112.99084,
+      "share": 0.001019646851541489,
+      "aged": [
+        5112.99084,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "71uoz5zmaUJ2UzpKGqAiECjMPCGMmGiNCT3TmBArQYeg",
+      "amount": 5104.141261,
+      "share": 0.0010178820438883586,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "two27ajsnwDkmaNGBuRgCRkwgVJXcRxroUiVDwY2Zpz",
+      "amount": 5077.693657,
+      "share": 0.0010126077891530584,
+      "aged": [
+        5077.693657,
+        5077.693657,
+        5077.693657,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DdQcTxZbsnFd3EcfjKKg5owrkRovrpYgs8CSgvMuFMxd",
+      "amount": 4906.466944,
+      "share": 0.000978461281898559,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "52vRmVZ5VdvRpAmvSwUDmnCBJRNCAPjjogdm7kN6o7EX",
+      "amount": 4779.509538,
+      "share": 0.0009531430829502947,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "gRBRCkUnp9ifsFoUij8ARdqMECLsEBJg6sg4kQ4wv87",
+      "amount": 4778.929759,
+      "share": 0.0009530274618098623,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "C4PTYBMP6qqivTyxiAH7ZmEz2e9Fx5PqGMFgbWkA28MD",
+      "amount": 4598.379605,
+      "share": 0.0009170216480244752,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "79fsavy5n1UWzem1RxvCUAkHrSts4e6aJsa3qe5T5HLR",
+      "amount": 4471.902082,
+      "share": 0.0008917991486785314,
+      "aged": [
+        4471.902082,
+        4471.902082,
+        4471.902082,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HNjbSB4cq3buNggFpU4eV9U1qxL42DzSSfMPJDhD75h3",
+      "amount": 4455.671464,
+      "share": 0.0008885623937027934,
+      "aged": [
+        4455.671464,
+        4455.671464,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BoRMoWRYGarZEKzovtMVYsDc4ngUUaovjFsEe9ggwWET",
+      "amount": 4402.360302,
+      "share": 0.0008779309335288266,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FH978utsiUvZi6Tx2GcXhRdYdDqCSQae3nExdP472Pae",
+      "amount": 4354.502751,
+      "share": 0.0008683870476259061,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5PQ2SDxjRsLT2HbsEpn6HMGW6DuwAR4CUiEiVivFc8GN",
+      "amount": 4246.426746,
+      "share": 0.0008468342301705494,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "sobLmyY3kjTYqk2r7Ui18PC6YzHUBDaD2tk6PPNAv4o",
+      "amount": 4133.221264,
+      "share": 0.0008242584781477789,
+      "aged": [
+        4.697547,
+        4.697547,
+        4.697547,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HoNKBwuKytLhHeWEmyW2mGtSwrxqbfRV5AE7dR7X8coH",
+      "amount": 4048.412212,
+      "share": 0.000807345621160533,
+      "aged": [
+        4048.412212,
+        4048.412212,
+        4048.412212,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HFTNuoGMQ6okQcvFKtQQgG6Tat4cpuTxSd9681tpZV2h",
+      "amount": 4017.303512,
+      "share": 0.0008011418376993153,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "92bTJdCHwxh1xa9SHu2HkSSPmrRw5D14GhseeKqAESme",
+      "amount": 4011.841467,
+      "share": 0.0008000525814965353,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HqaS2iSdv8xHAFPxpfjV4HnmQyAsZnNVhMScqFDWUzdb",
+      "amount": 3977.650667,
+      "share": 0.0007932341570825997,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "cWzS922M2HpZ7cdYcTjytciedxXCSNQZA71ghM8M18y",
+      "amount": 3954.582681,
+      "share": 0.000788633875166917,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5iQyAu7jWUpMn8LDQpLpnN8UjP6fyGVW7uoi76Fmk7tf",
+      "amount": 3912.502063,
+      "share": 0.0007802420413073789,
+      "aged": [
+        3912.502063,
+        3912.502063,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AUBQ8CuA368M81ay7ud6DMPBLXPhpxpnABSMYHMjY3p5",
+      "amount": 3902.766215,
+      "share": 0.0007783004914257276,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FAvxEWHJeMCAKNgDm2UF5HBPCJcMWF6hv75XnRv3HFkn",
+      "amount": 3880.83993,
+      "share": 0.0007739278906983124,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5VNF7ZGCT2MaVvQdGvTEUsmaHF6ddBfytp8YHvkWbpaM",
+      "amount": 3863.780709,
+      "share": 0.0007705258934081314,
+      "aged": [
+        3863.780709,
+        3863.780709,
+        3863.780709,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7mq8rV6MkAcGpn4kijVePQwKQbyuFZUqZEpWpxLHj7py",
+      "amount": 3839.146895,
+      "share": 0.0007656133497184269,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BDkzeMPHbzXQyNioG8wS9UubqUb5WefXsgbsX1Nqucio",
+      "amount": 3747.585979,
+      "share": 0.0007473540172366862,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "97FV4H5yRcCo23PXKZ3Ujnh98KyJSM4pwpqJvjjiiCbY",
+      "amount": 3743.141054,
+      "share": 0.0007464675979327181,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5JEHHRMMB4kNzpDRqMARtrRAS6TGGCwML7s7yC5vXBhg",
+      "amount": 3737.610832,
+      "share": 0.000745364745683011,
+      "aged": [
+        3737.610832,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7w2ivZxGoYRwRN7sbHgFKN9MXoAFYa4nHpJhdDYj27dT",
+      "amount": 3666.120915,
+      "share": 0.0007311080276353777,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2y9DD5zUQh64dMrhwNXLtJqzQRxHzdCoytz3bzkqrL2Z",
+      "amount": 3623.734699,
+      "share": 0.0007226552505728713,
+      "aged": [
+        3623.734699,
+        3623.734699,
+        3623.734699,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "E9coca6ebL1SX4iQGpWY8o622y33nxQMMp6X3SnmgciJ",
+      "amount": 3621.934909,
+      "share": 0.0007222963314462068,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4YeDq24Aqmj7M36soLCWix96dcCEKLGrS8xGvgdKWVzf",
+      "amount": 3571.809958,
+      "share": 0.00071230027433009,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5EvbEZeuzehCv4cm6TN51pYnxaC7MEe2Bsdf18v7o8UR",
+      "amount": 3542.800295,
+      "share": 0.0007065150866644245,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Ec323ix1ztEqPAbBrJcTuhBBzuwrR6cb1QqjZeAnjyyT",
+      "amount": 3519.476048,
+      "share": 0.00070186370046751,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Fi4ccnHbW1fDhAZqCCc6C36bRvzuLHScPjSDKgev6hSs",
+      "amount": 3517.04431,
+      "share": 0.0007013787565133617,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Gy4hvzvTQ5fquYGnctcmWv4v8RvHmqZcJaLL2FcPiNrp",
+      "amount": 3516.682002,
+      "share": 0.0007013065040444939,
+      "aged": [
+        3516.682002,
+        3516.682002,
+        3516.682002,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6HxPpGazJRuHz4Xk4A39oxdG3UTRnFJNUWaxK1P33tca",
+      "amount": 3462.500602,
+      "share": 0.000690501498588605,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DAnCmfUsCaZ8yzQ9SkQmrSQM7dvy6vEbLYKoG7cpT6WS",
+      "amount": 3439.667758,
+      "share": 0.0006859481093444463,
+      "aged": [
+        3439.667758,
+        3439.667758,
+        3439.667758,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GA6653eGabw4QCfMjVAin2e9283opW96ZfXi7TTjmnYG",
+      "amount": 3404.15276,
+      "share": 0.0006788656096830149,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8EabpoYoh7hrkkwdqQr2fEnmgocK1xWZn47agLe6TdUo",
+      "amount": 3341.685755,
+      "share": 0.000666408265837377,
+      "aged": [
+        3341.685755,
+        3341.685755,
+        3341.685755,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8Wjh19qX88zbDEGnDEY9pQe5ATBZAMRnUBcWrRqAS6dF",
+      "amount": 3286.464589,
+      "share": 0.000655395907354382,
+      "aged": [
+        3286.464589,
+        3286.464589,
+        3286.464589,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2W6B2tEa5EvjWQupXWk1QCARYd6siBpiCbRPkgmkAJM2",
+      "amount": 3229.841532,
+      "share": 0.0006441039798697819,
+      "aged": [
+        3229.841532,
+        3229.841532,
+        3229.841532,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3b1tCLb8SA4LtRCL6v4rd2mcZXW6X6mzLvt6JP49UFwA",
+      "amount": 3207.611706,
+      "share": 0.0006396708461520585,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "385eVWFacLjGZNmU9w3nFxnur9gRX182oLVHBgbTjLKs",
+      "amount": 3137.786714,
+      "share": 0.0006257461520777561,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8psNvWTrdNTiVRNzAgsou9kETXNJm2SXZyaKuJraVRtf",
+      "amount": 3051.142249,
+      "share": 0.0006084672719261253,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3NznbF6UYckgNnCWeJXfEP74focFjDW7wWcRXfJN2kvB",
+      "amount": 3050.065979,
+      "share": 0.0006082526391698287,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GFLBtSSxo16ggXW6Pd7W9cDPy5KB9Vt65A2dwdWqKZhj",
+      "amount": 3020.794772,
+      "share": 0.0006024152936723803,
+      "aged": [
+        3020.794772,
+        3020.794772,
+        3020.794772,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2HSjT63mtJ1eeCJCWnfppq3TrBZEvAgrEPEBv2c4bgkE",
+      "amount": 2854.376443,
+      "share": 0.0005692276877263376,
+      "aged": [
+        2854.376443,
+        2854.376443,
+        2854.376443,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2n1heSDDv3zhYMfamoooQpAvNhWeKXj1zKAbFH2rRMAP",
+      "amount": 2840.560466,
+      "share": 0.0005664724671734645,
+      "aged": [
+        1971.847496,
+        1971.847496,
+        1971.847496,
+        1971.847496
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8UycdkjMdDozf5RdU2bdCCd93DNipeYMYUKGy3mgoQ9m",
+      "amount": 2811.350931,
+      "share": 0.0005606474204777539,
+      "aged": [
+        2811.350931,
+        2811.350931,
+        2811.350931,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2uKW7DgxYJutbct7SrQLY9LzSRWC3WxpG3X7YX9yQSeV",
+      "amount": 2746.202668,
+      "share": 0.0005476553727057012,
+      "aged": [
+        2746.202668,
+        2746.202668,
+        2746.202668,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "G7yhsV2G5jrqNn6gN7SPNUWPaHgMUYoTovWYWxVoJkih",
+      "amount": 2714.106359,
+      "share": 0.000541254637511356,
+      "aged": [
+        2714.106359,
+        2714.106359,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6vEFkt3s3A5cbwESLvgxZ8fS6u6tStwDPjgq3VmrXSTr",
+      "amount": 2656.321466,
+      "share": 0.0005297310134607971,
+      "aged": [
+        104.461275,
+        104.461275,
+        104.461275,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6qbWCJTYk29d4Lta3Pc4gsmXwSeaBURXg9UgEoeeLbvi",
+      "amount": 2454.618919,
+      "share": 0.0004895069306426771,
+      "aged": [
+        2454.618919,
+        2454.618919,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "C5dXWndGxd42FLg3YUBCSmuu3YgnU8M4DFuoB9eUb4Jh",
+      "amount": 2439.037876,
+      "share": 0.00048639971571978025,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7rXuFVBRHo8HcVdgCxNnHHZS1HJX4p21vjFZmZUHs4sP",
+      "amount": 2434.866377,
+      "share": 0.0004855678237890764,
+      "aged": [
+        2434.866377,
+        2434.866377,
+        2434.866377,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "C6S9VhrPRkjb8mAsaxpniYUDRGJAxw7LccurHjpHmv5b",
+      "amount": 2318.865118,
+      "share": 0.0004624345301424564,
+      "aged": [
+        2318.865118,
+        2318.865118,
+        2318.865118,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5kFw84ExcaCwXCmNiAu2NDcfmgrgSJjnrKDk3RSp4nbc",
+      "amount": 2247.348732,
+      "share": 0.00044817253357323783,
+      "aged": [
+        2247.348732,
+        2247.348732,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "58gLLbiFL93JF8w9pqo6k4HkqREhv8wyJ48Apw99FD21",
+      "amount": 2236.636037,
+      "share": 0.00044603617814642586,
+      "aged": [
+        2236.636037,
+        2236.636037,
+        2236.636037,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Gntaqb8qybUuztj8TCVHJZpiVmjSkPAgdviDUDjaPSHE",
+      "amount": 2225.54256,
+      "share": 0.00044382388611429336,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5ABLWjABx7Loj5ZaZpejYEWSdosYL7RDFobpzsyZ5ect",
+      "amount": 2184.704993,
+      "share": 0.00043567994494185725,
+      "aged": [
+        2184.704993,
+        2184.704993,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "rdFTFFP5RW7PLppozWGuERYViV7p7mAQXCNUPeknAVN",
+      "amount": 2090.405855,
+      "share": 0.0004168745486144161,
+      "aged": [
+        2090.405855,
+        2090.405855,
+        2090.405855,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Dz9oLTbeRvDuXQyxqm4cB8YH2HF7qX7PHks12pHC5fHh",
+      "amount": 2084.328417,
+      "share": 0.0004156625690282884,
+      "aged": [
+        2084.328417,
+        2084.328417,
+        2084.328417,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8FhykeYZj7ZUjRVweTujxWmHdVfYL8jiBn9eJ6aaGe3s",
+      "amount": 1986.202808,
+      "share": 0.00039609408721335876,
+      "aged": [
+        1986.202808,
+        1986.202808,
+        1986.202808,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8aCHt46nTPPALrBZrFkRGDfRQAosTCQwAppsprWezsZM",
+      "amount": 1910.00726,
+      "share": 0.0003808989591462648,
+      "aged": [
+        1910.00726,
+        1910.00726,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AWGpUvj5iL6SYsCqL9bstHdDuteJmZAeLisSB7WKJEyP",
+      "amount": 1905.334659,
+      "share": 0.00037996713606125427,
+      "aged": [
+        1905.334659,
+        1905.334659,
+        1905.334659,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5dPRtRVLGc1RTSapMgB4zeo32qfeV5bTNDkSBpCzW4nb",
+      "amount": 1811.901574,
+      "share": 0.00036133445043139725,
+      "aged": [
+        1811.901574,
+        1811.901574,
+        1811.901574,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "LgXY1SRXgNuySKD8n8a6VEtmKSWL6AjJxX5dAbFD3sE",
+      "amount": 1752.431443,
+      "share": 0.0003494747515325606,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3ykuLWoC1PGxhwu7QwDZQdaMobixy3U4UeV4yEr48Zxh",
+      "amount": 1735.744083,
+      "share": 0.0003461469117970724,
+      "aged": [
+        1735.744083,
+        1735.744083,
+        1735.744083,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CoPsFjciMRBaLiFdfxQvS3upzJZh3maev5iQ2SvyqaEb",
+      "amount": 1735.198352,
+      "share": 0.0003460380806034811,
+      "aged": [
+        1735.198352,
+        1735.198352,
+        1735.198352,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BLiVWvjJ5YWTEtoheVRJD9XnBEVjBqugKnoUvXtjVCmj",
+      "amount": 1729.552272,
+      "share": 0.00034491212362923555,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FQ8pPdMPgjg88zUZqVz72F1NXGByi542jjbfE6Y5EWio",
+      "amount": 1716.72871,
+      "share": 0.0003423548132353748,
+      "aged": [
+        1716.72871,
+        1716.72871,
+        1716.72871,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "E6LLEp6QhMcs2FKsFRy7qrvS9cHX13RPpVFhtLbu8CMW",
+      "amount": 1649.791781,
+      "share": 0.0003290060647156715,
+      "aged": [
+        1649.791781,
+        1649.791781,
+        1649.791781,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "B7nQC9Fru8Kok27DpmiiqrHUEBCNoQacipi3pvbSwF5t",
+      "amount": 1643.858739,
+      "share": 0.00032782288098140075,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4qKXJuBfaHHGhPXQ9cL2vJtZ2oDr4zgPgPci7ANGGoJb",
+      "amount": 1628.217781,
+      "share": 0.0003247037176425921,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7Y6uJEwDk1stJvSJYTznGWrK9nctAvHKEn3VtQrDv6eY",
+      "amount": 1615.475099,
+      "share": 0.0003221625365632427,
+      "aged": [
+        1615.475099,
+        1615.475099,
+        1615.475099,
+        1615.475099
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2NdExuQof3Vxfb6PguFhsCQeD1pdPpxBUYo83hGvJNFK",
+      "amount": 1552.024158,
+      "share": 0.0003095089734643511,
+      "aged": [
+        1552.024158,
+        1552.024158,
+        1552.024158,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9YN995ofNMirBrFpTHUc6E4ScXJJQvQVfx4kNKQLiVHd",
+      "amount": 1519.626296,
+      "share": 0.0003030481017321859,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "434sPdhmWm2SXYm63p5zFeA8zKyxWroRx7pyoEXsxDoJ",
+      "amount": 1449.456422,
+      "share": 0.00028905463033039423,
+      "aged": [
+        1449.456422,
+        1449.456422,
+        1449.456422,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HFqp6ErWHY6Uzhj8rFyjYuDya2mXUpYEk8VW75K9PSiY",
+      "amount": 1415.807514,
+      "share": 0.0002823442715259945,
+      "aged": [
+        1415.807514,
+        1415.807514,
+        1415.807514,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Dogy6JgKsTWwnZsbWesYFhBb28yLMscwGoZ8JApSiRdm",
+      "amount": 1401.031712,
+      "share": 0.00027939764000253564,
+      "aged": [
+        1401.031712,
+        1401.031712,
+        1401.031712,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5aMLBTdfJyMaCjoXKXpJQ6iw2TPexLhbC1URp2WStfW5",
+      "amount": 1395.338444,
+      "share": 0.00027826227266610946,
+      "aged": [
+        1395.338444,
+        1395.338444,
+        1395.338444,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "A2AeiLwX3PtBTbXpH1efaN4nwVg9MCpwQMDgGGghE2ST",
+      "amount": 1389.328457,
+      "share": 0.0002770637443459697,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "66BrHWdvgVttrPbh3brJyu4PRxzDxu912m8crDKosjnc",
+      "amount": 1339.699143,
+      "share": 0.0002671665285386627,
+      "aged": [
+        1339.699143,
+        1339.699143,
+        1339.699143,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FyW9fC1fNH8Fuk4nDwUKJ6xSLfYYKm727Q28D7qzePBz",
+      "amount": 1339.523853,
+      "share": 0.00026713157171941545,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GRAyZfUQEwMww6hZGUwkVTwemwhVcYH5Y5kSsaAMt7EE",
+      "amount": 1324.417239,
+      "share": 0.0002641189687469931,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9eFi9wcDAaebn5H96MpA4WmpXZkm5xZh9aP8jo7Y5DxV",
+      "amount": 1216.135497,
+      "share": 0.00024252512264698168,
+      "aged": [
+        1216.135497,
+        1216.135497,
+        1216.135497,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GMTgfzNqTF7Y9oMk6RCMrHzEiAJQ3UEJy7kCacG4tAVU",
+      "amount": 1198.26989,
+      "share": 0.0002389623136182787,
+      "aged": [
+        1198.26989,
+        1198.26989,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4rBdHiYsMYBZ3uaNddjNgHePNuk8GhG64R4EsydNNjrB",
+      "amount": 1180.444516,
+      "share": 0.00023540752796631585,
+      "aged": [
+        1180.444516,
+        1180.444516,
+        1180.444516,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FMVHP1xw6ZHB9zLGyrJeeAvEzCBgouH8bPzdkYqq2C5W",
+      "amount": 1170.223777,
+      "share": 0.00023336927977305732,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3PiasJRjzCcAwAjdf6UitxT91F67PP6e2V9sjpH3KxMQ",
+      "amount": 1150.168832,
+      "share": 0.0002293698668722731,
+      "aged": [
+        1150.168832,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7iWnBRRhBCiNXXPhqiGzvvBkKrvFSWqqmxRyu9VyYBxE",
+      "amount": 1117.91355,
+      "share": 0.00022293742884019503,
+      "aged": [
+        1117.91355,
+        1117.91355,
+        1117.91355,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GfGpr2m5SYjKySY8VZ7GSNLFF9g8TAv6u3WkBH1DhZeK",
+      "amount": 1026.007088,
+      "share": 0.00020460918661423838,
+      "aged": [
+        1026.007088,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BqgfBKH2fhv1vSPLdbc2gPPiD7r8tL9CL5M3nZu5A4WP",
+      "amount": 1000.28937,
+      "share": 0.00019948048777472866,
+      "aged": [
+        1000.28937,
+        1000.28937,
+        1000.28937,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AzYVek3T7bBcuXnHvbVzRbhXqxGmNSCQBw1aRH5sj4tQ",
+      "amount": 983.826326,
+      "share": 0.00019619738175973939,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EmFwMtwGHbVpCSzdiJzxqrJqT7wUcHdgTpgmwc2X7sTR",
+      "amount": 975.370976,
+      "share": 0.00019451119235006282,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2rbMgYvzAb3xDk6vXrzKkY3VwsmyDZsJTkvB3JJYsRzA",
+      "amount": 951.354666,
+      "share": 0.00018972179302519633,
+      "aged": [
+        190.561259,
+        190.561259,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CWGQPqtYdECUH7Hip8nvwex5ps3abrQt8q1Nj6M5piY2",
+      "amount": 947.268353,
+      "share": 0.00018890688912349819,
+      "aged": [
+        947.268353,
+        947.268353,
+        947.268353,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GN3EHMwqpa2m6kc7b447MAnpuTvodhKaACSfwpJTnDAJ",
+      "amount": 937.676303,
+      "share": 0.00018699401583888094,
+      "aged": [
+        937.676303,
+        937.676303,
+        937.676303,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6ymdPVYLtw7hLYATBUcPnPsN7qw3LZohLSSVxcCm1YNW",
+      "amount": 929.300482,
+      "share": 0.000185323686323539,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6p5Bc9vmZbDhRQVFJCemWFXjLyjYCQtYJ7BzEYRQEWRr",
+      "amount": 928.65976,
+      "share": 0.00018519591176057628,
+      "aged": [
+        928.65976,
+        928.65976,
+        928.65976,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9BKe6wWBA4XQRh5sKGH3BhwJ2jN76udfM7XAeebCs6dg",
+      "amount": 923.411059,
+      "share": 0.00018414920121154416,
+      "aged": [
+        923.411059,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Aao9mAd74ogVyDDdqnXXecj8gTX53AQzrBsH5gwcmSsS",
+      "amount": 913.240336,
+      "share": 0.00018212092734809035,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4U3dKTQMRDbMyTUFnKf6HJibKpyD1LaxdHnN9CW8JDWJ",
+      "amount": 904.610014,
+      "share": 0.00018039984453561083,
+      "aged": [
+        904.610014,
+        904.610014,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HHeHDdWJdgrs9qEFMoPbLfXixj15EdNMXvbxEg8Ar7Di",
+      "amount": 850,
+      "share": 0.00016950936368395012,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8zqQy4bw3eKQDiubxMJRSrAk41EuxFpTBp566TjuKcae",
+      "amount": 805.182595,
+      "share": 0.00016057175215040202,
+      "aged": [
+        805.182595,
+        805.182595,
+        805.182595,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AwaZCunpe89Ft7Ji2eu9eKWnbVnM2N6cec4sAr4Z8Vu7",
+      "amount": 783.723603,
+      "share": 0.00015629234029249735,
+      "aged": [
+        783.723603,
+        783.723603,
+        783.723603,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4yoqzKtpfstL1q6Us5ecMt8xDFe9ekpZN88qtuSTjr8U",
+      "amount": 780.707336,
+      "share": 0.00015569082793970808,
+      "aged": [
+        780.707336,
+        780.707336,
+        780.707336,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9qpYmgg1NtunHfWzxWsBsyVAhkgdxznSEHA5m7u76ew3",
+      "amount": 764.791292,
+      "share": 0.00015251680618581892,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EsmR86jyLqcFUpHFjkMS5kHtwksS9iGV7KduKktb1MF8",
+      "amount": 753.479583,
+      "share": 0.00015026099372138598,
+      "aged": [
+        753.479583,
+        753.479583,
+        753.479583,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "APxxvQYPa1EWgh31onbS9BL4VJdkRNHRAoAB23qUQ4Fd",
+      "amount": 719.757951,
+      "share": 0.000143536132094675,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Gu6dfFWgrji5695NjaGspb3bCA2sUL33JRTKExHdxac8",
+      "amount": 654.378805,
+      "share": 0.000130498040992722,
+      "aged": [
+        654.378805,
+        654.378805,
+        654.378805,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2Bb7WEfZ9zFadfp4Kj88Uxsnz3TrCNmRQ6uE1a4t2r3A",
+      "amount": 653.722347,
+      "share": 0.00013036712831288052,
+      "aged": [
+        653.722347,
+        653.722347,
+        653.722347,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3Y17NvRjJyLQYBkGozUba5v6d6FnwdP8yY4AXSgCTgQ4",
+      "amount": 639.06867,
+      "share": 0.0001274448512965274,
+      "aged": [
+        639.06867,
+        639.06867,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3UqHZ7XbQ3wQob2dCm7u1rT5VhBXYgXiVP5Wb9y5AwsH",
+      "amount": 631.538368,
+      "share": 0.00012594313753138862,
+      "aged": [
+        631.538368,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3oyxDGbwSeQMU7RgPMPkT8Sc6WruAukkgUFykr5aZJ68",
+      "amount": 576.914501,
+      "share": 0.00011504989407594542,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "53sbyLURSU2jZsZmEnpMbDn5jYrZig1XQcsBCNAFAtcG",
+      "amount": 560.630401,
+      "share": 0.00011180247357104446,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EewGFhEtN6HKYFrL1fp7VL24oBgZGiMvi3VSEjwApkG7",
+      "amount": 540.987272,
+      "share": 0.00010788518616216006,
+      "aged": [
+        540.987272,
+        540.987272,
+        540.987272,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GHrkyVSD3v9E8i2qs9kGCRHmXYrWffq6r6rC6PXGoktT",
+      "amount": 538.428779,
+      "share": 0.00010737496437343084,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8XpKPzboAnm63c3sd6qQs9vRwnUjYbmU5BJoQNPt8mok",
+      "amount": 538.406335,
+      "share": 0.00010737048852853845,
+      "aged": [
+        538.406335,
+        538.406335,
+        538.406335,
+        538.406335
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CJaiJkf43W3ZAeN8h7Yr22ebFPxo82GqTUc43BBrLJx8",
+      "amount": 531.71501,
+      "share": 0.00010603608588977079,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5htX6Etcvj7VL1ZNsW6HepbgE4FUvDeuv7meQnpAAmMk",
+      "amount": 512.655053,
+      "share": 0.00010223509626281377,
+      "aged": [
+        512.655053,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6BW8XCuEyyFu9JTxWNsHhjXPBDkCPcBsmq6ZFRNegBUr",
+      "amount": 507.275845,
+      "share": 0.00010116235964492718,
+      "aged": [
+        507.275845,
+        507.275845,
+        507.275845,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7xNPLQiS74VmypMmYng3nVHrYfJKN6wFtxqsfhqetZr2",
+      "amount": 504.28513,
+      "share": 0.000100565942943033,
+      "aged": [
+        504.28513,
+        504.28513,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3Sydp1qvsn4ZE183S9Qu51hztNJCNyd7MqHGgTnNJNYx",
+      "amount": 500.944597,
+      "share": 0.00009989976456280334,
+      "aged": [
+        500.944597,
+        500.944597,
+        500.944597,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DVHWq4q6NuNVMxewqG6TrrjdTvepVAZnnu9J4opEvHsD",
+      "amount": 489.144469,
+      "share": 0.00009754655022319255,
+      "aged": [
+        489.144469,
+        489.144469,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5auuRm6dXYsGTWXskb6MsYmhKuiJru5yQ7xVR6TmR5rW",
+      "amount": 481.985332,
+      "share": 0.00009611885521449112,
+      "aged": [
+        481.985332,
+        481.985332,
+        481.985332,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4FTXGxcZBp73YxYTjPu52F52vsNV4rw4uYJgrofTc417",
+      "amount": 477.096666,
+      "share": 0.00009514394384634598,
+      "aged": [
+        477.096666,
+        477.096666,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "62SyEhwJb6M1Lx4sS8m8mS42oN5kssSUVUoDL9wTSkHA",
+      "amount": 476.030794,
+      "share": 0.00009493138468812416,
+      "aged": [
+        476.030794,
+        476.030794,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GSgyYjXmtTPxKZYmoVgmVsjNjdqfcz8JfSdPyXgW93Ui",
+      "amount": 459.946831,
+      "share": 0.0000917238760603051,
+      "aged": [
+        459.946831,
+        459.946831,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "C8J9RycrCpT3tvmSncs3aWhFtGxgLXhSx4SLbM2TPVNv",
+      "amount": 424.292909,
+      "share": 0.00008461367178847313,
+      "aged": [
+        424.292909,
+        424.292909,
+        424.292909,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EoiSQjZce19CenwkozEHNpWwQaVQZ7xKmpaW2w2oh4Bc",
+      "amount": 419.989723,
+      "share": 0.0000837555184700335,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AUsptzAUQYmXxsnxkAbn6vMJqtu3kKd2xBgWUyoB2r5w",
+      "amount": 418.702942,
+      "share": 0.0000834989050247269,
+      "aged": [
+        418.702942,
+        418.702942,
+        418.702942,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "661bTfHSaYDH2tysuvwvPkqo6y6xuYimtCbcZDPxMaTQ",
+      "amount": 402.655307,
+      "share": 0.00008029864102768892,
+      "aged": [
+        402.655307,
+        402.655307,
+        402.655307,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "14KG3UMTZL24eJ34P5gk4ATbFX2EDmUVZi865RcfTmJR",
+      "amount": 401.211175,
+      "share": 0.00008001064820839995,
+      "aged": [
+        401.211175,
+        401.211175,
+        401.211175,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EP2KKhJ3ogfQsWGT5aS65Pm8SvYhuLigBDjNL1nwm4yw",
+      "amount": 397.92031,
+      "share": 0.00007935437475884726,
+      "aged": [
+        397.92031,
+        397.92031,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7sBmhLtbWwheW8GQ8cqTMHjvc2mLZknXRr9k29BHgFWd",
+      "amount": 384.171479,
+      "share": 0.00007661254464801413,
+      "aged": [
+        384.171479,
+        384.171479,
+        384.171479,
+        384.171479
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5kRHSP8JCFFpYTff4ZSLTG8rqCnigJzZvFhFhAJvFJB7",
+      "amount": 372.588253,
+      "share": 0.00007430258550840544,
+      "aged": [
+        372.588253,
+        372.588253,
+        372.588253,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "A6gWLRq1MKJwfQtiiWCMJskVuJNMd9ja9ffrFuQNwUie",
+      "amount": 364.609406,
+      "share": 0.00007271142165205061,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BMmJtnsh7ze7fD1vFEGNvE16Vk9EEVXrRGncNYQcEw7Z",
+      "amount": 356.005252,
+      "share": 0.00007099555733489919,
+      "aged": [
+        356.005252,
+        356.005252,
+        356.005252,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "69yhtoJR4JYPPABZcSNkzuqbaFbwHsCkja1sP1Q2aVT5",
+      "amount": 349.240773,
+      "share": 0.00006964656612202455,
+      "aged": [
+        349.240773,
+        349.240773,
+        349.240773,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "D9GYt4W7VvteKCSvTgyjzuiBJyTy94Kmr6YiC9fbxGjW",
+      "amount": 336.990952,
+      "share": 0.00006720367275384539,
+      "aged": [
+        336.990952,
+        336.990952,
+        318.083583,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "H1FrrU6MPKSjjfrkN9ctSuTqNqz1GSSUnY39dJ1cpGYw",
+      "amount": 319.056294,
+      "share": 0.00006362709338270507,
+      "aged": [
+        319.056294,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DoMX9eS6sC4X3ZoGEoisHiJ7kTA4LxUTgWff3f1fqEVG",
+      "amount": 314.383343,
+      "share": 0.00006269520049972123,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Gkdp57i6A5dmhCXdxmsYud6bBggHNkbD9z3qhaWotGsx",
+      "amount": 306.947411,
+      "share": 0.00006121230626240695,
+      "aged": [
+        306.947411,
+        306.947411,
+        306.947411,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7pAta2mLuQZQETN6TkiNUQek33uxsTZJKjvTuUTFWa7D",
+      "amount": 297.086244,
+      "share": 0.000059245764917287936,
+      "aged": [
+        297.086244,
+        297.086244,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3RNFxGFypEAfAQwXsuFNDkLocDgycRkG2H42JFVBeSbP",
+      "amount": 294.502763,
+      "share": 0.00005873055995211197,
+      "aged": [
+        294.502763,
+        294.502763,
+        294.502763,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AkTgH1uW6J6j6QHmFNGzZuZwwXaHQsPCpHUriED28tRj",
+      "amount": 286.326617,
+      "share": 0.00005710005018052717,
+      "aged": [
+        286.326617,
+        286.326617,
+        286.326617,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "34FKjAdVcTax2DHqV2XnbXa9J3zmyKcFuFKWbcmgxjgm",
+      "amount": 279.944134,
+      "share": 0.00005582723767222879,
+      "aged": [
+        279.944134,
+        279.944134,
+        279.944134,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9AjeEeJehAfFc777cZyHDMwMfU7VCaRygaXnvcmPv4Fe",
+      "amount": 259.872461,
+      "share": 0.000051824488827167225,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9RxrrA3hPSAYY17r9b7kWKVXApxoE4pCoUAJzwed9e1x",
+      "amount": 256.485081,
+      "share": 0.00005114896808792518,
+      "aged": [
+        256.485081,
+        256.485081,
+        256.485081,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4MvGejn9MWpfYcnQqU6DvosGkio9m75P5DjGY5WTaCLK",
+      "amount": 250.838653,
+      "share": 0.000050022941714551964,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Ep18yXvpYEgxsLFDBwZ1MeDBvE5TY2mesmPv9Bs7SzMr",
+      "amount": 243.165231,
+      "share": 0.0000484926865610244,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9rGyeRQtPm19G9SRCRgcrXsnKb7b38TM3JnKioZWyT1M",
+      "amount": 223.983537,
+      "share": 0.00004466741980300059,
+      "aged": [
+        223.983537,
+        223.983537,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GSdHZxJJou23QCiRVP1krJooQKcE6LqCfwJGNoH6LDna",
+      "amount": 211.765734,
+      "share": 0.00004223091155341723,
+      "aged": [
+        211.765734,
+        211.765734,
+        211.765734,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "J6v6yot9Zp8UZYBWD6ujeBnZbiMyUQ98QanXLuLMjwsZ",
+      "amount": 210.882552,
+      "share": 0.00004205478494302062,
+      "aged": [
+        210.882552,
+        210.882552,
+        210.882552,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EkLXvtmLYzXTMQuDf9HhuynXWTuoxKG3Sk71nwWavKXg",
+      "amount": 205.10721,
+      "share": 0.000040903050181282745,
+      "aged": [
+        205.10721,
+        205.10721,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CthbbzgnehNHXbxHvb651kkKEKBSXr5REFiXc5tJ6EUg",
+      "amount": 203.038839,
+      "share": 0.000040490569884727055,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CNAmXWUDu77A8cfWfVyrzDYkkDNGDwnyQLvrRcwowYfb",
+      "amount": 199.098355,
+      "share": 0.000039704747607730834,
+      "aged": [
+        199.098355,
+        199.098355,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AAwjyNWmaFZBuGs3dqNrPoh1gbwLC9fcKDZBXpoFzg6y",
+      "amount": 196.462585,
+      "share": 0.00003917911502476937,
+      "aged": [
+        196.462585,
+        196.462585,
+        196.462585,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DyALg3WG3PSvkhhprCWgo816kcYar6uQHgzzCBGWCiSq",
+      "amount": 180.250073,
+      "share": 0.000035945970797900654,
+      "aged": [
+        180.250073,
+        180.250073,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "G2nu2EXbFxMYjStn4wccL9N66775MqoWbK5qe3JE3wfZ",
+      "amount": 177.776359,
+      "share": 0.000035452655873105276,
+      "aged": [
+        177.776359,
+        177.776359,
+        177.776359,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "A287MMh6ZZiop3Vbms4SmyPLEvui7AJxeK3X3eGcKKaX",
+      "amount": 171.130156,
+      "share": 0.00003412725158905308,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5qQzwAF3JtzwMGEyo9mV1nMtYVXpsH6oF1NE7rivdkx8",
+      "amount": 168.160359,
+      "share": 0.00003353500641288778,
+      "aged": [
+        168.160359,
+        168.160359,
+        168.160359,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BfTgSR8d5jLkGVFB4cE5qRbJmxik4wXSn7ohYWihxumr",
+      "amount": 166.13245,
+      "share": 0.00003313059516088901,
+      "aged": [
+        166.13245,
+        166.13245,
+        166.13245,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9mV2Y1TyEWU7NRY5dnLJTQnrUBEq6quLf95x6ef4u1KX",
+      "amount": 153.310725,
+      "share": 0.00003057365110667654,
+      "aged": [
+        153.310725,
+        153.310725,
+        153.310725,
+        153.310725
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8au5u5zbzJQes9KNsyPYUbEwqLimEDaSZmEbBhV1zGMN",
+      "amount": 149.908877,
+      "share": 0.000029895245118641816,
+      "aged": [
+        149.908877,
+        149.908877,
+        149.908877,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5RLwtYere1H4wxwm5JqTGm2xUZBvhw1WeRRHwcyJ3wbB",
+      "amount": 145.307596,
+      "share": 0.000028977644866358226,
+      "aged": [
+        145.307596,
+        145.307596,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DZSDL7PjPoW3FpCJiiyffCg5REoQonnVTcQD68tDg46F",
+      "amount": 143.07421,
+      "share": 0.000028532256819628064,
+      "aged": [
+        143.07421,
+        143.07421,
+        143.07421,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CQ32TqMX7nRK6C7KnjeG5FF9kfb4CBSunSKCKj86eSp2",
+      "amount": 140.812474,
+      "share": 0.000028081215137062087,
+      "aged": [
+        140.812474,
+        140.812474,
+        140.812474,
+        140.812474
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GJ7QcS4H2M6KyvCsytkfxT5VTASWwyo98JVwSiP1a1mx",
+      "amount": 140.211483,
+      "share": 0.000027961363840603515,
+      "aged": [
+        140.211483,
+        140.211483,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8dTiHohN5WwerQizwpgznugxHs3ptK7LkRkSDeU8243C",
+      "amount": 140.171837,
+      "share": 0.000027953457525035742,
+      "aged": [
+        140.171837,
+        140.171837,
+        140.171837,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2J4SVhGgNxgprJvxKbamv1rZKGyCKqKDNobDJ1xWASdK",
+      "amount": 127.145546,
+      "share": 0.000025355718350245184,
+      "aged": [
+        127.145546,
+        127.145546,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4u6nGyP8KdKDk5ydbbrv2rnLppaAY83fbf7PbQ7CNrQE",
+      "amount": 125.37248,
+      "share": 0.000025002128597975017,
+      "aged": [
+        125.37248,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BEochrdGhm5pcKVF73DURYrGo1DLzxq6bBcUBphQR64d",
+      "amount": 120.855079,
+      "share": 0.00002410125592854532,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5y6hyoYtMaRm91LhZKkpVX1B1KDPBdancFfwoktYdPWB",
+      "amount": 119.03332,
+      "share": 0.000023737955682809426,
+      "aged": [
+        119.03332,
+        119.03332,
+        119.03332,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6iTFq42TAnKoneuVd27NRWhqEHSM4STUgnCqwwHFUh94",
+      "amount": 117.38217,
+      "share": 0.000023408678758283835,
+      "aged": [
+        117.38217,
+        117.38217,
+        117.38217,
+        117.38217
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3t2SuztDLczEnJyS1ADTBT1LBsTs1qd8WjKz9jvc373X",
+      "amount": 117.38217,
+      "share": 0.000023408678758283835,
+      "aged": [
+        117.38217,
+        117.38217,
+        117.38217,
+        117.38217
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6qweXNeHA6q6adndiVwRanTF3MRDoAxpEjRBiyf2mmBp",
+      "amount": 115.741672,
+      "share": 0.000023081526085219372,
+      "aged": [
+        115.741672,
+        115.741672,
+        115.741672,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "1ustAaZVFkeJSLpjWd51ByozJPzVYF1AXmGRDUnNm3c",
+      "amount": 114.762444,
+      "share": 0.0000228862457144176,
+      "aged": [
+        114.762444,
+        114.762444,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DbsKoqWnMttAtpcJx8brS9XLCK1XXshYC88zhNBRr4Yr",
+      "amount": 108.469301,
+      "share": 0.000021631249637356302,
+      "aged": [
+        108.469301,
+        108.469301,
+        108.469301,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7SgR1CkkyaZ7oXT6ZPH62HoeD99vncz9eR7dCymqPGAT",
+      "amount": 95.01723,
+      "share": 0.000018948600230954748,
+      "aged": [
+        95.01723,
+        95.01723,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9LqVzVE2R14az1QmddB6nh2ZLYpXwuAsyRkoBh7dXDsU",
+      "amount": 87.406635,
+      "share": 0.000017430874212476804,
+      "aged": [
+        87.406635,
+        87.406635,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4Ki2mMcaLp7eXn4t64KCrNfayYXe3uxHKQKUsXY6RVnJ",
+      "amount": 86.194421,
+      "share": 0.00001718913112566648,
+      "aged": [
+        86.194421,
+        86.194421,
+        86.194421,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "H2Qk7SuQWFeQnAVTPUKZy7qVxGLu84hoqB9mzbMBs6GR",
+      "amount": 83.216104,
+      "share": 0.000016595186867408723,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HXi5kBL5zxS1fCK6fHi7iXLUzeLeowUyDiRDjaBsAr7g",
+      "amount": 74.485993,
+      "share": 0.000014854203855055483,
+      "aged": [
+        74.485993,
+        74.485993,
+        74.485993,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "F7Dxd2s5qWJ2gfy6ScUVnh2RhGRPEGZYaDo5TGKV1Pb5",
+      "amount": 71.676662,
+      "share": 0.000014293959254834784,
+      "aged": [
+        71.676662,
+        71.676662,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GGQ5abfTwrvH8tMe7XyS5bRaRPfXwGf4sJSuN3sWYwQu",
+      "amount": 69.522097,
+      "share": 0.00001386428991111042,
+      "aged": [
+        69.522097,
+        69.522097,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "34jYXm6KxBAFAFfqD3L4iSn4vLXfZxm3Pmo8TCzxuAa1",
+      "amount": 69.007801,
+      "share": 0.000013761727572633713,
+      "aged": [
+        69.007801,
+        69.007801,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2D9tdo4BLGpzHt9qcx87cFYAheKoU2nxFTLCHQYe4VhT",
+      "amount": 60.23019,
+      "share": 0.000012011271978192252,
+      "aged": [
+        60.23019,
+        60.23019,
+        60.23019,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EmSP9BeZt5s7uUYhyoouAvK4nQKL6cahwvLrhrxtfkt8",
+      "amount": 52.510975,
+      "share": 0.00001047188465726331,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GDbTfYiXx3pJoFvp9A85muty9dptfTkk44kHiPnANE6J",
+      "amount": 48.91202,
+      "share": 0.00000975417104317252,
+      "aged": [
+        48.91202,
+        48.91202,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9HZyyTzaUy4rnyU8hXntazVoL1m6MUmVvtAcxRh9gUGL",
+      "amount": 47.278785,
+      "share": 0.000009428466777765042,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FmwNYcssYPgyPNN9fk67T2e91dSWshRLVmLDcTcY8Cyh",
+      "amount": 44.686872,
+      "share": 0.000008911580279701326,
+      "aged": [
+        44.686872,
+        44.686872,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4P89GXJbCgy6vA82b6ifWWpf47sGXvxZvn45UEkWjq8n",
+      "amount": 44.181943,
+      "share": 0.000008810885934412415,
+      "aged": [
+        44.181943,
+        44.181943,
+        44.181943,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4hLcE452Ehwf4fdkAyUZSWJDc5mi4JrmLurG8Kgw9VCD",
+      "amount": 43.731832,
+      "share": 0.000008721123547121655,
+      "aged": [
+        43.731832,
+        43.731832,
+        43.731832,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "97M3TnhMGVULJXX3PU45FJcJGkinRiPNPFUkq9yNtmUd",
+      "amount": 42.440043,
+      "share": 0.000008463511392528803,
+      "aged": [
+        42.440043,
+        42.440043,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FWZoZt5epP8FAAhNyTDX7RL6WLW8Pzg7ZR7AqhWvg41u",
+      "amount": 39.058435,
+      "share": 0.000007789141721577561,
+      "aged": [
+        39.058435,
+        39.058435,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "E8iva355Li2XDwdY98Sin7zMrdrGbJCHNMm7hLuUWtmf",
+      "amount": 34.460505,
+      "share": 0.0000068722097350324484,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "G4zJNCcvZnK964y3KjsvLgNNwCzYVyGTfCn5d4rLsw9B",
+      "amount": 33.223288,
+      "share": 0.000006625480480433665,
+      "aged": [
+        33.223288,
+        33.223288,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5VdRtMhSRkhesUysGWAm5utb8Swt4sQBspsnXnGjWSjA",
+      "amount": 30.043298,
+      "share": 0.0000059913180317026956,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CN2mS3FZvELXfzed76KfVYsD7WTVcv1EsvHFBwKRdjiN",
+      "amount": 27.801651,
+      "share": 0.0000055442825533803,
+      "aged": [
+        27.801651,
+        27.801651,
+        27.801651,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AdAuir25j9ezJzNjNwv8fshy4DgBsAauUAddeoq9Z6v2",
+      "amount": 27.649202,
+      "share": 0.000005513880749869413,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GuJpqqq7Y8gcNtTwyu7rhAwN2BPvmvSujM8gT8vJ7rHk",
+      "amount": 25.462226,
+      "share": 0.000005077747914396389,
+      "aged": [
+        25.462226,
+        25.462226,
+        25.462226,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DoJWzFMv9212WurDg6Bz1vHm7ZUNooQbYrS8rKM6k2TV",
+      "amount": 23.490443,
+      "share": 0.000004684529465393059,
+      "aged": [
+        23.490443,
+        23.490443,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5WYSF6uHnpTk952DcZ2zWp3Unpa5bmXH4qV4PMw1ydcH",
+      "amount": 22.943384,
+      "share": 0.0000045754334383488495,
+      "aged": [
+        22.943384,
+        22.943384,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7fbrW6eiGKYz6j8zrEBkFKh7U6peURLvbKN96YzS42Ki",
+      "amount": 22.480227,
+      "share": 0.000004483069381459711,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "AoSLbsEUoNLppaJFkC2vE1MDnexGFamRXbh8yn7YXaHh",
+      "amount": 22.166336,
+      "share": 0.000004420472365370161,
+      "aged": [
+        22.166336,
+        22.166336,
+        22.166336,
+        22.166336
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "F4qbzhx1VusJa1nFwRU49mTbgjn8tt6aGCKi43RbJcm1",
+      "amount": 20.324966,
+      "share": 0.000004053261239479907,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "3vS7ZPYVDFtchJ3mUiywS4K85gVtPEw1L8CPLdYbU3gj",
+      "amount": 15.621693,
+      "share": 0.000003115321458936492,
+      "aged": [
+        15.621693,
+        15.621693,
+        15.621693,
+        15.621693
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FpLZmdMufWSL9aGVQ8tc8nMBvmDM2P9qECbaCKS8othn",
+      "amount": 14.828292,
+      "share": 0.0000029570992252233034,
+      "aged": [
+        14.828292,
+        14.828292,
+        14.828292,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FtyRwcuYzXq52Ar5RgPQbRZwExtoBSigSfoXdHCdcLnd",
+      "amount": 14.57001,
+      "share": 0.000002905591910551518,
+      "aged": [
+        14.57001,
+        14.57001,
+        14.57001,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "ETpC79G11aqZ9oA6DthmonYVRQGKrtkAX9hBUyz7NrKu",
+      "amount": 13.899337,
+      "share": 0.0000027718444358809225,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BSGBM7XXvdobs8pkwNs3AarvHaRBSnUqk3ZFi8dXX5Qx",
+      "amount": 10.602375,
+      "share": 0.0000021143551056336714,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "73UA8ECGYLnoXu9MR7R9YvFaw9cbsb9cPZHFxQEve57n",
+      "amount": 9.03492,
+      "share": 0.0000018017688707475229,
+      "aged": [
+        9.03492,
+        9.03492,
+        9.03492,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "R32xAccFis3YzBzGwZ1C4QkGiehLxSao7gDmErA3kjk",
+      "amount": 8.290673,
+      "share": 0.0000016533490644020067,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6ddBZunqQZb11y4CWSLNJpHgmF3a6KZUGwaN3KNqfTML",
+      "amount": 6.870117,
+      "share": 0.0000013700578365932805,
+      "aged": [
+        6.870117,
+        6.870117,
+        6.870117,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Ccsbo8PWkR6qqEssSJwwuHEVLpNojPX391jCM34Hr2ZM",
+      "amount": 3.132783,
+      "share": 6.247482975175251e-7,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "A4rELQuLNDcRJbv9AP3247K88Z4YHxLGMeNaKDNodPsf",
+      "amount": 1,
+      "share": 1.994227808046472e-7,
+      "aged": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "43mUfy3XbJF4CoeNDqtw6WSYGCDZBt2MuqPDCRPimfbh",
+      "amount": 0.533981,
+      "share": 1.0648797591684631e-7,
+      "aged": [
+        0.533981,
+        0.533981,
+        0.533981,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DfQGnRDjNrC5iasFbmTG543pTMeM9V3PhSEiuT6CA17B",
+      "amount": 0.370894,
+      "share": 7.396471286375882e-8,
+      "aged": [
+        0.370894,
+        0.370894,
+        0.370894,
+        0.370894
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "ESuvjvsQtjuxC4XGsDeMhx8Wp5yjQcCFGncGhupcJbg8",
+      "amount": 0.045436,
+      "share": 9.060973468639949e-9,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "49tgx4s6AZDQpxzFACznSoRrw5BULxBauGZTctMG6ipE",
+      "amount": 0.00937,
+      "share": 1.8685914561395443e-9,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "H5DQ7AoUMcpuvZHhDUabHDRJ6CWtAxBQEBnnT2rRnDmw",
+      "amount": 0.009203,
+      "share": 1.835287851745168e-9,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "BZik6XF3qy2ZJK4RZQ6sMANWy1DecxQjHwTXAdZd3rx",
+      "amount": 0.008881,
+      "share": 1.7710737163260717e-9,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EFPg7DXvF6E8zFMUipkS9JNNNc8ysnaxBToprcyQ3m4X",
+      "amount": 0.00788,
+      "share": 1.5714515127406199e-9,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8eHrsHPRFyzopPUP1C3Ac5qMTDW93LjVLZ9ecDc2tYGd",
+      "amount": 0.007702,
+      "share": 1.5359542577573926e-9,
+      "aged": [
+        0.007702,
+        0.007702,
+        0.007702,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9bi7Mh3nfkFNP2T6j1VqKbDF7xQRy3skhXrmy1Sfkyap",
+      "amount": 0.00767,
+      "share": 1.529572728771644e-9,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5risbq6PVKnbhzpRb2wS3pY5kEGVqBV3iMDwt3umJQss",
+      "amount": 0.007377,
+      "share": 1.4711418539958826e-9,
+      "aged": [
+        0.007377,
+        0.007377,
+        0.007377,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "38XA8Zhpk4QvrWHF75M8YfCP5uSJiRymm9zzTVMdiByE",
+      "amount": 0.007342,
+      "share": 1.4641620566677196e-9,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "4WpAJ5m4tFFccsPxohiqjKaeZx46PFtYJydBeHZVU9fq",
+      "amount": 0.007042,
+      "share": 1.4043352224263254e-9,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "rkinaacAjfKz4vf3kibyaKTgAkQzKkPk29zLA15EwYc",
+      "amount": 0.007,
+      "share": 1.3959594656325305e-9,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9syGxydKNXnrkNhEcixSxywWpfE7gzdAgPnQQWLTJRCM",
+      "amount": 0.006966,
+      "share": 1.3891790910851725e-9,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6G76XVK1SikWsxxacxmhpN4WunJJby5xPr4PsBFPq9TP",
+      "amount": 0.004982,
+      "share": 9.935242939687524e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "ARiNh1dNCck9Tiwk4oauLGDXopsKQgURm6WhPdE1doji",
+      "amount": 0.004811,
+      "share": 9.594229984511578e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "EJbiXe4NJtZTk7kuMX9W4fBaA26hYkVD9czr7iR7jjCj",
+      "amount": 0.004712,
+      "share": 9.396801431514978e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HzAe8YtMVpwpZjy3H7gaKfW4XKYGzwkLboCpAYJaJyQd",
+      "amount": 0.004377,
+      "share": 8.728735115819408e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8MD7y5YaxHmRnVSnhuZTgxXD5MDMCPnfnCZvcGeL1hSu",
+      "amount": 0.002882,
+      "share": 5.747364542789932e-10,
+      "aged": [
+        0.002882,
+        0.002882,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "63hxMftx8mEjaCqKUHbvMLNf4z3tjbEy5B9LufjguaMi",
+      "amount": 0.00229,
+      "share": 4.5667816804264204e-10,
+      "aged": [
+        0.00229,
+        0.00229,
+        0.00229,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DTNxHn7KYE1XDDdetnduArieAKmPe1u79P4beGnC9ZKF",
+      "amount": 0.002031,
+      "share": 4.0502766781423847e-10,
+      "aged": [
+        0.002031,
+        0.002031,
+        0.002031,
+        0.002031
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GhSJTyQ1hnpPwuDSeF51qoFHAdDJH4W5h9M8XEGnkRCE",
+      "amount": 0.002027,
+      "share": 4.0422997669101985e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "9FyQMkL7bU2pqCgrGDNXew8hk8FeqrxSqLugbDPGFYM1",
+      "amount": 0.001015,
+      "share": 2.024141225167169e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DPVs3yVEBLyegA6QGBCALuQUVCBni281rfo3xPG6EBCL",
+      "amount": 0.001011,
+      "share": 2.0161643139349833e-10,
+      "aged": [
+        0.001011,
+        0.001011,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2X5qETP7jUdE4wdAcmGp7cStDg1UVLzkhviPpoYgxWZC",
+      "amount": 0.001,
+      "share": 1.994227808046472e-10,
+      "aged": [
+        0.001,
+        0.001,
+        0.001,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CpLmCczXKYJeBPWiuvTvn77XUpmpgm54wrz5SyhXp7kC",
+      "amount": 0.000934,
+      "share": 1.862608772715405e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6Z6V8JbfR5CPK3xPDhVW8o5oNHxDPmwLeWAjJvVq1XVo",
+      "amount": 0.000932,
+      "share": 1.8586203170993118e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Fm7beZGpJ3PqwPa3LYEdjypqwRBEsXiWA2Kutt6hZjL7",
+      "amount": 0.000796,
+      "share": 1.5874053352049916e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Civ4nK57UwNgiVL2xtZCG5nAD5hEz79J6ZHNB41BrAC3",
+      "amount": 0.00075,
+      "share": 1.495670856034854e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "6ri3Qj5FrieXwsWZVudaDYpMR4iXX6tJ3jeLx4qKN4LT",
+      "amount": 0.000656,
+      "share": 1.3082134420784856e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GXQirbGr3XgL2qUiEHqRkXpME3iTNYdDzaxuLShaTb5Q",
+      "amount": 0.000628,
+      "share": 1.2523750634531843e-10,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DDs3d7WdgaRC1UPciwnh18C8G84FHejHdYfboF7HEdZt",
+      "amount": 0.000496,
+      "share": 9.891369927910501e-11,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FW6TZSCTRA5XhLoJ7GiYj8TNBP1XeTSP9N8ziyoGpBzY",
+      "amount": 0.000494,
+      "share": 9.851485371749571e-11,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "662WXnk33p3g2vYQZzjU1H26a7p8vHtrej5NdCqmJmVc",
+      "amount": 0.000387,
+      "share": 7.717661617139846e-11,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "92ueo7MpwwVfzV7qB2xDDR5w6ZRKn9tBfjqZANaNVeYU",
+      "amount": 0.00034,
+      "share": 6.780374547358005e-11,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "2YJHs7Xc4jEF62UPYTBpXSQVGPghk1AS69tYE3hMvj7q",
+      "amount": 0.000155,
+      "share": 3.0910531024720315e-11,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "29srX9kvyFm3pfLXhj3DzmX14dWun29aRYFQ33cU6BQE",
+      "amount": 0.000144,
+      "share": 2.8716880435869195e-11,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FHLtCWxiZek83Z4Nmvk9GcyXpY99F8nHnMHmWWJGCkLT",
+      "amount": 0.000101,
+      "share": 2.014170086126937e-11,
+      "aged": [
+        0.000101,
+        0.000101,
+        0.000101,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "VmPNYqB22qnV1ZAzXiuLyj7aLgKHT12nK26j8yqz2Jw",
+      "amount": 0.000098,
+      "share": 1.9543432518855426e-11,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "HZPatXCpSoBek1jGXGjQiFxZdsYsid6unvtzbdwqTrLU",
+      "amount": 0.000096,
+      "share": 1.9144586957246132e-11,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "FPagMYLnRrt2mxrev8nPjYqpb4zVv94edoJi86btgJvQ",
+      "amount": 0.000073,
+      "share": 1.4557862998739248e-11,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "C9fFC19AN48dBP2A6PbcKcLSzkLnQBrkjnJbPiscEZjP",
+      "amount": 0.000012,
+      "share": 2.3930733696557666e-12,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "5i8rFRKn3TEWHTPC9JH7B6QQSNRmBx5TgUGiub1kAbJA",
+      "amount": 0.000012,
+      "share": 2.3930733696557666e-12,
+      "aged": [
+        0.000012,
+        0.000012,
+        0.000012,
+        0.000012
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "7X6y8BR51e9ADwY98hg4Fcw5PKBJFTbx3Cy5tLKwdPtT",
+      "amount": 0.000006,
+      "share": 1.1965366848278833e-12,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "Eyrba6JymKWbMJknMmLmfs9yaLAPLNq35w8fnDRJE2zs",
+      "amount": 0.000005,
+      "share": 9.97113904023236e-13,
+      "aged": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8VAWzgZZdjVFjemt2a4xGc3FRjy52WuvxzvEV7XcGitn",
+      "amount": 0.000001,
+      "share": 1.9942278080464721e-13,
+      "aged": [
+        0.000001,
+        0.000001,
+        0.000001,
+        0.000001
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "77iNoSmaa8yaBUL3XSb9ZedBccSaHNrWMDr3jXh5KSQ",
+      "amount": 0.000001,
+      "share": 1.9942278080464721e-13,
+      "aged": [
+        0.000001,
+        0.000001,
+        0.000001,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "8ZpPHmQkspHarSLK3m7AokB2Tp9ba2U8WVKv2Zd7Xpx4",
+      "amount": 0.000001,
+      "share": 1.9942278080464721e-13,
+      "aged": [
+        0.000001,
+        0.000001,
+        0.000001,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "DQWjreyauBaHJ2eytBxLrVB6yk2q2DdkJhvvDcGVpjLw",
+      "amount": 0.000001,
+      "share": 1.9942278080464721e-13,
+      "aged": [
+        0.000001,
+        0.000001,
+        0.000001,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "XEcKtHXjDAGio2gtVoeNRsdvqNmKTipL73QBnE2r9SF",
+      "amount": 0.000001,
+      "share": 1.9942278080464721e-13,
+      "aged": [
+        0.000001,
+        0.000001,
+        0.000001,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GZkgxSpD6fDAibJrt5k7YRudQccagHj8VAj54MSqoDxz",
+      "amount": 0.000001,
+      "share": 1.9942278080464721e-13,
+      "aged": [
+        0.000001,
+        0.000001,
+        0.000001,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "GgzSwJuy7PM5Rd2oiZkp7GhBefBepBjXTGAizpAsDn8V",
+      "amount": 0.000001,
+      "share": 1.9942278080464721e-13,
+      "aged": [
+        0.000001,
+        0.000001,
+        0.000001,
+        0
+      ],
+      "unknown": 0
+    },
+    {
+      "address": "CYxiipvrg3QP4AokLpH2iiSNKtW6BTniG7FJHo7sBPM",
+      "amount": 0.000001,
+      "share": 1.9942278080464721e-13,
+      "aged": [
+        0.000001,
+        0.000001,
+        0.000001,
+        0
+      ],
+      "unknown": 0
+    }
+  ],
+  "excluded": [
+    {
+      "address": "hFdMUMUVwffcRdbVhT75DntB2sB2G5iYf3KMsUHhuBx",
+      "owner": "GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd",
+      "category": "dev",
+      "amount": 6500
+    },
+    {
+      "address": "2EuMwkZ3MXxJFEbqkDnVpeDMrmnM6ZAr5pkHGy59MTzz",
+      "owner": "Grsyrh21rnUaqXU73TbisGwNnjSbCQ6mMwNj5yDXzf2e",
+      "category": "program",
+      "amount": 35.201458
+    },
+    {
+      "address": "46yKHJzEnbCtQxA8GGZ1oh9Y9JPyWcDropT5pymbt2T9",
+      "owner": "3MxtuSv6JV9ShZjT9rn7mecEuxnb3YRfxPtN466vhPHV",
+      "category": "program",
+      "amount": 198.584524
+    },
+    {
+      "address": "7Pz8CoXocwLEYgxhBTUfUx32TYjM62pwWoLK6EFiN89o",
+      "owner": "GkrEDh76bcovVr3xPbxtUeXWEAJhfhTLQ2Z3oSVHCXB9",
+      "category": "reserve",
+      "amount": 25000000
+    },
+    {
+      "address": "84iH6gSnokn6eWLqQyZsa7otgurf8g76dvxVNQQjBeoW",
+      "owner": "A6TLCJ8Kasy53pqzKwt2TtJ68JqCZgCi8p6Jo5g7VkuM",
+      "category": "reserve",
+      "amount": 212500000
+    },
+    {
+      "address": "8Av1cTiKFerXVXsV82EDaNQjR9w2if5arm9QT7Vs6kZ9",
+      "owner": "9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ",
+      "category": "pool",
+      "amount": 71672169.281697
+    },
+    {
+      "address": "FKzf1f6KgvP5f3DcHJ5Eq76dCNstZ6Nb73VLpLw4FKu2",
+      "owner": "FgXGaLnEvXUBbo6UGzRyMxxqGEy17a7S3FsTpPgM4JkV",
+      "category": "program",
+      "amount": 18.947099
+    },
+    {
+      "address": "Fq8JwvHmApjy5sA4EREbuudZsbQAya8ebkwbiXTvP2Q9",
+      "owner": "Bb8pCvrTtB9EdCkR9siwpfnWXL4vspeUyivFouaQDwx9",
+      "category": "program",
+      "amount": 27.385211
+    }
+  ]
+}

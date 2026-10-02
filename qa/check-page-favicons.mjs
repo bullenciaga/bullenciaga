@@ -10,6 +10,7 @@ const pages = new Map([
   ['buy.html', 'buy.svg'],
   ['giveaways.html', 'giveaways.svg'],
   ['stats.html', 'stats.svg'],
+  ['deepdive.html', 'deepdive.svg'],
   ['chart.html', 'chart.svg'],
   ['curve.html', 'curve.svg'],
   ['refer.html', 'refer.svg'],
