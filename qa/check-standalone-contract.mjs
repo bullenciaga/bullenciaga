@@ -98,7 +98,7 @@ for (const section of ['MOBILE BUYING', 'ONE HOUSE', 'THE TAPE', 'HOUSE DESK', '
 }
 for (const proof of [
   'https://lock.jup.ag/escrow/GkrEDh76bcovVr3xPbxtUeXWEAJhfhTLQ2Z3oSVHCXB9',
-  'https://lock.jup.ag/escrow/A6TLCJ8Kasy53pqzKwt2TtJ68JqCZgCi8p6Jo5g7VkuM',
+  'https://lock.jup.ag/escrow/5uquyi4cQ4PV6bLUpBBp5rhuV3kMDjv8pGFKkKm4JmH1',
   '25,000,000', '212,500,000', 'Vesting rate', 'Can cancel',
 ]) {
   if (!lockSource.includes(proof)) failures.push(`lock.html: public reserve record omits ${proof}`);
