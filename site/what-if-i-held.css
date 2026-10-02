@@ -8,3 +8,5 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
 .live-summary{border:1px solid var(--line);background:var(--panel);padding:20px 23px;margin:20px 0 24px}.live-summary strong{font-size:20px;font-weight:500;color:var(--pale);display:block;overflow-wrap:anywhere}.live-summary>span{display:block;font:11px/1.8 var(--mono);margin-top:5px}.live-summary p,.flow-note{font-size:12px;line-height:1.8;color:var(--muted);margin:12px 0 0}.flow-note{padding:15px 18px;border-left:2px solid var(--gold);margin:0 0 22px}.overview{margin-top:54px;padding-top:30px;border-top:1px solid var(--line)}#live-controls{margin:18px 0}.wallet-status[role=status]{overflow-wrap:anywhere}@media(max-width:680px){.live-summary{padding:17px}.live-summary strong{font-size:18px}.live-summary p,.flow-note{font-size:11px}}
+
+@media(max-width:480px){.return-grid{grid-template-columns:1fr}.return-box>strong{font-size:clamp(36px,12vw,52px);white-space:nowrap;overflow-wrap:normal}}
