@@ -1422,10 +1422,18 @@
   .gallery-card img.gallery-img-failed{
     opacity:0;
   }
-  .gallery-card img.gallery-img-failed + .gallery-card-name::before{
-    content:"(image unavailable right now — try refreshing) ";
-    color:rgba(245,243,238,0.35);
+  /* Reveal the whole decoded artwork together, not partially received rows. */
+  .gallery-card img.gallery-img-pending{visibility:hidden}
+  .gallery-card:has(>img.gallery-img-pending)::before,
+  .gallery-card:has(>img.gallery-img-failed)::before{
+    content:"Loading artwork";
+    position:absolute;top:0;left:0;width:100%;aspect-ratio:1/1;
+    display:grid;place-items:center;padding:16px;box-sizing:border-box;
+    background:linear-gradient(135deg,#17150f,#090909);
+    color:rgba(245,243,238,0.52);font:10px/1.7 'Space Mono',monospace;
+    text-align:center;pointer-events:none;
   }
+  .gallery-card:has(>img.gallery-img-failed)::before{content:"Artwork unavailable. Try refreshing."}
   .gallery-card-badge{
     box-sizing:border-box;
     max-width:calc(100% - 16px);
@@ -7211,6 +7219,7 @@
       if (attempt > maxRetries) {
         img.removeEventListener('error', onErr);
         img.classList.add('gallery-img-failed');
+        img.classList.remove('gallery-img-pending');
         return;
       }
       const delay = 800 * attempt; // 0.8s, 1.6s, 2.4s
@@ -7395,7 +7404,20 @@
       + (cardTier ? ` tier-glow-${cardTier}` : '');
     const img = document.createElement('img');
     img.loading = 'lazy';
+    img.decoding = 'async';
     img.alt = entry.name;
+    img.classList.add('gallery-img-pending');
+    img.addEventListener('load', async () => {
+      const loadedSource = img.currentSrc || img.src;
+      try {
+        if (img.decode) await img.decode();
+        if (loadedSource !== (img.currentSrc || img.src)) return;
+        img.classList.remove('gallery-img-pending', 'gallery-img-failed');
+      } catch (_) {
+        // A failed decode follows the same bounded retry path as a failed fetch.
+        if (loadedSource === (img.currentSrc || img.src)) img.dispatchEvent(new Event('error'));
+      }
+    });
     attachImageRetry(img, entry.image, 3);
     card.appendChild(img);
     const holdKind = holdKindOf(entry);

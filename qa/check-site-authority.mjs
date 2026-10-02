@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
-const expectedIndexHash = 'f1e51170939d2dfd0aa4bf65b83d7dc87a739379f6ba71342bbe82e2f0485805';
+const expectedIndexHash = '06b1800fe7241c683847fdda923f4cbd4b75ac2d89e707ec507f46da96cdf354';
 const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs', 'proof.html'];
 const required = [
   'what-if-i-held.html', 'what-if-i-held.css', 'what-if-i-held.js', 'holding-math.js', 'holding-study.json', 'assets/social/what-if-i-held.jpg',
@@ -13,7 +13,7 @@ const required = [
   'bullen-ui.css', 'bullen-ui.js', 'bullen-layout.css', 'bullen-navigation.js', 'bullen-focus.css', 'bullen-focus.js', 'giveaways.html', 'giveaways.json', 'follow500.js', 'follow500.css',
   'objects.html', 'objects.css', 'objects.js', 'bullen-wallet-chooser.js',
   'tape.html', 'favicons/tape.svg',
-  'patchnotes.html', 'patchnotes-001.html', 'patchnotes-002.html', 'patchnotes-003.html', 'patchnotes-004.html', 'house-record.js', 'house-record.css', 'favicons/patchnotes.svg', 'lock.html', 'favicons/lock.svg',
+  'patchnotes.html', 'patchnotes-001.html', 'patchnotes-002.html', 'patchnotes-003.html', 'patchnotes-004.html', 'patchnotes-005.html', 'house-record.js', 'house-record.css', 'favicons/patchnotes.svg', 'lock.html', 'favicons/lock.svg',
   'ledger.html', 'favicons/ledger.svg', 'house-ledger.js', 'ledger-preview.json',
   'passport.html', 'favicons/passport.svg', 'wallet-passport.js', 'house-intelligence.css',
   'collector-tools.js', 'collector-tools.css', 'assets/collection-originals/promise-nft.png', 'assets/collection-originals/triad-nft.png',
