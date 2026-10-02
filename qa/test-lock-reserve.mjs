@@ -5,8 +5,8 @@ import vm from 'node:vm';
 const html = fs.readFileSync(new URL('../site/lock.html', import.meta.url), 'utf8');
 const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1];
 const mint = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
-const firstCliff = Date.parse('2026-10-02T17:00:00Z');
-const lastCliff = Date.parse('2026-10-04T17:00:00Z');
+const firstCliff = Date.parse('2026-10-04T17:00:00Z');
+const lastCliff = Date.parse('2026-12-01T18:00:00Z');
 const settle = () => new Promise(resolve => setImmediate(resolve));
 
 function mount(at) {
@@ -44,6 +44,10 @@ function mount(at) {
 
 assert.match(html,/GkrEDh76bcovVr3xPbxtUeXWEAJhfhTLQ2Z3oSVHCXB9/);
 assert.match(html,/7Pz8CoXocwLEYgxhBTUfUx32TYjM62pwWoLK6EFiN89o/);
+assert.match(html,/5uquyi4cQ4PV6bLUpBBp5rhuV3kMDjv8pGFKkKm4JmH1/);
+assert.match(html,/H6cULEt3UrJVT3rVvSkTazV5Kk1LXAYcqMGRJjxhuUpA/);
+assert.match(html,/01 Dec 2026 · 19:00 CET/,'December uses winter time in Warsaw');
+assert.doesNotMatch(html,/A6TLCJ8Kasy53pqzKwt2TtJ68JqCZgCi8p6Jo5g7VkuM|84iH6gSnokn6eWLqQyZsa7otgurf8g76dvxVNQQjBeoW|2026-10-02T17:00:00Z/);
 assert.doesNotMatch(html, /J6vSzqFLcTWYyg8aPfKSBpnMegvizygzvLKumEUhGATB|3EbJKQu31nVxHK9zAaRKpNLYAP7tkY1tHrSPPH2pACiw|2026-09-27T17:00:00Z/);
 assert.doesNotMatch(html,/Next volume burn · 7D|seven-day window/);
 assert.doesNotMatch(html,/tokens currently claimable/,'A schedule does not establish an unwithdrawn balance');
@@ -53,7 +57,7 @@ const page = mount(firstCliff-30000);
 await settle();
 assert.equal(page.elements['locked-total'].textContent,'237.5M');
 assert.equal(page.elements['elapsed-cliffs'].textContent,'0');
-assert.match(page.cliffs[1].textContent,/under 1m/);
+assert.match(page.cliffs[0].textContent,/under 1m/);
 assert.equal(page.values[0].textContent,'(≈ $5,000.00 USD)');
 assert.equal(page.values[1].textContent,'(≈ $42,500.00 USD)');
 
@@ -63,10 +67,10 @@ page.state.now = firstCliff;
 page.tick();
 assert.equal(page.elements['locked-total'].textContent,'—');
 assert.equal(page.elements['elapsed-cliffs'].textContent,'1');
-assert.match(page.cliffs[1].textContent,/Cliff reached/);
-page.state.supply = {mint,nonCirculating:25000000,updatedAt:new Date(firstCliff).toISOString()};
+assert.match(page.cliffs[0].textContent,/Cliff reached/);
+page.state.supply = {mint,nonCirculating:212500000,updatedAt:new Date(firstCliff).toISOString()};
 page.refresh(); await settle();
-assert.equal(page.elements['locked-total'].textContent,'25M');
+assert.equal(page.elements['locked-total'].textContent,'212.5M');
 
 page.state.now = lastCliff;
 page.state.supply = {mint,nonCirculating:0,updatedAt:new Date(lastCliff).toISOString()};
