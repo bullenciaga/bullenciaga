@@ -368,6 +368,12 @@
     cursor:pointer;
     position:relative;
   }
+  /* Hero actions keep their full scale; only width yields when space runs out. */
+  @media(min-width:481px){
+    .hero main{max-width:min(720px,100%);}
+    .hero .cta{--btn-font:15px;--btn-pad-y:19px;flex-wrap:nowrap;}
+    .hero .cta > .btn{width:210px;min-width:0;flex:0 1 210px;}
+  }
   .btn.solid{
     background:var(--gold);
     color:var(--black);

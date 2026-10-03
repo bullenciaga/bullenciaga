@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
-const expectedIndexHash = 'd00078b0e6748af98f250a1b7a72a90aea8fda1f0e16032fc6f17e069d1cdd3d';
+const expectedIndexHash = 'a54f78ae7f180b25a526bd34db6d7a2c046b31a1753ff8c6f82b0f26d04e5b87';
 const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs', 'proof.html'];
 const required = [
   'what-if-i-held.html', 'what-if-i-held.css', 'what-if-i-held.js', 'holding-math.js', 'holding-study.json', 'assets/social/what-if-i-held.jpg',
