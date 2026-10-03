@@ -300,6 +300,8 @@
     letter-spacing:0.01em;
   }
   .bignum .cur{ color:var(--gold); }
+  .volume-heading{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px 16px; }
+  .target-progress{ color:var(--dim); font-size:clamp(10px,0.85vw,14px); white-space:nowrap; }
 
   .track{
     position:relative;
@@ -340,6 +342,7 @@
   .trow .th{ color:var(--dim); text-transform:uppercase; letter-spacing:0.16em; font-size:clamp(10px,0.8vw,15px); }
   .trow .tk{ color:var(--dim); }
   .trow .status{ text-align:right; letter-spacing:0.1em; text-transform:uppercase; }
+  .trow .tier-percent{ white-space:nowrap; }
   .trow.done{ border-color:rgba(199,168,105,0.4); }
   .trow.done .tk{ color:var(--gold); }
   .trow.done .status{ color:var(--gold); }
@@ -721,9 +724,12 @@
 
       <div class="panel grow">
         <div class="label">Cumulative Volume — Burn Schedule</div>
-        <div class="bignum" id="cumVol" data-reading="pending">Loading…</div>
+        <div class="volume-heading">
+          <div class="bignum" id="cumVol" data-reading="pending">Loading…</div>
+          <div class="target-progress" id="targetProgress"></div>
+        </div>
 
-        <div class="track"><div class="fill" id="burnFill"></div></div>
+        <div class="track" id="burnProgress" role="progressbar" aria-label="Cumulative volume toward next burn target" aria-valuemin="0" aria-valuemax="100"><div class="fill" id="burnFill"></div></div>
 
         <div class="tiertable" id="tierTable"></div>
 
@@ -733,7 +739,7 @@
             <div class="v" id="burnedSoFar" data-reading="pending">Loading…</div>
           </div>
           <div style="text-align:right;">
-            <div class="k">Next burn at</div>
+            <div class="k">Next volume target</div>
             <div class="v" id="nextBurn" data-reading="pending">Loading…</div>
           </div>
         </div>
@@ -1089,15 +1095,15 @@
   }
 
   // -------------------------------------------------- burn schedule UI
+  function targetPct(volume, target){
+    if (!Number.isFinite(volume) || volume <= 0) return 0;
+    // Show tenths without announcing 100% before the threshold is reached.
+    return Math.min(100, Math.floor((volume / target) * 1000) / 10);
+  }
   function schedulePct(volume){
-    if (typeof volume !== 'number' || volume <= 0) return 0;
-    let prev = 0;
-    for (let i=0;i<BURN_THRESHOLDS.length;i++){
-      const t = BURN_THRESHOLDS[i];
-      if (volume < t) return ((i + (volume-prev)/(t-prev)) / BURN_THRESHOLDS.length) * 100;
-      prev = t;
-    }
-    return 100;
+    if (!Number.isFinite(volume) || volume <= 0) return 0;
+    const target = BURN_THRESHOLDS.find(t => volume < t);
+    return target ? targetPct(volume, target) : 100;
   }
   function burnedTokens(volume){
     let sum = 0;
@@ -1106,7 +1112,7 @@
   }
   function nextThreshold(volume){
     for (let i=0;i<BURN_THRESHOLDS.length;i++) if (volume < BURN_THRESHOLDS[i]) return TIER_LABELS[i];
-    return 'complete';
+    return 'All reached';
   }
 
   // Real per-tier breakdown -- exact token amounts from the whitepaper's
@@ -1130,7 +1136,7 @@
       let status;
       if (done) status = '\u2713 done';
       else if (volume >= t) status = 'threshold reached';
-      else if (active) status = Math.floor(((volume-prev)/(t-prev))*100) + '% there';
+      else if (active) status = `<span class="tier-percent">${targetPct(volume, t)}% there</span>`;
       else status = 'upcoming';
       const rowClass = done ? 'done' : (active ? 'active' : 'upcoming');
       prev = t;
@@ -1192,7 +1198,13 @@
   function paintVolume(volume){
     lastRealVolume = volume;
     $('cumVol').innerHTML = `<span class="cur">${fmtUsd(volume)}</span>`;
-    $('burnFill').style.width = schedulePct(volume).toFixed(2) + '%';
+    const pct = schedulePct(volume);
+    const target = nextThreshold(volume);
+    const progressText = volume >= BURN_THRESHOLDS.at(-1) ? 'All volume targets reached' : `${pct}% to ${target}`;
+    $('burnFill').style.width = pct + '%';
+    $('targetProgress').textContent = progressText;
+    $('burnProgress').setAttribute('aria-valuenow', String(pct));
+    $('burnProgress').setAttribute('aria-valuetext', progressText);
     // fitTierTable() reads scrollHeight/clientHeight, which forces a layout.
     // Only worth paying for when the table's height could actually have
     // changed -- otherwise the demo triggers two reflows per tick, twenty a
@@ -1206,7 +1218,7 @@
     // having been burned at all.
     const burnedNow = CFG.DEMO ? burnedTokens(volume) : scheduleProof?.burned;
     $('burnedSoFar').textContent = burnedNow == null ? 'Unavailable' : fmtInt(burnedNow);
-    $('nextBurn').textContent = nextThreshold(volume);
+    $('nextBurn').textContent = target;
     const complete = CFG.DEMO ? volume >= BURN_THRESHOLDS.at(-1) : scheduleProof?.count === 5;
     $('burnedLabel').textContent = CFG.DEMO ? 'Simulated schedule burns' : 'Confirmed schedule burns';
     const note = $('completeNote');
@@ -1470,7 +1482,17 @@
       const data = response.ok ? await response.json() : null;
       if (!data || !data.ok || typeof data.total !== 'number' || !Number.isFinite(data.total) || data.total < 0) throw new Error('Volume unavailable');
       paintVolume(data.total); checkTierCompletion(data.total);
-    } catch { $('cumVol').textContent = 'Unavailable'; $('nextBurn').textContent = 'Unavailable'; $('burnFill').style.width = '0%'; $('tierTable').textContent = 'Volume unavailable · retrying'; }
+    } catch {
+      lastRealVolume = null;
+      lastTierSig = null;
+      $('cumVol').textContent = 'Unavailable';
+      $('nextBurn').textContent = 'Unavailable';
+      $('targetProgress').textContent = '';
+      $('burnFill').style.width = '0%';
+      $('burnProgress').removeAttribute('aria-valuenow');
+      $('burnProgress').setAttribute('aria-valuetext', 'Volume unavailable');
+      $('tierTable').textContent = 'Volume unavailable · retrying';
+    }
   }
 
   // Wrapped SOL on DexScreener -- same API the rest of this file already
