@@ -46,8 +46,11 @@ try {
       await page.evaluate(() => {
         const legacyVerificationLink = document.getElementById('jupVerifyLink');
         if (legacyVerificationLink) legacyVerificationLink.style.display = 'inline-flex';
-        document.getElementById('badgeMintText').textContent = 'Mint Authority — Revoked';
-        document.getElementById('badgeFreezeText').textContent = 'Freeze Authority — Revoked';
+        // Only the historical baseline still renders authority badges.
+        const legacyMint = document.getElementById('badgeMintText');
+        const legacyFreeze = document.getElementById('badgeFreezeText');
+        if (legacyMint) legacyMint.textContent = 'Mint Authority — Revoked';
+        if (legacyFreeze) legacyFreeze.textContent = 'Freeze Authority — Revoked';
       });
       const geometry = () => page.evaluate(() => {
         const rect = selector => {

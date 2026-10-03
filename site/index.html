@@ -445,15 +445,18 @@
   }
   .socials a:hover{ opacity:1; transform:translateY(-2px); }
   .socials svg{ width:20px; height:20px; }
+  @media(min-width:821px){
+    .socials svg{ width:24px; height:24px; }
+  }
   .socials svg.icon-shrink{ transform:scale(0.8); transform-origin:center; }
 
-  /* ===== SECTION: MARKET LINKS =====  quiet references, alongside authority details */
+  /* ===== SECTION: MARKET LINKS =====  quiet references below the primary actions */
   .market-links{
     display:flex;
     align-items:center;
     justify-content:center;
     gap:20px;
-    margin-top:12px;
+    margin-top:72px;
   }
   .market-link{
     display:inline-flex;
@@ -475,40 +478,14 @@
   .market-link:hover .market-link-name{border-bottom-color:currentColor;}
   .market-link:focus-visible{outline:1px solid var(--gold-light);outline-offset:3px;}
   .market-links-divider{width:1px;height:14px;background:var(--line);flex:none;}
+  /* Preserve the open space between the primary actions and market links. */
+  @media(min-width:481px) and (max-width:524px){
+    .market-links{margin-top:118px;}
+  }
   @media(max-width:480px){
-    .market-links{gap:16px;}
+    .market-links{gap:16px;margin-top:106px;}
     .market-link{gap:7px;font-size:10px;}
   }
-
-  /* ===== SECTION: TRUST BADGES =====  mint and freeze authority dots */
-  .trust-badges{
-    margin-top:26px;
-    display:flex;
-    gap:12px;
-    justify-content:center;
-    flex-wrap:wrap;
-  }
-  .badge{
-    font-family:'Space Mono', monospace;
-    font-size:10.5px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    padding:8px 14px;
-    border:1px solid var(--line);
-    color:rgba(245,243,238,0.55);
-    display:flex;
-    align-items:center;
-    gap:7px;
-    max-width:100%;
-    word-break:break-word;
-  }
-  .badge .dot{
-    width:6px; height:6px; border-radius:50%;
-    background:rgba(245,243,238,0.3);
-    flex-shrink:0;
-  }
-  .badge.safe .dot{ background:#8fae6a; }
-  .badge.warn .dot{ background:#b1483f; }
 
   /* ===== SECTION: CONTRACT ROW =====  tap-to-copy address */
   .contract-row{
@@ -794,16 +771,9 @@
           #050505 100%);
     }
 
-    /* ONE SHARED WIDTH FOR THE WHOLE HERO STACK.
-       The buttons and the two authority badges are separate components that
-       sit directly above one another, so any difference in width reads as a
-       mistake -- which is exactly what was happening: the badges sized to
-       their own text, so "MINT AUTHORITY - REVOKED" and "FREEZE AUTHORITY -
-       REVOKED" came out visibly different widths. Both groups now take this
-       one value, so the edges line up down the page. */
     :root{ --m-stack:260px; }
 
-    /* Keep both primary actions aligned with the mobile authority details. */
+    /* Keep both mobile primary actions the same width. */
     .cta{
       flex-direction:column;
       align-items:center;
@@ -814,18 +784,6 @@
       max-width:var(--m-stack);
     }
 
-    .trust-badges{
-      flex-direction:column;
-      align-items:center;
-      gap:8px;
-    }
-    .badge{
-      font-size:9.5px;
-      padding:7px 10px;
-      width:100%;
-      max-width:var(--m-stack);
-      justify-content:center;
-    }
   }
 
   /* ===== SECTION: HOW TO BUY ===== */
@@ -3122,12 +3080,6 @@
       <a href="#nft" id="contractBtn" class="btn">The Herd</a>
     </div>
 
-    <div class="trust-badges">
-      <div class="badge" id="badgeMint"><span class="dot"></span><span id="badgeMintText">Mint Authority — —</span></div>
-      <div class="badge" id="badgeFreeze"><span class="dot"></span><span id="badgeFreezeText">Freeze Authority — —</span></div>
-    </div>
-
-
     <div class="market-links" role="group" aria-label="Find BULLEN on CoinGecko and Jupiter">
       <a class="market-link" href="https://www.coingecko.com/en/coins/bullen" target="_blank" rel="noopener noreferrer" aria-label="BULLEN listed on CoinGecko (opens in a new tab)" title="Listed on CoinGecko">
         <img src="/assets/markets/coingecko-symbol.svg" width="18" height="18" alt="" decoding="async">
@@ -3533,7 +3485,7 @@
     </details>
     <details class="faq-item">
       <summary>can the team mint more tokens or freeze wallets?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
-      <p>check the Mint Authority and Freeze Authority badges near the top of this page — they're read directly from the chain, live, every time this page loads.</p>
+      <p>you can inspect the token’s mint and freeze authority settings directly on <a href="https://solscan.io/token/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN" target="_blank" rel="noopener noreferrer">Solscan</a>.</p>
     </details>
     <details class="faq-item">
       <summary>how do the burns actually work?<svg class="faq-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4l4 4 4-4"/></svg></summary>
@@ -3639,10 +3591,6 @@
     buyBtn: document.getElementById('buyBtn'),
     contractBtn: document.getElementById('contractBtn'),
     copyBtn: document.getElementById('copyBtn'),
-    badgeMint: document.getElementById('badgeMint'),
-    badgeMintText: document.getElementById('badgeMintText'),
-    badgeFreeze: document.getElementById('badgeFreeze'),
-    badgeFreezeText: document.getElementById('badgeFreezeText'),
     cumulativeVolumeValue: document.getElementById('cumulativeVolumeValue')
   };
 
@@ -3756,37 +3704,6 @@
     const supply=json?.result?.value?.uiAmount;
     if(typeof supply !== 'number' || !Number.isFinite(supply) || supply <= 0 || supply > 1000000000) throw new Error('Invalid supply');
     return { value: supply, locked: 0, isTotal: true };
-  }
-
-  // Reads the mint account directly to see if the creator can still mint more
-  // supply (mintAuthority) or freeze wallets (freezeAuthority). null means
-  // that power has been permanently given up — the reassuring answer for
-  // both. This is free, on-chain data, same RPC call style as the rest.
-  async function getMintFreezeAuthority(mintAddress){
-    const res = await fetch(CONFIG.RPC_URL, {
-      signal:AbortSignal.timeout(12000),
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        jsonrpc: '2.0', id: 1,
-        method: 'getAccountInfo',
-        params: [mintAddress, { encoding: 'jsonParsed' }]
-      })
-    });
-    const json = await res.json();
-    if (json.error) throw new Error(json.error.message);
-    const info = json.result?.value?.data?.parsed?.info;
-    if (!info) throw new Error('mint account not found');
-    return {
-      mintAuthority: info.mintAuthority ?? null,
-      freezeAuthority: info.freezeAuthority ?? null
-    };
-  }
-
-  function setBadge(boxEl, textEl, label, isRevoked){
-    textEl.textContent = `${label} — ${isRevoked ? 'Revoked' : 'Active'}`;
-    boxEl.classList.remove('safe', 'warn');
-    boxEl.classList.add(isRevoked ? 'safe' : 'warn');
   }
 
   // Cumulative (all-time) volume isn't something DexScreener's API exposes --
@@ -4159,14 +4076,6 @@
     }
 
     initContractCopy(CONFIG.TOKEN_ADDRESS);
-
-    getMintFreezeAuthority(CONFIG.TOKEN_ADDRESS).then(auth => {
-      setBadge(els.badgeMint, els.badgeMintText, 'Mint Authority', auth.mintAuthority === null);
-      setBadge(els.badgeFreeze, els.badgeFreezeText, 'Freeze Authority', auth.freezeAuthority === null);
-    }).catch(() => {
-      els.badgeMintText.textContent = 'Mint Authority — Unavailable';
-      els.badgeFreezeText.textContent = 'Freeze Authority — Unavailable';
-    });
 
     refreshStats();
     setInterval(refreshStats, CONFIG.REFRESH_MS);
