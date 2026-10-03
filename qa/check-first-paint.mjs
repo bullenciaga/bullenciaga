@@ -124,10 +124,13 @@ for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", 'window
 const stats = fs.readFileSync(path.join(site, 'stats.html'), 'utf8');
 if (stats.includes('█')) failures.push('stats.html must never paint block-character token placeholders');
 const bootStart = stats.indexOf('async function boot()');
-const reserveAt = stats.indexOf('paintVolume(0);', bootStart);
+const reserveAt = stats.indexOf('renderTierTable(null);', bootStart);
 const firstAwait = stats.indexOf('await ', bootStart);
 if (reserveAt < 0 || firstAwait < 0 || reserveAt > firstAwait) {
   failures.push('stats.html must reserve the static burn schedule before its first network await');
+}
+if (stats.slice(bootStart, firstAwait).includes('paintVolume(0)')) {
+  failures.push('stats.html must not invent zero volume while reserving the loading layout');
 }
 
 // Run the real image-entry helper, including BFCache restores. The document

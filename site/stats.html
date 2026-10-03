@@ -301,6 +301,8 @@
   }
   .bignum .cur{ color:var(--gold); }
   .volume-heading{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px 16px; }
+  .market-stats:not(.transparent) .volume-heading{ min-height:clamp(34px,4vw,58px); }
+  .market-stats:not(.transparent) .burnline .v{ min-height:25px; }
   .target-progress{ color:var(--dim); font-size:clamp(10px,0.85vw,14px); white-space:nowrap; }
 
   .track{
@@ -323,6 +325,10 @@
     transition:width 1.2s cubic-bezier(.22,.61,.36,1);
     box-shadow:0 0 22px rgba(199,168,105,0.55);
   }
+  /* The volume label and its bar arrive together, at the same value. */
+  #burnFill{ transition:none; }
+  .volume-heading{ min-height:clamp(40px,4.6vw,88px); }
+  .burnline .v{ min-height:calc(clamp(16px,1.56vw,30px) * 1.45); }
 
   /* Tier breakdown table -- replaces a plain 5-tick row with the actual
      per-tier numbers (threshold, tokens, status), so this panel has real
@@ -331,7 +337,7 @@
   .tiertable{ margin-top:clamp(14px,1.3vw,24px); display:flex; flex-direction:column; gap:clamp(6px,0.6vw,10px); }
   .trow{
     display:grid;
-    grid-template-columns:1fr 1.3fr 1.7fr 1.3fr;
+    grid-template-columns:1fr 1.3fr 1.7fr minmax(11.5ch,1.3fr);
     align-items:center;
     gap:clamp(6px,0.7vw,14px);
     padding:clamp(6px,0.65vw,12px) clamp(8px,0.8vw,14px);
@@ -341,13 +347,13 @@
   }
   .trow .th{ color:var(--dim); text-transform:uppercase; letter-spacing:0.16em; font-size:clamp(10px,0.8vw,15px); }
   .trow .tk{ color:var(--dim); }
-  .trow .status{ text-align:right; letter-spacing:0.1em; text-transform:uppercase; }
-  .trow .tier-percent{ white-space:nowrap; }
+  .trow .status{ text-align:right; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap; }
   .trow.done{ border-color:rgba(199,168,105,0.4); }
   .trow.done .tk{ color:var(--gold); }
   .trow.done .status{ color:var(--gold); }
   .trow.active{ border-color:var(--gold); background:rgba(199,168,105,0.06); }
   .trow.active .status{ color:var(--white); }
+  .trow.reached .status{ color:var(--gold); }
   .trow.upcoming .status{ color:var(--dim); }
 
   .burnline{
@@ -614,6 +620,8 @@
 
     /* Burn schedule */
     .bignum{ font-size:clamp(32px,10vw,46px); }
+    .volume-heading{ min-height:clamp(32px,10vw,46px); }
+    .burnline .v{ min-height:25px; }
     .label{ font-size:11px; letter-spacing:0.18em; margin-bottom:7px; }
     .tiertable{ margin-top:12px; gap:5px; }
     .trow{ padding:7px 9px; font-size:10px; gap:6px; }
@@ -1129,21 +1137,28 @@
   let lastTierSig = null;
   function renderTierTable(volume){
     const wrap = $('tierTable');
+    const hasVolume = Number.isFinite(volume);
     let prev = 0;
     const rows = BURN_THRESHOLDS.map((t,i)=>{
-      const done = CFG.DEMO ? volume >= t : !!scheduleProof && i < scheduleProof.count;
-      const active = !done && volume >= prev;
-      let status;
+      const done = CFG.DEMO ? hasVolume && volume >= t : !!scheduleProof && i < scheduleProof.count;
+      const reached = hasVolume && volume >= t;
+      const active = !done && hasVolume && volume >= prev && volume < t;
+      let status, detail = '';
       if (done) status = '\u2713 done';
-      else if (volume >= t) status = 'threshold reached';
-      else if (active) status = `<span class="tier-percent">${targetPct(volume, t)}% there</span>`;
+      else if (!hasVolume){ status = '—'; detail = 'Loading cumulative volume'; }
+      else if (reached && !scheduleProof && !CFG.DEMO){
+        status = scheduleProofState === 'unavailable' ? 'Unknown' : '—';
+        detail = scheduleProofState === 'unavailable' ? 'Burn receipts unavailable; retrying' : 'Checking burn receipts';
+      }
+      else if (reached){ status = 'Reached'; detail = 'Volume target reached; burn confirmation pending'; }
+      else if (active) status = targetPct(volume, t) + '% there';
       else status = 'upcoming';
-      const rowClass = done ? 'done' : (active ? 'active' : 'upcoming');
+      const rowClass = done ? 'done' : active ? 'active' : reached && scheduleProof ? 'reached' : 'upcoming';
       prev = t;
-      return { i, rowClass, status };
+      return { i, rowClass, status, detail };
     });
 
-    const sig = rows.map(r => r.rowClass + '\u0001' + r.status).join('|');
+    const sig = rows.map(r => r.rowClass + '\u0001' + r.status + '\u0001' + r.detail).join('|');
     if (sig === lastTierSig) return false;
     lastTierSig = sig;
 
@@ -1151,7 +1166,7 @@
         <div class="th">Tier ${r.i+1}</div>
         <div class="tk">${TIER_LABELS[r.i]}</div>
         <div class="tk">${BURN_TIER_TOKENS[r.i].toLocaleString()}</div>
-        <div class="status">${r.status}</div>
+        <div class="status"${r.detail ? ` title="${r.detail}" aria-label="${r.detail}"` : ''}>${r.status}</div>
       </div>`).join('');
     return true;
   }
@@ -1179,19 +1194,29 @@
 
     if (panel.scrollHeight <= panel.clientHeight + 1) return; // fits -- stay expanded
 
-    const keepRow = rows.find(r => r.classList.contains('active')) || rows[rows.length - 1];
+    // Receipt timing must not switch the compact view to an older tier.
+    const nextIndex = lastRealVolume === null ? 0 : BURN_THRESHOLDS.findIndex(t => lastRealVolume < t);
+    const keepRow = rows[nextIndex < 0 ? rows.length - 1 : nextIndex];
     rows.forEach(r => { r.style.display = (r === keepRow) ? '' : 'none'; });
   }
 
   let scheduleProof = null;
+  let scheduleProofState = 'loading';
   let lastRealVolume = null;
   async function refreshScheduleProof(){
     if(CFG.DEMO)return;
-    try { scheduleProof = await window.BullenBurnSchedule.load(); } catch { scheduleProof = null; }
-    $('burnedLabel').textContent = 'Confirmed schedule burns';
-    $('burnedSoFar').textContent = scheduleProof ? fmtInt(scheduleProof.burned) : 'Unavailable';
-    $('burnedSoFar').title = scheduleProof ? 'Receipts checked ' + new Date(scheduleProof.checkedAt).toLocaleString() : 'Burn receipts unavailable';
+    try {
+      const proof = await window.BullenBurnSchedule.load();
+      // Validated burns cannot be undone by a failed or older response.
+      if (scheduleProof && proof.count < scheduleProof.count) throw new Error('Older burn receipts');
+      scheduleProof = proof;
+      scheduleProofState = 'ready';
+    } catch { scheduleProofState = scheduleProof ? 'stale' : 'unavailable'; }
     if(lastRealVolume !== null) paintVolume(lastRealVolume);
+    else {
+      renderScheduleSummary();
+      if (renderTierTable(null)) fitTierTable();
+    }
   }
   refreshScheduleProof(); setInterval(refreshScheduleProof,60000);
   let lastCompleteState = null;
@@ -1210,15 +1235,17 @@
     // changed -- otherwise the demo triggers two reflows per tick, twenty a
     // second, for a table that looks identical.
     const tableChanged = renderTierTable(volume);
-    // Counted as "N of 5" until any have fired. A bare 0 sat directly beneath
-    // a "% Burned" figure in the double digits and read as a contradiction --
-    // these are different burns entirely: that one counts every mint, this one
-    // counts only the volume-triggered schedule. Showing the denominator makes
-    // the zero read as progress through a schedule rather than as nothing
-    // having been burned at all.
-    const burnedNow = CFG.DEMO ? burnedTokens(volume) : scheduleProof?.burned;
-    $('burnedSoFar').textContent = burnedNow == null ? 'Unavailable' : fmtInt(burnedNow);
     $('nextBurn').textContent = target;
+    const completeChanged = renderScheduleSummary(volume);
+    if (tableChanged || completeChanged) fitTierTable();
+  }
+
+  function renderScheduleSummary(volume = lastRealVolume){
+    const burnedNow = CFG.DEMO ? burnedTokens(volume) : scheduleProof?.burned;
+    $('burnedSoFar').textContent = burnedNow == null ? (scheduleProofState === 'loading' ? 'Loading…' : 'Unavailable') : fmtInt(burnedNow);
+    $('burnedSoFar').title = scheduleProof ?
+      (scheduleProofState === 'stale' ? 'Last verified receipts ' : 'Receipts checked ') + new Date(scheduleProof.checkedAt).toLocaleString() + (scheduleProofState === 'stale' ? '; refresh unavailable, retrying' : '') :
+      (scheduleProofState === 'loading' ? 'Checking burn receipts' : 'Burn receipts unavailable');
     const complete = CFG.DEMO ? volume >= BURN_THRESHOLDS.at(-1) : scheduleProof?.count === 5;
     $('burnedLabel').textContent = CFG.DEMO ? 'Simulated schedule burns' : 'Confirmed schedule burns';
     const note = $('completeNote');
@@ -1239,12 +1266,9 @@
     } else {
       note.classList.remove('show');
     }
-    // The note appearing/disappearing changes this panel's required height,
-    // so re-fit on that too -- but still only when something moved.
-    if (tableChanged || complete !== lastCompleteState){
-      lastCompleteState = complete;
-      fitTierTable();
-    }
+    const changed = complete !== lastCompleteState;
+    lastCompleteState = complete;
+    return changed;
   }
 
   // ---------------------------------------------------------- fetching
@@ -1484,14 +1508,13 @@
       paintVolume(data.total); checkTierCompletion(data.total);
     } catch {
       lastRealVolume = null;
-      lastTierSig = null;
       $('cumVol').textContent = 'Unavailable';
       $('nextBurn').textContent = 'Unavailable';
       $('targetProgress').textContent = '';
       $('burnFill').style.width = '0%';
       $('burnProgress').removeAttribute('aria-valuenow');
       $('burnProgress').setAttribute('aria-valuetext', 'Volume unavailable');
-      $('tierTable').textContent = 'Volume unavailable · retrying';
+      if (renderTierTable(null)) fitTierTable();
     }
   }
 
@@ -2409,7 +2432,8 @@
     // Previously this table did not exist until index.html and the manifest
     // had both resolved, so the whole lower dashboard jumped down on a cold
     // mobile load even though the schedule itself is static.
-    paintVolume(0);
+    renderTierTable(null);
+    fitTierTable();
     if (!CFG.DEMO){
       const tok = await resolveToken();
       CFG.TOKEN = tok.addr;
