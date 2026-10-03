@@ -123,7 +123,7 @@
   @media(prefers-reduced-motion:reduce){ .hero-bg{ transition:none; } }
   .hero-bg img{ width:100%; height:100%; object-fit:cover; object-position:center 20%; display:block; }
   @media(max-width:700px){
-    html[data-bullen-page="index"] body .hero{ min-height:clamp(854px,calc(190vw + 164px),1094px); }
+    html[data-bullen-page="index"] body .hero{ min-height:clamp(724px,calc(190vw + 34px),964px); }
     .hero-bg{ top:var(--bullen-header-height,56px); }
     .hero-bg img{
       height:auto; object-fit:contain; object-position:center top;
@@ -447,69 +447,37 @@
   .socials svg{ width:20px; height:20px; }
   .socials svg.icon-shrink{ transform:scale(0.8); transform-origin:center; }
 
-  /* ===== SECTION: MARKET BADGES =====  official token pages */
-  .market-badges{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:12px;
-    width:min(100%,540px);
-    margin:22px auto 0;
-  }
-  .market-badge{
+  /* ===== SECTION: MARKET LINKS =====  quiet references, alongside authority details */
+  .market-links{
     display:flex;
     align-items:center;
-    gap:14px;
-    min-width:0;
-    min-height:76px;
-    padding:15px 18px;
-    text-align:left;
-    text-decoration:none;
-    color:var(--white);
-    border:1px solid rgba(199,168,105,.38);
-    border-radius:3px;
-    background:linear-gradient(120deg,rgba(199,168,105,.08),transparent 65%),rgba(8,8,7,.9);
-    box-shadow:inset 0 1px 0 rgba(232,217,174,.07);
-    transition:border-color .2s ease,background-color .2s ease,box-shadow .2s ease;
+    justify-content:center;
+    gap:20px;
+    margin-top:12px;
   }
-  .market-badge img{
-    display:block;
-    width:34px;
-    height:34px;
-    object-fit:contain;
-    flex:none;
-  }
-  .market-badge-copy{ display:grid;gap:3px; }
-  .market-badge-label{
-    font-family:'Space Mono',monospace;
-    font-size:9px;
-    line-height:1.4;
-    letter-spacing:.11em;
-    text-transform:uppercase;
+  .market-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:44px;
+    padding:4px 2px;
     color:var(--gold);
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    line-height:1.4;
+    letter-spacing:.07em;
+    text-transform:uppercase;
+    text-decoration:none;
   }
-  .market-badge-name{
-    font-family:'Poppins',sans-serif;
-    font-size:17px;
-    font-weight:500;
-    line-height:1.25;
-    letter-spacing:-.02em;
-  }
-  .market-badge-arrow{
-    width:14px;height:14px;margin-left:auto;flex:none;
-    color:var(--gold);opacity:.65;
-  }
-  .market-badge:hover{
-    border-color:var(--gold);
-    background-color:#14120c;
-    box-shadow:inset 0 1px 0 rgba(232,217,174,.16),0 4px 22px rgba(0,0,0,.25);
-  }
-  .market-badge:focus-visible{ outline:2px solid var(--gold-light);outline-offset:4px; }
-  @media(prefers-reduced-motion:reduce){ .market-badge{transition:none;} }
+  .market-link img{display:block;width:18px;height:18px;object-fit:contain;flex:none;}
+  .market-link-name{border-bottom:1px solid transparent;}
+  .market-link:hover{color:var(--gold-light);}
+  .market-link:hover .market-link-name{border-bottom-color:currentColor;}
+  .market-link:focus-visible{outline:1px solid var(--gold-light);outline-offset:3px;}
+  .market-links-divider{width:1px;height:14px;background:var(--line);flex:none;}
   @media(max-width:480px){
-    .market-badges{grid-template-columns:1fr;width:min(100%,var(--m-stack,260px));gap:10px;margin-top:20px;}
-    .market-badge{min-height:66px;padding:12px 18px;}
-    .market-badge img{width:30px;height:30px;}
-    .market-badge-name{font-size:16px;}
+    .market-links{gap:16px;}
+    .market-link{gap:7px;font-size:10px;}
   }
 
   /* ===== SECTION: TRUST BADGES =====  mint and freeze authority dots */
@@ -544,7 +512,7 @@
 
   /* ===== SECTION: CONTRACT ROW =====  tap-to-copy address */
   .contract-row{
-    margin-top:40px;
+    margin-top:18px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -3162,24 +3130,23 @@
       <a href="#nft" id="contractBtn" class="btn">The Herd</a>
     </div>
 
-    <div class="market-badges" role="group" aria-label="Find BULLEN on CoinGecko and Jupiter">
-      <a class="market-badge" href="https://www.coingecko.com/en/coins/bullen" target="_blank" rel="noopener noreferrer" aria-label="BULLEN listed on CoinGecko (opens in a new tab)">
-        <img src="/assets/markets/coingecko-symbol.svg" width="34" height="34" alt="" decoding="async">
-        <span class="market-badge-copy"><span class="market-badge-label">Listed on</span><span class="market-badge-name">CoinGecko</span></span>
-        <svg class="market-badge-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg>
-      </a>
-      <a class="market-badge" href="https://jup.ag/tokens/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN" target="_blank" rel="noopener noreferrer" aria-label="BULLEN verified on Jupiter (opens in a new tab)">
-        <img src="/assets/markets/jupiter-symbol.svg" width="34" height="34" alt="" decoding="async">
-        <span class="market-badge-copy"><span class="market-badge-label">Verified on</span><span class="market-badge-name">Jupiter</span></span>
-        <svg class="market-badge-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg>
-      </a>
-    </div>
-
     <div class="trust-badges">
       <div class="badge" id="badgeMint"><span class="dot"></span><span id="badgeMintText">Mint Authority — —</span></div>
       <div class="badge" id="badgeFreeze"><span class="dot"></span><span id="badgeFreezeText">Freeze Authority — —</span></div>
     </div>
 
+
+    <div class="market-links" role="group" aria-label="Find BULLEN on CoinGecko and Jupiter">
+      <a class="market-link" href="https://www.coingecko.com/en/coins/bullen" target="_blank" rel="noopener noreferrer" aria-label="BULLEN listed on CoinGecko (opens in a new tab)" title="Listed on CoinGecko">
+        <img src="/assets/markets/coingecko-symbol.svg" width="18" height="18" alt="" decoding="async">
+        <span class="market-link-name">CoinGecko</span>
+      </a>
+      <span class="market-links-divider" aria-hidden="true"></span>
+      <a class="market-link" href="https://jup.ag/tokens/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN" target="_blank" rel="noopener noreferrer" aria-label="BULLEN verified on Jupiter (opens in a new tab)" title="Verified on Jupiter">
+        <img src="/assets/markets/jupiter-symbol.svg" width="18" height="18" alt="" decoding="async">
+        <span class="market-link-name">Jupiter</span>
+      </a>
+    </div>
 
     <div class="contract-row">
       <button class="contract-copy" id="contractCopy" type="button" aria-label="Copy contract address" title="Copy contract address" disabled>
