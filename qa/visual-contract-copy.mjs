@@ -48,7 +48,6 @@ try {
         if (legacyVerificationLink) legacyVerificationLink.style.display = 'inline-flex';
         document.getElementById('badgeMintText').textContent = 'Mint Authority — Revoked';
         document.getElementById('badgeFreezeText').textContent = 'Freeze Authority — Revoked';
-        document.getElementById('dropBtn').textContent = 'The Drop · 32%';
       });
       const geometry = () => page.evaluate(() => {
         const rect = selector => {

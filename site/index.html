@@ -123,7 +123,7 @@
   @media(prefers-reduced-motion:reduce){ .hero-bg{ transition:none; } }
   .hero-bg img{ width:100%; height:100%; object-fit:cover; object-position:center 20%; display:block; }
   @media(max-width:700px){
-    html[data-bullen-page="index"] body .hero{ min-height:clamp(724px,calc(190vw + 34px),964px); }
+    html[data-bullen-page="index"] body .hero{ min-height:clamp(690px,190vw,930px); }
     .hero-bg{ top:var(--bullen-header-height,56px); }
     .hero-bg img{
       height:auto; object-fit:contain; object-position:center top;
@@ -803,14 +803,7 @@
        one value, so the edges line up down the page. */
     :root{ --m-stack:260px; }
 
-    /* HERO BUTTONS: one column, not two-then-one.
-       .btn is clamp(168px, 15vw, 210px), so on a 390px screen exactly two fit
-       on a line and the third drops beneath them. That asymmetry reads as a
-       wrapping accident rather than a layout, and it moves depending on the
-       handset width. Stacking is deliberate at every width, and the tap
-       targets get bigger. Three across was the alternative and would have
-       squeezed the primary call to action to about 120px including its
-       letter-spacing -- too narrow for "BUY $BULLEN" to survive. */
+    /* Keep both primary actions aligned with the mobile authority details. */
     .cta{
       flex-direction:column;
       align-items:center;
@@ -3126,7 +3119,6 @@
 
     <div class="cta">
       <a href="#" id="buyBtn" class="btn solid">Buy $BULLEN</a>
-      <a href="/thedrop" id="dropBtn" class="btn">The Drop</a>
       <a href="#nft" id="contractBtn" class="btn">The Herd</a>
     </div>
 
@@ -8457,33 +8449,7 @@
 </script>
 
 
-<!-- THE DROP: the live figure on the hero button.
 
-     A button that only links to the counter does less work than one that
-     carries it, so this fills the label with the real percentage and with
-     UNLOCKED when the bar fills.
-
-     Fails quiet. If /drop cannot be read the button keeps its plain label and
-     still links correctly -- a hero button rendering an error is worse than
-     one rendering a plain word. -->
-<script>
-(function(){
-  var b = document.getElementById('dropBtn');
-  if (!b) return;
-  function paint(){
-    fetch('/drop?nocache=' + Date.now())
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if (!d || d.ok !== true) return;
-        var pct = Math.floor(Math.max(0, Math.min(100, Number(d.pct) || 0)));
-        b.textContent = d.unlocked ? 'The Drop \u00b7 UNLOCKED' : 'The Drop \u00b7 ' + pct + '%';
-      })
-      .catch(function(){ /* the plain label is the fallback */ });
-  }
-  paint();
-  setInterval(paint, 30000);
-})();
-</script>
 <script>(function(){const ids=["statPrice", "statMcap", "statLiquidity", "statVolume", "statSupply", "statPriceChange", "cumulativeVolumeValue", "nftMintedCount", "nftUsdEquivalent", "nftBurnedViaMintsBox"];ids.forEach(id=>{const el=document.getElementById(id);if(!el)return;const update=()=>{const pending=/^(Loading|Reading)/i.test(el.textContent);const unavailable=/unavailable|^--/i.test(el.textContent);const next=pending?'pending':unavailable?'unavailable':'ready';if(el.dataset.reading!==next){el.dataset.reading=next;if(next==='ready')el.classList.add('record-arrived');else el.classList.remove('record-arrived');}};new MutationObserver(update).observe(el,{childList:true,subtree:true,characterData:true});update();});})();</script>
 </body>
 </html>
