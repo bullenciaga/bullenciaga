@@ -483,7 +483,9 @@
     .market-links{margin-top:118px;}
   }
   @media(max-width:480px){
-    .market-links{gap:16px;margin-top:106px;}
+    /* Move the lower links above mobile browser chrome without shifting the actions. */
+    .hero main{padding-bottom:64px;}
+    .market-links{gap:16px;margin-top:42px;}
     .market-link{gap:7px;font-size:10px;}
   }
 
