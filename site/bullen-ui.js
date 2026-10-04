@@ -154,7 +154,6 @@
 
     const homeSections = [
       ['/#stats', 'Live Stats'],
-      ['/#how-to-buy', 'How To Buy'],
       ['/#nft', 'The Herd Collection'],
       ['/#gallery', 'Browse The Herd'],
       ['/#roadmap', 'Roadmap'],
