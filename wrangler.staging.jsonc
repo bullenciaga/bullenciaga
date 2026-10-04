@@ -26,6 +26,14 @@
         "limit": 10,
         "period": 60
       }
+    },
+    {
+      "name": "MERCH_PREVIEW_LIMIT",
+      "namespace_id": "9262604",
+      "simple": {
+        "limit": 10,
+        "period": 60
+      }
     }
   ],
   "services": [
@@ -33,5 +41,14 @@
       "binding": "CONTROL_AUTH",
       "service": "rpc-proxy-staging"
     }
-  ]
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MERCH_PREVIEW_ASSETS",
+      "bucket_name": "bullenciaga-merch-preview-staging"
+    }
+  ],
+  "vars": {
+    "MERCH_PREVIEW_PREFIX": "collection01-v2-20261005"
+  }
 }

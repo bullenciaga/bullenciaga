@@ -1,5 +1,6 @@
 import { platformSignupsAdmin } from './platform-signups-admin.mjs';
 import { platformSignup } from './platform-signup.mjs';
+import { merchPreview } from './merch-preview.mjs';
 
 // Keep short-domain visits on the established origin for wallets and sessions.
 const aliases = new Set(['bullen.app', 'www.bullen.app']);
@@ -101,6 +102,7 @@ export default {
         },
       });
     }
+    if (url.pathname === '/merch' || url.pathname.startsWith('/merch/')) return merchPreview(request, env);
     if (url.pathname === '/platform/signups') return platformSignupsAdmin(request, env);
     if (url.pathname === '/platform/signup') return platformSignup(request, env);
     const userAgent = request.headers.get('User-Agent') || '';

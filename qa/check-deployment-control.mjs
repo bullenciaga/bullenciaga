@@ -26,11 +26,14 @@ const stagingConfig = parseJsonc(stagingConfigText);
 assert.equal(stagingConfig.name, 'bullenciaga-staging');
 assert.equal(stagingConfig.workers_dev, true, 'staging must use workers.dev');
 assert.equal(stagingConfig.preview_urls, true, 'staging preview URLs must be enabled');
-for (const forbidden of ['route', 'routes', 'kv_namespaces', 'r2_buckets', 'triggers']) {
+for (const forbidden of ['route', 'routes', 'kv_namespaces', 'triggers']) {
   assert(!(forbidden in stagingConfig), `staging config must not define ${forbidden}`);
 }
 
 const productionConfig = parseJsonc(productionConfigText);
+assert.deepEqual(stagingConfig.r2_buckets, [{ binding: 'MERCH_PREVIEW_ASSETS', bucket_name: 'bullenciaga-merch-preview-staging' }], 'staging may bind only its isolated private preview bucket');
+assert.deepEqual(productionConfig.r2_buckets, [{ binding: 'MERCH_PREVIEW_ASSETS', bucket_name: 'bullenciaga-merch-preview' }], 'production may bind only its private preview bucket');
+assert.notEqual(stagingConfig.r2_buckets[0].bucket_name, productionConfig.r2_buckets[0].bucket_name, 'staging must never bind production preview storage');
 assert.equal(productionConfig.name, 'bullenciaga');
 assert.deepEqual(productionConfig.routes, [
   { pattern: 'bullenciaga.com', custom_domain: true },
