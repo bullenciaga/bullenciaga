@@ -1,6 +1,13 @@
 (() => {
   'use strict';
   const install = () => {
+    // Keep previously shared tutorial links useful after moving buying to /buy.
+    const redirectLegacyBuy = () => {
+      if (!['/', '/index.html'].includes(location.pathname) || location.hash !== '#how-to-buy') return false;
+      location.replace('/buy' + location.search);
+      return true;
+    };
+    if (redirectLegacyBuy()) return;
     const root = document.documentElement;
     const markEntry = () => {
       const state = history.state;
@@ -131,6 +138,7 @@
       });
     });
     addEventListener('hashchange', () => {
+      if (redirectLegacyBuy()) return;
       if (!restoringHistory) followFragment(fragmentTarget(location.hash), false);
       if (!restoringHistory) markEntry();
     });

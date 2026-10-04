@@ -8,7 +8,7 @@ const evidence = process.env.NAV_EVIDENCE || '/tmp/bullen-fragment-navigation.js
 const browser = await chromium.launch({ channel: process.env.CHROME_CHANNEL || 'chrome' });
 const results = [];
 const iphone = 'Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0.7339.39 Mobile/15E148 Safari/604.1';
-const sections = ['stats', 'how-to-buy', 'nft', 'gallery', 'roadmap', 'faq'];
+const sections = ['stats', 'nft', 'gallery', 'roadmap', 'faq'];
 try {
   for (const mobile of [false, true]) {
     const context = await browser.newContext({ viewport: { width: mobile ? 390 : 1440, height: 900 }, ...(mobile ? {userAgent:iphone,isMobile:true,hasTouch:true} : {}) });
