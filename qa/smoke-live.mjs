@@ -21,7 +21,9 @@ const pageChecks = [
   ['/dev', /<title>BULLENCIAGA — The Developer Record/i],
   ['/platform', /<title>early preview — bullenciaga/i],
   ['/buy', /<title>BULLENCIAGA — Buy \$BULLEN/i],
-  ['/', /<title>BULLENCIAGA — A token with horns\./i],
+  ['/', smokePhase === 'preflight'
+    ? /<title>BULLENCIAGA — (?:A token with horns\.|One House\. Everything connected\.)/i
+    : /<title>BULLENCIAGA — One House\. Everything connected\.<\/title>/i],
   ['/deepdive', /<title>Deep Dive — \$BULLEN, beyond the candle/i],
   ['/stats', /<title>BULLENCIAGA — Live Dashboard/i],
   ['/chart', /<title>BULLENCIAGA — \$BULLEN chart/i],
