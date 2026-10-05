@@ -17,7 +17,9 @@ function headers(extra = {}) {
     'Cache-Control': 'private, no-store, max-age=0',
     Pragma: 'no-cache', Expires: '0', Vary: 'Cookie',
     'X-Robots-Tag': 'noindex, nofollow, noarchive, nosnippet',
-    'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer',
+    // Native form POSTs need a same-origin Origin header for the CSRF check.
+    // no-referrer would make browsers send Origin: null even to this origin.
+    'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin',
     'Cross-Origin-Resource-Policy': 'same-origin',
     'Cross-Origin-Opener-Policy': 'same-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',

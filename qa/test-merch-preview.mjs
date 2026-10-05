@@ -35,6 +35,9 @@ function privateHeaders(response) {
   assert.match(response.headers.get('Cache-Control'), /private, no-store/);
   assert.match(response.headers.get('X-Robots-Tag'), /noindex.*noarchive/);
   assert.equal(response.headers.get('X-Content-Type-Options'), 'nosniff');
+  // Preserve native login/logout POST origins without sending cross-origin referrers.
+  // A no-referrer response makes native form POSTs send Origin: null, which must stay denied.
+  assert.equal(response.headers.get('Referrer-Policy'), 'same-origin');
   assert.match(response.headers.get('Content-Security-Policy'), /frame-ancestors 'none'/);
   assert.equal(response.headers.get('Access-Control-Allow-Origin'), null);
   assert.equal(response.headers.get('ETag'), null);
