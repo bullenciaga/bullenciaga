@@ -50,6 +50,7 @@ assert.match(staging, /paths:[\s\S]*wrangler\.production\.jsonc/, 'staging must 
 assert.match(staging, /^\s+workflow_dispatch:/m, 'staging must retain an emergency manual trigger');
 assert.match(staging, /^\s+- main$/m, 'automatic staging must target main only');
 assert.match(staging, /wrangler\.staging\.jsonc/, 'staging must use the route-free config');
+assert.match(staging, /command: deploy --config wrangler\.staging\.jsonc --experimental-provision=false/, 'staging must use existing resources without auto-provisioning');
 assert.match(staging, /SMOKE_INCLUDE_API:\s*["']0["']/, 'staging must not probe production APIs');
 
 assert.match(production, /^\s+workflow_run:/m, 'production must follow a completed staging workflow');
@@ -62,6 +63,7 @@ assert.match(production, /Preflight current production pages and APIs/, 'product
 assert.match(production, /workers\/scripts\/bullenciaga\/deployments/, 'production must capture the live rollback target automatically');
 assert.match(production, /current-production-version\.mjs/, 'production must validate the rollback response');
 assert.match(production, /versions upload/, 'production must upload before promotion');
+assert.match(production, /versions upload\s+--config wrangler\.production\.jsonc\s+--experimental-provision=false/, 'version uploads must use existing resources without auto-provisioning');
 assert.match(production, /versions deploy/, 'production must promote an exact version');
 assert.match(production, /rollback \$\{\{ steps\.rollback\.outputs\.version_id \}\}/, 'production must roll back to the captured live version');
 assert(!production.includes('approved_commit_sha'), 'manual commit input is forbidden');
