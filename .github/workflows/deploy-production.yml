@@ -95,6 +95,7 @@ jobs:
           command: >-
             versions upload
             --config wrangler.production.jsonc
+            --experimental-provision=false
             --tag ${{ steps.release.outputs.tag }}
             --message "GitHub ${{ steps.fingerprint.outputs.commit_sha }}"
 
