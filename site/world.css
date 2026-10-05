@@ -57,10 +57,8 @@ svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width:
 .icon-library { position: absolute; width: 0; height: 0; overflow: hidden; }
 .skip-link { position: fixed; z-index: 20; top: -90px; left: 16px; padding: 12px 18px; border-radius: 8px; background: #e1d7ef; color: #17141c; }
 .skip-link:focus { top: 16px; }
-.world-shell { position: relative; width: min(780px, calc(100% - 48px)); margin-inline: auto; padding: 54px 0 30px; }
-.identity { text-align: center; margin-bottom: 36px; }
-.house-mark { display: grid; place-items: center; width: 62px; height: 62px; margin: 0 auto 17px; color: #d1cdd7; }
-.monogram { width: 55px; height: 55px; }
+.world-shell { position: relative; width: min(780px, calc(100% - 48px)); margin-inline: auto; padding: 40px 0 30px; }
+.identity { text-align: center; margin-bottom: 28px; }
 .wordmark { font-size: 12px; font-weight: 600; letter-spacing: .28em; padding-left: .28em; color: #dad6df; }
 h1 { font-size: clamp(34px, 6vw, 48px); font-weight: 500; line-height: 1.22; letter-spacing: -.055em; margin: 19px 0 9px; }
 .intro { font-size: 12px; color: var(--muted); letter-spacing: .015em; }
@@ -84,13 +82,13 @@ h1 { font-size: clamp(34px, 6vw, 48px); font-weight: 500; line-height: 1.22; let
 .listen-link { display: flex; align-items: center; gap: 13px; border: 1px solid rgba(228, 219, 240, .15); border-radius: 10px; padding: 11px 13px; min-height: 63px; background: linear-gradient(105deg, rgba(205, 193, 224, .08), rgba(211, 197, 230, .035)); transition: background .18s ease, border-color .18s ease; }
 .listen-link>span { font-size: 13px; line-height: 1.4; }
 .listen-link small { display: block; font-size: 9px; letter-spacing: .1em; color: #a8a1b3; margin-bottom: 2px; }
-.service-icon { width: 23px; height: 23px; color: #d4cddd; }
+.service-icon { display: block; width: 24px; height: 24px; flex: none; object-fit: contain; }
 .link-arrow { width: 18px; height: 18px; margin-left: auto; color: #a79cb8; transition: color .18s ease; }
 .listen-link:hover { border-color: rgba(215, 195, 240, .36); background: rgba(199, 178, 222, .12); }
 a:hover>.link-arrow { color: #e3d2f4; }
 .film-link { display: flex; align-items: center; gap: 21px; margin-top: 13px; padding: 22px 25px; border-radius: 17px; transition: border-color .18s ease, background .18s ease; }
 .film-icon { width: 49px; height: 49px; border-radius: 13px; display: grid; place-items: center; flex: none; color: #c9c0d8; border: 1px solid rgba(213, 200, 231, .13); background: rgba(151, 130, 179, .055); }
-.film-icon svg { width: 25px; height: 25px; }
+.film-icon img { display: block; width: 29px; height: auto; object-fit: contain; }
 .film-copy { display: grid; gap: 3px; }
 .film-copy .eyebrow { font-size: 9px; color: #aba1b9; }
 .film-copy strong { font-weight: 500; font-size: 17px; letter-spacing: -.025em; }
@@ -102,13 +100,13 @@ a:hover>.link-arrow { color: #e3d2f4; }
 .section-label>span { flex: 1; height: 1px; background: linear-gradient(to right, var(--line), rgba(222, 214, 236, .025)); }
 .artist-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .artist-link { display: flex; align-items: center; gap: 13px; border-radius: 13px; padding: 17px 19px; min-height: 80px; transition: border-color .18s ease, background-color .18s ease; }
-.artist-link .service-icon { width: 21px; height: 21px; color: #bcb5c6; }
 .artist-link strong { display: block; font-weight: 500; font-size: 12px; }
 .artist-link small { display: block; font-size: 10px; color: var(--muted); margin-top: 2px; }
 .artist-link .link-arrow { width: 15px; height: 15px; }
 .house-links { display: flex; align-items: center; justify-content: center; gap: 26px; margin: 29px 0 0; }
 .house-links a { display: flex; align-items: center; gap: 9px; min-height: 46px; font-size: 12px; color: #b1aab9; }
 .house-links a>svg { width: 15px; height: 15px; }
+.social-icon { display: block; width: 16px; height: auto; flex: none; object-fit: contain; }
 .house-links a>.small-arrow { width: 11px; height: 11px; color: #716a7d; margin-left: 2px; }
 .house-links a:hover { color: #e5daef; }
 .house-divider { height: 15px; width: 1px; background: var(--line); }
@@ -119,10 +117,8 @@ footer p { font-size: 10px; letter-spacing: .06em; color: #8b8593; }
   .glass { background: linear-gradient(130deg, #24222a, #19181e 65%); }
 }
 @media (max-width: 600px) {
-  .world-shell { width: min(440px, calc(100% - 32px)); padding-top: 35px; padding-bottom: max(27px, env(safe-area-inset-bottom)); }
-  .identity { margin-bottom: 27px; }
-  .house-mark { width: 49px; height: 49px; margin-bottom: 14px; }
-  .monogram { width: 46px; height: 46px; }
+  .world-shell { width: min(440px, calc(100% - 32px)); padding-top: 24px; padding-bottom: max(27px, env(safe-area-inset-bottom)); }
+  .identity { margin-bottom: 22px; }
   .wordmark { font-size: 10px; }
   h1 { font-size: 37px; margin-top: 17px; }
   .intro { font-size: 12px; }
@@ -134,11 +130,10 @@ footer p { font-size: 10px; letter-spacing: .06em; color: #8b8593; }
   .release h2 br { display: none; }
   .release-artist { font-size: 10px; margin: 8px 0 19px; }
   .listen-links { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .listen-link { min-height: 62px; gap: 9px; padding: 11px 10px; border-radius: 9px; }
-  .listen-link .service-icon { width: 21px; height: 21px; }
+  .listen-link { min-height: 62px; gap: 12px; padding: 11px 10px; border-radius: 9px; }
   .listen-link>span { font-size: 12px; }
   .listen-link small { font-size: 9px; }
-  .listen-link .link-arrow { width: 13px; height: 13px; }
+  .listen-link .link-arrow { display: none; }
   .film-link { gap: 15px; padding: 20px 18px; border-radius: 15px; }
   .film-icon { width: 43px; height: 43px; border-radius: 11px; }
   .film-copy strong { font-size: 15px; }
@@ -147,8 +142,7 @@ footer p { font-size: 10px; letter-spacing: .06em; color: #8b8593; }
   .film-link>.link-arrow { width: 16px; height: 16px; }
   .artist-section { margin-top: 27px; }
   .artist-links { gap: 9px; }
-  .artist-link { padding: 15px 12px; gap: 9px; min-height: 76px; }
-  .artist-link .service-icon { width: 19px; height: 19px; }
+  .artist-link { padding: 15px 12px; gap: 12px; min-height: 76px; }
   .artist-link strong { font-size: 12px; }
   .artist-link small { font-size: 10px; }
   .artist-link .link-arrow { width: 12px; height: 12px; }
@@ -166,7 +160,7 @@ footer p { font-size: 10px; letter-spacing: .06em; color: #8b8593; }
   .listen-link { padding-inline: 13px; }
   .listen-link>span { font-size: 13px; }
   .listen-link small { font-size: 9px; }
-  .artist-link { gap: 7px; padding-inline: 10px; }
+  .artist-link { gap: 12px; padding-inline: 10px; }
   .artist-link .link-arrow { display: none; }
   .house-links { gap: 17px; }
 }
