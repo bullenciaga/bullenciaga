@@ -17,6 +17,7 @@ assert(Number.isFinite(initialRetryDelayMs) && initialRetryDelayMs >= 0 && initi
 const retryableStatuses = new Set([404, 408, 425, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524]);
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const pageChecks = [
+  ['/world', /<title>BULLENCIAGA — World<\/title>/i],
   ['/what-if-i-held', /<title>What if I held\? — BULLENCIAGA/i],
   ['/dev', /<title>BULLENCIAGA — The Developer Record/i],
   ['/platform', /<title>early preview — bullenciaga/i],
@@ -49,7 +50,7 @@ const effectivePageChecks = smokePhase === 'preflight'
   // Preflight proves the currently deployed release. Pages introduced by the
   // candidate cannot exist until after promotion, so require them only in the
   // post-release smoke test.
-  ? pageChecks.filter(([path]) => !['/what-if-i-held', '/deepdive', '/dev', '/platform', '/buy', '/giveaways', '/tape', '/patchnotes', '/patchnotes-001', '/patchnotes-002', '/lock', '/ledger', '/passport', '/flywheel'].includes(path))
+  ? pageChecks.filter(([path]) => !['/world', '/what-if-i-held', '/deepdive', '/dev', '/platform', '/buy', '/giveaways', '/tape', '/patchnotes', '/patchnotes-001', '/patchnotes-002', '/lock', '/ledger', '/passport', '/flywheel'].includes(path))
   : pageChecks;
 
 const apiChecks = [
