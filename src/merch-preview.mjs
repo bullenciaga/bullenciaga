@@ -1,6 +1,8 @@
 // The preview payload lives in a private R2 bucket, never the public site assets.
 // Rotating either secret invalidates existing sessions. Nothing here places an order.
 const SESSION_COOKIE = '__Secure-bullen_merch';
+const PREVIEW_PATH = '/goods';
+const LEGACY_PATH = '/merch';
 const SESSION_SECONDS = 12 * 60 * 60;
 const MAX_LOGIN_BYTES = 2048;
 const encoder = new TextEncoder();
@@ -35,7 +37,7 @@ function reply(text, status = 200, extra = {}, head = false) {
 function loginPage(message = '', status = 200, head = false) {
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light dark"><title>Private preview — BULLENCIAGA</title><style>
     :root{color-scheme:light dark;--paper:#eee8dc;--ink:#171712;--line:#cbc4b7;--muted:#646259}*{box-sizing:border-box}body{margin:0;min-height:100svh;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;display:grid;grid-template-rows:auto 1fr auto}header,footer{padding:28px clamp(24px,5vw,72px)}header{border-bottom:1px solid var(--line);font-size:15px;font-weight:600;letter-spacing:.14em}main{width:min(100%,470px);margin:auto;padding:64px 28px}p{font-size:14px;line-height:1.6;color:var(--muted)}.eyebrow,footer{font-size:10px;letter-spacing:.12em;text-transform:uppercase}h1{font-size:clamp(34px,8vw,46px);font-weight:400;letter-spacing:-.04em;margin:18px 0 20px}label{display:block;font-size:12px;margin:30px 0 10px}input,button{width:100%;border-radius:0;min-height:50px;font:inherit}input{background:transparent;border:1px solid var(--line);color:var(--ink);padding:12px}button{border:1px solid var(--ink);background:var(--ink);color:var(--paper);font-size:12px;letter-spacing:.05em;margin-top:12px;cursor:pointer}input:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:4px}.message{min-height:24px;margin:12px 0 0}footer{border-top:1px solid var(--line);color:var(--muted)}@media(prefers-color-scheme:dark){:root{--paper:#11110f;--ink:#eee8dc;--line:#39382f;--muted:#b0aa9d}}
-  </style></head><body><header>BULLENCIAGA</header><main><p class="eyebrow">The House / Private preview</p><h1>A first look.</h1><p>Enter your password to open the collection.</p><form method="post" action="/merch/login"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" maxlength="256" required><button type="submit">Enter the preview</button><p class="message" role="status">${message}</p></form></main><footer>One House. Everything connected.</footer></body></html>`;
+  </style></head><body><header>BULLENCIAGA</header><main><p class="eyebrow">The House / Private preview</p><h1>A first look.</h1><p>Enter your password to open the collection.</p><form method="post" action="${PREVIEW_PATH}/login"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" maxlength="256" required><button type="submit">Enter the preview</button><p class="message" role="status">${message}</p></form></main><footer>One House. Everything connected.</footer></body></html>`;
   return reply(html, status, { 'Content-Type': 'text/html; charset=utf-8' }, head);
 }
 
@@ -60,7 +62,7 @@ function equalDigest(actual, expected) {
 }
 
 function cookie(value, maxAge = SESSION_SECONDS) {
-  return `${SESSION_COOKIE}=${value}; Path=/merch; Max-Age=${maxAge}; Secure; HttpOnly; SameSite=Strict`;
+  return `${SESSION_COOKIE}=${value}; Path=${PREVIEW_PATH}; Max-Age=${maxAge}; Secure; HttpOnly; SameSite=Strict`;
 }
 
 async function signingKey(env) {
@@ -117,8 +119,8 @@ async function readLogin(request) {
 }
 
 function assetName(pathname) {
-  if (pathname === '/merch' || pathname === '/merch/') return 'index.html';
-  const relative = pathname.slice('/merch/'.length);
+  if (pathname === PREVIEW_PATH || pathname === `${PREVIEW_PATH}/`) return 'index.html';
+  const relative = pathname.slice(PREVIEW_PATH.length + 1);
   // No encoded separators, dot segments, hidden files or double decoding.
   if (relative.length > 512 || !relative.split('/').every(part => /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(part))) return null;
   const extension = relative.split('.').pop().toLowerCase();
@@ -127,14 +129,22 @@ function assetName(pathname) {
 
 export async function merchPreview(request, env) {
   const url = new URL(request.url), head = request.method === 'HEAD';
-  if (url.pathname !== '/merch' && !url.pathname.startsWith('/merch/')) return null;
+  const legacy = url.pathname === LEGACY_PATH || url.pathname.startsWith(`${LEGACY_PATH}/`);
+  if (!legacy && url.pathname !== PREVIEW_PATH && !url.pathname.startsWith(`${PREVIEW_PATH}/`)) return null;
+  const pathname = legacy ? PREVIEW_PATH + url.pathname.slice(LEGACY_PATH.length) : url.pathname;
   try {
     if (url.protocol !== 'https:' || !configReady(env)) return reply('Preview temporarily unavailable.', 503, {}, head);
-    if (url.pathname === '/merch/login' || url.pathname === '/merch/logout') {
+    if (legacy && ['GET', 'HEAD'].includes(request.method)) {
+      // Keep old links and assets working without serving private bytes here.
+      return reply('', 308, { Location: pathname + url.search }, head);
+    }
+    // Old forms retain the same CSRF, throttling and password checks, then
+    // issue or expire the canonical cookie without replaying a POST redirect.
+    if (pathname === `${PREVIEW_PATH}/login` || pathname === `${PREVIEW_PATH}/logout`) {
       if (request.method !== 'POST') return reply('Method not allowed.', 405, { Allow: 'POST' }, head);
       if (request.headers.get('Origin') !== url.origin || request.headers.get('Sec-Fetch-Site') === 'cross-site') return reply('Request not allowed.', 403);
-      if (url.pathname === '/merch/logout') {
-        return reply('', 303, { Location: '/merch', 'Set-Cookie': cookie('', 0) });
+      if (pathname === `${PREVIEW_PATH}/logout`) {
+        return reply('', 303, { Location: PREVIEW_PATH, 'Set-Cookie': cookie('', 0) });
       }
       const key = hex(await hash(`merch-login:${request.headers.get('CF-Connecting-IP') || 'unknown'}`));
       const limit = await env.MERCH_PREVIEW_LIMIT.limit({ key });
@@ -145,16 +155,16 @@ export async function merchPreview(request, env) {
       if (!equalDigest(suppliedHash, unhex(env.MERCH_PREVIEW_PASSWORD_SHA256)) || password === null) {
         return loginPage('That password did not match. Please try again.', 401);
       }
-      return reply('', 303, { Location: '/merch/', 'Set-Cookie': cookie(await createSession(url.origin, env)) });
+      return reply('', 303, { Location: `${PREVIEW_PATH}/`, 'Set-Cookie': cookie(await createSession(url.origin, env)) });
     }
     if (!['GET', 'HEAD'].includes(request.method)) return reply('Method not allowed.', 405, { Allow: 'GET, HEAD' }, head);
     if (!await authenticated(request, env, url.origin)) {
-      return url.pathname === '/merch' || url.pathname === '/merch/'
+      return pathname === PREVIEW_PATH || pathname === `${PREVIEW_PATH}/`
         ? loginPage('', 200, head) : reply('Authentication required.', 401, {}, head);
     }
-    const name = assetName(url.pathname);
+    const name = assetName(pathname);
     if (!name) return reply('Not found.', 404, {}, head);
-    if (url.pathname === '/merch') return reply('', 308, { Location: '/merch/' }, head);
+    if (pathname === PREVIEW_PATH) return reply('', 308, { Location: `${PREVIEW_PATH}/${url.search}` }, head);
     const key = `${env.MERCH_PREVIEW_PREFIX}/${name}`;
     const object = await env.MERCH_PREVIEW_ASSETS[head ? 'head' : 'get'](key);
     if (!object) return reply('Not found.', 404, {}, head);

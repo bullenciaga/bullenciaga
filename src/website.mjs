@@ -102,7 +102,7 @@ export default {
         },
       });
     }
-    if (url.pathname === '/merch' || url.pathname.startsWith('/merch/')) return merchPreview(request, env);
+    if (['/goods', '/merch'].some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) return merchPreview(request, env);
     if (url.pathname === '/platform/signups') return platformSignupsAdmin(request, env);
     if (url.pathname === '/platform/signup') return platformSignup(request, env);
     const userAgent = request.headers.get('User-Agent') || '';
