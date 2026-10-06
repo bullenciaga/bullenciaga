@@ -86,19 +86,12 @@ h1 { font-size: clamp(34px, 6vw, 48px); font-weight: 500; line-height: 1.22; let
 .link-arrow { width: 18px; height: 18px; margin-left: auto; color: #a79cb8; transition: color .18s ease; }
 .listen-link:hover { border-color: rgba(215, 195, 240, .36); background: rgba(199, 178, 222, .12); }
 a:hover>.link-arrow { color: #e3d2f4; }
-.film-link { display: flex; align-items: center; gap: 21px; margin-top: 13px; padding: 22px 25px; border-radius: 17px; transition: border-color .18s ease, background .18s ease; }
-.film-icon { width: 49px; height: 49px; border-radius: 13px; display: grid; place-items: center; flex: none; color: #c9c0d8; border: 1px solid rgba(213, 200, 231, .13); background: rgba(151, 130, 179, .055); }
-.film-icon img { display: block; width: 29px; height: auto; object-fit: contain; }
-.film-copy { display: grid; gap: 3px; }
-.film-copy .eyebrow { font-size: 9px; color: #aba1b9; }
-.film-copy strong { font-weight: 500; font-size: 17px; letter-spacing: -.025em; }
-.link-caption { font-size: 11px; color: var(--muted); }
-.film-link:hover, .artist-link:hover { border-color: rgba(215, 195, 240, .29); background-color: rgba(105, 92, 124, .1); }
+.artist-link:hover { border-color: rgba(215, 195, 240, .29); background-color: rgba(105, 92, 124, .1); }
 .artist-section { margin-top: 31px; }
 .section-label { display: flex; align-items: center; gap: 17px; margin: 0 2px 12px; }
 .section-label h2 { font-size: 11px; font-weight: 500; letter-spacing: .015em; white-space: nowrap; color: var(--muted); }
 .section-label>span { flex: 1; height: 1px; background: linear-gradient(to right, var(--line), rgba(222, 214, 236, .025)); }
-.artist-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.artist-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .artist-link { display: flex; align-items: center; gap: 13px; border-radius: 13px; padding: 17px 19px; min-height: 80px; transition: border-color .18s ease, background-color .18s ease; }
 .artist-link strong { display: block; font-weight: 500; font-size: 12px; }
 .artist-link small { display: block; font-size: 10px; color: var(--muted); margin-top: 2px; }
@@ -116,6 +109,9 @@ footer p { font-size: 10px; letter-spacing: .06em; color: #8b8593; }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass { background: linear-gradient(130deg, #24222a, #19181e 65%); }
 }
+@media (max-width: 740px) {
+  .artist-links { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 600px) {
   .world-shell { width: min(440px, calc(100% - 32px)); padding-top: 24px; padding-bottom: max(27px, env(safe-area-inset-bottom)); }
   .identity { margin-bottom: 22px; }
@@ -129,17 +125,11 @@ footer p { font-size: 10px; letter-spacing: .06em; color: #8b8593; }
   .release h2 { font-size: 32px; }
   .release h2 br { display: none; }
   .release-artist { font-size: 10px; margin: 8px 0 19px; }
-  .listen-links { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .listen-links { grid-template-columns: minmax(0, 1fr); gap: 9px; }
   .listen-link { min-height: 62px; gap: 12px; padding: 11px 10px; border-radius: 9px; }
   .listen-link>span { font-size: 12px; }
   .listen-link small { font-size: 9px; }
-  .listen-link .link-arrow { display: none; }
-  .film-link { gap: 15px; padding: 20px 18px; border-radius: 15px; }
-  .film-icon { width: 43px; height: 43px; border-radius: 11px; }
-  .film-copy strong { font-size: 15px; }
-  .film-copy .eyebrow { font-size: 9px; }
-  .film-copy .link-caption { font-size: 11px; }
-  .film-link>.link-arrow { width: 16px; height: 16px; }
+  .listen-link .link-arrow { width: 16px; height: 16px; }
   .artist-section { margin-top: 27px; }
   .artist-links { gap: 9px; }
   .artist-link { padding: 15px 12px; gap: 12px; min-height: 76px; }
@@ -169,6 +159,6 @@ footer p { font-size: 10px; letter-spacing: .06em; color: #8b8593; }
   *, *::before, *::after { transition: none !important; }
 }
 @media (forced-colors: active) {
-  .glass, .listen-link, .film-icon { border: 1px solid CanvasText; }
+  .glass, .listen-link { border: 1px solid CanvasText; }
   .link-arrow, .service-icon { color: LinkText; }
 }
