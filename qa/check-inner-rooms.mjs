@@ -38,6 +38,7 @@ assert.match(css, /box-shadow:inset 0 0 0 2px var\(--bullen-focus\)/);
 assert.match(css, /@media \(max-width:700px\)/);
 assert.match(nav, /rooms: 'Inner Rooms'/);
 assert.match(nav, /\['rooms', '\/rooms\.html'\]/);
-assert.match(nav, /nav\.append\(buildLink\('rooms'\)\)/);
+assert.match(nav, /\['Explore', \['refer', 'thedrop', 'ledger', 'passport', 'rooms'\]\]/);
+assert.doesNotMatch(nav, /nav\.append\(buildLink\('rooms'\)\)/);
 
 console.log('Inner Rooms: signed Key gate, retained Salon client and responsive page verified');

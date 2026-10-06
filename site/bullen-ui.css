@@ -818,10 +818,28 @@ body.lightbox-open {
   .house-burn-registry__metric { padding: 12px; }
 }
 
+/* Pearl, rose and cyan echo the World orb without adding another badge. */
+.bullen-site-nav a.bullen-site-world { color: #e8e8f2; }
+.bullen-site-nav a.bullen-site-world::after {
+  background: linear-gradient(110deg, #79eeff, #cbb5ff 30%, #fff1b8 56%, #ff9fc7 78%, #8cf4ff);
+}
+
 /* A restrained silver finish for the platform invitation. */
 .bullen-site-nav a.bullen-site-platform { color: #d7d7d7; }
 .bullen-site-nav a.bullen-site-platform::after { background: #d7d7d7; }
 @supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .bullen-site-world > span {
+    background-image: linear-gradient(110deg, #79eeff 0%, #cbb5ff 23%, #fff1b8 48%, #ff9fc7 73%, #8cf4ff 100%);
+    background-size: 110% 100%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 7px rgba(185, 247, 255, 0.14));
+    transition: background-position 400ms ease;
+  }
+  .bullen-site-world:hover > span,
+  .bullen-site-world:focus-visible > span { background-position: 100% 50%; }
   .bullen-site-platform > span {
     background-image: linear-gradient(110deg, #999 0%, #dedede 24%, #fff 45%, #aaa 68%, #e5e5e5 100%);
     background-size: 200% 100%;
@@ -835,8 +853,10 @@ body.lightbox-open {
   .bullen-site-platform:focus-visible > span { background-position: 100% 50%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bullen-site-platform > span { transition: none; }
+  .bullen-site-platform > span,
+  .bullen-site-world > span { transition: none; }
 }
 @media (forced-colors: active) {
-  .bullen-site-platform > span { background: none; color: LinkText; }
+  .bullen-site-platform > span,
+  .bullen-site-world > span { background: none; color: LinkText; filter: none; }
 }

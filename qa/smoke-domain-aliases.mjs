@@ -23,3 +23,27 @@ for (const host of ['bullen.app', 'www.bullen.app']) for (const path of paths) {
   results.push(result);
 }
 console.log(JSON.stringify({ok:true, results}, null, 2));
+
+// Catch plain-HTTP page regressions that an HTTPS-only release smoke misses.
+const securePaths = ['/', '/world', '/world/', '/buy', '/platform', '/goods/', '/proof', '/world?ref=a%2Fb&tag=x+y&tag=z&empty='];
+const upgrades = [];
+for (const host of ['bullenciaga.com', 'www.bullenciaga.com']) for (const path of securePaths) {
+  let result;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const response = await fetch(`http://${host}${path}`, {method:'HEAD', redirect:'manual', signal:AbortSignal.timeout(15000)});
+      assert([301,308].includes(response.status));
+      const location = response.headers.get('location');
+      assert.equal(location, `https://${host}${path}`);
+      const secure = await fetch(location, {method:'HEAD', redirect:'manual', signal:AbortSignal.timeout(15000)});
+      assert.match(secure.headers.get('strict-transport-security') || '', /max-age=31536000/);
+      result = {host, path, status:response.status, location, hsts:true};
+      break;
+    } catch (error) {
+      if (attempt === 3) throw new Error(`HTTPS upgrade failed: ${host}${path}`, {cause:error});
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+  }
+  upgrades.push(result);
+}
+console.log(JSON.stringify({ok:true, upgrades}, null, 2));

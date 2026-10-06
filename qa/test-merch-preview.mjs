@@ -194,11 +194,12 @@ assert.match(legacyLogout.headers.get('Set-Cookie'), /Path=\/goods; Max-Age=0; S
 
 // Routing and deploy configuration keep the content outside public assets/Git.
 assert.equal(await merchPreview(request('/'), env), null);
-const publicResponse = new Response('ordinary public page');
-assert.equal(await website.fetch(request('/unchanged'), { ASSETS: { fetch() { return publicResponse; } } }), publicResponse);
-for (const path of ['/goods-news', '/merchandise', '/goodsish/index.html']) {
+for (const path of ['/unchanged', '/goods-news', '/merchandise', '/goodsish/index.html']) {
   assert.equal(await merchPreview(request(path), env), null);
-  assert.equal(await website.fetch(request(path), { ASSETS: { fetch() { return publicResponse; } } }), publicResponse);
+  const response = await website.fetch(request(path), { ASSETS: { fetch() { return new Response('ordinary public page'); } } });
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), 'ordinary public page');
+  assert.equal(response.headers.get('Strict-Transport-Security'), 'max-age=31536000');
 }
 for (const name of ['production', 'staging']) {
   const config = JSON.parse(readFileSync(new URL(`../wrangler.${name}.jsonc`, import.meta.url), 'utf8'));
