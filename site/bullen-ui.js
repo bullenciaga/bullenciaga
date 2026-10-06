@@ -23,6 +23,7 @@
     ledger: 'Living Ledger',
     passport: 'Wallet Passport',
     rooms: 'Inner Rooms',
+    world: 'World',
     platform: 'The platform',
     flywheel: 'Flywheel',
     bullensaga: 'BULLENSAGA',
@@ -43,6 +44,7 @@
     ['ledger', '/ledger.html'],
     ['passport', '/passport.html'],
     ['rooms', '/rooms.html'],
+    ['world', '/world'],
     ['platform', '/platform'],
     ['flywheel', '/flywheel'],
     ['bullensaga', 'https://bullensaga.com/'],
@@ -50,9 +52,9 @@
   const navigationGroups = [
     ['House', ['objects', 'lock', 'patchnotes', 'giveaways']],
     ['Market', ['buy', 'stats', 'deepdive', 'chart', 'tape', 'curve']],
-    ['Explore', ['refer', 'thedrop', 'ledger', 'passport']],
+    ['Explore', ['refer', 'thedrop', 'ledger', 'passport', 'rooms']],
   ];
-  const mobileNavigationKeys = ['buy', 'platform', 'flywheel', 'bullensaga', 'giveaways', 'objects', 'patchnotes', 'lock', 'stats', 'deepdive', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport'];
+  const mobileNavigationKeys = ['buy', 'world', 'platform', 'flywheel', 'bullensaga', 'giveaways', 'objects', 'patchnotes', 'lock', 'stats', 'deepdive', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport', 'rooms'];
   const destinationByKey = new Map(destinations);
 
   root.dataset.bullenPage = page;
@@ -81,6 +83,10 @@
       const link = document.createElement('a');
       link.href = href;
       link.textContent = labels[key];
+      if (key === 'world') {
+        link.className = 'bullen-site-world';
+        link.innerHTML = '<span>World</span>';
+      }
       if (key === 'platform') {
         link.className = 'bullen-site-platform';
         link.innerHTML = '<span>The platform</span>';
@@ -113,7 +119,9 @@
       mobileDirectory.append(link);
     }
     nav.append(mobileDirectory);
-    nav.append(buildLink('rooms'));
+    const worldLink = buildLink('world');
+    worldLink.classList.add('bullen-desktop-nav-link');
+    nav.append(worldLink);
     const platformLink = buildLink('platform');
     platformLink.classList.add('bullen-desktop-nav-link');
     nav.append(platformLink);

@@ -4,6 +4,8 @@ import { merchPreview } from './merch-preview.mjs';
 
 // Keep short-domain visits on the established origin for wallets and sessions.
 const aliases = new Set(['bullen.app', 'www.bullen.app']);
+const websiteHosts = new Set(['bullenciaga.com', 'www.bullenciaga.com']);
+const hsts = 'max-age=31536000';
 
 // Keep the native iPhone Chrome scroll view at the viewport's extent. Its
 // fullscreen controller otherwise reacts to document content-size/offset
@@ -90,18 +92,9 @@ const iphoneNavigation = `<style data-bullen-navigation>
 })();
 </script>`;
 
-export default {
+const website = {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (aliases.has(url.hostname)) {
-      return new Response(null, {
-        status: 308,
-        headers: {
-          Location: `https://bullenciaga.com${url.pathname}${url.search}`,
-          'Cache-Control': 'public, max-age=300',
-        },
-      });
-    }
     if (['/goods', '/merch'].some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) return merchPreview(request, env);
     if (url.pathname === '/platform/signups') return platformSignupsAdmin(request, env);
     if (url.pathname === '/platform/signup') return platformSignup(request, env);
@@ -143,5 +136,32 @@ export default {
         if (content) element.setAttribute('content', content.replace(/viewport-fit\s*=\s*cover/gi, 'viewport-fit=auto'));
       },
     }).transform(response);
+  },
+};
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const alias = aliases.has(url.hostname);
+    const websiteHost = websiteHosts.has(url.hostname);
+    // Upgrade before asset redirects, login forms or API handlers can run.
+    // Keep www on its own HTTPS origin so existing sessions remain valid.
+    if (alias || (websiteHost && url.protocol === 'http:')) {
+      return new Response(null, {
+        status: 308,
+        headers: {
+          Location: `https://${alias ? 'bullenciaga.com' : url.hostname}${url.pathname}${url.search}`,
+          'Cache-Control': 'public, max-age=300',
+          ...(url.protocol === 'https:' ? { 'Strict-Transport-Security': hsts } : {}),
+        },
+      });
+    }
+    const response = await website.fetch(request, env);
+    if (!websiteHost || url.protocol !== 'https:') return response;
+    // Cover successful pages, redirects, static assets and protected responses.
+    // Subdomains are separate services; do not opt them into HSTS here.
+    const secure = new Response(response.body, response);
+    secure.headers.set('Strict-Transport-Security', hsts);
+    return secure;
   },
 };

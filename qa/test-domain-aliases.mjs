@@ -23,7 +23,10 @@ for (const host of ['bullen.app', 'www.bullen.app']) for (const protocol of ['ht
 for (const host of ['bullenciaga.com', 'www.bullenciaga.com', 'bullenciaga-staging.workers.dev', 'bullen.app.example.com']) {
   const request = new Request(`https://${host}/buy?ref=keep`, { headers: { 'X-Forwarded-Host': 'bullen.app' } });
   const response = new Response('asset response', { status: 200 });
-  assert.equal(await worker.fetch(request, { ASSETS: { fetch(value) { assert.equal(value, request); return response; } } }), response);
+  const result = await worker.fetch(request, { ASSETS: { fetch(value) { assert.equal(value, request); return response; } } });
+  assert.equal(result.status, 200);
+  assert.equal(result.headers.get('location'), null);
+  assert.equal(await result.text(), 'asset response');
 }
 const post = await worker.fetch(new Request('https://bullen.app/any-path', { method: 'POST', body: 'test' }), {});
 assert.equal(post.status, 308, 'method-preserving redirect');

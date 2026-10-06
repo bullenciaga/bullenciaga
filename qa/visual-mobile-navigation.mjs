@@ -51,12 +51,14 @@ try {
       const jump = await inspect('.jumpto-menu', '.jumpto-item');
       await page.locator('.bullen-nav-toggle').click();
       await page.locator('.bullen-site-shell.nav-open .bullen-site-nav').waitFor({ state:'visible' });
-      const nav = await inspect('.bullen-site-nav', '.bullen-mobile-nav-directory a:not([aria-current]):not(.bullen-site-featured):not(.bullen-site-sister):not(.bullen-site-platform)');
+      const nav = await inspect('.bullen-site-nav', '.bullen-mobile-nav-directory a:not([aria-current]):not(.bullen-site-featured):not(.bullen-site-sister):not(.bullen-site-platform):not(.bullen-site-world)');
       assert.deepEqual(nav, jump, `${pathname} at ${width}: hamburger must match Jump To surface/type/insets`);
       assert.equal(await page.locator('.jumpto-btn').getAttribute('aria-expanded'), 'false', 'only one dropdown opens');
       const links = page.locator('.bullen-mobile-nav-directory a');
-      assert.equal(await links.count(), 16);
-      assert.deepEqual((await links.allTextContents()).slice(0, 5), ['Buy $BULLEN', 'The platform', 'Flywheel', 'BULLENSAGA', 'Giveaways']);
+      assert.deepEqual(await links.allTextContents(), ['Buy $BULLEN', 'World', 'The platform', 'Flywheel', 'BULLENSAGA', 'Giveaways', 'House Objects', 'House Record', 'Burn Reserve', 'Stats', 'Deep Dive', 'Chart', 'The Tape', 'Curve', 'Referrals', 'The Drop', 'Living Ledger', 'Wallet Passport', 'Inner Rooms']);
+      const world = page.locator('.bullen-mobile-nav-directory a[href="/world"]');
+      assert(await world.isVisible(), 'World is reachable immediately below Buy $BULLEN');
+      assert((await world.locator('span').evaluate(el => getComputedStyle(el).backgroundImage)).includes('linear-gradient'), 'World uses the iridescent accent');
       const flywheel = page.locator('.bullen-mobile-nav-directory a[href="/flywheel"]');
       assert(await flywheel.isVisible(), 'Flywheel is reachable below The platform');
       for (const link of await page.locator('.bullen-site-nav > .bullen-desktop-nav-link').all()) assert.equal(await link.isVisible(), false, 'compact navigation has no duplicate featured row');
@@ -64,8 +66,8 @@ try {
       for (const href of ['/buy', 'https://bullensaga.com/']) assert.equal(await page.locator(`.bullen-mobile-nav-directory a[href="${href}"]`).evaluate(el => getComputedStyle(el).color), gold, 'Buy and BULLENSAGA use the approved gold navigation accent');
       assert.notEqual(await page.locator('.bullen-mobile-nav-directory a[href="/giveaways.html"]').evaluate(el => getComputedStyle(el).color), gold, 'Giveaways retains the normal navigation style');
       if (pathname === '/') await page.screenshot({ path:path.join(output, `hamburger-${width}.png`) });
-      await page.locator('.bullen-site-nav > a[href="/rooms.html"]').scrollIntoViewIfNeeded();
-      assert(await page.locator('.bullen-site-nav > a[href="/rooms.html"]').evaluate(link => {
+      await page.locator('.bullen-mobile-nav-directory a[href="/rooms.html"]').scrollIntoViewIfNeeded();
+      assert(await page.locator('.bullen-mobile-nav-directory a[href="/rooms.html"]').evaluate(link => {
         const b = link.getBoundingClientRect(), panel = link.closest('nav').getBoundingClientRect();
         return b.top >= panel.top && b.bottom <= panel.bottom + 1;
       }), 'last destination is reachable within the scrollable menu');

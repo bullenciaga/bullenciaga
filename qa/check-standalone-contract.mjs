@@ -43,16 +43,17 @@ if (!shell.includes('const buildPageJumpTo') || !shell.includes("closeExtraContr
 if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
 if (!shell.includes('const navigationGroups') || !shell.includes("['House', ['objects', 'lock', 'patchnotes', 'giveaways']]")
     || !shell.includes("['Market', ['buy', 'stats', 'deepdive', 'chart', 'tape', 'curve']]")
-    || !shell.includes("['Explore', ['refer', 'thedrop', 'ledger', 'passport']]")) {
+    || !shell.includes("['Explore', ['refer', 'thedrop', 'ledger', 'passport', 'rooms']]")) {
   failures.push('desktop public navigation is not grouped into stable House, Market and Explore menus');
 }
-if (!shell.includes("const mobileNavigationKeys = ['buy', 'platform', 'flywheel', 'bullensaga', 'giveaways', 'objects', 'patchnotes', 'lock', 'stats', 'deepdive', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport']")) {
+if (!shell.includes("const mobileNavigationKeys = ['buy', 'world', 'platform', 'flywheel', 'bullensaga', 'giveaways', 'objects', 'patchnotes', 'lock', 'stats', 'deepdive', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport', 'rooms']")) {
   failures.push('mobile public navigation is not kept in its approved ungrouped order');
 }
 if (!shell.includes("['bullensaga', 'https://bullensaga.com/']")) failures.push('BULLENSAGA sister-site navigation missing');
 if (!shell.includes("['tape', '/tape.html']")) failures.push('live market tape navigation missing');
 if (!shell.includes("['ledger', '/ledger.html']") || !shell.includes("['passport', '/passport.html']")) failures.push('House intelligence pages are missing from public navigation');
-if (!shell.includes("['rooms', '/rooms.html']") || !shell.includes("nav.append(buildLink('rooms'))")) failures.push('The Inner Rooms are not a distinct top-level House destination');
+if (!shell.includes("['rooms', '/rooms.html']") || shell.includes("nav.append(buildLink('rooms'))")) failures.push('The Inner Rooms must remain in Explore and the mobile directory');
+if (!shell.includes("['world', '/world']") || !shell.includes("nav.append(worldLink)")) failures.push('World is missing from the primary House navigation');
 if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
 if (shell.includes("['transparency', '/transparency.html']")) failures.push('Telegram-only moderation page is exposed in public navigation');
 if (shell.includes("['proof', '/proof.html']") || shell.includes("proof: 'Proof'")) failures.push('retired Proof page remains in public navigation');
