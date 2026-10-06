@@ -75,4 +75,5 @@ if (!stats.includes('if (zeros < 3)')
   throw new Error('Stats must compact three-or-more leading price zeros into subscript notation');
 }
 
+await import('./test-deepdive-freshness.mjs');
 console.log('market surfaces: shared shell and scoped page hooks verified');

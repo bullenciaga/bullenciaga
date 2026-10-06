@@ -10,7 +10,7 @@ const safeAddress=a=>typeof a==='string'&&/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(a
 const sum=arr=>arr.reduce((a,b)=>a+b,0);
 const colors=['#423b2c','#74623e','#a1834b','#c7a869','#ead9aa'];
 const bucketNames=['0–7d','7–14d','14–30d','30–60d','60d+'];
-let snapshot=null, days=30, denominator='eligible', tape=null, windowSize='1h', saved=false;
+let snapshot=null, days=30, denominator='eligible', tape=null, windowSize='1h', saved=false, refreshFailed=false;
 const set=(id,value)=>{$(id).textContent=value;};
 const get=async url=>{const response=await fetch(url,{signal:AbortSignal.timeout(10000),cache:'no-cache'});if(!response.ok)throw new Error('Data unavailable');return response.json();};
 function valid(data){return data?.ok===true&&data.schemaVersion===1&&data.method==='account-net-inflow-fifo-v1'&&data.mint==='BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN'&&Number.isSafeInteger(data.slot)&&Array.isArray(data.excluded)&&data.excluded.every(x=>safeAddress(x.address)&&['pool','reserve','dev','program','escrow'].includes(x.category)&&Number.isFinite(x.amount))&&Number.isFinite(Date.parse(data.asOf))&&Number.isFinite(data.supply?.eligible)&&data.supply.eligible>0&&Array.isArray(data.thresholds)&&data.thresholds.length===4&&data.thresholds.every(t=>[t.days,t.amount,t.percent,t.wallets].every(Number.isFinite))&&Array.isArray(data.wallets)&&data.wallets.every(w=>safeAddress(w.address)&&Number.isFinite(w.amount)&&Array.isArray(w.aged))&&data.buckets?.length===5&&data.buckets.every(Number.isFinite);}
@@ -25,7 +25,7 @@ function ageView(){
 function drawSnapshot(){
  const s=snapshot;
  ageView();
- const stale=Date.now()-Date.parse(s.asOf)>5*60000;
+ const stale=refreshFailed||Date.now()-Date.parse(s.asOf)>5*60000;
  set('snapshot-status',`${saved?'Saved snapshot':stale?'Last verified holder data':'Live holder data'} · ${time(s.asOf)} · ${fmt(s.coverage.percent)}% balance coverage${stale?' · Update delayed; showing the last verified snapshot':''}`);
  $('snapshot-status').classList.toggle('stale',stale);
  set('weighted-age',fmt(s.weightedAgeDays)+' days');set('holder-count',fmt(s.holdersAtLeastOne));set('coverage',pct(s.coverage.percent));set('coverage-badge',fmt(s.coverage.percent)+'% COVERAGE');
@@ -46,8 +46,8 @@ function drawSnapshot(){
  $('download').disabled=false;
 }
 async function loadSnapshot(){
- try{const s=await get('/supply/deepdive');if(!valid(s))throw new Error('Snapshot format unavailable');if(!snapshot||Date.parse(s.asOf)>=Date.parse(snapshot.asOf)){snapshot=s;saved=false;drawSnapshot();}}
- catch{if(!snapshot){try{const s=await get('/deepdive-snapshot.json');if(!valid(s))throw new Error();snapshot=s;saved=true;drawSnapshot();}catch{set('snapshot-status','Holder snapshot unavailable. Please try again shortly.');}}else drawSnapshot();}
+ try{const s=await get('/supply/deepdive');if(!valid(s))throw new Error('Snapshot format unavailable');if(!snapshot||Date.parse(s.asOf)>=Date.parse(snapshot.asOf)){snapshot=s;saved=false;refreshFailed=false;drawSnapshot();}}
+ catch{refreshFailed=true;if(!snapshot){try{const s=await get('/deepdive-snapshot.json');if(!valid(s))throw new Error();snapshot=s;saved=true;drawSnapshot();}catch{set('snapshot-status','Holder snapshot unavailable. Please try again shortly.');}}else drawSnapshot();}
 }
 function drawFlow(){
  if(!tape?.ok)return;
