@@ -6,6 +6,17 @@ export default {
   "checkoutOrigin": "https://store.bullenciaga.com",
   "variants": [
     {
+      "product": "nocturne-atlas-cushion",
+      "colour": "HL03",
+      "size": "16 × 16 in",
+      "productId": "2673c388-7839-4433-b082-42f4cef30fcf",
+      "slug": "nocturne-atlas-cushion",
+      "variantId": "155d6120-3d39-4055-9cd6-5998426505a9",
+      "expectedColor": "All-Over Print",
+      "expectedSize": "16\" x 16\"",
+      "enabled": true
+    },
+    {
       "product": "villa-perpetua-cushion",
       "colour": "HL02",
       "size": "16 × 16 in",
