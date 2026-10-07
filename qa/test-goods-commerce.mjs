@@ -32,7 +32,7 @@ test('authenticated handler creates an exact provider cart and returns the appro
     const cookie=await login(), activeEnv={...env,GOODS_STOREFRONT_TOKEN:'fixture-token',GOODS_CHECKOUT_ENABLED:'1'};
     const catalogue=await merchPreview(req('/goods/api/catalog',{headers:{Cookie:cookie}}),activeEnv);assert.equal(catalogue.status,200);const data=await catalogue.json();assert.equal(data.salesEnabled,true);assert.equal(data.variants.length,eligible.length);assert.ok(data.variants.every(v=>v.available));
     const r=await merchPreview(req('/goods/api/checkout',{method:'POST',headers:{Cookie:cookie,Origin:origin,'Content-Type':'application/json','Sec-Fetch-Site':'same-origin'},body:JSON.stringify({currency:'USD',items:[{product:chosen.product,colour:chosen.colour,size:chosen.size,variantId:chosen.variantId,quantity:1,expectedUnitPrice:89.99}]})}),activeEnv);
-    assert.equal(r.status,200);assert.deepEqual(await r.json(),{checkoutUrl:'https://checkout.bullenciaga.com/cart/checkout?cartId=fixture-cart&currency=USD',checkoutHost:'checkout.bullenciaga.com'});assert.equal(observed.filter(v=>v.method==='POST').length,1);assert.match(r.headers.get('Cache-Control'),/private, no-store/);
+    assert.equal(r.status,200);assert.deepEqual(await r.json(),{checkoutUrl:'https://store.bullenciaga.com/cart/checkout?cartId=fixture-cart&currency=USD',checkoutHost:'store.bullenciaga.com'});assert.equal(observed.filter(v=>v.method==='POST').length,1);assert.match(r.headers.get('Cache-Control'),/private, no-store/);
   }finally{globalThis.fetch=nativeFetch;}
 });
 

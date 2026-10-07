@@ -142,6 +142,16 @@ const website = {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    // Keep previously shared checkout links working after the store rename.
+    if (url.hostname === 'checkout.bullenciaga.com') {
+      return new Response(null, {
+        status: 308,
+        headers: {
+          Location: `https://store.bullenciaga.com${url.pathname}${url.search}`,
+          'Cache-Control': 'public, max-age=300',
+        },
+      });
+    }
     const alias = aliases.has(url.hostname);
     const websiteHost = websiteHosts.has(url.hostname);
     // Upgrade before asset redirects, login forms or API handlers can run.
