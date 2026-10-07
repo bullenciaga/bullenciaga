@@ -47,3 +47,14 @@ for (const url of ['http://localhost:8758/world','http://127.0.0.1:8758/world','
   assert.equal(response.headers.get('Strict-Transport-Security'), null);
 }
 console.log(`HTTPS upgrade: ${checked} URL/method checks; secure headers, protected responses and unrelated origins passed`);
+// Retired checkout origin preserves hosted payment URLs and query strings.
+for (const protocol of ['http:', 'https:']) {
+  for (const path of ['/', '/checkout/ch_test', '/products/house-orbit-crewneck']) {
+    const suffix = '?ref=a%2Fb&tag=x+y';
+    const response = await worker.fetch(new Request(`${protocol}//checkout.bullenciaga.com${path}${suffix}`), {
+      ASSETS: {fetch() {throw new Error('Retired checkout must not invoke site handlers');}},
+    });
+    assert.equal(response.status, 308);
+    assert.equal(response.headers.get('location'), `https://store.bullenciaga.com${path}${suffix}`);
+  }
+}

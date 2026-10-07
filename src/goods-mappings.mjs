@@ -3,7 +3,7 @@ export default {
   "schemaVersion": 1,
   "salesEnabled": true,
   "currency": "USD",
-  "checkoutOrigin": "https://checkout.bullenciaga.com",
+  "checkoutOrigin": "https://store.bullenciaga.com",
   "variants": [
     {
       "product": "twin-sleeve-crew",
