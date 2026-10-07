@@ -3,7 +3,7 @@ export default {
   "schemaVersion": 1,
   "salesEnabled": true,
   "currency": "USD",
-  "checkoutOrigin": "https://bullenciaga-shop.fourthwall.com",
+  "checkoutOrigin": "https://checkout.bullenciaga.com",
   "variants": [
     {
       "product": "twin-sleeve-crew",
