@@ -50,3 +50,11 @@ test('checkout cancels an oversized chunked body at20KB and rejects malformed by
  const declared=h.makeRequest(body());declared.headers.set('Content-Length','20001');assert.equal((await h.handler(declared)).status,413);
  const invalid=new Request('https://bullenciaga.com/goods/api/checkout',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://bullenciaga.com'},body:new Uint8Array([0xc3,0x28])});assert.equal((await h.handler(invalid)).status,400);assert.equal(h.calls.length,0);
 });
+
+test('existing gate supplies one canonical privacy header for commerce responses',async()=>{
+ const {merchPreview}=await import('../src/merch-preview.mjs');
+ const {createHash}=await import('node:crypto');
+ const env={MERCH_PREVIEW_PASSWORD_SHA256:createHash('sha256').update('fixture').digest('hex'),MERCH_PREVIEW_SESSION_SECRET:'fixture-secret-at-least-thirty-two-characters',MERCH_PREVIEW_PREFIX:'fixture',MERCH_PREVIEW_ASSETS:{get:async()=>null,head:async()=>null},MERCH_PREVIEW_LIMIT:{limit:async()=>({success:true})}};
+ const r=await merchPreview(new Request('https://bullenciaga.com/goods/api/catalog'),env);
+ assert.equal(r.status,401);assert.equal(r.headers.get('Cache-Control'),'private, no-store, max-age=0');assert.equal(r.headers.get('X-Content-Type-Options'),'nosniff');assert.equal(r.headers.get('Content-Type'),'application/json; charset=utf-8');
+});

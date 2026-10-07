@@ -179,7 +179,11 @@ export async function merchPreview(request, env) {
       });
       const result = await handler(request);
       if (!result) return reply('Not found.', 404, {}, head);
-      return new Response(head ? null : result.body, { status: result.status, headers: headers(Object.fromEntries(result.headers)) });
+      const responseHeaders = headers();
+      for (const [name, value] of result.headers) {
+        if (!responseHeaders.has(name)) responseHeaders.set(name, value);
+      }
+      return new Response(head ? null : result.body, { status: result.status, headers: responseHeaders });
     }
     if (!['GET', 'HEAD'].includes(request.method)) return reply('Method not allowed.', 405, { Allow: 'GET, HEAD' }, head);
     if (!await authenticated(request, env, url.origin)) {
