@@ -1,3 +1,6 @@
+import { createGoodsHandler } from './goods-fourthwall.mjs';
+import goodsMappings from './goods-mappings.mjs';
+
 // The preview payload lives in a private R2 bucket, never the public site assets.
 // Rotating either secret invalidates existing sessions. Nothing here places an order.
 const SESSION_COOKIE = '__Secure-bullen_merch';
@@ -8,7 +11,7 @@ const MAX_LOGIN_BYTES = 2048;
 const encoder = new TextEncoder();
 const mediaTypes = {
   html: 'text/html; charset=utf-8', css: 'text/css; charset=utf-8',
-  js: 'text/javascript; charset=utf-8', json: 'application/json; charset=utf-8',
+  js: 'text/javascript; charset=utf-8', mjs: 'text/javascript; charset=utf-8', json: 'application/json; charset=utf-8',
   png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp',
   avif: 'image/avif', svg: 'image/svg+xml', ico: 'image/x-icon',
   woff: 'font/woff', woff2: 'font/woff2',
@@ -156,6 +159,31 @@ export async function merchPreview(request, env) {
         return loginPage('That password did not match. Please try again.', 401);
       }
       return reply('', 303, { Location: `${PREVIEW_PATH}/`, 'Set-Cookie': cookie(await createSession(url.origin, env)) });
+    }
+    // Keep commerce below /goods so the existing Path=/goods session cookie is sent.
+    // Draft mappings and provisioned credentials cannot turn checkout on by themselves.
+    if (pathname.startsWith(`${PREVIEW_PATH}/api/`)) {
+      if (legacy) return reply('Not found.', 404, {}, head);
+      const commerceEnabled = goodsMappings.salesEnabled === true && env.GOODS_CHECKOUT_ENABLED === '1'
+        && typeof env.GOODS_STOREFRONT_TOKEN === 'string' && env.GOODS_STOREFRONT_TOKEN.length > 0;
+      const handler = createGoodsHandler({
+        config: { ...goodsMappings, salesEnabled: commerceEnabled, variants: commerceEnabled ? goodsMappings.variants : goodsMappings.variants.map(variant => ({ ...variant, enabled: false })) },
+        storefrontToken: env.GOODS_STOREFRONT_TOKEN,
+        authorize: candidate => authenticated(candidate, env, url.origin),
+        rateLimit: async candidate => {
+          const action = new URL(candidate.url).pathname.endsWith('/checkout') ? 'checkout' : 'catalog';
+          const key = hex(await hash(`goods-${action}:${candidate.headers.get('CF-Connecting-IP') || 'unknown'}`));
+          const limit = await env.MERCH_PREVIEW_LIMIT.limit({ key });
+          return limit?.success === true;
+        },
+      });
+      const result = await handler(request);
+      if (!result) return reply('Not found.', 404, {}, head);
+      const responseHeaders = headers();
+      for (const [name, value] of result.headers) {
+        if (!responseHeaders.has(name)) responseHeaders.set(name, value);
+      }
+      return new Response(head ? null : result.body, { status: result.status, headers: responseHeaders });
     }
     if (!['GET', 'HEAD'].includes(request.method)) return reply('Method not allowed.', 405, { Allow: 'GET, HEAD' }, head);
     if (!await authenticated(request, env, url.origin)) {
