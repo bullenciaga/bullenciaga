@@ -62,7 +62,9 @@ export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,autho
     if(!storefrontToken)throw unavailable();
     const url=new URL(API+path);url.searchParams.set('storefront_token',storefrontToken);url.searchParams.set('currency',config.currency);
     let res;
-    try{res=await fetchImpl(url,{method:body?'POST':'GET',headers:{Accept:'application/json','User-Agent':'BULLENCIAGA Goods/1.0',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),redirect:'error',signal:AbortSignal.timeout(15000)});}catch{throw unavailable();}
+    try{res=await fetchImpl(url,{method:body?'POST':'GET',headers:{Accept:'application/json','User-Agent':'BULLENCIAGA Goods/1.0',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),redirect:'manual',signal:AbortSignal.timeout(15000)});}catch{throw unavailable();}
+    // workerd supports manual/follow only. Never forward the query credential to redirects.
+    if(res.status>=300 && res.status<400)throw unavailable();
     if(!res.ok){
       if(res.status===400 || res.status===404){const error=new ShopError('UNAVAILABLE','A selection is no longer available. Please review your bag.',409);error.upstreamStatus=res.status;throw error;}
       throw unavailable();

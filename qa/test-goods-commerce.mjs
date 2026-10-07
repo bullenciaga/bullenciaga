@@ -19,7 +19,7 @@ test('authenticated handler creates an exact provider cart and returns the appro
   const chosen=eligible[0], observed=[];const nativeFetch=globalThis.fetch;
   const variant=m=>({id:m.variantId,unitPrice:{value:89.99,currency:'USD'},attributes:{color:{name:m.expectedColor},size:{name:m.expectedSize}},stock:{type:'UNLIMITED'}});
   globalThis.fetch=async(url,options)=>{
-    const parsed=new URL(url);assert.equal(parsed.origin,'https://storefront-api.fourthwall.com');assert.equal(parsed.searchParams.get('storefront_token'),'fixture-token');assert.equal(options.redirect,'error');assert.equal(options.headers['User-Agent'],'BULLENCIAGA Goods/1.0');
+    const parsed=new URL(url);assert.equal(parsed.origin,'https://storefront-api.fourthwall.com');assert.equal(parsed.searchParams.get('storefront_token'),'fixture-token');assert.equal(options.redirect,'manual');assert.equal(options.headers['User-Agent'],'BULLENCIAGA Goods/1.0');
     observed.push({path:parsed.pathname,method:options.method});
     if(options.method==='GET'){
       const slug=parsed.pathname.split('/').at(-1), rows=eligible.filter(m=>m.slug===slug);assert.ok(rows.length);

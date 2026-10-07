@@ -58,3 +58,8 @@ test('existing gate supplies one canonical privacy header for commerce responses
  const r=await merchPreview(new Request('https://bullenciaga.com/goods/api/catalog'),env);
  assert.equal(r.status,401);assert.equal(r.headers.get('Cache-Control'),'private, no-store, max-age=0');assert.equal(r.headers.get('X-Content-Type-Options'),'nosniff');assert.equal(r.headers.get('Content-Type'),'application/json; charset=utf-8');
 });
+
+test('provider redirects are handled manually and never followed with the credential',async()=>{
+ for(const status of [302,307]){let calls=0;const handler=createGoodsHandler({config:config(),storefrontToken:'never-forward-fixture',authorize:async()=>true,rateLimit:async()=>true,fetchImpl:async(url,options)=>{calls++;assert.equal(new URL(url).origin,'https://storefront-api.fourthwall.com');assert.equal(options.redirect,'manual');return new Response(null,{status,headers:{Location:'https://other.invalid/redirect-target'}});}});
+ const r=await handler(new Request('https://bullenciaga.com/goods/api/catalog'));assert.equal(r.status,503);assert.equal(calls,1);const text=await r.text();assert.ok(!text.includes('never-forward-fixture'));assert.ok(!text.includes('other.invalid'));}
+});
