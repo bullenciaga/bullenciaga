@@ -6,6 +6,17 @@ export default {
   "checkoutOrigin": "https://store.bullenciaga.com",
   "variants": [
     {
+      "product": "villa-perpetua-cushion",
+      "colour": "HL02",
+      "size": "16 × 16 in",
+      "productId": "344bede4-cc49-4bb2-bdb8-40fe20a9913e",
+      "slug": "villa-perpetua-cushion",
+      "variantId": "d3f909a6-cb3e-41bf-8997-a59bbb5a9454",
+      "expectedColor": "All-Over Print",
+      "expectedSize": "16\" x 16\"",
+      "enabled": true
+    },
+    {
       "product": "twin-sleeve-crew",
       "colour": "E01-TWIN",
       "size": "S",
