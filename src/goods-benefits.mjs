@@ -357,7 +357,7 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
    const product=await provider.getProduct(r.product_id);
    const variant=productVariants(product).find(v=>v.attributes?.color?.name===r.colour&&v.attributes?.size?.name===r.size);
    if(product.access?.type!=='HIDDEN'||!productOpen(product)||!variant || variant.unitPrice?.currency!=='USD'||Math.abs(variantPrice(variant)-r.price)>0.001||!availableStock(variant.stock))throw unavailable();
-   const info=parseJSON(r.print_info),message=info?`Square front print: approximately ${info.widthCm} × ${info.widthCm} cm. Original ${info.sourcePixels}px artwork at about ${info.dpi} dpi, with no image upscaling.`:null;
+   const info=parseJSON(r.print_info),message=info?`Square front print: approximately ${info.widthCm} × ${info.widthCm} cm. Original ${info.sourcePixels}px artwork at about ${info.dpi} dpi, with the original pixels preserved.${info.lowResolution?' Fine detail may look softer at this size.':''}`:null;
    await store.update(id,{state:'ready',variant_id:variant.id,stage:'ready',next_retry_at:0,message},now());
   }catch(error){
    r=await store.request(id);
