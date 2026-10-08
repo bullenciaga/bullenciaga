@@ -2,11 +2,13 @@ import { createGoodsHandler } from './goods-fourthwall.mjs';
 import goodsMappings from './goods-mappings.mjs';
 import { createGoodsRuntime } from './goods-runtime.mjs';
 
-// Public Goods assets are selected from a private R2 bucket; the bucket itself
-// stays private. Wallet benefits retain their separate signed-session checks.
+// Goods assets stay in private R2. The optional page gate and wallet proofs
+// are separate boundaries; Fourthwall callbacks retain their HMAC authentication.
 const SESSION_COOKIE = '__Secure-bullen_merch';
 const PREVIEW_PATH = '/goods';
 const LEGACY_PATH = '/merch';
+const SESSION_SECONDS = 12 * 60 * 60;
+const MAX_LOGIN_BYTES = 2048;
 const encoder = new TextEncoder();
 const mediaTypes = {
   html: 'text/html; charset=utf-8', css: 'text/css; charset=utf-8',
@@ -36,15 +38,91 @@ function reply(text, status = 200, extra = {}, head = false) {
   return new Response(head ? null : text, { status, headers: headers({ 'Content-Type': 'text/plain; charset=utf-8', ...extra }) });
 }
 
+function loginPage(message = '', status = 200, head = false, extra = {}) {
+  const html = `<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#19191e"><meta name="color-scheme" content="dark"><title>Goods — BULLENCIAGA</title><link rel="stylesheet" href="/fonts/house-fonts-full.css"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2319191e'/%3E%3Cpath d='M8 11h16l1 15H7zM12 12V8a4 4 0 0 1 8 0v4' fill='none' stroke='%23f2efe9' stroke-width='2'/%3E%3C/svg%3E"><style>
+:root{color-scheme:dark;--paper:#19191e;--ink:#f2efe9;--muted:#aaa8a7;--line:#f2efe926}*{box-sizing:border-box}body{margin:0;min-height:100svh;background:var(--paper);color:var(--ink);font-family:Poppins,Arial,Helvetica,sans-serif;display:grid;grid-template-rows:auto 1fr auto;-webkit-font-smoothing:antialiased}header,footer{padding:25px clamp(24px,4vw,72px);display:flex;align-items:center;justify-content:space-between;gap:20px}header{border-bottom:1px solid var(--line)}.identity{display:flex;align-items:center;gap:20px}.wordmark{font-size:16px;letter-spacing:.2em;font-weight:600;white-space:nowrap}.section{padding-left:20px;border-left:1px solid var(--line);font-size:10px;letter-spacing:.14em}.collection,.eyebrow,footer{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}main{width:min(100%,520px);margin:auto;padding:70px 32px 54px}.lock{width:26px;height:26px;color:var(--muted);margin-bottom:32px}.eyebrow{margin:0 0 18px}h1{font-size:clamp(34px,7vw,44px);line-height:1.16;font-weight:600;letter-spacing:-.045em;margin:0 0 20px;text-wrap:balance}p{font-size:14px;line-height:1.7;color:var(--muted);margin:0}.intro{max-width:340px}form{margin-top:38px}label{display:block;font-size:12px;margin:0 0 10px}input,button{width:100%;border-radius:3px;min-height:54px;font:inherit}input{background:transparent;border:1px solid #f2efe935;color:var(--ink);padding:14px 16px;font-size:16px;transition:border-color .18s}input:hover{border-color:#f2efe970}button{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font-size:13px;font-weight:500;padding:14px 18px;margin-top:14px;cursor:pointer;transition:background .18s}button:hover{background:#dad7d1}button svg{width:19px;height:19px}input:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:4px}.message{min-height:46px;padding-top:14px;font-size:12px;color:var(--ink)}footer{border-top:1px solid var(--line);padding-top:21px;padding-bottom:21px}@media(max-width:560px){header{padding:22px 24px}.identity{gap:14px}.wordmark{font-size:14px}.section{padding-left:14px}.collection{display:none}main{padding:52px 24px 32px}footer{font-size:9px;letter-spacing:.1em}}@media(prefers-reduced-motion:reduce){input,button{transition:none}}
+</style></head><body><header><div class="identity"><span class="wordmark">BULLENCIAGA</span><span class="section">GOODS</span></div><span class="collection">Collection 01</span></header><main><svg class="lock" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" stroke="currentColor" stroke-width="1.3"/></svg><p class="eyebrow">A private viewing</p><h1>The collection awaits.</h1><p class="intro">Enter your password to step inside.</p><form method="post" action="${PREVIEW_PATH}/login"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" maxlength="256" required aria-describedby="message"${status === 401 ? ' aria-invalid="true"' : ''}><button type="submit"><span>Enter the collection</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.4"/></svg></button><p id="message" class="message" role="status" aria-live="polite">${message}</p></form></main><footer><span>Collection 01</span><span>The House of BULLENCIAGA</span></footer></body></html>`;
+  return reply(html, status, { 'Content-Type': 'text/html; charset=utf-8', ...extra }, head);
+}
+
+function gateEnabled(env) { return env.MERCH_PREVIEW_PROTECTED === '1'; }
+
 function configReady(env) {
+  if (gateEnabled(env) && (!/^[a-f0-9]{64}$/i.test(env.MERCH_PREVIEW_PASSWORD_SHA256 || '')
+    || typeof env.MERCH_PREVIEW_SESSION_SECRET !== 'string' || env.MERCH_PREVIEW_SESSION_SECRET.length < 32)) return false;
   return /^[a-z0-9][a-z0-9_-]{0,95}$/i.test(env.MERCH_PREVIEW_PREFIX || '')
     && typeof env.MERCH_PREVIEW_ASSETS?.get === 'function'
     && typeof env.MERCH_PREVIEW_ASSETS?.head === 'function'
     && typeof env.MERCH_PREVIEW_LIMIT?.limit === 'function';
 }
 
+function unhex(value) { return Uint8Array.from(value.match(/../g), part => Number.parseInt(part, 16)); }
 function hex(bytes) { return Array.from(new Uint8Array(bytes), value => value.toString(16).padStart(2, '0')).join(''); }
 async function hash(value) { return new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(value))); }
+
+// Fixed-length SHA-256 values; every byte participates in the comparison.
+function equalDigest(actual, expected) {
+  let difference = 0;
+  for (let index = 0; index < 32; index++) difference |= actual[index] ^ expected[index];
+  return difference === 0;
+}
+
+function cookie(value, maxAge = SESSION_SECONDS) {
+  return `${SESSION_COOKIE}=${value}; Path=${PREVIEW_PATH}; Max-Age=${maxAge}; Secure; HttpOnly; SameSite=Strict`;
+}
+
+async function signingKey(env) {
+  return crypto.subtle.importKey('raw', encoder.encode(env.MERCH_PREVIEW_SESSION_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
+}
+
+function signatureInput(body, origin, env) {
+  return encoder.encode(`merch-preview|${origin}|${env.MERCH_PREVIEW_PASSWORD_SHA256.toLowerCase()}|${body}`);
+}
+
+async function createSession(origin, env) {
+  const now = Math.floor(Date.now() / 1000);
+  const nonce = hex(crypto.getRandomValues(new Uint8Array(16)));
+  const body = `v1.${now}.${now + SESSION_SECONDS}.${nonce}`;
+  const signature = await crypto.subtle.sign('HMAC', await signingKey(env), signatureInput(body, origin, env));
+  return `${body}.${hex(signature)}`;
+}
+
+async function authenticated(request, env, origin) {
+  const raw = request.headers.get('Cookie') || '';
+  if (raw.length > 8192) return false;
+  const values = raw.split(';').map(part => part.trim()).filter(part => part.startsWith(`${SESSION_COOKIE}=`));
+  if (values.length !== 1) return false;
+  const token = values[0].slice(SESSION_COOKIE.length + 1);
+  const match = /^(v1\.([0-9]{10})\.([0-9]{10})\.[a-f0-9]{32})\.([a-f0-9]{64})$/.exec(token);
+  if (!match) return false;
+  const issued = Number(match[2]), expires = Number(match[3]), now = Math.floor(Date.now() / 1000);
+  if (issued > now || expires <= now || expires - issued !== SESSION_SECONDS) return false;
+  return crypto.subtle.verify('HMAC', await signingKey(env), unhex(match[4]), signatureInput(match[1], origin, env));
+}
+
+async function readLogin(request) {
+  if (!/^application\/x-www-form-urlencoded(?:\s*;|$)/i.test(request.headers.get('Content-Type') || '')) return null;
+  const length = request.headers.get('Content-Length');
+  if (length && (!/^\d+$/.test(length) || Number(length) > MAX_LOGIN_BYTES)) return null;
+  if (!request.body) return null;
+  const reader = request.body.getReader();
+  const chunks = [];
+  let size = 0;
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > MAX_LOGIN_BYTES) { await reader.cancel(); return null; }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+  const values = new URLSearchParams(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+  if (values.getAll('password').length !== 1 || [...values.keys()].some(key => key !== 'password')) return null;
+  const password = values.get('password');
+  return password && encoder.encode(password).length <= 256 ? password : null;
+}
 
 function assetName(pathname) {
   if (pathname === PREVIEW_PATH || pathname === `${PREVIEW_PATH}/`) return 'index.html';
@@ -77,22 +155,42 @@ export async function merchPreview(request, env, ctx) {
     }
     if (url.protocol !== 'https:' || !configReady(env)) return reply('The collection is temporarily unavailable.', 503, {}, head);
     if (legacy && ['GET', 'HEAD'].includes(request.method)) {
-      // Keep old links local; the canonical Goods route serves public content.
+      // Keep old links local; the canonical Goods route applies the access policy.
       return reply('', 308, { Location: pathname + url.search }, head);
     }
-    // Retire old preview forms safely. These routes only expire the obsolete
+    // Page access uses the existing server-only password and signed cookie.
+    if (gateEnabled(env) && (pathname === `${PREVIEW_PATH}/login` || pathname === `${PREVIEW_PATH}/logout`)) {
+      if (request.method !== 'POST') return reply('Method not allowed.', 405, { Allow: 'POST' }, head);
+      if (request.headers.get('Origin') !== url.origin || request.headers.get('Sec-Fetch-Site') === 'cross-site') return reply('Request not allowed.', 403);
+      if (pathname === `${PREVIEW_PATH}/logout`) {
+        return reply('', 303, { Location: PREVIEW_PATH, 'Set-Cookie': cookie('', 0) });
+      }
+      const key = hex(await hash(`merch-login:${request.headers.get('CF-Connecting-IP') || 'unknown'}`));
+      const limit = await env.MERCH_PREVIEW_LIMIT.limit({ key });
+      if (!limit?.success) return loginPage('Too many attempts. Please try again in a minute.', 429, false, { 'Retry-After': '60' });
+      const password = await readLogin(request);
+      // Malformed and incorrect submissions receive the same response.
+      const suppliedHash = await hash(password || '');
+      if (!equalDigest(suppliedHash, unhex(env.MERCH_PREVIEW_PASSWORD_SHA256)) || password === null) {
+        return loginPage('That password did not match. Please try again.', 401);
+      }
+      return reply('', 303, { Location: `${PREVIEW_PATH}/`, 'Set-Cookie': cookie(await createSession(url.origin, env)) });
+    }
+    // Retire old preview forms safely when the collection is public. These routes only expire the obsolete
     // page-password cookie; the independent wallet session is never changed.
     if (pathname === `${PREVIEW_PATH}/login` || pathname === `${PREVIEW_PATH}/logout`) {
       if (!['GET', 'HEAD', 'POST'].includes(request.method)) return reply('Method not allowed.', 405, { Allow: 'GET, HEAD, POST' }, head);
       if (request.method === 'POST' && (request.headers.get('Origin') !== url.origin || request.headers.get('Sec-Fetch-Site') === 'cross-site')) return reply('Request not allowed.', 403);
       return reply('', 303, { Location: `${PREVIEW_PATH}/`, 'Set-Cookie': `${SESSION_COOKIE}=; Path=${PREVIEW_PATH}; Max-Age=0; Secure; HttpOnly; SameSite=Strict` }, head);
     }
-    // Public commerce still validates origin, rate, mappings and current prices.
+    // Commerce still validates origin, rate, mappings and current prices.
     // Holder/custom endpoints enforce their own verified wallet session below.
     // Draft mappings and provisioned credentials cannot turn checkout on by themselves.
     if (pathname.startsWith(`${PREVIEW_PATH}/api/`)) {
       if (legacy) return reply('Not found.', 404, {}, head);
-      const authorize = candidate => new URL(candidate.url).protocol === 'https:';
+      const authorize = candidate => gateEnabled(env)
+        ? authenticated(candidate, env, new URL(candidate.url).origin)
+        : new URL(candidate.url).protocol === 'https:';
       const rateLimit = async candidate => {
         const path = new URL(candidate.url).pathname;
         const imageMint = candidate.method === 'GET' && /^\/goods\/api\/benefits\/nft-image\/([1-9A-HJ-NP-Za-km-z]{32,44})$/.exec(path)?.[1];
@@ -105,6 +203,7 @@ export async function merchPreview(request, env, ctx) {
       };
       const runtime = createGoodsRuntime(env, { authorize, rateLimit });
       if (pathname === '/goods/api/benefits' || pathname.startsWith('/goods/api/benefits/')) {
+        if (!await authorize(request)) return reply(JSON.stringify({error:{code:'AUTH_REQUIRED',message:'Please unlock the collection again.'}}),401,{'Content-Type':'application/json; charset=utf-8'},head);
         const result = runtime ? await runtime.handler(request, ctx) : Response.json({error:{code:'BENEFITS_UNAVAILABLE',message:'Holder benefits are temporarily unavailable. Please try again shortly.'}},{status:503});
         const responseHeaders = headers();
         for (const [name,value] of result.headers) if (!responseHeaders.has(name)) responseHeaders.set(name,value);
@@ -129,11 +228,15 @@ export async function merchPreview(request, env, ctx) {
     if (!['GET', 'HEAD'].includes(request.method)) return reply('Method not allowed.', 405, { Allow: 'GET, HEAD' }, head);
     const name = assetName(pathname);
     if (!name) return reply('Not found.', 404, {}, head);
+    if (gateEnabled(env) && !await authenticated(request, env, url.origin)) {
+      return name === 'index.html' ? loginPage('', 200, head) : reply('Authentication required.', 401, {}, head);
+    }
     if (pathname === PREVIEW_PATH) return reply('', 308, { Location: `${PREVIEW_PATH}/${url.search}` }, head);
     const key = `${env.MERCH_PREVIEW_PREFIX}/${name}`;
     const object = await env.MERCH_PREVIEW_ASSETS[head ? 'head' : 'get'](key);
     if (!object) return reply('Not found.', 404, {}, head);
     const contentType = mediaTypes[name.split('.').pop().toLowerCase()];
+    if (gateEnabled(env)) return new Response(head ? null : object.body, { status: 200, headers: headers({ 'Content-Type': contentType }) });
     const publicHeaders = headers({ 'Content-Type': contentType, 'Cache-Control': 'no-store, max-age=0' });
     publicHeaders.delete('Vary'); publicHeaders.delete('X-Robots-Tag');
     return new Response(head ? null : object.body, { status: 200, headers: publicHeaders });
