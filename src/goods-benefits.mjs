@@ -17,6 +17,7 @@ export const GOODS_OFFICIAL_COLLECTIONS = Object.freeze({
 const PAID = new Set(['CONFIRMED','PARTIALLY_IN_PRODUCTION','IN_PRODUCTION','PARTIALLY_SHIPPED','SHIPPED','PARTIALLY_DELIVERED','DELIVERED','COMPLETED']);
 const BASE = '/goods/api/benefits';
 const MAX_ORDERS = 10;
+const MAX_SAVED_CUSTOM = 5;
 // Bound simultaneous private artwork responses within an isolate.
 let thumbnailFlights = 0;
 const thumbnailWaiters=[];
@@ -196,6 +197,9 @@ export class GoodsBenefitsStore {
  session(tokenHash,now){return this.one('SELECT * FROM goods_wallet_sessions WHERE token_hash=? AND expires_at>?',tokenHash,now)}
  deleteSession(tokenHash){return this.run('DELETE FROM goods_wallet_sessions WHERE token_hash=?',tokenHash)}
  active(wallet,kind){return this.one('SELECT * FROM goods_benefit_requests WHERE wallet=? AND kind=? AND active=1 ORDER BY created_at,id LIMIT 1',wallet,kind)}
+ savedCustom(wallet,now){return this.all("SELECT * FROM goods_benefit_requests WHERE wallet=? AND kind='custom' AND state NOT IN ('discarded','expired','consumed') AND (expires_at>? OR active=1) ORDER BY created_at,id",wallet,now)}
+ customChoice(wallet,mint,colour,size){return this.one("SELECT * FROM goods_benefit_requests WHERE wallet=? AND kind='custom' AND active=1 AND discard_requested_at IS NULL AND mint=? AND colour=? AND size=?",wallet,mint,colour,size)}
+ async hasPaidCustom(id){return Boolean(await this.one("SELECT 1 AS paid FROM goods_benefit_orders WHERE request_id=? AND kind='custom' AND status<>'CANCELLED' LIMIT 1",id))}
  request(id,wallet){return wallet?this.one('SELECT * FROM goods_benefit_requests WHERE id=? AND wallet=?',id,wallet):this.one('SELECT * FROM goods_benefit_requests WHERE id=?',id)}
  idempotent(wallet,kind,key){return this.one('SELECT * FROM goods_benefit_requests WHERE wallet=? AND kind=? AND idempotency_key=?',wallet,kind,key)}
  async count(wallet,kind){return Number((await this.one("SELECT count(*) AS n FROM goods_benefit_orders WHERE wallet=? AND kind=? AND status<>'CANCELLED'",wallet,kind))?.n||0)}
@@ -207,16 +211,24 @@ export class GoodsBenefitsStore {
    SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? WHERE
    (SELECT count(*) FROM goods_benefit_orders WHERE wallet=? AND kind=? AND status<>'CANCELLED')
    +(SELECT count(*) FROM goods_benefit_requests WHERE wallet=? AND kind=? AND active=1) < ?
-   AND NOT EXISTS(SELECT 1 FROM goods_benefit_requests WHERE wallet=? AND kind=? AND active=1)`,
-   x.id,x.wallet,x.kind,x.key,x.state,x.now,x.now,x.expiresAt,x.percent??null,x.balanceRaw??null,x.code??null,x.mint??null,x.colour??null,x.size??null,x.name??null,x.image??null,x.price??null,x.stage??null,x.wallet,x.kind,x.wallet,x.kind,MAX_ORDERS,x.wallet,x.kind);
+   AND ((?='discount' AND NOT EXISTS(SELECT 1 FROM goods_benefit_requests WHERE wallet=? AND kind='discount' AND active=1))
+    OR (?='custom' AND (SELECT count(*) FROM goods_benefit_requests WHERE wallet=? AND kind='custom'
+     AND state NOT IN ('discarded','expired','consumed') AND (expires_at>? OR active=1)) < ?))`,
+   x.id,x.wallet,x.kind,x.key,x.state,x.now,x.now,x.expiresAt,x.percent??null,x.balanceRaw??null,x.code??null,x.mint??null,x.colour??null,x.size??null,x.name??null,x.image??null,x.price??null,x.stage??null,x.wallet,x.kind,x.wallet,x.kind,MAX_ORDERS,x.kind,x.wallet,x.kind,x.wallet,x.now,MAX_SAVED_CUSTOM);
   return changes(result)===1;
  }
  async update(id,patch,now){
-  const allowed=new Set(['state','active','promotion_id','image_id','customization_id','product_id','variant_id','preview','message','stage','expires_at','print_info','retry_count','next_retry_at']);
+  const allowed=new Set(['state','active','promotion_id','image_id','customization_id','product_id','variant_id','preview','message','stage','expires_at','print_info','retry_count','next_retry_at','processing','retired_at']);
   for(const key of Object.keys(patch))if(!allowed.has(key))throw new Error('Unsafe request update');
   const fields=Object.keys(patch);return this.run(`UPDATE goods_benefit_requests SET ${fields.map(k=>`${k}=?`).join(',')},updated_at=? WHERE id=?`,...fields.map(k=>patch[k]),now,id);
  }
- async startJob(id,now){return changes(await this.run("UPDATE goods_benefit_requests SET stage='working',updated_at=? WHERE id=? AND stage='queued' AND active=1 AND next_retry_at<=? AND expires_at>?",now,id,now,now))===1}
+ async startJob(id,now){return changes(await this.run("UPDATE goods_benefit_requests SET stage='working',processing=1,updated_at=? WHERE id=? AND stage='queued' AND state='preparing' AND active=1 AND processing=0 AND discard_requested_at IS NULL AND next_retry_at<=? AND expires_at>?",now,id,now,now))===1}
+ async markDiscard(id,wallet,now){return changes(await this.run(`UPDATE goods_benefit_requests SET
+  discard_requested_at=COALESCE(discard_requested_at,?),state='discarding',message='Removing this saved tee. It cannot be checked out while removal is pending.',updated_at=?
+  WHERE id=? AND wallet=? AND kind='custom' AND state<>'discarded'
+  AND NOT EXISTS(SELECT 1 FROM goods_benefit_orders WHERE request_id=? AND kind='custom' AND status<>'CANCELLED')`,now,now,id,wallet,id))===1}
+ readyCustom(id,variant,message,now){return this.run("UPDATE goods_benefit_requests SET state='ready',variant_id=?,stage='ready',next_retry_at=0,message=?,updated_at=? WHERE id=? AND active=1 AND processing=1 AND discard_requested_at IS NULL AND expires_at>?",variant,message,now,id,now)}
+ async claimProductWrite(id,now){return changes(await this.run("UPDATE goods_benefit_requests SET stage='product_pending',updated_at=? WHERE id=? AND active=1 AND processing=1 AND discard_requested_at IS NULL AND expires_at>?",now,id,now))===1}
  async recordOrder(order,requests,now){
   const statements=[];const updated=Date.parse(order.updatedAt||order.createdAt);
   if(!Number.isFinite(updated))throw unavailable();
@@ -259,17 +271,50 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   for(let i=0;i<ids.length;i+=5){await Promise.all(ids.slice(i,i+5).map(async id=>{const p=await provider.getProduct(id);if(!productOpen(p)||p.type!=='STANDARD')return;const variants=productVariants(p);if(!variants.length||variants.some(v=>v.unitPrice?.currency!=='USD'||!Number.isFinite(variantPrice(v))))return;const isSale=variants.some(v=>Number(v.compareAtPrice?.value??v.compareAtPrice?.amount)>variantPrice(v));if(!isSale)valid.push(id)}))}
   return valid.sort();
  }
- function publicCustom(r){return {id:r.id,state:r.state,name:r.name,mint:r.mint,colour:r.colour,size:r.size,price:r.price,currency:'USD',preview:r.preview||undefined,message:r.message||undefined,printInfo:parseJSON(r.print_info,undefined),expiresAt:iso(r.expires_at)};}
- async function expire(r,allowCustomRelease=false){
+ function publicCustom(r){return {id:r.id,state:r.discard_requested_at&&!['discarded','consumed'].includes(r.state)?'discarding':r.state,name:r.name,mint:r.mint,colour:r.colour,size:r.size,price:r.price,currency:'USD',preview:r.preview||undefined,message:r.message||undefined,printInfo:parseJSON(r.print_info,undefined),expiresAt:iso(r.expires_at)};}
+ async function retireCustom(r){
+  if(r.processing)return false;
+  if(!r.product_id)return r.stage!=='product_pending';
+  if(!r.retired_at){
+   await provider.setProductAvailable(r.product_id,false);
+   const p=await provider.getProduct(r.product_id);if(p?.id!==r.product_id||p.state?.type!=='SOLD_OUT')throw unavailable();
+   await store.update(r.id,{retired_at:now()},now());
+  }
+  return true;
+ }
+ async function finishDiscard(id,ordersCheckedAt=null){
+  let r=await store.request(id);if(!r?.discard_requested_at||r.state==='discarded'||r.state==='consumed')return r;
+  if(r.processing)return r;
+  if(!await retireCustom(r))return r; // Unknown create outcomes remain reserved for review.
+  r=await store.request(id);
+  // A product may already have a paid order whose webhook has not arrived.
+  // Retire it first, then require an exhaustive provider-order scan before reuse.
+  if(r.product_id&&(ordersCheckedAt===null||!r.retired_at||r.retired_at>ordersCheckedAt))return r;
+  await store.run(`UPDATE goods_benefit_requests SET state='discarded',active=0,stage='discarded',message='This saved tee has been removed.',updated_at=?
+   WHERE id=? AND processing=0 AND discard_requested_at IS NOT NULL
+   AND NOT EXISTS(SELECT 1 FROM goods_benefit_orders WHERE request_id=? AND kind='custom' AND status<>'CANCELLED')`,now(),id,id);
+  return store.request(id);
+ }
+ async function discardCustom(request,id,ctx){
+  assertWritable();const s=await session(request);let r=await store.request(id,s.wallet);
+  if(!r||r.kind!=='custom')fail('NOT_FOUND','Custom request not found.',404);
+  if(r.state==='discarded')return publicCustom(r);
+  if(await store.hasPaidCustom(id))fail('CUSTOM_PURCHASED','A purchased tee stays in your order history and cannot be discarded.',409);
+  if(!await store.markDiscard(id,s.wallet,now()))fail('CUSTOM_PURCHASED','A purchased tee stays in your order history and cannot be discarded.',409);
+  try{r=await finishDiscard(id)}catch{r=await store.request(id)}
+  if(r.state!=='discarded'&&ctx?.waitUntil)ctx.waitUntil(reconcile().catch(()=>{}));
+  return publicCustom(r);
+ }
+ async function expire(r,allowCustomRelease=false,ordersCheckedAt=null){
   if(!r||r.kind==='discount'||r.expires_at>now())return r;
   {
    // Unlike a promotion there is no provider usage count for a hidden product.
    // Only the scheduled path, after a complete authenticated order scan, may
    // release this slot. Browser requests cannot outrun a delayed paid webhook.
-   if(!allowCustomRelease)return r;
+   if(!allowCustomRelease||r.processing||r.discard_requested_at)return r;
    // An ambiguous product-create result must not free an unknown live product.
    if(r.stage==='product_pending'&&!r.product_id)return r;
-   if(r.product_id){await provider.setProductAvailable(r.product_id,false);const p=await provider.getProduct(r.product_id);if(p.state?.type!=='SOLD_OUT')throw unavailable()}
+   if(r.product_id&&(!r.retired_at||ordersCheckedAt===null||r.retired_at>ordersCheckedAt))return r;
   }
   await store.update(r.id,{state:'expired',active:0},now());return null;
  }
@@ -319,7 +364,15 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
  async function processCustom(id){
   assertWritable();
   if(!(await store.startJob(id,now()))){
-   const prior=await store.request(id);
+   let prior=await store.request(id);
+   if(prior?.processing&&prior.updated_at<now()-300000){
+    // Every provider IO is bounded below one minute. An interrupted worker may
+    // leave this flag behind; revoke its ability to claim any later product
+    // write. A journaled product_pending outcome is still held for review.
+    await store.run("UPDATE goods_benefit_requests SET processing=0,state=CASE WHEN discard_requested_at IS NULL THEN 'review_required' ELSE 'discarding' END,message='The House is checking this interrupted print preparation. Your order allowance has not been used.' WHERE id=? AND processing=1 AND updated_at<?",id,now()-300000);
+    prior=await store.request(id);
+   }
+   if(prior?.discard_requested_at){await finishDiscard(id);return}
    if(prior&&prior.expires_at<=now())return;
    if(prior?.state==='preparing'&&prior.stage==='queued'&&prior.next_retry_at>now())throw new FourthwallRateLimitError((prior.next_retry_at-now())/1000);
    if(prior?.state==='preparing' && prior.updated_at<now()-300000){
@@ -329,7 +382,7 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
    return;
   }
   let r=await store.request(id);
-  const beforeWrite=()=>{if(r.expires_at<=now())fail('REQUEST_EXPIRED','Your saved request has expired. Please prepare a new tee.',409)};
+  const beforeWrite=async()=>{r=await store.request(id);if(r.discard_requested_at||!r.processing)fail('CUSTOM_DISCARDED','This saved tee is no longer being prepared.',409);if(r.expires_at<=now())fail('REQUEST_EXPIRED','Your saved request has expired. Please prepare a new tee.',409)};
   try{
    const asset=await chain.owned(r.wallet,r.mint);if(!asset)fail('NFT_NOT_OWNED','This NFT is no longer held by the verified wallet.',409);
    const template=await provider.template(),opt=normalizeCustomOptions(template,customPrices),choice=opt.colours.find(c=>c.name===r.colour)?.sizes.find(s=>s.name===r.size);if(!choice||choice.price!==r.price)fail('VARIANT_CHANGED','This colour or size changed. Please choose again.',409);
@@ -343,24 +396,30 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
       let printable=await resolvePrintAsset(asset);
       if(!printable.imageId){try{printable=await makeSquarePrintCanvas(printable,template.customizableAreas?.find(a=>a.regionId==='front')?.dimensions)}catch{fail('ARTWORK_REVIEW','This artwork needs print-file preparation by the House before checkout.',409)}}
       if(printable.printInfo)await store.update(id,{print_info:JSON.stringify(printable.printInfo),message:printable.printMessage},now());
-      beforeWrite();const imageId=printable.imageId||await provider.uploadImage(printable);await store.update(id,{image_id:imageId,stage:'customization_pending'},now());r=await store.request(id);
+      await beforeWrite();const imageId=printable.imageId||await provider.uploadImage(printable);await store.update(id,{image_id:imageId,stage:'customization_pending'},now());r=await store.request(id);
      }
-     beforeWrite();const design=await provider.createCustomization({imageId:r.image_id,colour:r.colour,size:r.size,placementStrategy:r.print_info?'FULL_REGION':'PLACEMENT_ID'});if(!design.customizationId||!firstPreview(design.images))throw unavailable();
-     await store.update(id,{customization_id:design.customizationId,preview:firstPreview(design.images),stage:'product_pending'},now());r=await store.request(id);
+     await beforeWrite();const design=await provider.createCustomization({imageId:r.image_id,colour:r.colour,size:r.size,placementStrategy:r.print_info?'FULL_REGION':'PLACEMENT_ID'});if(!design.customizationId||!firstPreview(design.images))throw unavailable();
+     await store.update(id,{customization_id:design.customizationId,preview:firstPreview(design.images),stage:'customized'},now());r=await store.request(id);
     }
     const printInfo=parseJSON(r.print_info),name=`${asset.name} — Custom Heavy Tee [${id.slice(0,8)}]`;
     const sizeCopy=printInfo?` Square front print: approximately ${printInfo.widthCm} × ${printInfo.widthCm} cm.`:' Square front artwork.';
-    beforeWrite();await store.update(id,{stage:'product_pending'},now());
+    await beforeWrite();if(!await store.claimProductWrite(id,now()))fail('CUSTOM_DISCARDED','This saved tee is no longer being prepared.',409);
     const result=await provider.createProduct({customizationId:r.customization_id,name,description:'Your official BULLENCIAGA artwork, printed on a premium AS Colour 5080 heavyweight cotton tee.'+sizeCopy+' Made to order.',profitMargin});
     if(!result.productId)throw unavailable();await store.update(id,{product_id:result.productId,preview:firstPreview(result.images)||r.preview,stage:'product_created'},now());r=await store.request(id);
    }
-   const product=await provider.getProduct(r.product_id);
+   await beforeWrite();const product=await provider.getProduct(r.product_id);
    const variant=productVariants(product).find(v=>v.attributes?.color?.name===r.colour&&v.attributes?.size?.name===r.size);
    if(product.access?.type!=='HIDDEN'||!productOpen(product)||!variant || variant.unitPrice?.currency!=='USD'||Math.abs(variantPrice(variant)-r.price)>0.001||!availableStock(variant.stock))throw unavailable();
    const info=parseJSON(r.print_info),message=info?`Square front print: approximately ${info.widthCm} × ${info.widthCm} cm. Original ${info.sourcePixels}px artwork at about ${info.dpi} dpi, with the original pixels preserved.${info.lowResolution?' Fine detail may look softer at this size.':''}`:null;
-   await store.update(id,{state:'ready',variant_id:variant.id,stage:'ready',next_retry_at:0,message},now());
+   await store.readyCustom(id,variant.id,message,now());
   }catch(error){
    r=await store.request(id);
+   if(r.discard_requested_at){
+    // An explicit429 proves that a rejected product write did not create one.
+    // Every other uncertain create result remains held, even after discard.
+    if(error instanceof FourthwallRateLimitError&&!r.product_id)await store.update(id,{stage:'review'},now());
+    return;
+   }
    if(error instanceof FourthwallRateLimitError&&Number(r.retry_count)<5){
     await store.update(id,{state:'preparing',stage:'queued',retry_count:Number(r.retry_count)+1,next_retry_at:now()+error.retryAfterSeconds*1000,message:error.message},now());
     throw error;
@@ -368,6 +427,9 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
    const uncertain=Boolean(r.product_id)||(!(error instanceof FourthwallRateLimitError)&&['product_pending','product_created'].includes(r.stage));
    if(r.product_id){try{await provider.setProductAvailable(r.product_id,false)}catch{/* retain reservation until reconciliation */}}
    await store.update(id,{state:'review_required',active:uncertain?1:0,message:error instanceof GoodsBenefitError && error.status<500?error.message:'The House needs to review this print before checkout. Your order allowance has not been used.',stage:uncertain?r.stage:'review'},now());
+  }finally{
+   await store.update(id,{processing:0},now());
+   if((await store.request(id))?.discard_requested_at)await finishDiscard(id);
   }
  }
  async function requestCustom(wallet,body,ctx){
@@ -376,11 +438,15 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   if(typeof idempotencyKey!=='string'||!/^[a-zA-Z0-9_-]{16,80}$/.test(idempotencyKey))fail('INVALID_REQUEST','Please restart this custom request.',400);
   walletAddress(mint);
   const previous=await store.idempotent(wallet,'custom',idempotencyKey);if(previous){if(previous.mint!==mint||previous.colour!==colour||previous.size!==size)fail('REQUEST_CONFLICT','That request identifier has already been used.',409);return publicCustom(previous)}
-  const outstanding=await active(wallet,'custom');if(outstanding){if(outstanding.mint===mint&&outstanding.colour===colour&&outstanding.size===size)return publicCustom(outstanding);fail('CUSTOM_PENDING','Finish your existing custom tee before preparing another.',409)}
+  const outstanding=await store.customChoice(wallet,mint,colour,size);if(outstanding&&outstanding.expires_at>now())return publicCustom(outstanding);
   const asset=await chain.owned(wallet,mint);if(!asset)fail('NFT_NOT_OWNED','Choose an official BULLENCIAGA NFT held in this wallet.',403);
   const opt=await options(),choice=opt.colours.find(c=>c.name===colour)?.sizes.find(s=>s.name===size);if(!choice)fail('VARIANT_UNAVAILABLE','Choose an available colour and size.',409);
   const id=randomId();
-  if(!(await store.reserve({id,wallet,kind:'custom',key:idempotencyKey,state:'preparing',stage:'queued',now:now(),expiresAt:now()+requestTTL,mint,colour,size,name:asset.name,image:asset.image,price:choice.price})))fail('LIMIT_REACHED','This wallet has reached its custom-order allowance or has a tee in progress.',409);
+  if(!(await store.reserve({id,wallet,kind:'custom',key:idempotencyKey,state:'preparing',stage:'queued',now:now(),expiresAt:now()+requestTTL,mint,colour,size,name:asset.name,image:asset.image,price:choice.price}))){
+   const duplicate=await store.customChoice(wallet,mint,colour,size);if(duplicate&&duplicate.expires_at>now())return publicCustom(duplicate);
+   if((await store.savedCustom(wallet,now())).length>=MAX_SAVED_CUSTOM)fail('SAVED_LIMIT','You can save up to five custom tees. Discard one before preparing another.',409);
+   fail('LIMIT_REACHED','This wallet has reached its 10 custom-order allowance or has outstanding purchase reservations.',409);
+  }
   if(enqueueCustom)await enqueueCustom(id);
   else if(ctx?.waitUntil)ctx.waitUntil(processCustom(id));
   else await processCustom(id);
@@ -399,7 +465,7 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
  }
  async function customCheckout(request,id,body){
   assertWritable();
-  const s=await session(request),r=await store.request(id,s.wallet);if(!r||r.state!=='ready'||!r.active||r.expires_at<=now())fail('CUSTOM_NOT_READY','This custom tee is not available for checkout.',409);
+  const s=await session(request),r=await store.request(id,s.wallet);if(!r||r.state!=='ready'||!r.active||r.discard_requested_at||r.expires_at<=now())fail('CUSTOM_NOT_READY','This custom tee is not available for checkout.',409);
   if(await store.count(s.wallet,'custom')>=MAX_ORDERS)fail('LIMIT_REACHED','This wallet has used its 10 custom orders.',409);
   // Ownership at request time is the entitlement. Sharing the link afterward is
   // explicitly allowed; do not require the recipient to own the NFT at payment.
@@ -407,9 +473,11 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   if(!productOpen(product)||!variant||!availableStock(variant.stock)||variant.unitPrice?.currency!=='USD'||Math.abs(variantPrice(variant)-r.price)>0.001)fail('VARIANT_CHANGED','This tee is not available at the shown price. Please refresh.',409);
   const benefit=await checkoutBenefit(request,{holderDiscount:body.holderDiscount===true,productIds:[r.product_id]});
   const metadata={...benefit.metadata,custom_request:r.id,custom_mac:await hmac(metadataSecret,enc.encode(r.id))};
+  const stillReady=async()=>{const current=await store.request(id,s.wallet);if(!current||current.discard_requested_at||!current.active||current.state!=='ready'||current.expires_at<=now())fail('CUSTOM_NOT_READY','This custom tee is not available for checkout.',409)};
+  await stillReady();
   const result=await provider.createCart({variantId:r.variant_id,metadata,code:benefit.code});
   const cartVariant=result.cart?.items?.[0]?.variant;if(!cartVariant||cartVariant.unitPrice?.currency!=='USD'||Math.abs(variantPrice(cartVariant)-r.price)>0.001)throw unavailable();
-  return {checkoutUrl:result.checkoutUrl};
+  await stillReady();return {checkoutUrl:result.checkoutUrl};
  }
  async function reconcileOrder(orderId){
   const order=await provider.getOrder(orderId);if(order?.id!==orderId||(!PAID.has(order.status)&&order.status!=='CANCELLED'))return;
@@ -447,6 +515,10 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
  async function reconcile(){
   assertWritable();
   await drainEvents();
+  // Stop sales before the authoritative order scan. An order already paid
+  // without a delivered webhook must count before a discarded slot is reused.
+  const closing=await store.all("SELECT * FROM goods_benefit_requests WHERE kind='custom' AND state NOT IN ('discarded','consumed') AND (discard_requested_at IS NOT NULL OR (active=1 AND expires_at<=?)) LIMIT 100",now());
+  for(const r of closing){try{await retireCustom(r)}catch{/* retry closure on the next reconciliation */}}
   const saved=await store.one("SELECT value FROM goods_reconcile_state WHERE key='orders_since'");
   const until=now(),since=saved?Math.max(0,Number(saved.value)-300000):now()-7*86400000;
   let exhausted=false;
@@ -457,9 +529,12 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   }
   if(exhausted)await store.run("INSERT INTO goods_reconcile_state(key,value) VALUES('orders_since',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",String(until));
   // Do not release expired slots unless this complete provider scan succeeded.
-  if(exhausted)for(const r of await store.all("SELECT * FROM goods_benefit_requests WHERE active=1 AND kind='custom' AND expires_at<=? LIMIT 100",now())){try{await expire(r,true)}catch{}}
+  if(exhausted){
+   for(const r of await store.all("SELECT id FROM goods_benefit_requests WHERE kind='custom' AND discard_requested_at IS NOT NULL AND state NOT IN ('discarded','consumed') LIMIT 100")){try{await finishDiscard(r.id,until)}catch{}}
+   for(const r of await store.all("SELECT * FROM goods_benefit_requests WHERE active=1 AND kind='custom' AND expires_at<=? LIMIT 100",now())){try{await expire(r,true,until)}catch{}}
+  }
   if(enqueueCustom)for(const r of await store.all("SELECT id FROM goods_benefit_requests WHERE active=1 AND state='preparing' AND stage='queued' AND next_retry_at<=? LIMIT 10",now()))await enqueueCustom(r.id);
-  for(const r of await store.all("SELECT id FROM goods_benefit_requests WHERE active=1 AND state='preparing' AND stage<>'queued' AND updated_at<? LIMIT 10",now()-300000))await processCustom(r.id);
+  for(const r of await store.all("SELECT id FROM goods_benefit_requests WHERE active=1 AND (processing=1 OR (state='preparing' AND stage<>'queued')) AND updated_at<? LIMIT 10",now()-300000))await processCustom(r.id);
   await store.run('DELETE FROM goods_wallet_challenges WHERE expires_at<?',now()-86400000);
   await store.run('DELETE FROM goods_wallet_sessions WHERE expires_at<?',now());
  }
@@ -485,10 +560,10 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
    }
    if(action==='/logout'&&method==='POST'){await readBody(request);const token=readToken(request);if(token)await store.deleteSession(await hash(token));return json({ok:true},200,{'Set-Cookie':cookie('',0)})}
    if(action==='/status'&&method==='GET'){
-    const s=await session(request,false),opt=await options();if(!s)return json({authenticated:false,options:opt,discount:{limit:10},custom:{limit:10}});
-    const [q,balance,r,custom]=await Promise.all([quotas(s.wallet),chain.balance(s.wallet),active(s.wallet,'discount'),active(s.wallet,'custom')]);
+    const s=await session(request,false),opt=await options();if(!s)return json({authenticated:false,options:opt,discount:{limit:10},custom:{limit:10,maxSaved:MAX_SAVED_CUSTOM,savedRequests:[]}});
+    const [q,balance,r,custom]=await Promise.all([quotas(s.wallet),chain.balance(s.wallet),active(s.wallet,'discount'),store.savedCustom(s.wallet,now())]);
     const eligiblePercent=holderPercentage(balance.raw,balance.decimals);
-    return json({authenticated:true,wallet:s.wallet,...q,discount:{...q.discount,percent:r?.state==='ready'?r.percent:eligiblePercent,eligiblePercent,balance:Number(balance.raw)/10**balance.decimals,...(r?.state==='ready'?{activeCode:r.code}:{})},custom:{...q.custom,...(custom?{activeRequest:publicCustom(custom)}:{})},options:opt});
+    return json({authenticated:true,wallet:s.wallet,...q,discount:{...q.discount,percent:r?.state==='ready'?r.percent:eligiblePercent,eligiblePercent,balance:Number(balance.raw)/10**balance.decimals,...(r?.state==='ready'?{activeCode:r.code}:{})},custom:{...q.custom,maxSaved:MAX_SAVED_CUSTOM,savedRequests:custom.map(publicCustom),...(custom[0]?{activeRequest:publicCustom(custom[0])}:{})},options:opt});
    }
    const s=await session(request);
    if(action==='/discount'&&method==='POST'){await readBody(request);return json(await issueDiscount(s.wallet))}
@@ -504,9 +579,10 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
     }finally{releaseThumbnail()}
    }
    if(action==='/custom'&&method==='POST')return json(await requestCustom(s.wallet,await readBody(request),ctx),202);
-   const match=/^\/custom\/([a-zA-Z0-9_-]+)(\/checkout)?$/.exec(action);
+   const match=/^\/custom\/([a-zA-Z0-9_-]+)(\/checkout|\/discard)?$/.exec(action);
    if(match&&!match[2]&&method==='GET'){const r=await store.request(match[1],s.wallet);if(!r)fail('NOT_FOUND','Custom request not found.',404);return json(publicCustom(r))}
-   if(match?.[2]&&method==='POST')return json(await customCheckout(request,match[1],await readBody(request)));
+   if(match?.[2]==='/discard'&&method==='POST'){await readBody(request);const result=await discardCustom(request,match[1],ctx);return json(result,result.state==='discarding'?202:200)}
+   if(match?.[2]==='/checkout'&&method==='POST')return json(await customCheckout(request,match[1],await readBody(request)));
    return json({error:{code:'NOT_FOUND',message:'Not found.'}},404);
   }catch(error){const e=error instanceof GoodsBenefitError?error:unavailable();return json({error:{code:e.code,message:e.message}},e.status)}
  }
