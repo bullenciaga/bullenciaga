@@ -1,6 +1,7 @@
 import { platformSignupsAdmin } from './platform-signups-admin.mjs';
 import { platformSignup } from './platform-signup.mjs';
 import { merchPreview } from './merch-preview.mjs';
+import { createGoodsRuntime } from './goods-runtime.mjs';
 
 // Keep short-domain visits on the established origin for wallets and sessions.
 const aliases = new Set(['bullen.app', 'www.bullen.app']);
@@ -93,9 +94,9 @@ const iphoneNavigation = `<style data-bullen-navigation>
 </script>`;
 
 const website = {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    if (['/goods', '/merch'].some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) return merchPreview(request, env);
+    if (['/goods', '/merch'].some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) return merchPreview(request, env, ctx);
     if (url.pathname === '/platform/signups') return platformSignupsAdmin(request, env);
     if (url.pathname === '/platform/signup') return platformSignup(request, env);
     const userAgent = request.headers.get('User-Agent') || '';
@@ -140,7 +141,7 @@ const website = {
 };
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const alias = aliases.has(url.hostname);
     const websiteHost = websiteHosts.has(url.hostname);
@@ -156,12 +157,21 @@ export default {
         },
       });
     }
-    const response = await website.fetch(request, env);
+    const response = await website.fetch(request, env, ctx);
     if (!websiteHost || url.protocol !== 'https:') return response;
     // Cover successful pages, redirects, static assets and protected responses.
     // Subdomains are separate services; do not opt them into HSTS here.
     const secure = new Response(response.body, response);
     secure.headers.set('Strict-Transport-Security', hsts);
     return secure;
+  },
+  async queue(batch, env) {
+    const runtime=createGoodsRuntime(env);
+    if (!runtime) { for (const message of batch.messages) message.retry({delaySeconds:60}); return; }
+    await runtime.queue(batch);
+  },
+  async scheduled(event, env, ctx) {
+    const runtime=createGoodsRuntime(env);
+    if (runtime) { const task=runtime.scheduled(); if (ctx?.waitUntil) ctx.waitUntil(task); else await task; }
   },
 };

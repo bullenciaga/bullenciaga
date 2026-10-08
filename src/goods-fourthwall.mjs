@@ -1,5 +1,6 @@
 // Protected Goods catalog/cart adapter. The existing session gate and runtime opt-in are wired by merch-preview.mjs.
 // Documented schema: setup/api/storefront-openapi.json. Currency values are major units.
+import { GoodsBenefitError } from './goods-benefits.mjs';
 const API='https://storefront-api.fourthwall.com';
 const KEY=x=>JSON.stringify([x.product,x.colour,x.size]);
 export class ShopError extends Error { constructor(code,message,status=400){super(message);this.code=code;this.status=status;} }
@@ -53,7 +54,7 @@ async function readCheckoutBody(request) {
   catch{throw new ShopError('INVALID','Invalid request.');}
 }
 
-export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,authorize,rateLimit}) {
+export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,authorize,rateLimit,checkoutBenefit}) {
   validateMappings(config);
   // Integration must explicitly wire the existing protected Goods gate and a shared rate limiter.
   if (typeof authorize!=='function' || typeof rateLimit!=='function') throw new Error('Existing gate and rate limiter are required');
@@ -86,6 +87,7 @@ export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,autho
     const bodyText=await readCheckoutBody(request);
     let body;try{body=JSON.parse(bodyText);}catch{throw new ShopError('INVALID','Invalid request.');}
     if(!body || typeof body!=='object' || body.currency!==config.currency || !Array.isArray(body.items) || body.items.length===0 || body.items.length>50)throw new ShopError('INVALID','Please review your bag.');
+    if(body.holderDiscount!==undefined && typeof body.holderDiscount!=='boolean')throw new ShopError('INVALID','Please review the holder discount selection.');
     const seen=new Set(),selected=[];
     for(const item of body.items){
       if(!item || typeof item!=='object')throw new ShopError('INVALID','Please review your bag.');
@@ -99,7 +101,9 @@ export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,autho
       if(Math.round(current[i].unitPrice*100)!==Math.round(body.items[i].expectedUnitPrice*100))throw new ShopError('PRICE_CHANGED','Prices have updated. Review your bag before continuing.',409);
     }
     const requested=body.items.map(({variantId,quantity})=>({variantId,quantity}));
-    const cart=await fourthwall('/v1/carts',{items:requested,metadata:{source:'bullenciaga_goods'}});
+    if(body.holderDiscount===true && !checkoutBenefit)throw new ShopError('BENEFITS_UNAVAILABLE','Holder benefits are temporarily unavailable. You can continue at the listed price.',409);
+    const benefit=checkoutBenefit?await checkoutBenefit(request,{holderDiscount:body.holderDiscount===true,productIds:[...new Set(selected.map(v=>v.productId))]}):{metadata:{source:'bullenciaga_goods'}};
+    const cart=await fourthwall('/v1/carts',{items:requested,metadata:benefit.metadata});
     // Never redirect a silently altered cart or one carrying missing/extra rows.
     if(typeof cart.id!=='string' || !cart.id || !Array.isArray(cart.items) || cart.items.length!==requested.length)throw unavailable();
     const returned=new Set();
@@ -109,6 +113,7 @@ export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,autho
       returned.add(line.variant.id);
     }
     const url=new URL('/cart/checkout',config.checkoutOrigin);url.searchParams.set('cartId',cart.id);url.searchParams.set('currency',config.currency);
+    if(benefit.code)url.searchParams.set('coupon',benefit.code);
     return {checkoutUrl:url.href,checkoutHost:url.hostname};
   }
   return async request=>{
@@ -123,6 +128,6 @@ export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,autho
         return response(await checkout(request));
       }
       return response({code:'METHOD',message:'Method not allowed.'},405);
-    }catch(error){return response({code:error instanceof ShopError?error.code:'UNAVAILABLE',message:error instanceof ShopError?error.message:'The shop is temporarily unavailable. Please try again.'},error instanceof ShopError?error.status:503);}
+    }catch(error){const known=error instanceof ShopError || error instanceof GoodsBenefitError;return response({code:known?error.code:'UNAVAILABLE',message:known?error.message:'The shop is temporarily unavailable. Please try again.'},known?error.status:503);}
   };
 }
