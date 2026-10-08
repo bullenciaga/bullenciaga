@@ -1566,6 +1566,39 @@ export default {
       "expectedColor": "Black",
       "expectedSize": "3XL",
       "enabled": true
+    },
+    {
+      "product": "house-emblem-cap",
+      "colour": "K03-BLACK",
+      "size": "One size",
+      "productId": "6a6b388f-9e4d-49c4-aa60-8fb2e66b5cd6",
+      "slug": "house-emblem-cord-cap-black-gold",
+      "variantId": "785bc2c3-3b3d-45a3-bda8-33b019f61648",
+      "expectedColor": "Black",
+      "expectedSize": "One size",
+      "enabled": true
+    },
+    {
+      "product": "house-emblem-cap",
+      "colour": "K03-CAMEL",
+      "size": "One size",
+      "productId": "c66ccaad-8fa5-421b-822b-316013489040",
+      "slug": "house-emblem-cord-cap-camel-black",
+      "variantId": "34f7163f-e4ca-4402-a735-b3829b6f9e98",
+      "expectedColor": "Camel",
+      "expectedSize": "One size",
+      "enabled": true
+    },
+    {
+      "product": "house-emblem-cap",
+      "colour": "K03-OLIVE",
+      "size": "One size",
+      "productId": "1c6caeae-7571-44ad-aeb8-61c271904ff5",
+      "slug": "house-emblem-cord-cap-dark-olive-gold",
+      "variantId": "62497039-6466-4bc5-a2a8-56515ab66fd8",
+      "expectedColor": "Dark Olive",
+      "expectedSize": "One size",
+      "enabled": true
     }
   ]
 };

@@ -43,3 +43,48 @@ test('supplier-unavailable Signature Black sizes remain unmapped despite provide
   assert.equal(r.status,400);assert.equal(upstreamCalls,0);
  }finally{globalThis.fetch=nativeFetch;}
 });
+
+test('three House Emblem cap colours create one exact supplier cart at their live USD price',async()=>{
+ const caps=mappings.variants.filter(v=>v.product==='house-emblem-cap' && v.enabled);
+ assert.deepEqual(caps.map(v=>[v.colour,v.expectedColor,v.size,v.expectedSize]),[
+  ['K03-BLACK','Black','One size','One size'],
+  ['K03-CAMEL','Camel','One size','One size'],
+  ['K03-OLIVE','Dark Olive','One size','One size']
+ ]);
+ assert.equal(new Set(caps.map(v=>v.productId)).size,3);
+ assert.equal(new Set(caps.map(v=>v.variantId)).size,3);
+ const nativeFetch=globalThis.fetch,gets=[],posts=[];
+ const variant=row=>({id:row.variantId,unitPrice:{value:34.99,currency:'USD'},attributes:{color:{name:row.expectedColor},size:{name:'One size'}},stock:{type:'UNLIMITED'}});
+ globalThis.fetch=async(url,options)=>{
+  const parsed=new URL(url);assert.equal(parsed.origin,'https://storefront-api.fourthwall.com');
+  if(options.method==='GET'){
+   const row=caps.find(v=>parsed.pathname==='/v1/products/'+v.slug);assert.ok(row,'Only the selected cap listings may be read');gets.push(row.productId);
+   return Response.json({id:row.productId,slug:row.slug,type:'PRODUCT',access:{type:'PUBLIC'},state:{type:'AVAILABLE'},variants:[variant(row)]});
+  }
+  assert.equal(parsed.pathname,'/v1/carts');const body=JSON.parse(options.body);posts.push(body);
+  assert.deepEqual(body.items,caps.map(v=>({variantId:v.variantId,quantity:1})));
+  return Response.json({id:'fixture-emblem-caps',items:caps.map(row=>({variant:variant(row),quantity:1}))});
+ };
+ try{
+  const r=await merchPreview(req('/goods/api/checkout',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({currency:'USD',items:caps.map(v=>({product:v.product,colour:v.colour,size:v.size,variantId:v.variantId,quantity:1,expectedUnitPrice:34.99}))})}),{...env,GOODS_STOREFRONT_TOKEN:'fixture-token',GOODS_CHECKOUT_ENABLED:'1'});
+  assert.equal(r.status,200);assert.equal((await r.json()).checkoutUrl,'https://store.bullenciaga.com/cart/checkout?cartId=fixture-emblem-caps&currency=USD');
+  assert.deepEqual(new Set(gets),new Set(caps.map(v=>v.productId)));assert.equal(posts.length,1);
+ }finally{globalThis.fetch=nativeFetch;}
+});
+
+test('cap checkout rejects a cross-colour variant and changed supplier attributes or price before cart creation',async()=>{
+ const [black,camel]=mappings.variants.filter(v=>v.product==='house-emblem-cap' && v.enabled);
+ const nativeFetch=globalThis.fetch;let reads=0,writes=0,mode='none';
+ globalThis.fetch=async(url,options)=>{
+  if(options.method!=='GET'){writes++;throw new Error('Invalid cap must not create a cart');}
+  reads++;
+  return Response.json({id:black.productId,slug:black.slug,type:'PRODUCT',access:{type:'PUBLIC'},state:{type:'AVAILABLE'},variants:[{id:black.variantId,unitPrice:{value:mode==='price'?37.99:34.99,currency:'USD'},attributes:{color:{name:mode==='colour'?'Camel':'Black'},size:{name:'One size'}},stock:{type:'UNLIMITED'}}]});
+ };
+ const checkout=variantId=>merchPreview(req('/goods/api/checkout',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({currency:'USD',items:[{product:black.product,colour:black.colour,size:black.size,variantId,quantity:1,expectedUnitPrice:34.99}]})}),{...env,GOODS_STOREFRONT_TOKEN:'fixture-token',GOODS_CHECKOUT_ENABLED:'1'});
+ try{
+  let r=await checkout(camel.variantId);assert.equal(r.status,400);assert.equal((await r.json()).code,'INVALID');assert.equal(reads,0);
+  mode='colour';r=await checkout(black.variantId);assert.equal(r.status,503);assert.equal((await r.json()).code,'UNAVAILABLE');
+  mode='price';r=await checkout(black.variantId);assert.equal(r.status,409);assert.equal((await r.json()).code,'PRICE_CHANGED');
+  assert.equal(reads,2);assert.equal(writes,0);
+ }finally{globalThis.fetch=nativeFetch;}
+});
