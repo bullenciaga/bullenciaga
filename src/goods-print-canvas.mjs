@@ -45,7 +45,9 @@ export async function makeSquarePrintCanvas(asset,dimensions){
  if(asset.width!==asset.height||asset.width<1024||asset.width>2600||asset.contentType!=='image/png')review();
  if(dimensions?.inchesWidth!==15.5||dimensions?.inchesHeight!==19.6)review();
  const source=await decodePrintPNG(asset.bytes);if(source.width!==asset.width||source.height!==asset.height)review();
- const small=source.width<1800,inch=small?source.width/150:12.6;
+ // The same physical square for every eligible original. Keep the original
+ // pixels; a lower-resolution source is honestly a softer, larger print.
+ const inch=12.6;
  const dpi=source.width/inch,width=Math.round(dimensions.inchesWidth*dpi),height=Math.round(dimensions.inchesHeight*dpi);
  // Center horizontally; place top one inch below the front print-region top.
  const x=Math.floor((width-source.width)/2),y=Math.round(dpi);if(x<0||y+source.height>height)review();
@@ -63,5 +65,6 @@ export async function makeSquarePrintCanvas(asset,dimensions){
  const physical=new Uint8Array(9),pv=new DataView(physical.buffer);pv.setUint32(0,Math.round(dpi/0.0254));pv.setUint32(4,Math.round(dpi/0.0254));physical[8]=1;
  const bytes=concat([SIGNATURE,chunk('IHDR',header),...source.profiles,chunk('pHYs',physical),...data,chunk('IEND',new Uint8Array())]);
  const physicalInches=source.width/width*dimensions.inchesWidth,cm=Math.round(physicalInches*2.54*10)/10;
- return {...asset,bytes,width,height,placementStrategy:'FULL_REGION',printInfo:{widthInches:Number(physicalInches.toFixed(2)),widthCm:cm,sourcePixels:source.width,dpi:Math.round(source.width/physicalInches),small,upscaled:false,pixelOffset:{x,y},canvasPixels:{width,height}},printMessage:`Square front print: approximately ${cm} × ${cm} cm. Original ${source.width}px artwork at about ${Math.round(source.width/physicalInches)} dpi, with no image upscaling.`};
+ const effectiveDpi=Math.round(source.width/physicalInches),lowResolution=effectiveDpi<150;
+ return {...asset,bytes,width,height,placementStrategy:'FULL_REGION',printInfo:{widthInches:Number(physicalInches.toFixed(2)),widthCm:cm,sourcePixels:source.width,dpi:effectiveDpi,small:false,lowResolution,upscaled:false,pixelOffset:{x,y},canvasPixels:{width,height}},printMessage:`Square front print: approximately ${cm} × ${cm} cm. Original ${source.width}px artwork at about ${effectiveDpi} dpi, with the original pixels preserved.${lowResolution?' Fine detail may look softer at this size.':''}`};
 }
