@@ -36,6 +36,12 @@
       "database_name": "bullen-platform-preview",
       "database_id": "3ca8afd0-91dc-4f2e-80ac-a28c2cf71a11",
       "migrations_dir": "migrations/platform"
+    },
+    {
+      "binding": "GOODS_DB",
+      "database_name": "bullenciaga-goods",
+      "database_id": "6b0d33f6-9281-4416-b323-028f342161ca",
+      "migrations_dir": "migrations/goods"
     }
   ],
   "ratelimits": [
@@ -69,6 +75,32 @@
     }
   ],
   "vars": {
-    "MERCH_PREVIEW_PREFIX": "collection01-v2-20261005"
+    "MERCH_PREVIEW_PREFIX": "collection01-v2-20261005",
+    "GOODS_BENEFITS_ENABLED": "1",
+    "GOODS_SHOP_ID": "sh_519b5285-451f-42f7-ba14-f2926fd1a7df"
+  },
+  "queues": {
+    "producers": [
+      {
+        "binding": "GOODS_CUSTOM_QUEUE",
+        "queue": "bullenciaga-goods-custom"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "bullenciaga-goods-custom",
+        "max_batch_size": 1,
+        "max_batch_timeout": 1,
+        "max_retries": 5,
+        "max_concurrency": 1,
+        "retry_delay": 60,
+        "dead_letter_queue": "bullenciaga-goods-custom-dlq"
+      }
+    ]
+  },
+  "triggers": {
+    "crons": [
+      "*/5 * * * *"
+    ]
   }
 }

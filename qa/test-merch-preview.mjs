@@ -210,5 +210,7 @@ for (const name of ['production', 'staging']) {
   assert(!('MERCH_PREVIEW_PASSWORD_SHA256' in config.vars));
   assert(!('MERCH_PREVIEW_SESSION_SECRET' in config.vars));
 }
-assert.match(readFileSync(new URL('./release-fingerprint.mjs', import.meta.url), 'utf8'), /await read\('src\/merch-preview\.mjs'\)/, 'the gate implementation participates in the release fingerprint');
+const fingerprintSource = readFileSync(new URL('./release-fingerprint.mjs', import.meta.url), 'utf8');
+assert.match(fingerprintSource, /'src\/merch-preview\.mjs'/, 'the gate implementation participates in the release fingerprint');
+assert.match(fingerprintSource, /\.map\(read\)/, 'release modules are read into the fingerprint');
 console.log('Private goods: canonical route, legacy redirects/forms, password gate, throttling, signed sessions, CSRF, guarded assets, traversal defenses and public-route isolation passed.');

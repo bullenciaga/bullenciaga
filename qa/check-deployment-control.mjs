@@ -91,11 +91,31 @@ assert(!production.includes('triggers deploy'), 'code-release token must not req
 assert.match(production, /node qa\/smoke-domain-aliases.mjs/);
 assert(staging.includes('"src/**"'));
 
-assert.equal(stagingConfig.d1_databases.length, 1);
+assert.equal(stagingConfig.d1_databases.length, 2);
+assert.equal(productionConfig.d1_databases.length, 2);
 assert.equal(stagingConfig.d1_databases[0].database_name, 'bullen-platform-preview-staging');
 assert.equal(productionConfig.d1_databases[0].database_name, 'bullen-platform-preview');
 assert.notEqual(stagingConfig.d1_databases[0].database_id, productionConfig.d1_databases[0].database_id, 'signup staging must never write to production');
 assert.notEqual(stagingConfig.ratelimits[0].namespace_id, productionConfig.ratelimits[0].namespace_id);
+
+const goodsProduction = productionConfig.d1_databases.find(db => db.binding === 'GOODS_DB');
+const goodsStaging = stagingConfig.d1_databases.find(db => db.binding === 'GOODS_DB');
+assert.equal(goodsProduction.database_name, 'bullenciaga-goods');
+assert.equal(goodsStaging.database_name, 'bullenciaga-goods-staging');
+assert.notEqual(goodsProduction.database_id, goodsStaging.database_id, 'Goods staging must never write to production');
+assert.equal(goodsProduction.migrations_dir, 'migrations/goods');
+assert.equal(goodsStaging.migrations_dir, 'migrations/goods');
+assert.equal(stagingConfig.vars.GOODS_BENEFITS_ENABLED, '0', 'staging cannot create live provider products or coupons');
+assert.deepEqual(productionConfig.triggers.crons, ['*/5 * * * *']);
+for (const [config, suffix] of [[productionConfig, ''], [stagingConfig, '-staging']]) {
+  assert.deepEqual(config.queues.producers, [{binding:'GOODS_CUSTOM_QUEUE',queue:`bullenciaga-goods-custom${suffix}`}]);
+  assert.equal(config.queues.consumers.length, 1);
+  const consumer = config.queues.consumers[0];
+  assert.equal(consumer.queue, `bullenciaga-goods-custom${suffix}`);
+  assert.equal(consumer.dead_letter_queue, `bullenciaga-goods-custom-dlq${suffix}`);
+  assert.equal(consumer.max_batch_size, 1);
+  assert.equal(consumer.max_concurrency, 1, 'provider design rendering must run serially');
+}
 
 assert.deepEqual(stagingConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy-staging"}], "staging owner authentication stays in staging");
 assert.deepEqual(productionConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy"}], "only the existing owner authorization service is bound");

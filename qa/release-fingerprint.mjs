@@ -17,7 +17,12 @@ const [manifest, productionConfig, workerSource] = await Promise.all([
 ]);
 const siteManifestSha256 = sha256(manifest);
 const productionConfigSha256 = sha256(productionConfig);
-const workerSourceSha256 = sha256(Buffer.concat([workerSource, await read('src/platform-signup.mjs'), await read('src/platform-signups-admin.mjs'), await read('src/merch-preview.mjs'), await read('src/goods-fourthwall.mjs'), await read('src/goods-mappings.mjs')]));
+const workerSourceSha256 = sha256(Buffer.concat([workerSource, ...await Promise.all([
+  'src/platform-signup.mjs', 'src/platform-signups-admin.mjs',
+  'src/merch-preview.mjs', 'src/goods-fourthwall.mjs', 'src/goods-mappings.mjs',
+  'src/goods-benefits.mjs', 'src/goods-runtime.mjs', 'src/goods-print-canvas.mjs',
+  'site/wallet-proof-format.mjs',
+].map(read))]));
 const releaseFingerprint = sha256([
   `site-tree=${siteTreeSha}`,
   `site-manifest=${siteManifestSha256}`,

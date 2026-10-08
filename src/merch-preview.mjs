@@ -1,5 +1,6 @@
 import { createGoodsHandler } from './goods-fourthwall.mjs';
 import goodsMappings from './goods-mappings.mjs';
+import { createGoodsRuntime } from './goods-runtime.mjs';
 
 // The preview payload lives in a private R2 bucket, never the public site assets.
 // Rotating either secret invalidates existing sessions. Nothing here places an order.
@@ -28,7 +29,7 @@ function headers(extra = {}) {
     'Cross-Origin-Resource-Policy': 'same-origin',
     'Cross-Origin-Opener-Policy': 'same-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
-    'Content-Security-Policy': "default-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self'",
+    'Content-Security-Policy': "default-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://gateway.irys.xyz https://arweave.net https://bullenciaga.com https://www.bullenciaga.com https://bullensaga.com https://imgproxy.fourthwall.dev https://imgproxy.fourthwall.com https://cdn.fourthwall.com; font-src 'self'; connect-src 'self'; media-src 'self'",
     ...extra,
   });
 }
@@ -130,12 +131,19 @@ function assetName(pathname) {
   return mediaTypes[extension] ? relative : null;
 }
 
-export async function merchPreview(request, env) {
+export async function merchPreview(request, env, ctx) {
   const url = new URL(request.url), head = request.method === 'HEAD';
   const legacy = url.pathname === LEGACY_PATH || url.pathname.startsWith(`${LEGACY_PATH}/`);
   if (!legacy && url.pathname !== PREVIEW_PATH && !url.pathname.startsWith(`${PREVIEW_PATH}/`)) return null;
   const pathname = legacy ? PREVIEW_PATH + url.pathname.slice(LEGACY_PATH.length) : url.pathname;
   try {
+    // Provider callbacks do not have a browser preview cookie. This exact route
+    // authenticates raw bytes with Fourthwall HMAC + shop ID before accepting data.
+    if (!legacy && pathname === `${PREVIEW_PATH}/api/webhook`) {
+      if (url.protocol !== 'https:') return reply('Webhook unavailable.', 503, {}, head);
+      const runtime = createGoodsRuntime(env);
+      return runtime ? await runtime.handler(request, ctx) : reply('Webhook unavailable.', 503, {}, head);
+    }
     if (url.protocol !== 'https:' || !configReady(env)) return reply('Preview temporarily unavailable.', 503, {}, head);
     if (legacy && ['GET', 'HEAD'].includes(request.method)) {
       // Keep old links and assets working without serving private bytes here.
@@ -164,18 +172,32 @@ export async function merchPreview(request, env) {
     // Draft mappings and provisioned credentials cannot turn checkout on by themselves.
     if (pathname.startsWith(`${PREVIEW_PATH}/api/`)) {
       if (legacy) return reply('Not found.', 404, {}, head);
+      const authorize = candidate => authenticated(candidate, env, new URL(candidate.url).origin);
+      const rateLimit = async candidate => {
+        const path = new URL(candidate.url).pathname;
+        const imageMint = candidate.method === 'GET' && /^\/goods\/api\/benefits\/nft-image\/([1-9A-HJ-NP-Za-km-z]{32,44})$/.exec(path)?.[1];
+        const action = imageMint ? `benefit-image-${imageMint}` : path.startsWith('/goods/api/benefits/')
+          ? (candidate.method === 'GET' ? (path.includes('/custom/') ? 'benefit-poll' : 'benefit-read') : 'benefit-write')
+          : path.endsWith('/checkout') ? 'checkout' : 'catalog';
+        const key = hex(await hash(`goods-${action}:${candidate.headers.get('CF-Connecting-IP') || 'unknown'}`));
+        const limit = await env.MERCH_PREVIEW_LIMIT.limit({ key });
+        return limit?.success === true;
+      };
+      const runtime = createGoodsRuntime(env, { authorize, rateLimit });
+      if (pathname === '/goods/api/benefits' || pathname.startsWith('/goods/api/benefits/')) {
+        if (!await authorize(request)) return reply(JSON.stringify({error:{code:'AUTH_REQUIRED',message:'Please unlock the collection again.'}}),401,{'Content-Type':'application/json; charset=utf-8'},head);
+        const result = runtime ? await runtime.handler(request, ctx) : Response.json({error:{code:'BENEFITS_UNAVAILABLE',message:'Holder benefits are temporarily unavailable. Please try again shortly.'}},{status:503});
+        const responseHeaders = headers();
+        for (const [name,value] of result.headers) if (!responseHeaders.has(name)) responseHeaders.set(name,value);
+        return new Response(head ? null : result.body,{status:result.status,headers:responseHeaders});
+      }
       const commerceEnabled = goodsMappings.salesEnabled === true && env.GOODS_CHECKOUT_ENABLED === '1'
         && typeof env.GOODS_STOREFRONT_TOKEN === 'string' && env.GOODS_STOREFRONT_TOKEN.length > 0;
       const handler = createGoodsHandler({
         config: { ...goodsMappings, salesEnabled: commerceEnabled, variants: commerceEnabled ? goodsMappings.variants : goodsMappings.variants.map(variant => ({ ...variant, enabled: false })) },
         storefrontToken: env.GOODS_STOREFRONT_TOKEN,
-        authorize: candidate => authenticated(candidate, env, url.origin),
-        rateLimit: async candidate => {
-          const action = new URL(candidate.url).pathname.endsWith('/checkout') ? 'checkout' : 'catalog';
-          const key = hex(await hash(`goods-${action}:${candidate.headers.get('CF-Connecting-IP') || 'unknown'}`));
-          const limit = await env.MERCH_PREVIEW_LIMIT.limit({ key });
-          return limit?.success === true;
-        },
+        authorize, rateLimit,
+        checkoutBenefit: runtime?.checkoutBenefit,
       });
       const result = await handler(request);
       if (!result) return reply('Not found.', 404, {}, head);

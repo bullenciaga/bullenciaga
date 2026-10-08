@@ -63,3 +63,50 @@ test('provider redirects are handled manually and never followed with the creden
  for(const status of [302,307]){let calls=0;const handler=createGoodsHandler({config:config(),storefrontToken:'never-forward-fixture',authorize:async()=>true,rateLimit:async()=>true,fetchImpl:async(url,options)=>{calls++;assert.equal(new URL(url).origin,'https://storefront-api.fourthwall.com');assert.equal(options.redirect,'manual');return new Response(null,{status,headers:{Location:'https://other.invalid/redirect-target'}});}});
  const r=await handler(new Request('https://bullenciaga.com/goods/api/catalog'));assert.equal(r.status,503);assert.equal(calls,1);const text=await r.text();assert.ok(!text.includes('never-forward-fixture'));assert.ok(!text.includes('other.invalid'));}
 });
+
+// Release routing contract: IDs below come from approved supplier readbacks.
+const releaseMappings=(await import('../src/goods-mappings.mjs')).default;
+test('approved catalogue has one route per selection and no variant shared across selections',()=>{
+ assert.doesNotThrow(()=>validateMappings(releaseMappings));
+ const rows=releaseMappings.variants;
+ assert.equal(rows.length,142);assert.equal(new Set(rows.map(x=>x.product)).size,27);
+ assert.equal(new Set(rows.map(x=>[x.product,x.colour,x.size].join('|'))).size,rows.length);
+ assert.equal(new Set(rows.map(x=>x.variantId)).size,rows.length);
+ const retired=new Set(['53ffe548-2e95-482d-909c-f3e592b17aed','6fc7156c-8666-46de-b939-48b228717f75']);
+ assert.ok(rows.every(x=>x.enabled&&!retired.has(x.productId)));
+ assert.ok(rows.every(x=>!x.product.includes('all-over')),'Abandoned AOP tees must not regain checkout routes');
+});
+
+test('lore hoodie routing covers only three approved character artworks and actual S–3XL sizes',()=>{
+ const approved={
+  'lily-aurelia-hoodie':'eae1cbf5-f2c1-4702-be8d-1feba822b2c6',
+  'sakura-selene-hoodie':'9550c4d4-ef44-48de-a7eb-d2d8cbb57f23',
+  'celestial-atelier-hoodie':'9d7800c0-e830-4486-98cd-cc525145eb99'
+ };
+ const lore=releaseMappings.variants.filter(x=>/^(lily-aurelia|sakura-selene|celestial-atelier|villa-perpetua|nocturne-atlas)-hoodie$/.test(x.product));
+ assert.deepEqual([...new Set(lore.map(x=>x.product))].sort(),Object.keys(approved).sort());
+ for(const [family,id] of Object.entries(approved)){
+  const rows=lore.filter(x=>x.product===family);
+  assert.equal(rows.length,6);assert.deepEqual(rows.map(x=>x.size).sort(),['S','M','L','XL','2XL','3XL'].sort());
+  assert.ok(rows.every(x=>x.productId===id&&x.expectedColor==='Black'&&x.expectedSize===x.size));
+ }
+});
+
+test('embroidered colours resolve to the approved pocketed blanks, including Cream and Arona',()=>{
+ const rows=releaseMappings.variants.filter(x=>x.product==='embroidered-house-hoodie');
+ const colours={E01:{name:'Black',productId:'e332b6d2-33db-47d8-818c-4edff0c6f60c'},E01A:{name:'Arona',productId:'e332b6d2-33db-47d8-818c-4edff0c6f60c'},E01S:{name:'Cream',productId:'fdecb177-6b5a-4bc5-bdab-42eee0b6b154'}};
+ assert.deepEqual([...new Set(rows.map(x=>x.colour))].sort(),Object.keys(colours).sort());
+ for(const [colour,expected] of Object.entries(colours)){
+  const selected=rows.filter(x=>x.colour===colour);assert.equal(selected.length,7);
+  assert.deepEqual(selected.map(x=>x.size).sort(),['XS','S','M','L','XL','2XL','3XL'].sort());
+  assert.ok(selected.every(x=>x.productId===expected.productId&&x.expectedColor===expected.name&&x.expectedSize===x.size));
+ }
+ // Independent supplier XS records catch a Cream/Arona cross-wire even if labels change together.
+ for(const [colour,variantId] of [['E01S','e3e4babc-555c-4922-ac18-618c0eea0c5d'],['E01A','cb0bb89c-7e7c-49c7-a407-388742b91476']]){
+  const route=rows.find(x=>x.colour===colour&&x.size==='XS');assert.equal(route.variantId,variantId);
+  const record={...product(),id:colours[colour].productId,slug:route.slug,variants:[{id:variantId,unitPrice:{value:124.99,currency:'USD'},attributes:{color:{name:colours[colour].name},size:{name:'XS'}},stock:{type:'UNLIMITED'}}]};
+  assert.equal(normalizeVariant(route,record,'USD').available,true);
+  record.variants[0].attributes.color.name=colour==='E01S'?'Arona':'Cream';
+  assert.throws(()=>normalizeVariant(route,record,'USD'),'A swapped supplier colour must fail closed');
+ }
+});
