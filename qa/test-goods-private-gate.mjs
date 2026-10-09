@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash, createHmac } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { runInNewContext } from 'node:vm';
 import { merchPreview } from '../src/merch-preview.mjs';
 import website from '../src/website.mjs';
 
@@ -49,6 +50,93 @@ function signedCookie(issued, expires, sessionSecret = secret) {
   return `__Secure-bullen_merch=${body}.${signature}`;
 }
 
+const launchInstant = Date.parse('2026-10-10T17:00:00Z');
+function gateScript(response, body) {
+  const scripts = [...body.matchAll(/<script nonce="([a-f0-9]{32})">([\s\S]*?)<\/script>/g)];
+  assert.equal(scripts.length, 1, 'only one response-nonced countdown script');
+  assert.equal([...body.matchAll(/<script\b/g)].length, 1);
+  const [, nonce, script] = scripts[0];
+  const scriptPolicy = response.headers.get('Content-Security-Policy').match(/(?:^|;\s*)script-src ([^;]+)/)?.[1];
+  assert.equal(scriptPolicy, `'self' 'nonce-${nonce}'`, 'the script nonce matches its response CSP without unsafe-inline');
+  assert.match(body, /<header>[\s\S]*?<a class="wordmark" href="https:\/\/bullenciaga\.com\/">BULLENCIAGA<\/a>/);
+  assert.match(body, /<time[^>]+datetime="2026-10-10T19:00:00\+02:00">Saturday, 10 October · 19:00 CEST<\/time>/);
+  assert.match(body, /role="timer" aria-live="off"/);
+  assert.match(body, /<noscript>/, 'the explicit launch date remains useful without JavaScript');
+  return { nonce, script };
+}
+function runCountdown(script, initialTime) {
+  let now = initialTime;
+  const nodes = new Map(['countdown', 'launch-note', ...[0, 1, 2, 3].map(i => `countdown-${i}`)].map(id => [id, {
+    textContent: '', attributes: {}, setAttribute(key, value) { this.attributes[key] = value; },
+  }]));
+  const events = new Map(), intervals = [];
+  // Only the countdown DOM is available: navigation, form/cookie mutation,
+  // storage and network access fail instead of silently passing this test.
+  runInNewContext(script, {
+    Date: { parse: Date.parse, now: () => now },
+    document: {
+      getElementById(id) { assert(nodes.has(id), `unexpected DOM access: ${id}`); return nodes.get(id); },
+      addEventListener(name, callback) { assert.equal(name, 'visibilitychange'); events.set(name, callback); },
+    },
+    setInterval(callback, delay) { assert.equal(delay, 1000); intervals.push(callback); return intervals.length; },
+  }, { timeout: 1000 });
+  assert.equal(intervals.length, 1);
+  assert(events.has('visibilitychange'), 'resume refreshes immediately after a background tab');
+  return {
+    values: () => [0, 1, 2, 3].map(i => nodes.get(`countdown-${i}`).textContent),
+    note: () => nodes.get('launch-note').textContent,
+    aria: () => nodes.get('countdown').attributes['aria-label'],
+    tick(time) { now = time; intervals[0](); },
+    resume(time) { now = time; events.get('visibilitychange')(); },
+  };
+}
+
+// Exercise the actual served script and the server-rendered digits against a
+// fixed clock. The date must be CEST rather than the viewer's local timezone.
+const responseNonces = new Set();
+for (const [now, expected] of [
+  [launchInstant - (2 * 86400 + 3 * 3600 + 4 * 60 + 5) * 1000, ['02', '03', '04', '05']],
+  [launchInstant - 1, ['00', '00', '00', '01']],
+  [launchInstant, ['00', '00', '00', '00']],
+  [launchInstant + 86400000, ['00', '00', '00', '00']],
+]) {
+  const realNow = Date.now;
+  let response;
+  try {
+    Date.now = () => now;
+    response = await merchPreview(request('/goods/'), env);
+    assert.equal(response.status, 200); privateHeaders(response);
+    assert.equal(response.headers.get('Set-Cookie'), null);
+    assert.equal(response.headers.get('Location'), null);
+    // Reaching launch time never changes the existing authorization boundary.
+    assert.equal((await merchPreview(request('/goods/storefront-v20.js'), env)).status, 401);
+    assert.equal((await merchPreview(request('/goods/api/catalog'), env)).status, 401);
+  } finally { Date.now = realNow; }
+  const body = await response.text();
+  const { nonce, script } = gateScript(response, body);
+  assert(!responseNonces.has(nonce), 'every gate response needs a fresh nonce');
+  responseNonces.add(nonce);
+  assert.deepEqual([...body.matchAll(/id="countdown-\d">(\d+)<\/span>/g)].map(match => match[1]), expected);
+  const client = runCountdown(script, now);
+  assert.deepEqual(client.values(), expected);
+  if (now >= launchInstant) {
+    assert.equal(client.note(), 'Launch time has arrived. Stay tuned.');
+    assert.match(body, /action="\/goods\/login"/);
+    assert.doesNotMatch(body, /Private fixture|unit-test|hoodie\.png/);
+  }
+  client.tick(launchInstant - (4 * 3600 + 7 * 60 + 11) * 1000);
+  assert.deepEqual(client.values(), ['00', '04', '07', '11'], 'skipped callbacks recompute absolute remaining time');
+  assert.equal(client.aria(), '0 days, 4 hours, 7 minutes, 11 seconds remaining');
+  client.resume(launchInstant - 1001);
+  assert.deepEqual(client.values(), ['00', '00', '00', '02']);
+  client.resume(launchInstant);
+  assert.deepEqual(client.values(), ['00', '00', '00', '00']);
+  client.tick(launchInstant + 7200000);
+  assert.deepEqual(client.values(), ['00', '00', '00', '00'], 'expired countdown never becomes negative');
+  assert.equal(client.note(), 'Launch time has arrived. Stay tuned.');
+}
+assert.deepEqual(reads, [], 'countdown never reads private catalogue assets');
+
 // Logged-out visitors receive only the generic gate, never any private payload.
 for (const path of ['/goods', '/goods/', '/goods/index.html']) {
   const response = await website.fetch(request(path), env);
@@ -60,6 +148,7 @@ for (const path of ['/goods', '/goods/', '/goods/index.html']) {
 for (const path of ['/goods/storefront-v20.js', '/goods/images/hoodie.png']) {
   const response = await website.fetch(request(path), env);
   assert.equal(response.status, 401); privateHeaders(response);
+  assert.equal(response.headers.get('Content-Security-Policy').match(/(?:^|;\s*)script-src ([^;]+)/)?.[1], "'self'");
 }
 assert.deepEqual(reads, []);
 const unauthenticatedHead = await merchPreview(request('/goods/', { method: 'HEAD' }), env);
@@ -109,7 +198,10 @@ for (const path of ['/goods/login', '/goods/logout', '/merch/login', '/merch/log
   assert.equal((await merchPreview(request(path, { method: 'POST', headers: { Origin: origin, 'Sec-Fetch-Site': 'cross-site' } }), env)).status, 403);
 }
 assert.equal(limitCalls, 0);
-assert.equal((await merchPreview(post('wrong-password'), env)).status, 401);
+const wrongPassword = await merchPreview(post('wrong-password'), env);
+assert.equal(wrongPassword.status, 401);
+gateScript(wrongPassword, await wrongPassword.text());
+assert.equal(wrongPassword.headers.get('Set-Cookie'), null);
 assert.equal((await merchPreview(post('wrong-password', {}, '/merch/login'), env)).status, 401);
 assert.equal((await merchPreview(post(''), env)).status, 401);
 for (const [body, type] of [
@@ -122,6 +214,7 @@ allowed = false;
 const throttled = await merchPreview(post(), env);
 assert.equal(throttled.status, 429); assert.equal(throttled.headers.get('Retry-After'), '60');
 assert.equal(throttled.headers.get('Set-Cookie'), null);
+gateScript(throttled, await throttled.text());
 assert.equal((await merchPreview(post(password, {}, '/merch/login'), env)).status, 429);
 allowed = true;
 const limiterFailure = await merchPreview(post(), { ...env, MERCH_PREVIEW_LIMIT: { limit() { throw new Error('fixture'); } } });
@@ -142,6 +235,10 @@ const html = await website.fetch(auth('/goods/'), env);
 assert.equal(html.status, 200); assert.match(await html.text(), /Private fixture/); privateHeaders(html);
 const js = await merchPreview(auth('/goods/storefront-v20.js'), env);
 assert.equal(js.status, 200); assert.match(js.headers.get('Content-Type'), /text\/javascript/);
+for (const response of [html, js]) {
+  assert.equal(response.headers.get('Content-Security-Policy').match(/(?:^|;\s*)script-src ([^;]+)/)?.[1], "'self'",
+    'the countdown nonce exception never reaches authenticated private assets');
+}
 const image = await merchPreview(auth('/goods/images/hoodie.png', 'HEAD'), env);
 assert.equal(image.status, 200); assert.equal(await image.text(), '');
 assert.deepEqual(reads.at(-1), ['head', `${prefix}/images/hoodie.png`]);
@@ -215,6 +312,6 @@ for (const name of ['production', 'staging']) {
 const fingerprintSource = readFileSync(new URL('./release-fingerprint.mjs', import.meta.url), 'utf8');
 assert.match(fingerprintSource, /'src\/merch-preview\.mjs'/, 'the gate implementation participates in the release fingerprint');
 assert.match(fingerprintSource, /\.map\(read\)/, 'release modules are read into the fingerprint');
-console.log('Private goods: canonical route, legacy redirects/forms, password gate, throttling, signed sessions, CSRF, guarded assets, traversal defenses and public-route isolation passed.');
+console.log('Private goods: precise CEST countdown/boundaries/resume, response-scoped CSP nonces, homepage wordmark, canonical route, legacy redirects/forms, password gate, throttling, signed sessions, CSRF, guarded assets, traversal defenses and public-route isolation passed.');
 
 for (const path of ['/goods/api/catalog','/goods/api/benefits/status']) { const response = await merchPreview(request(path), env); assert.equal(response.status, 401); }
