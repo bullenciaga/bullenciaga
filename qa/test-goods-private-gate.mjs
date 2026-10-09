@@ -137,6 +137,60 @@ for (const [now, expected] of [
 }
 assert.deepEqual(reads, [], 'countdown never reads private catalogue assets');
 
+// Crawlers receive complete metadata without JavaScript or an authentication
+// bypass. A single approved share image lives in ordinary public site assets.
+const socialImage = `${origin}/assets/social/goods-collection-01-v1.jpg`;
+const socialDescription = 'Signature pieces. House statements. The BULLENCIAGA collection.';
+const socialAlt = 'Bull, Lily and Sakura wearing the BULLENCIAGA House collection during a studio photoshoot.';
+function shareMetadata(body) {
+  const expected = {
+    description: socialDescription,
+    'og:type': 'website', 'og:site_name': 'BULLENCIAGA',
+    'og:title': 'Goods — BULLENCIAGA', 'og:description': socialDescription,
+    'og:url': `${origin}/goods/`, 'og:image': socialImage,
+    'og:image:secure_url': socialImage, 'og:image:type': 'image/jpeg',
+    'og:image:width': '1200', 'og:image:height': '630', 'og:image:alt': socialAlt,
+    'twitter:card': 'summary_large_image', 'twitter:title': 'Goods — BULLENCIAGA',
+    'twitter:description': socialDescription, 'twitter:image': socialImage, 'twitter:image:alt': socialAlt,
+  };
+  const metas = [...body.matchAll(/<meta (?:name|property)="([^"]+)" content="([^"]*)">/g)];
+  for (const [key, value] of Object.entries(expected)) {
+    const matches = metas.filter(match => match[1] === key);
+    assert.equal(matches.length, 1, `${key} appears exactly once`);
+    assert.equal(matches[0][2], value, key);
+  }
+  assert.deepEqual([...body.matchAll(/<link rel="canonical" href="([^"]+)">/g)].map(match => match[1]), [`${origin}/goods/`]);
+  assert.equal(new URL(socialImage).pathname.startsWith('/goods/'), false, 'preview image must not require the page password');
+}
+for (const userAgent of ['Twitterbot/1.0', 'Discordbot/2.0', 'facebookexternalhit/1.1']) {
+  for (const path of ['/goods', '/goods/', '/goods/index.html?share=https://untrusted.example']) {
+    const response = await website.fetch(request(path, { headers: { 'User-Agent': userAgent } }), env);
+    assert.equal(response.status, 200); privateHeaders(response);
+    assert.equal(response.headers.get('Set-Cookie'), null);
+    const body = await response.text();
+    shareMetadata(body);
+    assert.match(body, /action="\/goods\/login"/);
+    assert.doesNotMatch(body, /Private fixture|unit-test|hoodie\.png|untrusted\.example/);
+  }
+  for (const path of ['/goods/storefront-v20.js', '/goods/images/hoodie.png', '/goods/api/catalog', '/goods/api/benefits/status']) {
+    const response = await website.fetch(request(path, { headers: { 'User-Agent': userAgent } }), env);
+    assert.equal(response.status, 401, 'social bots cannot bypass private routes');
+  }
+  const response = await website.fetch(new Request(socialImage, { headers: { 'User-Agent': userAgent } }), {
+    // No private configuration or cookie is needed for this one public file.
+    ASSETS: { fetch(incoming) {
+      assert.equal(incoming.url, socialImage);
+      assert.equal(incoming.headers.get('Cookie'), null);
+      return new Response('approved public share image', { headers: { 'Content-Type': 'image/jpeg' } });
+    } },
+  });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('Content-Type'), 'image/jpeg');
+  assert.equal(response.headers.get('Set-Cookie'), null);
+  assert.equal(await response.text(), 'approved public share image');
+}
+assert.deepEqual(reads, [], 'social sharing never reads or reveals private catalogue assets');
+
 // Logged-out visitors receive only the generic gate, never any private payload.
 for (const path of ['/goods', '/goods/', '/goods/index.html']) {
   const response = await website.fetch(request(path), env);
@@ -200,7 +254,9 @@ for (const path of ['/goods/login', '/goods/logout', '/merch/login', '/merch/log
 assert.equal(limitCalls, 0);
 const wrongPassword = await merchPreview(post('wrong-password'), env);
 assert.equal(wrongPassword.status, 401);
-gateScript(wrongPassword, await wrongPassword.text());
+const wrongPasswordBody = await wrongPassword.text();
+gateScript(wrongPassword, wrongPasswordBody);
+shareMetadata(wrongPasswordBody);
 assert.equal(wrongPassword.headers.get('Set-Cookie'), null);
 assert.equal((await merchPreview(post('wrong-password', {}, '/merch/login'), env)).status, 401);
 assert.equal((await merchPreview(post(''), env)).status, 401);
@@ -312,6 +368,6 @@ for (const name of ['production', 'staging']) {
 const fingerprintSource = readFileSync(new URL('./release-fingerprint.mjs', import.meta.url), 'utf8');
 assert.match(fingerprintSource, /'src\/merch-preview\.mjs'/, 'the gate implementation participates in the release fingerprint');
 assert.match(fingerprintSource, /\.map\(read\)/, 'release modules are read into the fingerprint');
-console.log('Private goods: precise CEST countdown/boundaries/resume, response-scoped CSP nonces, homepage wordmark, canonical route, legacy redirects/forms, password gate, throttling, signed sessions, CSRF, guarded assets, traversal defenses and public-route isolation passed.');
+console.log('Private goods: public OG/Twitter share metadata, crawler isolation, precise CEST countdown/boundaries/resume, response-scoped CSP nonces, homepage wordmark, canonical route, legacy redirects/forms, password gate, throttling, signed sessions, CSRF, guarded assets, traversal defenses and public-route isolation passed.');
 
 for (const path of ['/goods/api/catalog','/goods/api/benefits/status']) { const response = await merchPreview(request(path), env); assert.equal(response.status, 401); }
