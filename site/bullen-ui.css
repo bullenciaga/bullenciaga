@@ -839,7 +839,7 @@ body.lightbox-open {
     transition: background-position 400ms ease;
   }
   .bullen-site-world:hover > span,
-  .bullen-site-world:focus-visible > span { background-position: 100% 50%; }
+  html[data-focus-navigation="keyboard"] .bullen-site-world:focus-visible > span { background-position: 100% 50%; }
   .bullen-site-platform > span {
     background-image: linear-gradient(110deg, #999 0%, #dedede 24%, #fff 45%, #aaa 68%, #e5e5e5 100%);
     background-size: 200% 100%;
@@ -850,7 +850,7 @@ body.lightbox-open {
     transition: background-position 400ms ease;
   }
   .bullen-site-platform:hover > span,
-  .bullen-site-platform:focus-visible > span { background-position: 100% 50%; }
+  html[data-focus-navigation="keyboard"] .bullen-site-platform:focus-visible > span { background-position: 100% 50%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .bullen-site-platform > span,

@@ -54,7 +54,10 @@ const launchInstant = Date.parse('2026-10-10T17:00:00Z');
 function gateScript(response, body) {
   const scripts = [...body.matchAll(/<script nonce="([a-f0-9]{32})">([\s\S]*?)<\/script>/g)];
   assert.equal(scripts.length, 1, 'only one response-nonced countdown script');
-  assert.equal([...body.matchAll(/<script\b/g)].length, 1);
+  assert.equal([...body.matchAll(/<script\b/g)].length, 2, 'one shared focus policy and one countdown script');
+  assert.equal((body.match(/<link rel="stylesheet" href="\/bullen-focus\.css">/g) || []).length, 1, 'gate includes neutral-before-script focus styles');
+  assert.equal((body.match(/<script defer src="\/bullen-focus\.js"><\/script>/g) || []).length, 1, 'gate uses the shared keyboard navigation policy');
+  assert.match(body, /--bullen-focus:var\(--ink\)/, 'keyboard cue matches the Goods palette');
   const [, nonce, script] = scripts[0];
   const scriptPolicy = response.headers.get('Content-Security-Policy').match(/(?:^|;\s*)script-src ([^;]+)/)?.[1];
   assert.equal(scriptPolicy, `'self' 'nonce-${nonce}'`, 'the script nonce matches its response CSP without unsafe-inline');

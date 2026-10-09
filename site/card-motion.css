@@ -16,7 +16,7 @@
 
 /* Compact, tactile close control, with an equally visible keyboard state. */
 #vaultModalClose{transition:background .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease}
-#vaultModalClose:focus-visible{outline:2px solid var(--gold);outline-offset:4px;background:#211c12}
+html[data-focus-navigation="keyboard"] #vaultModalClose:focus-visible{outline:2px solid var(--gold);outline-offset:4px;background:#211c12}
 @media(hover:hover){#vaultModalClose:hover{background:var(--gold);color:#050505;box-shadow:0 0 16px #c7a86930;transform:scale(1.04)}}
 #vaultModalClose:active{transform:scale(.96)}
 .card-shuffle-layer{pointer-events:none!important}

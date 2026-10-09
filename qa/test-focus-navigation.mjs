@@ -81,6 +81,18 @@ assert.equal(documents,30);
 assert(!read('shares.html').includes('src="/bullen-ui.js"'),'private Shares does not acquire public navigation');
 assert.match(read('bullen-focus.css'),/html:not\(\[data-focus-navigation="keyboard"\]\) :focus/,'neutral before JS executes');
 assert.match(read('collector-tools.css'),/html\[data-focus-navigation="keyboard"\] \.collector-palette input:focus-visible\+span/);
+// Outlines on a focused control are globally neutralized. Sibling outlines and
+// focus-only fills/shadows must also require deliberate keyboard navigation.
+assert.match(read('platform.css'), /html\[data-focus-navigation="keyboard"\] \.contact-method input:focus-visible\+span\{/);
+assert.doesNotMatch(read('world.css'), /html:not\(\[data-focus-navigation\]\) a:focus-visible/);
+assert.match(read('card-motion.css'), /html\[data-focus-navigation="keyboard"\] #vaultModalClose:focus-visible\{/);
+for (const selector of ['.node:focus-visible', '.map .node.faded:focus-visible', '.map .node:focus-visible']) {
+  assert(read('flywheel.html').includes(`html[data-focus-navigation="keyboard"] ${selector}`), `${selector}: focus effects require keyboard navigation`);
+}
+for (const name of ['world', 'platform']) {
+  assert(read('bullen-ui.css').includes(`html[data-focus-navigation="keyboard"] .bullen-site-${name}:focus-visible > span`), `${name}: focus-only decoration requires keyboard navigation`);
+}
+
 assert.match(read('collector-tools.css'),/\.collector-close svg\{display:block;width:20px;height:20px/);
 assert.match(read('collector-tools.js'),/aria-label="Close \$\{title\}"><svg viewBox="0 0 24 24"/);
-console.log('Focus navigation: Tab/composite keys, typing/caret/IME, delayed autofocus, touch, frame cleanup,30-page coverage and centered collector SVG: ok');
+console.log('Focus navigation: Tab/composite keys, typing/caret/IME, delayed autofocus, touch, frame cleanup,30-page coverage, sibling/decoration guards and centered collector SVG: ok');
