@@ -53,19 +53,30 @@ function signedCookie(issued, expires, sessionSecret = secret) {
 const launchInstant = Date.parse('2026-10-10T17:00:00Z');
 function gateScript(response, body) {
   const scripts = [...body.matchAll(/<script nonce="([a-f0-9]{32})">([\s\S]*?)<\/script>/g)];
-  assert.equal(scripts.length, 1, 'only one response-nonced countdown script');
-  assert.equal([...body.matchAll(/<script\b/g)].length, 2, 'one shared focus policy and one countdown script');
+  assert.equal(scripts.length, 2, 'font bootstrap and countdown use the response nonce');
+  assert.equal([...body.matchAll(/<script\b/g)].length, 3, 'shared focus policy, early font bootstrap and countdown');
   assert.equal((body.match(/<link rel="stylesheet" href="\/bullen-focus\.css">/g) || []).length, 1, 'gate includes neutral-before-script focus styles');
   assert.equal((body.match(/<script defer src="\/bullen-focus\.js"><\/script>/g) || []).length, 1, 'gate uses the shared keyboard navigation policy');
   assert.match(body, /--bullen-focus:var\(--ink\)/, 'keyboard cue matches the Goods palette');
-  const [, nonce, script] = scripts[0];
+  const [, nonce, fontScript] = scripts[0];
+  const [, timerNonce, script] = scripts[1];
+  assert.equal(timerNonce, nonce, 'both inline scripts use this response nonce');
+  assert(body.indexOf(fontScript) < body.indexOf('<link rel="stylesheet" href="/fonts/house-fonts-full.css">'), 'font state is established before render-blocking font CSS');
+  assert.deepEqual([...body.matchAll(/<link rel="preload" href="([^"]+)" as="font" type="font\/woff2" crossorigin>/g)].map(match => match[1]), [
+    '/fonts/house-3dc5d0c52428fe16.woff2', '/fonts/house-289e0afc8be731a8.woff2', '/fonts/house-872e862918591a9e.woff2',
+  ]);
+  assert.match(body, /html:not\(\[data-gate-fonts\]\) body,html\[data-gate-fonts="fallback"\] body\{font-family:Arial,Helvetica,sans-serif\}/, 'no-JS and timed-out fonts remain in the same stable fallback');
+  assert.match(body, /html\[data-gate-fonts="loading"\] body\{opacity:0\}/, 'only JavaScript-started loading can hide the gate');
+  assert.match(body, /html\{background:var\(--paper\);-webkit-text-size-adjust:100%;text-size-adjust:100%\}/, 'hidden body keeps the dark page canvas and mobile text scale');
+  assert.match(body, /body\{transition:opacity \.18s ease\}/, 'reveal changes opacity only');
+  assert.match(body, /@media\(prefers-reduced-motion:reduce\)\{body\{transition:none\}\}/, 'reduced motion reveals immediately');
   const scriptPolicy = response.headers.get('Content-Security-Policy').match(/(?:^|;\s*)script-src ([^;]+)/)?.[1];
   assert.equal(scriptPolicy, `'self' 'nonce-${nonce}'`, 'the script nonce matches its response CSP without unsafe-inline');
   assert.match(body, /<header>[\s\S]*?<a class="wordmark" href="https:\/\/bullenciaga\.com\/">BULLENCIAGA<\/a>/);
   assert.match(body, /<time[^>]+datetime="2026-10-10T19:00:00\+02:00">Saturday, 10 October · 19:00 CEST<\/time>/);
   assert.match(body, /role="timer" aria-live="off"/);
   assert.match(body, /<noscript>/, 'the explicit launch date remains useful without JavaScript');
-  return { nonce, script };
+  return { nonce, script, fontScript };
 }
 function runCountdown(script, initialTime) {
   let now = initialTime;
@@ -97,6 +108,7 @@ function runCountdown(script, initialTime) {
 // Exercise the actual served script and the server-rendered digits against a
 // fixed clock. The date must be CEST rather than the viewer's local timezone.
 const responseNonces = new Set();
+let servedFontScript;
 for (const [now, expected] of [
   [launchInstant - (2 * 86400 + 3 * 3600 + 4 * 60 + 5) * 1000, ['02', '03', '04', '05']],
   [launchInstant - 1, ['00', '00', '00', '01']],
@@ -116,7 +128,8 @@ for (const [now, expected] of [
     assert.equal((await merchPreview(request('/goods/api/catalog'), env)).status, 401);
   } finally { Date.now = realNow; }
   const body = await response.text();
-  const { nonce, script } = gateScript(response, body);
+  const { nonce, script, fontScript } = gateScript(response, body);
+  servedFontScript = fontScript;
   assert(!responseNonces.has(nonce), 'every gate response needs a fresh nonce');
   responseNonces.add(nonce);
   assert.deepEqual([...body.matchAll(/id="countdown-\d">(\d+)<\/span>/g)].map(match => match[1]), expected);
@@ -139,6 +152,65 @@ for (const [now, expected] of [
   assert.equal(client.note(), 'Launch time has arrived. Stay tuned.');
 }
 assert.deepEqual(reads, [], 'countdown never reads private catalogue assets');
+
+// Exercise the actual early script. No form, cookie, storage, private asset or
+// wallet APIs exist in this context: a font-loader escape would fail the test.
+function runFontBoot({ fontAPI = true } = {}) {
+  const root = { dataset: {} }, events = new Map(), loads = [], pending = [];
+  let deadline, cleared = false;
+  const document = {
+    documentElement: root,
+    fonts: fontAPI ? { load(query) {
+      loads.push(query);
+      return new Promise((resolve, reject) => pending.push({ resolve, reject }));
+    } } : undefined,
+    addEventListener(name, callback) {
+      assert(['load', 'error', 'DOMContentLoaded'].includes(name));
+      events.set(name, callback);
+    },
+  };
+  runInNewContext(servedFontScript, {
+    document,
+    setTimeout(callback, delay) { assert.equal(delay, 1200); deadline = callback; return 7; },
+    clearTimeout(id) { assert.equal(id, 7); cleared = true; },
+  }, { timeout: 1000 });
+  const style = { tagName: 'LINK', getAttribute: key => key === 'href' ? '/fonts/house-fonts-full.css' : null };
+  return {
+    state: () => root.dataset.gateFonts, loads, cleared: () => cleared,
+    stylesReady() { events.get('load')({ target: style }); },
+    domReady() { events.get('DOMContentLoaded')(); },
+    styleError() { events.get('error')({ target: style }); },
+    timeout() { deadline(); },
+    async settle({ failed = false, empty = false } = {}) {
+      pending.forEach((result, index) => failed && index === 1 ? result.reject(new Error('font unavailable')) : result.resolve(empty ? [] : [{ status: 'loaded' }]));
+      await new Promise(resolve => setImmediate(resolve));
+    },
+  };
+}
+{
+  const boot = runFontBoot();
+  assert.equal(boot.state(), 'loading');
+  boot.stylesReady(); boot.domReady();
+  assert.deepEqual(boot.loads, ['400 16px Poppins', '500 16px Poppins', '600 16px Poppins'], 'all three rendered weights load once');
+  await boot.settle(); assert.equal(boot.state(), 'ready'); assert(boot.cleared());
+  boot.timeout(); assert.equal(boot.state(), 'ready', 'stale deadline cannot undo a completed font load');
+}
+{
+  const boot = runFontBoot(); boot.stylesReady(); boot.timeout();
+  assert.equal(boot.state(), 'fallback');
+  await boot.settle(); assert.equal(boot.state(), 'fallback', 'late fonts never resize a revealed gate');
+}
+{
+  const boot = runFontBoot(); boot.timeout(); boot.stylesReady(); boot.domReady();
+  assert.equal(boot.state(), 'fallback'); assert.deepEqual(boot.loads, [], 'stalled stylesheet cannot restart a timed-out gate');
+}
+for (const problem of ['style-error', 'missing-api', 'failed-font', 'missing-face']) {
+  const boot = runFontBoot({ fontAPI: problem !== 'missing-api' });
+  if (problem === 'style-error') boot.styleError();
+  else { boot.stylesReady(); await boot.settle({ failed: problem === 'failed-font', empty: problem === 'missing-face' }); }
+  assert.equal(boot.state(), 'fallback', problem + ' reveals readable content'); assert(boot.cleared());
+}
+
 
 // Crawlers receive complete metadata without JavaScript or an authentication
 // bypass. A single approved share image lives in ordinary public site assets.
