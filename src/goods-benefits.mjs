@@ -13,6 +13,7 @@ export const GOODS_BULLEN_MINT = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
 export const GOODS_OFFICIAL_COLLECTIONS = Object.freeze({
  '5GXF7Uug7mZy2pj5XDk4LP9yH7oA5oMQEbCT49ggQnVC': 'The Herd',
  '9ucdkSaiTLUDXmVCjWonxAJqrTH9uyB675BzzRi5vqgM': 'House Objects',
+ 'FnbDXuPxcy87y451eYimMTDrrPqoFRMVi4ctAu73XVkD': 'Founding Records',
 });
 const PAID = new Set(['CONFIRMED','PARTIALLY_IN_PRODUCTION','IN_PRODUCTION','PARTIALLY_SHIPPED','SHIPPED','PARTIALLY_DELIVERED','DELIVERED','COMPLETED']);
 const BASE = '/goods/api/benefits';
@@ -264,7 +265,7 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
  async function session(request,required=true){const token=readToken(request);const value=token?await store.session(await hash(token),now()):null;if(!value&&required)fail('WALLET_REQUIRED','Connect and verify your wallet again.',401);return value}
  async function guard(request){if(!(await authorize(request)))fail('AUTH_REQUIRED','Please unlock the collection again.',401);if(!(await rateLimit(request)))fail('RATE_LIMIT','Please wait a moment and try again.',429);if(request.method!=='GET')sameOrigin(request)}
  async function quotas(wallet){const [discount,custom]=await Promise.all([store.count(wallet,'discount'),store.count(wallet,'custom')]);return {discount:{completedOrders:discount,remainingOrders:Math.max(0,MAX_ORDERS-discount),limit:MAX_ORDERS},custom:{completedOrders:custom,remainingOrders:Math.max(0,MAX_ORDERS-custom),limit:MAX_ORDERS}}}
- async function options(){return normalizeCustomOptions(await provider.template(),customPrices)}
+ async function options(){return {...normalizeCustomOptions(await provider.template(),customPrices),collections:GOODS_OFFICIAL_COLLECTIONS}}
  async function scopeProductIds(){const configured=typeof eligibleProductIds==='function'?await eligibleProductIds():eligibleProductIds;const custom=await store.all("SELECT product_id FROM goods_benefit_requests WHERE kind='custom' AND product_id IS NOT NULL AND active=1");return [...new Set([...configured,...custom.map(x=>x.product_id)])]}
  async function fullPriceIds(ids){
   const valid=[];

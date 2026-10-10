@@ -34,9 +34,17 @@
   }
 
   function connectWallet(wallet) {
-    var provider = wallet.provider();
-    if (!provider) return Promise.reject(new Error(wallet.name + ' is not available in this browser.'));
-    return Promise.resolve(provider.connect()).then(function (response) {
+    var provider, connection;
+    try {
+      provider = wallet.provider();
+      if (!provider) throw new Error(wallet.name + ' is not available in this browser.');
+      if (typeof provider.connect !== 'function') throw new Error(wallet.name + ' is not ready. Please reopen your wallet and try again.');
+      // Keep the provider call inside the click's user activation, including failures.
+      connection = provider.connect();
+    } catch (error) {
+      return Promise.reject(error);
+    }
+    return Promise.resolve(connection).then(function (response) {
       var address = publicKeyOf(provider, response);
       if (!address) throw new Error('Wallet did not return an address.');
       return { id:wallet.id, name:wallet.name, provider:provider, address:address };
