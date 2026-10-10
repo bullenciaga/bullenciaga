@@ -7,7 +7,7 @@ import {GoodsBenefitsStore,createGoodsBenefitsHandler,createFourthwallBenefitsCl
 import {FourthwallRateLimitError} from '../src/goods-benefits.mjs';
 const enc=new TextEncoder();
 const template={productId:'pro_05kHMsNpQZubKsMrnysvyQ',colorVariants:[{available:true,color:{name:'Black',hex:'#000'},sizeVariants:[{size:'M',available:false,price:{amount:24.84,currency:'USD'}},{size:'3XL',available:true,price:{amount:28.84,currency:'USD'}}]},{available:true,color:{name:'Butter',hex:'#ddd'},sizeVariants:[{size:'M',available:true,price:{amount:24.84,currency:'USD'}}]}]};
-const product=(id='standard')=>({id,type:'STANDARD',access:{type:'HIDDEN'},state:{type:'AVAILABLE'},variants:[{id:'variant-'+id,unitPrice:{value:54.99,currency:'USD'},attributes:{color:{name:'Butter'},size:{name:'M'}},stock:{type:'UNLIMITED'}}]});
+const product=(id='standard',price=54.99)=>({id,type:'STANDARD',access:{type:'HIDDEN'},state:{type:'AVAILABLE'},variants:[{id:'variant-'+id,unitPrice:{value:price,currency:'USD'},attributes:{color:{name:'Butter'},size:{name:'M'}},stock:{type:'UNLIMITED'}}]});
 function database(){
  const sqlite=new DatabaseSync(':memory:');for(const file of readdirSync(new URL('../migrations/goods/',import.meta.url)).filter(x=>x.endsWith('.sql')).sort())sqlite.exec(readFileSync(new URL('../migrations/goods/'+file,import.meta.url),'utf8'));
  const prepare=sql=>({bind(...args){
@@ -33,7 +33,7 @@ async function harness(overrides={}){
   setProductAvailable:async(id,available)=>{calls.push(['availability',id,available]);products.get(id).state.type=available?'AVAILABLE':'SOLD_OUT';return{}},
   uploadImage:async()=>{calls.push(['upload']);return 'image'},
   createCustomization:async body=>{calls.push(['customization',body]);return {customizationId:'customization',images:[{url:'https://imgproxy.fourthwall.dev/preview.jpg'}]}},
-  createProduct:async body=>{calls.push(['product',body]);const id='custom-'+(++productCounter);products.set(id,product(id));return {productId:id,images:[{url:'https://imgproxy.fourthwall.dev/final.jpg'}]}},
+  createProduct:async body=>{calls.push(['product',body]);const id='custom-'+(++productCounter);products.set(id,product(id,49.99));return {productId:id,images:[{url:'https://imgproxy.fourthwall.dev/final.jpg'}]}},
   createCart:async body=>{calls.push(['cart',body]);const variant=[...products.values()].flatMap(p=>p.variants).find(v=>v.id===body.variantId);return {checkoutUrl:'https://store.bullenciaga.com/cart/checkout?cartId=test',cart:{items:[{quantity:1,variant}]}}},
   getOrder:async id=>{calls.push(['order',id]);return orders.get(id)},
   listOrders:async()=>({results:[...orders.values()]}),
@@ -74,8 +74,21 @@ test('active coupon percentage remains its issued percentage when current wallet
 test('provider product scope and entire-order quantity scope are required before exposing a coupon',async()=>{
  for(const patch of[{type:'ENTIRE_ORDER_WITH_EXCLUDED_PRODUCTS'},{type:'SELECTED_PRODUCTS',products:[]},{type:'SELECTED_PRODUCTS',products:['standard'],oncePerOrder:true}]){const h=await harness();await h.login();const create=h.provider.createPromotion;h.provider.createPromotion=async b=>({...await create(b),appliesTo:patch});const r=await h.api('/discount',{});assert.equal(r.status,503);assert.equal(r.body.code,undefined);assert.equal(h.calls.filter(c=>c[0]==='cart').length,0)}
 });
-test('larger premium tee sizes match existing Lore prices and derive margin from live supplier costs',async()=>{
- for(const [size,cost,margin]of[['2XL',26.84,33.15],['3XL',28.84,31.15]]){const h=await harness();await h.login();const t=structuredClone(template);t.colorVariants[1].sizeVariants=[{size,available:true,price:{amount:cost,currency:'USD'}}];h.setTemplate(t);h.provider.createProduct=async body=>{h.calls.push(['product',body]);const p=product('large');p.variants[0].attributes.size.name=size;p.variants[0].unitPrice.value=59.99;h.products.set('large',p);return{productId:'large'}};const r=await h.api('/custom',{mint:h.mint,colour:'Butter',size,idempotencyKey:'large-size-custom-'+size});assert.equal(r.body.state,'ready');assert.equal(r.body.price,59.99);assert.equal(h.calls.find(c=>c[0]==='product')[1].profitMargin,margin)}
+test('all custom colours and sizes quote49.99, derive supplier margin and retain the price through checkout',async()=>{
+ for(const colour of ['Black','Navy','Pine Green','Butter']){
+  for(const [size,cost,margin] of [['S',24.84,25.15],['M',24.84,25.15],['L',24.84,25.15],['XL',24.84,25.15],['2XL',26.84,23.15],['3XL',28.84,21.15]]){
+   const h=await harness();await h.login();const t=structuredClone(template);
+   t.colorVariants=[{available:true,color:{name:colour,hex:'#000'},sizeVariants:[{size,available:true,price:{amount:cost,currency:'USD'}}]}];h.setTemplate(t);
+   h.provider.createProduct=async body=>{h.calls.push(['product',body]);const p=product('custom-priced',49.99);p.variants[0].attributes={color:{name:colour},size:{name:size}};h.products.set(p.id,p);return {productId:p.id}};
+   const status=await h.api('/status');assert.equal(status.body.options.colours[0].sizes[0].price,49.99);
+   const r=await h.api('/custom',{mint:h.mint,colour,size,idempotencyKey:'flat-price-custom-'+size});
+   assert.equal(r.body.state,'ready');assert.equal(r.body.price,49.99);
+   assert.equal(h.calls.find(c=>c[0]==='product')[1].profitMargin,margin);
+   assert.equal((await h.api('/status')).body.custom.activeRequest.price,49.99);
+   assert.equal((await h.api(`/custom/${r.body.id}/checkout`,{})).status,200);
+   assert.equal(h.products.get('standard').variants[0].unitPrice.value,54.99,'regular product price is unchanged');
+  }
+ }
 });
 test('prepared print dimensions survive polling, page reload and supplier product description',async()=>{
  const h=await harness();await h.login();const printInfo={widthCm:17.3,sourcePixels:1024,dpi:150,upscaled:false};h.setResolve(async()=>({imageId:'prepared-art',placementStrategy:'FULL_REGION',printInfo,printMessage:'Approximately17.3cm square.'}));const c=await h.api('/custom',{mint:h.mint,colour:'Butter',size:'M',idempotencyKey:'print-dimensions-123456'});assert.equal(c.body.state,'ready');assert.deepEqual(c.body.printInfo,printInfo);assert.deepEqual((await h.api('/status')).body.custom.activeRequest.printInfo,printInfo);assert.equal(h.calls.find(c=>c[0]==='customization')[1].placementStrategy,'FULL_REGION');assert.match(h.calls.find(c=>c[0]==='product')[1].description,/17.3 × 17.3 cm/);
@@ -135,7 +148,7 @@ test('invalid HMAC, another shop and test-mode events cannot consume order allow
 });
 test('custom tee validates specific owner, current colour/size, idempotency and actual supplier variant before checkout',async()=>{
  const h=await harness();await h.login();let body={mint:h.mint,colour:'Butter',size:'M',idempotencyKey:'same-request-id-123456'};h.setOwns(false);assert.equal((await h.api('/custom',body)).status,403);h.setOwns(true);assert.equal((await h.api('/custom',{...body,colour:'Black'})).status,409);
- const a=await h.api('/custom',body);assert.equal(a.status,202);assert.equal(a.body.state,'ready');assert.equal(a.body.price,54.99);assert.equal((await h.api('/custom',body)).body.id,a.body.id);assert.equal(h.calls.filter(c=>c[0]==='product').length,1);assert.equal((await h.api('/custom',{...body,size:'3XL'})).status,409);
+ const a=await h.api('/custom',body);assert.equal(a.status,202);assert.equal(a.body.state,'ready');assert.equal(a.body.price,49.99);assert.equal((await h.api('/custom',body)).body.id,a.body.id);assert.equal(h.calls.filter(c=>c[0]==='product').length,1);assert.equal((await h.api('/custom',{...body,size:'3XL'})).status,409);
  const checkout=await h.api(`/custom/${a.body.id}/checkout`,{});assert.equal(checkout.status,200);assert.match(checkout.body.checkoutUrl,/store.bullenciaga.com/);
  h.products.get('custom-1').variants[0].unitPrice.value=55.99;assert.equal((await h.api(`/custom/${a.body.id}/checkout`,{})).status,409);
 });

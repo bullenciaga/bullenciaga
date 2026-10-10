@@ -32,9 +32,9 @@ async function acquireThumbnail(){
 }
 const COOKIE_TTL = 30 * 60 * 1000;
 const REQUEST_TTL = 24 * 60 * 60 * 1000;
-// Matches the existing premium lore tees; confirmed against all three supplier
-// listings. Derive each requested variant's margin from its live template cost.
-const CUSTOM_PRICES = Object.freeze({S:54.99,M:54.99,L:54.99,XL:54.99,'2XL':59.99,'3XL':59.99});
+// Flat custom NFT tee price across every size and colour, independent of
+// regular catalogue prices. Derive margin from each live supplier template cost.
+const CUSTOM_PRICES = Object.freeze({S:49.99,M:49.99,L:49.99,XL:49.99,'2XL':49.99,'3XL':49.99});
 export class GoodsBenefitError extends Error {
  constructor(code, message, status = 400) { super(message); this.code=code; this.status=status; }
 }
