@@ -41,7 +41,7 @@ assert.match(html, /Figures below are fixed to this review, not a live feed/);
 assert.match(html, /not a cross-wallet audit/);
 assert.match(html, /not a total of the dev’s personal purchases/);
 assert.doesNotMatch(html, /draft|owner review|unpublished|template|__\w+__/i);
-assert.deepEqual([...html.matchAll(/<script\b[^>]*src="([^"]+)"/g)].map(match => match[1]), ['/bullen-focus.js', '/bullen-navigation.js']);
+assert.deepEqual([...html.matchAll(/<script\b[^>]*src="([^"]+)"/g)].map(match => match[1]), ['/bullen-header.js', '/bullen-focus.js', '/bullen-navigation.js']);
 assert.match(html, /rel="canonical" href="https:\/\/bullenciaga.com\/dev"/);
 const cover = html.match(/property="og:image" content="https:\/\/bullenciaga.com(\/assets\/social\/dev-[a-f0-9]+\.png)"/)[1];
 assert(html.includes(`name="twitter:image" content="https://bullenciaga.com${cover}"`));

@@ -7,7 +7,7 @@ const site = path.join(root, 'site');
 const html = fs.readFileSync(path.join(site, 'rooms.html'), 'utf8');
 const js = fs.readFileSync(path.join(site, 'inner-rooms.js'), 'utf8');
 const css = fs.readFileSync(path.join(site, 'inner-rooms.css'), 'utf8');
-const nav = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
+import {labels,destinations,groups,featured} from './header-data.mjs';
 
 assert.match(html, /THE INNER ROOMS/i);
 assert.match(html, /SIGN THE REGISTER/);
@@ -36,9 +36,10 @@ assert.match(css, /\.rooms-interior\[hidden\] \{ display:none; \}/);
 assert.match(css, /\.salon-compose textarea:focus-visible/);
 assert.match(css, /box-shadow:inset 0 0 0 2px var\(--bullen-focus\)/);
 assert.match(css, /@media \(max-width:700px\)/);
-assert.match(nav, /rooms: 'Inner Rooms'/);
-assert.match(nav, /\['rooms', '\/rooms\.html'\]/);
-assert.match(nav, /\['Explore', \['refer', 'thedrop', 'ledger', 'passport', 'rooms'\]\]/);
-assert.doesNotMatch(nav, /nav\.append\(buildLink\('rooms'\)\)/);
+assert.equal(labels.rooms, 'Inner Rooms');
+assert.equal(destinations.rooms, '/rooms.html');
+assert(groups.find(([name])=>name==='Community')[1].includes('rooms'));
+assert(!featured.includes('rooms'));
+
 
 console.log('Inner Rooms: signed Key gate, retained Salon client and responsive page verified');

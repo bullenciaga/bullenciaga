@@ -8,8 +8,7 @@ const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
 const htmlFiles = fs.readdirSync(site).filter(name => name.endsWith('.html'));
 const failures = [];
-const shellSource = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8').split('  /* Warm same-origin page navigations')[0];
-const shellHash = crypto.createHash('sha256').update(shellSource).digest('hex');
+const shellHash = crypto.createHash('sha256').update(fs.readFileSync(new URL('./header-data.mjs', import.meta.url))).update(fs.readFileSync(new URL('./prerender-shells.mjs', import.meta.url))).digest('hex');
 
 for (const name of htmlFiles) {
   const html = fs.readFileSync(path.join(site, name), 'utf8');
@@ -19,7 +18,7 @@ for (const name of htmlFiles) {
   const bodyAt = html.indexOf('<body', html.indexOf('</head>'));
   if (bodyAt < 0) failures.push(`${name}: missing actual document body`);
   const staticShell = html.match(/<!-- BULLEN_SHELL_START[\s\S]*?<!-- BULLEN_SHELL_END -->/g) || [];
-  if (staticShell.length !== 1 || !staticShell[0].includes('data-bullen-shell') || !staticShell[0].includes('jumpto-btn')) failures.push(`${name}: finished navigation must be in the initial HTML`);
+  if (staticShell.length !== 1 || !staticShell[0].includes('data-bullen-shell') || !staticShell[0].includes('id="bullen-explore-button"')) failures.push(`${name}: finished navigation must be in the initial HTML`);
   const shellAtFirstPaint = html.indexOf('<!-- BULLEN_SHELL_START');
   const firstContent = html.slice(bodyAt).search(/<(?:main|section|article)\b/);
   if (shellAtFirstPaint < bodyAt || (firstContent >= 0 && shellAtFirstPaint > bodyAt + firstContent)) failures.push(`${name}: navigation must precede the page payload`);
@@ -117,7 +116,7 @@ const js = fs.readFileSync(path.join(site, 'bullen-ui.js'), 'utf8');
 if (!js.includes('mobilePaint ? 2500 : 500') || !js.includes("document.fonts.load('600 12px Poppins')")) {
   failures.push('mobile reveal must wait for the real header faces without changing the desktop font budget');
 }
-for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", 'window.__BULLEN_REVEAL(fontsReady)', 'const navigationGroups', "button.innerHTML = 'JUMP TO ", "appendGroup('On BULLENCIAGA'", "mobileDirectory.className = 'bullen-mobile-nav-directory'"]) {
+for (const required of ['document.fonts.ready', "hint.rel = 'prefetch'", 'window.__BULLEN_REVEAL(fontsReady)', 'bullen-header.js']) {
   if (!js.includes(required)) failures.push(`bullen-ui.js is missing ${required}`);
 }
 

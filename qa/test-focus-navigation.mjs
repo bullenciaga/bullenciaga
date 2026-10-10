@@ -74,11 +74,11 @@ for (const name of fs.readdirSync(site).filter(name => name.endsWith('.html'))) 
   assert.equal((html.match(/href="\/bullen-focus\.css"/g)||[]).length,1,`${name}: shared focus CSS`);
   assert.equal((html.match(/src="\/bullen-focus\.js"/g)||[]).length,1,`${name}: shared policy`);
   assert.equal((html.match(/href="\/bullen-layout\.css"/g)||[]).length,1,`${name}: shared responsive text layout`);
-  assert.equal((html.match(/src="\/bullen-navigation\.js"/g)||[]).length,name === 'shares.html' ? 0 : 1,`${name}: shared fragment navigation coverage`);
+  assert.equal((html.match(/src="\/bullen-navigation\.js"/g)||[]).length,1,`${name}: shared fragment navigation coverage`);
   documents++;
 }
 assert.equal(documents,30);
-assert(!read('shares.html').includes('src="/bullen-ui.js"'),'private Shares does not acquire public navigation');
+assert(!read('shares.html').includes('src="/bullen-ui.js"'),'private Shares does not acquire the global legacy body skin');
 assert.match(read('bullen-focus.css'),/html:not\(\[data-focus-navigation="keyboard"\]\) :focus/,'neutral before JS executes');
 assert.match(read('collector-tools.css'),/html\[data-focus-navigation="keyboard"\] \.collector-palette input:focus-visible\+span/);
 // Outlines on a focused control are globally neutralized. Sibling outlines and

@@ -32,6 +32,10 @@ for (const [source, canonical] of [[current, 'patchnotes'], [archive, 'patchnote
   for (const [, hash] of source.matchAll(/href="#([^"]+)"/g)) assert(ids.includes(hash), `Missing anchor ${hash}`);
   for (const [, route] of source.matchAll(/href="(\/(?!\/)[^"#?]*)/g)) {
     if (!route || route === '/') continue;
+    if (route === '/goods/') {
+      assert(fs.readFileSync(new URL('../src/merch-preview.mjs', import.meta.url), 'utf8').includes('/goods'), 'Goods must remain a Worker-served storefront');
+      continue;
+    }
     const asset = route.includes('.') ? route.slice(1) : `${route.slice(1)}.html`;
     const redirects = fs.readFileSync(new URL('../site/_redirects', import.meta.url), 'utf8').split('\n').map(line => line.trim().split(/\s+/)[0]);
     assert(fs.existsSync(new URL(`../site/${asset}`, import.meta.url)) || redirects.includes(route), `Missing linked page ${route}`);
@@ -54,7 +58,7 @@ for (const source of [current, archive, archive002, archive003, archive004, arch
 assert.doesNotMatch(current, /href="[^"]*(?:delivery|admin|shares|control-room)[^"]*"/i, 'Private operator surfaces must not be linked');
 const shared = read('bullen-ui.css');
 const mobile = shared.slice(shared.indexOf('@media (max-width: 820px)'));
-assert.match(mobile, /\.bullen-site-shell \.jumpto-btn \{[\s\S]*?width: 112px;[\s\S]*?padding: 10px 14px;[\s\S]*?font-size: 11px;/);
+assert.match(fs.readFileSync(new URL('../site/bullen-header.css', import.meta.url), 'utf8'), /bullen-header-control\{min-height:44px/);
 assert.doesNotMatch(shared.slice(0, shared.indexOf('@media (max-width: 820px)')), /width: 112px;/,
   'Wider Jump To must be mobile-only');
 console.log('House Record: current edition, immutable 001/002/003/004/005 release bodies, archive navigation, public links, mobile-only control: ok');
