@@ -72,3 +72,10 @@
 .h777-winners li { padding:14px 0; border-bottom:1px solid var(--bullen-border); font:12px/1.8 var(--bullen-font-data); overflow-wrap:anywhere; }
 .h777-winners a { font:11px/1.8 var(--bullen-font-data); }
 @media(prefers-reduced-motion:reduce) { .h777-tally strong { transition:none; } }
+
+/* Current-campaign rule amendment, kept beside the affected counter. */
+.h777-amendment { margin-top:24px; padding-top:20px; border-top:1px solid var(--bullen-border); max-width:80ch; }
+.h777-amendment h2 { margin:0; font:500 12px/1.7 var(--bullen-font-data); letter-spacing:0; color:var(--bullen-brand-light); }
+.h777-amendment p { line-height:1.85; }
+.h777-amendment a { display:inline-block; margin-top:12px; font:11px/1.8 var(--bullen-font-data); }
+#h777-amendment-status { color:var(--bullen-brand-light); }
