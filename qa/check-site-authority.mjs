@@ -4,13 +4,13 @@ import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const site = path.join(root, 'site');
-const expectedIndexHash = '1d25d2022ff37e8a5cf91be333d2ab15fe067cb3b98b20e15b832cfee4fd5bc6';
+const expectedIndexHash = 'e3151b23d9dbe0985f9bf4dd990a26c3587fd26897efe721d7e52a743a71bc91';
 const prohibited = ['.DS_Store', 'index.html.bak', 'make-prize-reel.sh', 't_devfilter.mjs', 'proof.html'];
 const required = [
   'what-if-i-held.html', 'what-if-i-held.css', 'what-if-i-held.js', 'holding-math.js', 'holding-study.json', 'assets/social/what-if-i-held.jpg',
   'buy.html', 'buy-page.css', 'buy-page.js', 'index.html', '_redirects', 'stats.html', 'deepdive.html', 'deepdive.css', 'deepdive.js', 'deepdive-snapshot.json', 'chart.html', 'curve.html',
   'transparency.html', 'whitepaper.pdf',
-  'bullen-ui.css', 'bullen-ui.js', 'bullen-layout.css', 'bullen-navigation.js', 'bullen-focus.css', 'bullen-focus.js', 'giveaways.html', 'giveaways.json', 'follow500.js', 'follow500.css',
+  'bullen-header.css', 'bullen-header.js', 'bullen-ui.css', 'bullen-ui.js', 'bullen-layout.css', 'bullen-navigation.js', 'bullen-focus.css', 'bullen-focus.js', 'giveaways.html', 'giveaways.json', 'follow500.js', 'follow500.css',
   'objects.html', 'objects.css', 'objects.js', 'bullen-wallet-chooser.js',
   'tape.html', 'favicons/tape.svg',
   'patchnotes.html', 'patchnotes-001.html', 'patchnotes-002.html', 'patchnotes-003.html', 'patchnotes-004.html', 'patchnotes-005.html', 'house-record.js', 'house-record.css', 'favicons/patchnotes.svg', 'lock.html', 'favicons/lock.svg',

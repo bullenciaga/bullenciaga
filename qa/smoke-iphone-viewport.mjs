@@ -36,12 +36,25 @@ async function get(path, ua, extra = {}) {
 const pages = fs.readdirSync(new URL('../site/', import.meta.url)).filter(name => name.endsWith('.html') && fs.readFileSync(new URL('../site/' + name, import.meta.url), 'utf8').includes('data-bullen-shell-source'));
 for (const name of pages) {
   const path = name === 'index.html' ? '/' : '/' + name.replace(/\.html$/, '');
+  const nativeScroll = fs.readFileSync(new URL('../site/' + name, import.meta.url), 'utf8').includes('<style data-bullen-boot>');
   await checkAfterPropagation(path, async url => {
     const a = await get(url, safari);
     const b = await get(url, chrome, {'If-None-Match':a.response.headers.get('ETag') || 'old', 'If-Modified-Since':'Mon, 07 Sep 2026 00:00:00 GMT'});
     assert(/<meta name="viewport"/.test(a.html));
     assert(!a.html.includes('data-bullen-navigation'), 'Safari must keep its original handoff');
     const navigation = b.html.match(/<style data-bullen-navigation>[\s\S]*?<\/style>/g) || [];
+    if (!nativeScroll) {
+      assert.equal(navigation.length, 0, path + ': standalone keeps its own native document scroll');
+      assert(!b.html.includes('data-bullen-scroll-state'));
+      assert.equal(b.html, a.html.replace('viewport-fit=cover', 'viewport-fit=auto'), path + ': standalone retains content and document scroll; only viewport safe-area policy may differ');
+      assert(b.html.includes('data-bullen-header=""'));
+      assert.match(b.response.headers.get('Cache-Control'), /no-store/);
+      assert.equal(b.response.headers.get('ETag'), null);
+      assert.equal(b.response.headers.get('Last-Modified'), null);
+      assert.match(a.response.headers.get('Vary'), /User-Agent/i);
+      assert.match(b.response.headers.get('Vary'), /User-Agent/i);
+      return;
+    }
     assert.equal(navigation.length, 1, path + ': one early native scroll style');
     assert(!navigation[0].includes('@view-transition'), 'no snapshot transition for the native scroll surface');
     assert(navigation[0].includes('--bullen-scroll-surface: body;'));
@@ -63,7 +76,7 @@ for (const ua of ['Mozilla/5.0 (Linux; Android 16) AppleWebKit/537.36 Chrome/140
     const {html} = await get(url,ua);assert(html.includes('viewport-fit=cover'),'non-iPhone Chrome must be unchanged');assert(!html.includes('data-bullen-navigation'));
   });
 }
-for (const path of ['/bullen-ui.css','/bullen-ui.js','/fonts/house-fonts-full.css']) {
+for (const path of ['/bullen-ui.css','/bullen-ui.js','/bullen-header.css','/bullen-header.js','/fonts/house-fonts-full.css']) {
   await checkAfterPropagation(path, async url => {
     const [a,b] = await Promise.all([get(url,safari),get(url,chrome)]);
     assert.equal(a.html,b.html);assert.equal(a.response.headers.get('Cache-Control'),b.response.headers.get('Cache-Control'));

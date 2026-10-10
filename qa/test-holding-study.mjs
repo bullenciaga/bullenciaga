@@ -59,7 +59,7 @@ assert.match(html,/DATED GROUP STUDY/);
 assert.match(html,/realized/i);assert.match(html,/Unrealized profit/);
 assert.doesNotMatch(html,/<button(?![^>]*\btype=)[^>]*>/i);
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length);
-for(const name of ['index.html','bullen-ui.js'])assert(!fs.readFileSync(new URL(name,site),'utf8').includes('/what-if-i-held'),'Page must remain unlinked from home and navigation');
+for(const name of ['index.html','bullen-ui.js','bullen-header.js'])assert(!fs.readFileSync(new URL(name,site),'utf8').includes('/what-if-i-held'),'Page must remain unlinked from home and navigation');
 const js=fs.readFileSync(new URL('what-if-i-held.js',site),'utf8');
 assert.doesNotMatch(js,/signTransaction|connectWallet|localStorage|sessionStorage|sendTransaction/);
 console.log(`Holding tool: 9 accounting/validation scenarios and ${checked} wallet P&L reconciliations pass; dated public page stays unlinked.`);

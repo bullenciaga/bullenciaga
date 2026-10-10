@@ -33,56 +33,30 @@ const mobileBuyCss = fs.readFileSync(path.join(site, 'mobile-buy.css'), 'utf8');
 const patchnotesSource = fs.readFileSync(path.join(site, 'patchnotes.html'), 'utf8');
 const archiveSource = fs.readFileSync(path.join(site, 'patchnotes-001.html'), 'utf8');
 const lockSource = fs.readFileSync(path.join(site, 'lock.html'), 'utf8');
-if (!shell.includes("page === 'referrals'")) failures.push('admin page classification missing');
-if (!shell.includes("page === 'index' ? ' bullen-home-shell'")) failures.push('homepage top-shell navigation missing');
-if (!shell.includes("bar.className = 'bullen-site-bar'")) failures.push('shared fixed-width header interior missing');
-if (!shell.includes("toggle.className = 'bullen-nav-toggle'")) failures.push('responsive navigation toggle missing');
-if (!shell.includes("page === 'index' ? document.getElementById('jumpToWidget') : buildPageJumpTo()")) failures.push('sitewide page-local Jump To is not incorporated into the top shell');
-if (!shell.includes('if (open) closeExtraControl();')) failures.push('hamburger does not close an already-open homepage Jump To panel');
-if (!shell.includes('const buildPageJumpTo') || !shell.includes("closeExtraControl();\n      for (const group")) failures.push('Jump To and grouped navigation do not enforce one open menu at a time');
-if (!shell.includes('const buildPublicNav')) failures.push('shared public-navigation builder missing');
-if (!shell.includes('const navigationGroups') || !shell.includes("['House', ['objects', 'lock', 'patchnotes', 'giveaways']]")
-    || !shell.includes("['Market', ['buy', 'stats', 'deepdive', 'chart', 'tape', 'curve']]")
-    || !shell.includes("['Explore', ['refer', 'thedrop', 'ledger', 'passport', 'rooms']]")) {
-  failures.push('desktop public navigation is not grouped into stable House, Market and Explore menus');
+// Shared navigation now renders from one deterministic source across all HTML.
+// Runtime hydration binds controls in place; it does not build replacement rails.
+const headerData = fs.readFileSync(path.join(root, 'qa/header-data.mjs'), 'utf8');
+const headerJs = fs.readFileSync(path.join(site, 'bullen-header.js'), 'utf8');
+const headerCss = fs.readFileSync(path.join(site, 'bullen-header.css'), 'utf8');
+for (const name of fs.readdirSync(site).filter(name => name.endsWith('.html'))) {
+  const source = fs.readFileSync(path.join(site, name), 'utf8');
+  if (!source.includes('data-bullen-header=""') || !source.includes('src="/bullen-header.js"') || !source.includes('href="/bullen-header.css"')) failures.push(`${name}: shared navigation missing`);
 }
-if (!shell.includes("const mobileNavigationKeys = ['buy', 'world', 'platform', 'flywheel', 'bullensaga', 'giveaways', 'objects', 'patchnotes', 'lock', 'stats', 'deepdive', 'chart', 'tape', 'curve', 'refer', 'thedrop', 'ledger', 'passport', 'rooms']")) {
-  failures.push('mobile public navigation is not kept in its approved ungrouped order');
+if (!headerData.includes("['goods','world','platform','flywheel']")) failures.push('featured destinations are out of approved order');
+if (!headerData.includes("['The House',['bullensaga','objects','patchnotes','lock','ledger','whitepaper']]")) failures.push('House directory is incomplete');
+if (!headerData.includes("['Community',['giveaways','thedrop','refer','passport','rooms']]")) failures.push('community directory is incomplete');
+for (const required of ['closePanels(true)', "event.key !== 'Escape'", "button.setAttribute('aria-expanded','true')", 'shell.contains(document.activeElement)']) {
+  if (!headerJs.includes(required)) failures.push(`shared navigation interaction missing: ${required}`);
 }
-if (!shell.includes("['bullensaga', 'https://bullensaga.com/']")) failures.push('BULLENSAGA sister-site navigation missing');
-if (!shell.includes("['tape', '/tape.html']")) failures.push('live market tape navigation missing');
-if (!shell.includes("['ledger', '/ledger.html']") || !shell.includes("['passport', '/passport.html']")) failures.push('House intelligence pages are missing from public navigation');
-if (!shell.includes("['rooms', '/rooms.html']") || shell.includes("nav.append(buildLink('rooms'))")) failures.push('The Inner Rooms must remain in Explore and the mobile directory');
-if (!shell.includes("['world', '/world']") || !shell.includes("nav.append(worldLink)")) failures.push('World is missing from the primary House navigation');
-if (!shell.includes("aria-current")) failures.push('active-page navigation state missing');
-if (shell.includes("['transparency', '/transparency.html']")) failures.push('Telegram-only moderation page is exposed in public navigation');
-if (shell.includes("['proof', '/proof.html']") || shell.includes("proof: 'Proof'")) failures.push('retired Proof page remains in public navigation');
-if (!shell.includes('const shell = buildShell(jumpTo)')) failures.push('standalone pages do not mount the same outward navigation shell and page-local control');
-if (!shellCss.includes('position: fixed;') || !shellCss.includes('backdrop-filter: blur(20px)')) failures.push('shared header is not fixed dark glass');
-if (!shellCss.includes('--bullen-header-shell-width: 1440px')
-    || !shellCss.includes('width: min(100%, var(--bullen-header-shell-width))')
-    || !shellCss.includes('calc((100vw - var(--bullen-header-shell-width)) / 2)')) {
-  failures.push('desktop header geometry can drift with page-specific content widths');
-}
+if (!headerCss.includes('position:fixed') || !headerCss.includes('max-width:1600px')) failures.push('fixed shared header geometry missing');
 for (const variable of ['--jupiter-plugin-primary', '--jupiter-plugin-background', '--jupiter-plugin-primaryText', '--jupiter-plugin-warning', '--jupiter-plugin-interactive', '--jupiter-plugin-module']) {
   if (!shellCss.includes(variable)) failures.push(`shared Jupiter modal theme is missing ${variable}`);
 }
 if (!shellCss.includes('background: var(--bullen-bg) !important;')) failures.push('standalone background color is not centrally unified');
 if (marketCss.includes('.market-curve header {')) failures.push('Curve page-level header rule can override the shared House navigation header');
 if (!shellCss.includes('html[data-bullen-page="index"] body .hero-mast { display: none !important; }')) failures.push('mobile homepage duplicate masthead remains visible');
-if (!shellCss.includes('top: calc(var(--bullen-header-height) + env(safe-area-inset-top, 0px) + 1px)')) failures.push('Jump To panel is not anchored below the fixed header');
-if (!shellCss.includes('width: 112px;') || !shellCss.includes('height: 44px;') || !shellCss.includes('.bullen-site-shell .jumpto-menu')) failures.push('mobile Jump To does not share the hamburger control and panel geometry');
-if (!shellCss.includes('top: calc(var(--bullen-header-height) + 2px)')) failures.push('desktop navigation menus can overlap the fixed House rail');
-if (!shellCss.includes('min-width: 44px;\n    height: 44px;')) failures.push('mobile hamburger can deform under the shared touch-target minimum');
-if (!shellCss.includes('.bullen-site-shell .jumpto-menu,\n  .bullen-site-shell .bullen-site-nav')
-    || !shellCss.includes('.bullen-site-shell .jumpto-item,\n  .bullen-site-shell .bullen-site-nav a')) {
-  failures.push('mobile hamburger must share Jump To surface and item styling');
-}
-if (!shellCss.includes('.bullen-nav-group-menu a,\n.bullen-site-shell .jumpto-item')
-    || !shellCss.includes('font: 400 12px/1.35 var(--bullen-font-data)')
-    || !shellCss.includes('.bullen-site-shell .jumpto-menu')
-    || !shellCss.includes('border: 0;')) {
-  failures.push('desktop dropdowns do not share the approved unframed editorial interior');
+for (const required of ['min-height:44px', 'grid-template-rows:56px 48px', '--bullen-header-height:104px', '--nav-teal:#81c5bf', 'max-height:calc(100dvh']) {
+  if (!headerCss.includes(required)) failures.push(`responsive navigation missing: ${required}`);
 }
 for (const [name, source] of [['index.html', homeSource], ['tape.html', tapeSource]]) {
   if (!source.includes('href="/mobile-buy.css"')) failures.push(`${name}: mobile wallet handoff styles missing`);
