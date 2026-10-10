@@ -35,6 +35,25 @@ const REQUEST_TTL = 24 * 60 * 60 * 1000;
 // Flat custom NFT tee price across every size and colour, independent of
 // regular catalogue prices. Derive margin from each live supplier template cost.
 const CUSTOM_PRICES = Object.freeze({S:49.99,M:49.99,L:49.99,XL:49.99,'2XL':49.99,'3XL':49.99});
+const HOODIE_PRICES = Object.freeze({S:99.99,M:99.99,L:99.99,XL:99.99,'2XL':99.99,'3XL':99.99});
+const CUSTOM_GARMENTS = Object.freeze({
+ tee:{templateId:TEMPLATE,label:'Heavy tee',template:'AS Colour Heavy T-shirt',printRegion:'front',printWidthCm:32,extraPrintCost:0,prices:CUSTOM_PRICES},
+ // Two-region 5151 cost verified against supplier unitCost; every newly created
+ // product is read back before checkout so a changed surcharge cannot overcharge.
+ hoodie:{templateId:'pro_PpTzovAMQWC_bvGw0IHh4w',label:'French terry hoodie',template:'AS Colour French Terry Hoodie',printRegion:'back',printWidthCm:30.5,extraPrintCost:6.87,prices:HOODIE_PRICES},
+});
+// The collection's outlined 95 mm chest wordmark, on full 4650×3600 front canvases.
+const HOODIE_CHEST_IMAGES = Object.freeze({bone:'540194794',ink:'1129720262'});
+function garmentConfig(garment='tee'){
+ if(typeof garment!=='string'||!Object.hasOwn(CUSTOM_GARMENTS,garment))fail('INVALID_GARMENT','Choose a custom tee or hoodie.',400);
+ return CUSTOM_GARMENTS[garment];
+}
+function hoodieChestImage(colour,hex){
+ if(!/^#[0-9a-f]{6}$/i.test(hex||''))hex=({'Black':'#252223','Ink Blue':'#2a2836','Athletic Heather':'#b1b1b1','Natural':'#dad6cd'})[colour];
+ if(!hex)throw unavailable();
+ const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
+ return HOODIE_CHEST_IMAGES[rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722>.4?'ink':'bone'];
+}
 export class GoodsBenefitError extends Error {
  constructor(code, message, status = 400) { super(message); this.code=code; this.status=status; }
 }
@@ -115,9 +134,18 @@ function productVariants(product){return product?.variants || [];}
 function variantPrice(variant){return Number(variant?.unitPrice?.value ?? variant?.price?.amount)}
 function productOpen(product){return ['PUBLIC','HIDDEN'].includes(product?.access?.type) && product?.state?.type==='AVAILABLE';}
 function availableStock(stock){return stock?.type==='UNLIMITED' || (stock?.type==='LIMITED' && Number.isInteger(stock.inStock) && stock.inStock>0);}
-export function normalizeCustomOptions(template,prices=CUSTOM_PRICES) {
- if(template?.productId!==TEMPLATE || !Array.isArray(template.colorVariants))throw unavailable();
- return {template:'AS Colour Heavy T-shirt',colours:template.colorVariants.filter(c=>c.available===true).map(c=>({name:c.color.name,hex:c.color.hex,sizes:c.sizeVariants.filter(s=>s.available===true&&s.price?.currency==='USD'&&Number.isFinite(Number(s.price.amount))&&Number(s.price.amount)>0&&Number.isFinite(prices[s.size])&&prices[s.size]>Number(s.price.amount)).map(s=>({name:s.size,price:prices[s.size],currency:'USD'}))})).filter(c=>c.sizes.length)};
+export function normalizeCustomOptions(template,prices,garment='tee') {
+ const config=garmentConfig(garment);prices=prices||config.prices;
+ if(template?.productId!==config.templateId || !Array.isArray(template.colorVariants))throw unavailable();
+ return {template:config.template,colours:template.colorVariants.filter(c=>c.available===true).map(c=>({name:c.color.name,hex:c.color.hex,sizes:c.sizeVariants.filter(s=>s.available===true&&s.price?.currency==='USD'&&Number.isFinite(Number(s.price.amount))&&Number(s.price.amount)>0&&Number.isFinite(prices[s.size])&&prices[s.size]>Number(s.price.amount)+config.extraPrintCost).map(s=>({name:s.size,price:prices[s.size],currency:'USD'}))})).filter(c=>c.sizes.length)};
+}
+function customPreviews(images,colour,garment){
+ if(garment==='tee'){const url=firstPreview(images);return url?[{region:'front',url}]:[];}
+ return ['back','front'].map(region=>{
+  const url=firstPreview((images||[]).filter(i=>i?.region===region&&i?.color===colour));
+  if(!url)fail('PREVIEW_REVIEW','The House needs to review both sides of this hoodie before checkout.',409);
+  return {region,url};
+ });
 }
 
 /** All authenticated platform requests are pinned to the documented API origin. */
@@ -133,6 +161,7 @@ export function createFourthwallBenefitsClient({username,password,storefrontToke
  }
  return {
   template:()=>call(`/product-templates/${TEMPLATE}`),
+  customTemplate:garment=>call(`/product-templates/${garmentConfig(garment).templateId}`),
   getProduct:id=>call(`/products/${encodeURIComponent(id)}`),
   getStorefrontProduct:id=>call(`/products/${encodeURIComponent(id)}`,{storefront:true}),
   getPromotion:id=>call(`/promotions/${encodeURIComponent(id)}`),
@@ -148,7 +177,14 @@ export function createFourthwallBenefitsClient({username,password,storefrontToke
    const result=await fetchImpl(uploadURL,{method:'PUT',headers:{'Content-Type':asset.contentType,'x-goog-content-length-range':`0,${bytes.length}`},body:bytes,redirect:'manual',signal:AbortSignal.timeout(55000)});if(!result.ok)throw unavailable();
    const image=await call('/media/images',{method:'POST',body:{fileUrl:upload.fileUrl,width:asset.width,height:asset.height}});if(!image.id)throw unavailable();return image.id;
   },
-  createCustomization:({imageId,colour,size,placementStrategy='PLACEMENT_ID'})=>call('/customizations',{method:'POST',body:{productTemplateId:TEMPLATE,regions:[{region:'front',placementStrategy,...(placementStrategy==='PLACEMENT_ID'?{placementId:'largeCenter'}:{}),imageId}],colors:[colour],sizes:[size]}}),
+  createCustomization:({imageId,colour,colourHex,size,placementStrategy='PLACEMENT_ID',garment='tee'})=>{
+   const config=garmentConfig(garment);
+   if(garment==='hoodie'&&placementStrategy!=='FULL_REGION')throw unavailable();
+   const regions=garment==='hoodie'
+    ?[{region:'front',placementStrategy:'FULL_REGION',imageId:hoodieChestImage(colour,colourHex)},{region:'back',placementStrategy:'FULL_REGION',imageId}]
+    :[{region:'front',placementStrategy,...(placementStrategy==='PLACEMENT_ID'?{placementId:'largeCenter'}:{}),imageId}];
+   return call('/customizations',{method:'POST',body:{productTemplateId:config.templateId,regions,colors:[colour],sizes:[size]}});
+  },
   createProduct:({customizationId,name,description,profitMargin})=>call('/products',{method:'POST',body:{type:'customization',customizationId,name,description,profitMargin,publishOnCreate:false}}),
   async createCart({variantId,metadata,code}){
    const productCart=await call('/carts',{method:'POST',storefront:true,body:{items:[{variantId,quantity:1}],metadata}});
@@ -172,7 +208,7 @@ export function createGoodsPrintAssetResolver({fetchImpl=fetch,minPixels=1024,al
   for(let i=0;i<4;i++){response=await fetchImpl(url,{redirect:'manual',signal:AbortSignal.timeout(15000)});if([301,302,303,307,308].includes(response.status)){url=checkURL(new URL(response.headers.get('location'),url).href,url);continue}break}
   if(!response?.ok)throw unavailable();const bytes=await boundedBytes(response,20000000);
   const info=readRasterSize(bytes);if(!info||!['image/png','image/jpeg'].includes(info.contentType))fail('ARTWORK_REVIEW','This image format needs print preparation.',409);
-  if(info.width!==info.height || info.width<minPixels || bytes.length<100)fail('ARTWORK_REVIEW','This NFT needs a higher-resolution square print file before a tee can be made.',409);
+  if(info.width!==info.height || info.width<minPixels || bytes.length<100)fail('ARTWORK_REVIEW','This NFT needs a higher-resolution square print file before a custom piece can be made.',409);
   if(info.width>2600)fail('ARTWORK_REVIEW','This artwork needs print-file preparation by the House.',409);
   return {...info,bytes,source:url.href};
  };
@@ -199,7 +235,7 @@ export class GoodsBenefitsStore {
  deleteSession(tokenHash){return this.run('DELETE FROM goods_wallet_sessions WHERE token_hash=?',tokenHash)}
  active(wallet,kind){return this.one('SELECT * FROM goods_benefit_requests WHERE wallet=? AND kind=? AND active=1 ORDER BY created_at,id LIMIT 1',wallet,kind)}
  savedCustom(wallet,now){return this.all("SELECT * FROM goods_benefit_requests WHERE wallet=? AND kind='custom' AND state NOT IN ('discarded','expired','consumed') AND (expires_at>? OR active=1) ORDER BY created_at,id",wallet,now)}
- customChoice(wallet,mint,colour,size){return this.one("SELECT * FROM goods_benefit_requests WHERE wallet=? AND kind='custom' AND active=1 AND discard_requested_at IS NULL AND mint=? AND colour=? AND size=?",wallet,mint,colour,size)}
+ customChoice(wallet,mint,colour,size,garment='tee'){return this.one("SELECT * FROM goods_benefit_requests WHERE wallet=? AND kind='custom' AND active=1 AND discard_requested_at IS NULL AND mint=? AND colour=? AND size=? AND garment=?",wallet,mint,colour,size,garment)}
  async hasPaidCustom(id){return Boolean(await this.one("SELECT 1 AS paid FROM goods_benefit_orders WHERE request_id=? AND kind='custom' AND status<>'CANCELLED' LIMIT 1",id))}
  request(id,wallet){return wallet?this.one('SELECT * FROM goods_benefit_requests WHERE id=? AND wallet=?',id,wallet):this.one('SELECT * FROM goods_benefit_requests WHERE id=?',id)}
  idempotent(wallet,kind,key){return this.one('SELECT * FROM goods_benefit_requests WHERE wallet=? AND kind=? AND idempotency_key=?',wallet,kind,key)}
@@ -208,24 +244,24 @@ export class GoodsBenefitsStore {
   // A single atomic conditional insert prevents concurrent new issuance.
   // Restored cancelled codes may coexist; each still reserves one allowance.
   const result=await this.run(`INSERT OR IGNORE INTO goods_benefit_requests
-   (id,wallet,kind,idempotency_key,state,created_at,updated_at,expires_at,percent,balance_raw,code,mint,colour,size,name,image_url,price,stage)
-   SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? WHERE
+   (id,wallet,kind,idempotency_key,state,created_at,updated_at,expires_at,percent,balance_raw,code,mint,colour,size,name,image_url,price,stage,garment)
+   SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? WHERE
    (SELECT count(*) FROM goods_benefit_orders WHERE wallet=? AND kind=? AND status<>'CANCELLED')
    +(SELECT count(*) FROM goods_benefit_requests WHERE wallet=? AND kind=? AND active=1) < ?
    AND ((?='discount' AND NOT EXISTS(SELECT 1 FROM goods_benefit_requests WHERE wallet=? AND kind='discount' AND active=1))
     OR (?='custom' AND (SELECT count(*) FROM goods_benefit_requests WHERE wallet=? AND kind='custom'
      AND state NOT IN ('discarded','expired','consumed') AND (expires_at>? OR active=1)) < ?))`,
-   x.id,x.wallet,x.kind,x.key,x.state,x.now,x.now,x.expiresAt,x.percent??null,x.balanceRaw??null,x.code??null,x.mint??null,x.colour??null,x.size??null,x.name??null,x.image??null,x.price??null,x.stage??null,x.wallet,x.kind,x.wallet,x.kind,MAX_ORDERS,x.kind,x.wallet,x.kind,x.wallet,x.now,MAX_SAVED_CUSTOM);
+   x.id,x.wallet,x.kind,x.key,x.state,x.now,x.now,x.expiresAt,x.percent??null,x.balanceRaw??null,x.code??null,x.mint??null,x.colour??null,x.size??null,x.name??null,x.image??null,x.price??null,x.stage??null,x.garment??'tee',x.wallet,x.kind,x.wallet,x.kind,MAX_ORDERS,x.kind,x.wallet,x.kind,x.wallet,x.now,MAX_SAVED_CUSTOM);
   return changes(result)===1;
  }
  async update(id,patch,now){
-  const allowed=new Set(['state','active','promotion_id','image_id','customization_id','product_id','variant_id','preview','message','stage','expires_at','print_info','retry_count','next_retry_at','processing','retired_at']);
+  const allowed=new Set(['state','active','promotion_id','image_id','customization_id','product_id','variant_id','preview','previews','message','stage','expires_at','print_info','retry_count','next_retry_at','processing','retired_at']);
   for(const key of Object.keys(patch))if(!allowed.has(key))throw new Error('Unsafe request update');
   const fields=Object.keys(patch);return this.run(`UPDATE goods_benefit_requests SET ${fields.map(k=>`${k}=?`).join(',')},updated_at=? WHERE id=?`,...fields.map(k=>patch[k]),now,id);
  }
  async startJob(id,now){return changes(await this.run("UPDATE goods_benefit_requests SET stage='working',processing=1,updated_at=? WHERE id=? AND stage='queued' AND state='preparing' AND active=1 AND processing=0 AND discard_requested_at IS NULL AND next_retry_at<=? AND expires_at>?",now,id,now,now))===1}
  async markDiscard(id,wallet,now){return changes(await this.run(`UPDATE goods_benefit_requests SET
-  discard_requested_at=COALESCE(discard_requested_at,?),state='discarding',message='Removing this saved tee. It cannot be checked out while removal is pending.',updated_at=?
+  discard_requested_at=COALESCE(discard_requested_at,?),state='discarding',message='Removing this saved design. It cannot be checked out while removal is pending.',updated_at=?
   WHERE id=? AND wallet=? AND kind='custom' AND state<>'discarded'
   AND NOT EXISTS(SELECT 1 FROM goods_benefit_orders WHERE request_id=? AND kind='custom' AND status<>'CANCELLED')`,now,now,id,wallet,id))===1}
  readyCustom(id,variant,message,now){return this.run("UPDATE goods_benefit_requests SET state='ready',variant_id=?,stage='ready',next_retry_at=0,message=?,updated_at=? WHERE id=? AND active=1 AND processing=1 AND discard_requested_at IS NULL AND expires_at>?",variant,message,now,id,now)}
@@ -265,14 +301,24 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
  async function session(request,required=true){const token=readToken(request);const value=token?await store.session(await hash(token),now()):null;if(!value&&required)fail('WALLET_REQUIRED','Connect and verify your wallet again.',401);return value}
  async function guard(request){if(!(await authorize(request)))fail('AUTH_REQUIRED','Please unlock the collection again.',401);if(!(await rateLimit(request)))fail('RATE_LIMIT','Please wait a moment and try again.',429);if(request.method!=='GET')sameOrigin(request)}
  async function quotas(wallet){const [discount,custom]=await Promise.all([store.count(wallet,'discount'),store.count(wallet,'custom')]);return {discount:{completedOrders:discount,remainingOrders:Math.max(0,MAX_ORDERS-discount),limit:MAX_ORDERS},custom:{completedOrders:custom,remainingOrders:Math.max(0,MAX_ORDERS-custom),limit:MAX_ORDERS}}}
- async function options(){return {...normalizeCustomOptions(await provider.template(),customPrices),collections:GOODS_OFFICIAL_COLLECTIONS}}
+ const templateFor=garment=>garment==='tee'?provider.template():provider.customTemplate(garment);
+ const pricesFor=garment=>garment==='tee'?customPrices:HOODIE_PRICES;
+ async function options(){
+  const ids=typeof provider.customTemplate==='function'?['tee','hoodie']:['tee'];
+  const products=await Promise.all(ids.map(async id=>{
+   const config=garmentConfig(id),details={id,label:config.label,printRegion:config.printRegion,printWidthCm:config.printWidthCm};
+   try{return {...details,...normalizeCustomOptions(await templateFor(id),pricesFor(id),id)}}
+   catch{ return {...details,template:config.template,colours:[],unavailable:true}; }
+  }));
+  return {template:products[0].template,colours:products[0].colours,products,collections:GOODS_OFFICIAL_COLLECTIONS};
+ }
  async function scopeProductIds(){const configured=typeof eligibleProductIds==='function'?await eligibleProductIds():eligibleProductIds;const custom=await store.all("SELECT product_id FROM goods_benefit_requests WHERE kind='custom' AND product_id IS NOT NULL AND active=1");return [...new Set([...configured,...custom.map(x=>x.product_id)])]}
  async function fullPriceIds(ids){
   const valid=[];
   for(let i=0;i<ids.length;i+=5){await Promise.all(ids.slice(i,i+5).map(async id=>{const p=await provider.getProduct(id);if(!productOpen(p)||p.type!=='STANDARD')return;const variants=productVariants(p);if(!variants.length||variants.some(v=>v.unitPrice?.currency!=='USD'||!Number.isFinite(variantPrice(v))))return;const isSale=variants.some(v=>Number(v.compareAtPrice?.value??v.compareAtPrice?.amount)>variantPrice(v));if(!isSale)valid.push(id)}))}
   return valid.sort();
  }
- function publicCustom(r){return {id:r.id,state:r.discard_requested_at&&!['discarded','consumed'].includes(r.state)?'discarding':r.state,name:r.name,mint:r.mint,colour:r.colour,size:r.size,price:r.price,currency:'USD',preview:r.preview||undefined,message:r.message||undefined,printInfo:parseJSON(r.print_info,undefined),expiresAt:iso(r.expires_at)};}
+ function publicCustom(r){const garment=r.garment||'tee';return {id:r.id,garment,label:garmentConfig(garment).label,state:r.discard_requested_at&&!['discarded','consumed'].includes(r.state)?'discarding':r.state,name:r.name,mint:r.mint,colour:r.colour,size:r.size,price:r.price,currency:'USD',preview:r.preview||undefined,previews:parseJSON(r.previews)|| (r.preview?[{region:garmentConfig(garment).printRegion,url:r.preview}]:[]),message:r.message||undefined,printInfo:parseJSON(r.print_info,undefined),expiresAt:iso(r.expires_at)};}
  async function retireCustom(r){
   if(r.processing)return false;
   if(!r.product_id)return r.stage!=='product_pending';
@@ -291,7 +337,7 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   // A product may already have a paid order whose webhook has not arrived.
   // Retire it first, then require an exhaustive provider-order scan before reuse.
   if(r.product_id&&(ordersCheckedAt===null||!r.retired_at||r.retired_at>ordersCheckedAt))return r;
-  await store.run(`UPDATE goods_benefit_requests SET state='discarded',active=0,stage='discarded',message='This saved tee has been removed.',updated_at=?
+  await store.run(`UPDATE goods_benefit_requests SET state='discarded',active=0,stage='discarded',message='This saved design has been removed.',updated_at=?
    WHERE id=? AND processing=0 AND discard_requested_at IS NOT NULL
    AND NOT EXISTS(SELECT 1 FROM goods_benefit_orders WHERE request_id=? AND kind='custom' AND status<>'CANCELLED')`,now(),id,id);
   return store.request(id);
@@ -300,8 +346,8 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   assertWritable();const s=await session(request);let r=await store.request(id,s.wallet);
   if(!r||r.kind!=='custom')fail('NOT_FOUND','Custom request not found.',404);
   if(r.state==='discarded')return publicCustom(r);
-  if(await store.hasPaidCustom(id))fail('CUSTOM_PURCHASED','A purchased tee stays in your order history and cannot be discarded.',409);
-  if(!await store.markDiscard(id,s.wallet,now()))fail('CUSTOM_PURCHASED','A purchased tee stays in your order history and cannot be discarded.',409);
+  if(await store.hasPaidCustom(id))fail('CUSTOM_PURCHASED','A purchased piece stays in your order history and cannot be discarded.',409);
+  if(!await store.markDiscard(id,s.wallet,now()))fail('CUSTOM_PURCHASED','A purchased piece stays in your order history and cannot be discarded.',409);
   try{r=await finishDiscard(id)}catch{r=await store.request(id)}
   if(r.state!=='discarded'&&ctx?.waitUntil)ctx.waitUntil(reconcile().catch(()=>{}));
   return publicCustom(r);
@@ -383,35 +429,43 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
    return;
   }
   let r=await store.request(id);
-  const beforeWrite=async()=>{r=await store.request(id);if(r.discard_requested_at||!r.processing)fail('CUSTOM_DISCARDED','This saved tee is no longer being prepared.',409);if(r.expires_at<=now())fail('REQUEST_EXPIRED','Your saved request has expired. Please prepare a new tee.',409)};
+  const beforeWrite=async()=>{r=await store.request(id);if(r.discard_requested_at||!r.processing)fail('CUSTOM_DISCARDED','This saved design is no longer being prepared.',409);if(r.expires_at<=now())fail('REQUEST_EXPIRED','Your saved request has expired. Please prepare a new design.',409)};
   try{
+   const garment=r.garment||'tee',config=garmentConfig(garment);
    const asset=await chain.owned(r.wallet,r.mint);if(!asset)fail('NFT_NOT_OWNED','This NFT is no longer held by the verified wallet.',409);
-   const template=await provider.template(),opt=normalizeCustomOptions(template,customPrices),choice=opt.colours.find(c=>c.name===r.colour)?.sizes.find(s=>s.name===r.size);if(!choice||choice.price!==r.price)fail('VARIANT_CHANGED','This colour or size changed. Please choose again.',409);
+   const template=await templateFor(garment),opt=normalizeCustomOptions(template,pricesFor(garment),garment),choice=opt.colours.find(c=>c.name===r.colour)?.sizes.find(s=>s.name===r.size);if(!choice||choice.price!==r.price)fail('VARIANT_CHANGED','This colour or size changed. Please choose again.',409);
+   if(garment==='hoodie'&&!['front','back'].every(region=>template.customizableAreas?.some(a=>a.regionId===region&&a.available===true&&a.supportsBackendRendering===true&&a.productionMethod==='DTG'&&a.dimensions?.inchesWidth===15.5&&a.dimensions?.inchesHeight===(region==='front'?12:19.6))))throw unavailable();
    const cost=Number(template.colorVariants.find(c=>c.color.name===r.colour)?.sizeVariants.find(s=>s.size===r.size)?.price?.amount);
-   const profitMargin=Math.round((r.price-cost)*100)/100;if(!Number.isFinite(profitMargin)||profitMargin<=0)throw unavailable();
+   const profitMargin=Math.round((r.price-cost-config.extraPrintCost)*100)/100;if(!Number.isFinite(profitMargin)||profitMargin<=0)throw unavailable();
    // Retain completed operation IDs on explicit429. Never recreate a product
    // merely because its subsequent GET was rate-limited.
    if(!r.product_id){
     if(!r.customization_id){
      if(!r.image_id){
-      let printable=await resolvePrintAsset(asset);
-      if(!printable.imageId){try{printable=await makeSquarePrintCanvas(printable,template.customizableAreas?.find(a=>a.regionId==='front')?.dimensions)}catch{fail('ARTWORK_REVIEW','This artwork needs print-file preparation by the House before checkout.',409)}}
-      if(printable.printInfo)await store.update(id,{print_info:JSON.stringify(printable.printInfo),message:printable.printMessage},now());
+      let printable=await resolvePrintAsset(asset,garment);
+      if(!printable.imageId){try{printable=await makeSquarePrintCanvas(printable,template.customizableAreas?.find(a=>a.regionId===config.printRegion)?.dimensions,garment)}catch{fail('ARTWORK_REVIEW','This artwork needs print-file preparation by the House before checkout.',409)}}
+      if(garment==='hoodie'&&printable.printInfo?.region!=='back')fail('ARTWORK_REVIEW','This artwork needs the hoodie back-print layout before checkout.',409);
+      if(printable.printInfo)await store.update(id,{print_info:JSON.stringify(printable.printInfo),message:printable.printMessage||null},now());
       await beforeWrite();const imageId=printable.imageId||await provider.uploadImage(printable);await store.update(id,{image_id:imageId,stage:'customization_pending'},now());r=await store.request(id);
      }
-     await beforeWrite();const design=await provider.createCustomization({imageId:r.image_id,colour:r.colour,size:r.size,placementStrategy:r.print_info?'FULL_REGION':'PLACEMENT_ID'});if(!design.customizationId||!firstPreview(design.images))throw unavailable();
-     await store.update(id,{customization_id:design.customizationId,preview:firstPreview(design.images),stage:'customized'},now());r=await store.request(id);
+     await beforeWrite();const design=await provider.createCustomization({garment,imageId:r.image_id,colour:r.colour,colourHex:opt.colours.find(c=>c.name===r.colour)?.hex,size:r.size,placementStrategy:r.print_info?'FULL_REGION':'PLACEMENT_ID'});if(!design.customizationId)throw unavailable();
+     const previews=customPreviews(design.images,r.colour,garment);if(!previews.length)throw unavailable();
+     await store.update(id,{customization_id:design.customizationId,preview:previews[0].url,previews:JSON.stringify(previews),stage:'customized'},now());r=await store.request(id);
     }
-    const printInfo=parseJSON(r.print_info),name=`${asset.name} — Custom Heavy Tee [${id.slice(0,8)}]`;
-    const sizeCopy=printInfo?` Square front print: approximately ${printInfo.widthCm} × ${printInfo.widthCm} cm.`:' Square front artwork.';
-    await beforeWrite();if(!await store.claimProductWrite(id,now()))fail('CUSTOM_DISCARDED','This saved tee is no longer being prepared.',409);
-    const result=await provider.createProduct({customizationId:r.customization_id,name,description:'Your official BULLENCIAGA artwork, printed on a premium AS Colour 5080 heavyweight cotton tee.'+sizeCopy+' Made to order.',profitMargin});
-    if(!result.productId)throw unavailable();await store.update(id,{product_id:result.productId,preview:firstPreview(result.images)||r.preview,stage:'product_created'},now());r=await store.request(id);
+    const printInfo=parseJSON(r.print_info),name=`${asset.name} — Custom ${garment==='hoodie'?'French Terry Hoodie':'Heavy Tee'} [${id.slice(0,8)}]`;
+    const sizeCopy=printInfo?` Square ${config.printRegion} print: approximately ${printInfo.widthCm} × ${printInfo.widthCm} cm.`:` Square ${config.printRegion} artwork.`;
+    await beforeWrite();if(!await store.claimProductWrite(id,now()))fail('CUSTOM_DISCARDED','This saved design is no longer being prepared.',409);
+    const material=garment==='hoodie'?'Your official BULLENCIAGA artwork, printed on the back of a premium AS Colour 5151 hoodie. 500 gsm, 100% cotton French terry. BULLENCIAGA wordmark on the chest.':'Your official BULLENCIAGA artwork, printed on a premium AS Colour 5080 heavyweight cotton tee.';
+    const result=await provider.createProduct({customizationId:r.customization_id,name,description:material+sizeCopy+' Made to order.',profitMargin});
+    // Product responses can list the front first without region labels. Retain
+    // the two explicitly labelled customization views for a hoodie.
+    if(!result.productId)throw unavailable();const preview=garment==='hoodie'?r.preview:firstPreview(result.images)||r.preview;
+    await store.update(id,{product_id:result.productId,preview,...(garment==='tee'?{previews:JSON.stringify([{region:'front',url:preview}])}:{}),stage:'product_created'},now());r=await store.request(id);
    }
    await beforeWrite();const product=await provider.getProduct(r.product_id);
    const variant=productVariants(product).find(v=>v.attributes?.color?.name===r.colour&&v.attributes?.size?.name===r.size);
-   if(product.access?.type!=='HIDDEN'||!productOpen(product)||!variant || variant.unitPrice?.currency!=='USD'||Math.abs(variantPrice(variant)-r.price)>0.001||!availableStock(variant.stock))throw unavailable();
-   const info=parseJSON(r.print_info),message=info?`Square front print: approximately ${info.widthCm} × ${info.widthCm} cm. Original ${info.sourcePixels}px artwork at about ${info.dpi} dpi, with the original pixels preserved.${info.lowResolution?' Fine detail may look softer at this size.':''}`:null;
+   if(product.access?.type!=='HIDDEN'||!productOpen(product)||!variant || variant.unitPrice?.currency!=='USD'||!Number.isFinite(variantPrice(variant))||Math.abs(variantPrice(variant)-r.price)>0.001||!availableStock(variant.stock))throw unavailable();
+   const info=parseJSON(r.print_info),message=info?`Square ${config.printRegion} print: approximately ${info.widthCm} × ${info.widthCm} cm. ${garment==='hoodie'?'BULLENCIAGA wordmark on the chest. ':''}Original ${info.sourcePixels}px artwork at about ${info.dpi} dpi, with the original pixels preserved.${info.lowResolution?' Fine detail may look softer at this size.':''}`:null;
    await store.readyCustom(id,variant.id,message,now());
   }catch(error){
    r=await store.request(id);
@@ -435,17 +489,17 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
  }
  async function requestCustom(wallet,body,ctx){
   assertWritable();
-  const {mint,colour,size,idempotencyKey}=body;
+  const {mint,colour,size,idempotencyKey,garment='tee'}=body;garmentConfig(garment);
   if(typeof idempotencyKey!=='string'||!/^[a-zA-Z0-9_-]{16,80}$/.test(idempotencyKey))fail('INVALID_REQUEST','Please restart this custom request.',400);
   walletAddress(mint);
-  const previous=await store.idempotent(wallet,'custom',idempotencyKey);if(previous){if(previous.mint!==mint||previous.colour!==colour||previous.size!==size)fail('REQUEST_CONFLICT','That request identifier has already been used.',409);return publicCustom(previous)}
-  const outstanding=await store.customChoice(wallet,mint,colour,size);if(outstanding&&outstanding.expires_at>now())return publicCustom(outstanding);
+  const previous=await store.idempotent(wallet,'custom',idempotencyKey);if(previous){if(previous.mint!==mint||previous.colour!==colour||previous.size!==size||(previous.garment||'tee')!==garment)fail('REQUEST_CONFLICT','That request identifier has already been used.',409);return publicCustom(previous)}
+  const outstanding=await store.customChoice(wallet,mint,colour,size,garment);if(outstanding&&outstanding.expires_at>now())return publicCustom(outstanding);
   const asset=await chain.owned(wallet,mint);if(!asset)fail('NFT_NOT_OWNED','Choose an official BULLENCIAGA NFT held in this wallet.',403);
-  const opt=await options(),choice=opt.colours.find(c=>c.name===colour)?.sizes.find(s=>s.name===size);if(!choice)fail('VARIANT_UNAVAILABLE','Choose an available colour and size.',409);
+  const opt=normalizeCustomOptions(await templateFor(garment),pricesFor(garment),garment),choice=opt.colours.find(c=>c.name===colour)?.sizes.find(s=>s.name===size);if(!choice)fail('VARIANT_UNAVAILABLE','Choose an available colour and size.',409);
   const id=randomId();
-  if(!(await store.reserve({id,wallet,kind:'custom',key:idempotencyKey,state:'preparing',stage:'queued',now:now(),expiresAt:now()+requestTTL,mint,colour,size,name:asset.name,image:asset.image,price:choice.price}))){
-   const duplicate=await store.customChoice(wallet,mint,colour,size);if(duplicate&&duplicate.expires_at>now())return publicCustom(duplicate);
-   if((await store.savedCustom(wallet,now())).length>=MAX_SAVED_CUSTOM)fail('SAVED_LIMIT','You can save up to five custom tees. Discard one before preparing another.',409);
+  if(!(await store.reserve({id,wallet,kind:'custom',key:idempotencyKey,state:'preparing',stage:'queued',now:now(),expiresAt:now()+requestTTL,mint,colour,size,garment,name:asset.name,image:asset.image,price:choice.price}))){
+   const duplicate=await store.customChoice(wallet,mint,colour,size,garment);if(duplicate&&duplicate.expires_at>now())return publicCustom(duplicate);
+   if((await store.savedCustom(wallet,now())).length>=MAX_SAVED_CUSTOM)fail('SAVED_LIMIT','You can save up to five custom designs. Discard one before preparing another.',409);
    fail('LIMIT_REACHED','This wallet has reached its 10 custom-order allowance or has outstanding purchase reservations.',409);
   }
   if(enqueueCustom)await enqueueCustom(id);
@@ -466,18 +520,18 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
  }
  async function customCheckout(request,id,body){
   assertWritable();
-  const s=await session(request),r=await store.request(id,s.wallet);if(!r||r.state!=='ready'||!r.active||r.discard_requested_at||r.expires_at<=now())fail('CUSTOM_NOT_READY','This custom tee is not available for checkout.',409);
+  const s=await session(request),r=await store.request(id,s.wallet);if(!r||r.state!=='ready'||!r.active||r.discard_requested_at||r.expires_at<=now())fail('CUSTOM_NOT_READY','This custom piece is not available for checkout.',409);
   if(await store.count(s.wallet,'custom')>=MAX_ORDERS)fail('LIMIT_REACHED','This wallet has used its 10 custom orders.',409);
   // Ownership at request time is the entitlement. Sharing the link afterward is
   // explicitly allowed; do not require the recipient to own the NFT at payment.
   const product=await provider.getProduct(r.product_id),variant=productVariants(product).find(v=>v.id===r.variant_id);
-  if(!productOpen(product)||!variant||!availableStock(variant.stock)||variant.unitPrice?.currency!=='USD'||Math.abs(variantPrice(variant)-r.price)>0.001)fail('VARIANT_CHANGED','This tee is not available at the shown price. Please refresh.',409);
+  if(!productOpen(product)||!variant||!availableStock(variant.stock)||variant.unitPrice?.currency!=='USD'||!Number.isFinite(variantPrice(variant))||Math.abs(variantPrice(variant)-r.price)>0.001)fail('VARIANT_CHANGED','This piece is not available at the shown price. Please refresh.',409);
   const benefit=await checkoutBenefit(request,{holderDiscount:body.holderDiscount===true,productIds:[r.product_id]});
   const metadata={...benefit.metadata,custom_request:r.id,custom_mac:await hmac(metadataSecret,enc.encode(r.id))};
-  const stillReady=async()=>{const current=await store.request(id,s.wallet);if(!current||current.discard_requested_at||!current.active||current.state!=='ready'||current.expires_at<=now())fail('CUSTOM_NOT_READY','This custom tee is not available for checkout.',409)};
+  const stillReady=async()=>{const current=await store.request(id,s.wallet);if(!current||current.discard_requested_at||!current.active||current.state!=='ready'||current.expires_at<=now())fail('CUSTOM_NOT_READY','This custom piece is not available for checkout.',409)};
   await stillReady();
   const result=await provider.createCart({variantId:r.variant_id,metadata,code:benefit.code});
-  const cartVariant=result.cart?.items?.[0]?.variant;if(!cartVariant||cartVariant.unitPrice?.currency!=='USD'||Math.abs(variantPrice(cartVariant)-r.price)>0.001)throw unavailable();
+  const cartVariant=result.cart?.items?.[0]?.variant;if(!cartVariant||cartVariant.unitPrice?.currency!=='USD'||!Number.isFinite(variantPrice(cartVariant))||Math.abs(variantPrice(cartVariant)-r.price)>0.001)throw unavailable();
   await stillReady();return {checkoutUrl:result.checkoutUrl};
  }
  async function reconcileOrder(orderId){
@@ -548,7 +602,7 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
    const action=path.slice(BASE.length),method=request.method;
    if(action==='/challenge'&&method==='POST'){
     const body=await readBody(request),wallet=walletAddress(body.wallet),id=randomId(),expiresAt=now()+300000,origin=new URL(request.url).origin;
-    const message=`BULLENCIAGA Goods wallet verification\nDomain: ${new URL(origin).host}\nWallet: ${wallet}\nNonce: ${randomToken()}\nExpires: ${iso(expiresAt)}\n\nSign to verify ownership for holder discounts and personal NFT tees. This does not authorize payments or asset transfers.`;
+    const message=`BULLENCIAGA Goods wallet verification\nDomain: ${new URL(origin).host}\nWallet: ${wallet}\nNonce: ${randomToken()}\nExpires: ${iso(expiresAt)}\n\nSign to verify ownership for holder discounts and personal NFT clothing. This does not authorize payments or asset transfers.`;
     await store.challenge({id,wallet,origin,message,expiresAt});return json({challengeId:id,message,expiresAt:iso(expiresAt)});
    }
    if(action==='/verify'&&method==='POST'){

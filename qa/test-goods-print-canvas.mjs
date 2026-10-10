@@ -24,6 +24,15 @@ test('1024px source becomes a32cm square with original pixels, honest resolution
 test('higher-resolution RGB artwork retains original pixels at32cm and opaque art alpha',async()=>{
  const source=png(1800,1800,3),p=await makeSquarePrintCanvas(source,{inchesWidth:15.5,inchesHeight:19.6}),o=rawOutput(p.bytes),{x,y}=p.printInfo.pixelOffset;assert.equal(p.printInfo.widthCm,32);assert.equal(p.printInfo.small,false);for(const [px,py]of[[0,0],[899,900],[1799,1799]]){const i=(py+y)*(o.w*4+1)+1+(px+x)*4,s=(py*1800+px)*3;assert.deepEqual(o.raw.subarray(i,i+3),source.pixels.subarray(s,s+3));assert.equal(o.raw[i+3],255)}
 });
+test('hoodie back keeps every NFT pixel in a30.5cm square below the hood',async()=>{
+ const source=png(1024,1024),p=await makeSquarePrintCanvas(source,{inchesWidth:15.5,inchesHeight:19.6},'hoodie'),o=rawOutput(p.bytes),{x,y}=p.printInfo.pixelOffset;
+ assert.equal(p.printInfo.region,'back');assert.equal(p.printInfo.widthCm,30.5);assert.equal(p.printInfo.upscaled,false);assert.equal(y,384);assert.equal(x,149);assert.match(p.printMessage,/Square back print/);
+ const stride=o.w*4+1;
+ for(let row=0;row<1024;row++)assert.deepEqual(o.raw.subarray((row+y)*stride+1+x*4,(row+y)*stride+1+(x+1024)*4),source.pixels.subarray(row*4096,(row+1)*4096));
+ assert.ok(o.raw.subarray(0,y*stride).every(v=>v===0),'transparent hood clearance');
+ await assert.rejects(()=>makeSquarePrintCanvas(source,{inchesWidth:15.5,inchesHeight:12},'hoodie'));
+ await assert.rejects(()=>makeSquarePrintCanvas(source,{inchesWidth:15.5,inchesHeight:19.6},'sweater'));
+});
 test('all eligible resolutions use the same physical size; softness disclosure tracks effective source DPI',async()=>{
  for(const size of[1500,1900,2512]){const p=await makeSquarePrintCanvas(png(size,size,3),{inchesWidth:15.5,inchesHeight:19.6});assert.equal(p.printInfo.widthCm,32);assert.equal(p.printInfo.sourcePixels,size);assert.equal(p.printInfo.upscaled,false);assert.equal(p.printInfo.lowResolution,size<1890);assert.equal(/may look softer/.test(p.printMessage),p.printInfo.lowResolution);assert.ok(Math.abs(p.printInfo.widthInches-12.6)<=0.01)}
 });

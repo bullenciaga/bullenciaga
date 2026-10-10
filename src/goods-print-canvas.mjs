@@ -1,4 +1,4 @@
-/** Exact pixel placement for the current AS Colour 5080 full front region.
+/** Exact pixel placement for AS Colour 5080 front and 5151 back regions.
  * No resize, interpolation or AI changes. Bounded PNG8 RGB/RGBA only. */
 const SIGNATURE=new Uint8Array([137,80,78,71,13,10,26,10]);
 const crcTable=Uint32Array.from({length:256},(_,n)=>{for(let i=0;i<8;i++)n=n&1?0xedb88320^(n>>>1):n>>>1;return n>>>0});
@@ -41,16 +41,17 @@ export async function decodePrintPNG(bytes,{maxSide=2600}={}){
  return {width,height,channels,stride,rows,profiles};
 }
 /** Region dimensions are from the live supplier template, never a client value. */
-export async function makeSquarePrintCanvas(asset,dimensions){
+export async function makeSquarePrintCanvas(asset,dimensions,garment='tee'){
+ if(!['tee','hoodie'].includes(garment))review();
  if(asset.width!==asset.height||asset.width<1024||asset.width>2600||asset.contentType!=='image/png')review();
  if(dimensions?.inchesWidth!==15.5||dimensions?.inchesHeight!==19.6)review();
  const source=await decodePrintPNG(asset.bytes);if(source.width!==asset.width||source.height!==asset.height)review();
  // The same physical square for every eligible original. Keep the original
  // pixels; a lower-resolution source is honestly a softer, larger print.
- const inch=12.6;
+ const region=garment==='hoodie'?'back':'front',inch=garment==='hoodie'?12:12.6;
  const dpi=source.width/inch,width=Math.round(dimensions.inchesWidth*dpi),height=Math.round(dimensions.inchesHeight*dpi);
- // Center horizontally; place top one inch below the front print-region top.
- const x=Math.floor((width-source.width)/2),y=Math.round(dpi);if(x<0||y+source.height>height)review();
+ // The hoodie uses the collection's approved rear placement below the hood.
+ const x=Math.floor((width-source.width)/2),y=Math.round(dpi*(garment==='hoodie'?4.5:1));if(x<0||y+source.height>height)review();
  let row=0;const raw=new ReadableStream({pull(controller){
   if(row>=height){controller.close();return}
   const out=new Uint8Array(width*4+1),sy=row-y;
@@ -66,5 +67,5 @@ export async function makeSquarePrintCanvas(asset,dimensions){
  const bytes=concat([SIGNATURE,chunk('IHDR',header),...source.profiles,chunk('pHYs',physical),...data,chunk('IEND',new Uint8Array())]);
  const physicalInches=source.width/width*dimensions.inchesWidth,cm=Math.round(physicalInches*2.54*10)/10;
  const effectiveDpi=Math.round(source.width/physicalInches),lowResolution=effectiveDpi<150;
- return {...asset,bytes,width,height,placementStrategy:'FULL_REGION',printInfo:{widthInches:Number(physicalInches.toFixed(2)),widthCm:cm,sourcePixels:source.width,dpi:effectiveDpi,small:false,lowResolution,upscaled:false,pixelOffset:{x,y},canvasPixels:{width,height}},printMessage:`Square front print: approximately ${cm} × ${cm} cm. Original ${source.width}px artwork at about ${effectiveDpi} dpi, with the original pixels preserved.${lowResolution?' Fine detail may look softer at this size.':''}`};
+ return {...asset,bytes,width,height,placementStrategy:'FULL_REGION',printInfo:{region,widthInches:Number(physicalInches.toFixed(2)),widthCm:cm,sourcePixels:source.width,dpi:effectiveDpi,small:false,lowResolution,upscaled:false,pixelOffset:{x,y},canvasPixels:{width,height}},printMessage:`Square ${region} print: approximately ${cm} × ${cm} cm. Original ${source.width}px artwork at about ${effectiveDpi} dpi, with the original pixels preserved.${lowResolution?' Fine detail may look softer at this size.':''}`};
 }
