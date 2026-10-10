@@ -58,7 +58,8 @@
     "MERCH_PREVIEW_PREFIX": "collection01-v2-20261005",
     "GOODS_BENEFITS_ENABLED": "0",
     "GOODS_SHOP_ID": "sh_519b5285-451f-42f7-ba14-f2926fd1a7df",
-    "MERCH_PREVIEW_PROTECTED": "1"
+    "MERCH_PREVIEW_PROTECTED": "1",
+    "GOODS_LAUNCH_AT": "2026-10-10T19:00:00+02:00"
   },
   "queues": {
     "producers": [

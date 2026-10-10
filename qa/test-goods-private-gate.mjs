@@ -88,6 +88,7 @@ function runCountdown(script, initialTime) {
   // storage and network access fail instead of silently passing this test.
   runInNewContext(script, {
     Date: { parse: Date.parse, now: () => now },
+    performance: { now: () => now - initialTime },
     document: {
       getElementById(id) { assert(nodes.has(id), `unexpected DOM access: ${id}`); return nodes.get(id); },
       addEventListener(name, callback) { assert.equal(name, 'visibilitychange'); events.set(name, callback); },
@@ -435,7 +436,9 @@ for (const name of ['production', 'staging']) {
   assert.equal(config.assets.run_worker_first, true);
   assert(config.r2_buckets.some(binding => binding.binding === 'MERCH_PREVIEW_ASSETS' && binding.bucket_name === `bullenciaga-merch-preview${name === 'staging' ? '-staging' : ''}`));
   assert(config.ratelimits.some(binding => binding.name === 'MERCH_PREVIEW_LIMIT' && binding.simple.limit === 10));
-  assert.equal(config.vars.MERCH_PREVIEW_PROTECTED, '1');
+  assert.equal(config.vars.MERCH_PREVIEW_PROTECTED, name === 'production' ? 'scheduled' : '1');
+  assert.equal(config.vars.GOODS_LAUNCH_AT, '2026-10-10T19:00:00+02:00');
+  if (name === 'staging') assert.equal(config.vars.GOODS_BENEFITS_ENABLED, '0');
   assert.match(config.vars.MERCH_PREVIEW_PREFIX, /^collection01-v2-20261005$/);
   assert(!('MERCH_PREVIEW_PASSWORD_SHA256' in config.vars));
   assert(!('MERCH_PREVIEW_SESSION_SECRET' in config.vars));

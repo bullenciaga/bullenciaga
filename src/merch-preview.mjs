@@ -40,8 +40,36 @@ function reply(text, status = 200, extra = {}, head = false) {
 
 // Explicit CEST offset keeps the launch instant independent of the visitor's timezone.
 const GOODS_LAUNCH = '2026-10-10T19:00:00+02:00';
-function countdownParts(now) {
-  const seconds = Math.max(0, Math.ceil((Date.parse(GOODS_LAUNCH) - now) / 1000));
+// Require an explicit timezone and a real calendar date; Date.parse alone silently
+// normalizes invalid days. Unrecognized modes and invalid schedules stay private.
+function launchDate(value) {
+  if (typeof value !== 'string') return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(Z|[+-](\d{2}):(\d{2}))$/.exec(value);
+  if (!match) return null;
+  const [, y, m, d, h, min, sec, , zh = '0', zm = '0'] = match;
+  const year = Number(y), month = Number(m), day = Number(d);
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (month < 1 || month > 12 || day < 1 || day > days[month - 1]
+    || Number(h) > 23 || Number(min) > 59 || Number(sec) > 59 || Number(zh) > 23 || Number(zm) > 59) return null;
+  return Number.isFinite(Date.parse(value)) ? value : null;
+}
+function launchState(env, now = Date.now()) {
+  const launchAt = launchDate(env.GOODS_LAUNCH_AT);
+  const mode = env.MERCH_PREVIEW_PROTECTED;
+  return { now, launchAt, scheduled: mode === 'scheduled' && launchAt !== null,
+    open: mode === '0' || (mode === 'scheduled' && launchAt !== null && now >= Date.parse(launchAt)),
+    displayAt: launchAt || (mode === '1' ? GOODS_LAUNCH : null) };
+}
+function launchLabel(value) {
+  const date = new Date(value);
+  const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Warsaw', weekday: 'long', day: 'numeric', month: 'long' }).formatToParts(date);
+  const part = type => parts.find(value => value.type === type).value;
+  const time = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Warsaw', hour: '2-digit', minute: '2-digit', timeZoneName: 'short', hourCycle: 'h23' }).format(date);
+  return part('weekday') + ', ' + part('day') + ' ' + part('month') + ' · ' + time;
+}
+function countdownParts(now, launchAt) {
+  const seconds = Math.max(0, Math.ceil((Date.parse(launchAt) - now) / 1000));
   return [Math.floor(seconds / 86400), Math.floor(seconds / 3600) % 24, Math.floor(seconds / 60) % 60, seconds % 60];
 }
 
@@ -65,10 +93,10 @@ const GOODS_SOCIAL_META = `<meta name="description" content="Signature pieces. H
 <meta name="twitter:image" content="https://bullenciaga.com/assets/social/goods-collection-01-v1.jpg">
 <meta name="twitter:image:alt" content="Bull, Lily and Sakura wearing the BULLENCIAGA House collection during a studio photoshoot.">`;
 
-function loginPage(message = '', status = 200, head = false, extra = {}) {
+function loginPage(message = '', status = 200, head = false, extra = {}, state = launchState({ MERCH_PREVIEW_PROTECTED: '1' })) {
   const nonce = hex(crypto.getRandomValues(new Uint8Array(16)));
   const labels = ['Days', 'Hours', 'Minutes', 'Seconds'];
-  const values = countdownParts(Date.now());
+  const values = countdownParts(state.now, state.displayAt || GOODS_LAUNCH);
   const arrived = values.every(value => value === 0);
   const fontPreloads = [
     'house-3dc5d0c52428fe16.woff2', // Poppins 400, Latin
@@ -110,22 +138,67 @@ body{transition:opacity .18s ease}
 /* No JavaScript and timed-out requests keep one stable system face. */
 html:not([data-gate-fonts]) body,html[data-gate-fonts="fallback"] body{font-family:Arial,Helvetica,sans-serif}
 html[data-gate-fonts="loading"] body{opacity:0}
-</style></head><body><header><div class="identity"><a class="wordmark" href="https://bullenciaga.com/">BULLENCIAGA</a><span class="section">GOODS</span></div><span class="collection">Collection 01</span></header><main><section class="launch" aria-labelledby="launch-title"><p class="eyebrow">Collection 01 · Coming this Saturday</p><h1 id="launch-title">The Goods arrive.</h1><time class="launch-date" datetime="${GOODS_LAUNCH}">Saturday, 10 October · 19:00 CEST</time><div id="countdown" class="countdown" role="timer" aria-live="off" aria-label="${values.map((value, i) => value + ' ' + labels[i].toLowerCase()).join(', ')} remaining">${values.map((value, i) => `<div class="unit" aria-hidden="true"><span class="digit" id="countdown-${i}">${String(value).padStart(2, '0')}</span><span class="unit-label">${labels[i]}</span></div>`).join('')}</div><p class="launch-note" id="launch-note">${arrived ? 'Launch time has arrived. Stay tuned.' : 'A new chapter. Almost yours.'}</p><noscript><p class="launch-note">The collection launches at the time shown above.</p></noscript></section><section class="private-view" aria-labelledby="private-title"><div class="private-heading"><svg class="lock" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" stroke="currentColor" stroke-width="1.3"/></svg><h2 id="private-title">The collection awaits.</h2></div><p class="intro">Have early access? Enter your password to step inside.</p><form method="post" action="${PREVIEW_PATH}/login"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" maxlength="256" required aria-describedby="message"${status === 401 ? ' aria-invalid="true"' : ''}><button type="submit"><span>Enter the collection</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.4"/></svg></button><p id="message" class="message" role="status" aria-live="polite">${message}</p></form></section></main><footer><span>Collection 01</span><span>The House of BULLENCIAGA</span></footer><script nonce="${nonce}">
+</style></head><body><header><div class="identity"><a class="wordmark" href="https://bullenciaga.com/">BULLENCIAGA</a><span class="section">GOODS</span></div><span class="collection">Collection 01</span></header><main><section class="launch" aria-labelledby="launch-title"><p class="eyebrow">${state.displayAt ? 'Collection 01 · Coming soon' : 'Collection 01 · Private view'}</p><h1 id="launch-title">${state.displayAt ? 'The Goods arrive.' : 'The collection awaits.'}</h1>${state.displayAt ? `<time class="launch-date" datetime="${state.displayAt}">${launchLabel(state.displayAt)}</time><div id="countdown" class="countdown" role="timer" aria-live="off" aria-label="${values.map((value, i) => value + ' ' + labels[i].toLowerCase()).join(', ')} remaining">${values.map((value, i) => `<div class="unit" aria-hidden="true"><span class="digit" id="countdown-${i}">${String(value).padStart(2, '0')}</span><span class="unit-label">${labels[i]}</span></div>`).join('')}</div><p class="launch-note" id="launch-note">${arrived ? 'Launch time has arrived. Stay tuned.' : 'A new chapter. Almost yours.'}</p><noscript><p class="launch-note">The collection launches at the time shown above. Reload this page then to enter.</p></noscript>` : '<p class="launch-note">The collection is currently in private view.</p>'}</section><section class="private-view" aria-labelledby="private-title"><div class="private-heading"><svg class="lock" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" stroke="currentColor" stroke-width="1.3"/></svg><h2 id="private-title">The collection awaits.</h2></div><p class="intro">Have early access? Enter your password to step inside.</p><form method="post" action="${PREVIEW_PATH}/login"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" maxlength="256" required aria-describedby="message"${status === 401 ? ' aria-invalid="true"' : ''}><button type="submit"><span>Enter the collection</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.4"/></svg></button><p id="message" class="message" role="status" aria-live="polite">${message}</p></form></section></main><footer><span>Collection 01</span><span>The House of BULLENCIAGA</span></footer><script nonce="${nonce}">
 (() => {
-  const deadline = Date.parse('${GOODS_LAUNCH}');
   const timer = document.getElementById('countdown');
+  if (!timer) return;
+  let deadline = ${state.displayAt ? Date.parse(state.displayAt) : 'null'};
+  let serverTime = ${state.now}, sampledAt = performance.now();
+  const scheduled = ${state.scheduled};
   const digits = [0, 1, 2, 3].map(i => document.getElementById('countdown-' + i));
   const labels = ['days', 'hours', 'minutes', 'seconds'];
+  const clock = () => serverTime + performance.now() - sampledAt;
+  let checking = false, retry = 0, failures = 0, entered = false;
   function update() {
-    const remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+    const remaining = Math.max(0, Math.ceil((deadline - clock()) / 1000));
     const values = [Math.floor(remaining / 86400), Math.floor(remaining / 3600) % 24, Math.floor(remaining / 60) % 60, remaining % 60];
     values.forEach((value, i) => { digits[i].textContent = String(value).padStart(2, '0'); });
     timer.setAttribute('aria-label', values.map((value, i) => value + ' ' + labels[i]).join(', ') + ' remaining');
     document.getElementById('launch-note').textContent = remaining === 0 ? 'Launch time has arrived. Stay tuned.' : 'A new chapter. Almost yours.';
   }
+  function plan(delay) {
+    clearTimeout(retry);
+    if (!scheduled || entered || document.hidden) return;
+    // Far from launch, check at most once a minute; close to launch, once per
+    // ten seconds and at zero. A failed request backs off, without overlapping.
+    const remaining = deadline - clock();
+    const next = remaining > 60000 ? Math.min(60000, remaining - 60000) : remaining > 0 ? Math.min(10000, remaining) : 2000;
+    retry = setTimeout(check, delay === undefined ? next : delay);
+  }
+  async function check() {
+    if (checking || entered || document.hidden) return;
+    checking = true;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    try {
+      const response = await fetch('/goods/api/launch-status', { cache: 'no-store', credentials: 'same-origin', redirect: 'error', signal: controller.signal });
+      if (!response.ok) throw new Error('Launch status unavailable');
+      const status = await response.json();
+      if (!status || typeof status.open !== 'boolean' || typeof status.serverTime !== 'string'
+        || !Number.isFinite(Date.parse(status.serverTime))
+        || (status.launchAt !== null && (typeof status.launchAt !== 'string' || !Number.isFinite(Date.parse(status.launchAt))))) throw new Error('Invalid launch status');
+      serverTime = Date.parse(status.serverTime);
+      sampledAt = performance.now();
+      if (status.launchAt !== null) deadline = Date.parse(status.launchAt);
+      failures = 0;
+      update();
+      if (status.open === true) { entered = true; location.replace('/goods/'); }
+    } catch (_) { failures = Math.min(failures + 1, 5); }
+    finally {
+      clearTimeout(timeout);
+      checking = false;
+      plan(failures ? Math.min(30000, 2000 * 2 ** (failures - 1)) : undefined);
+    }
+  }
   update();
   setInterval(update, 1000);
-  document.addEventListener('visibilitychange', update);
+  if (scheduled) plan();
+  document.addEventListener('visibilitychange', () => {
+    update();
+    if (!scheduled) return;
+    clearTimeout(retry);
+    if (!document.hidden) check();
+  });
 })();
 </script></body></html>`;
   // Permit only this response's font/timer scripts; private assets keep their original CSP.
@@ -133,15 +206,29 @@ html[data-gate-fonts="loading"] body{opacity:0}
   return reply(html, status, { 'Content-Type': 'text/html; charset=utf-8', 'Content-Security-Policy': policy, ...extra }, head);
 }
 
-function gateEnabled(env) { return env.MERCH_PREVIEW_PROTECTED === '1'; }
-
-function configReady(env) {
-  if (gateEnabled(env) && (!/^[a-f0-9]{64}$/i.test(env.MERCH_PREVIEW_PASSWORD_SHA256 || '')
+function configReady(env, state) {
+  if (!state.open && (!/^[a-f0-9]{64}$/i.test(env.MERCH_PREVIEW_PASSWORD_SHA256 || '')
     || typeof env.MERCH_PREVIEW_SESSION_SECRET !== 'string' || env.MERCH_PREVIEW_SESSION_SECRET.length < 32)) return false;
   return /^[a-z0-9][a-z0-9_-]{0,95}$/i.test(env.MERCH_PREVIEW_PREFIX || '')
     && typeof env.MERCH_PREVIEW_ASSETS?.get === 'function'
     && typeof env.MERCH_PREVIEW_ASSETS?.head === 'function'
     && typeof env.MERCH_PREVIEW_LIMIT?.limit === 'function';
+}
+
+// Only explicitly marked presentation fragments change at public opening. R2
+// remains immutable, and the span scan preserves nested markup and its siblings.
+function publicIndex(html) {
+  const marked = /\sdata-goods-private-only(?=\s|=|\/?>)/i;
+  html = html.replace(/<meta\b[^>]*>/gi, tag => marked.test(tag) ? '' : tag);
+  const spans = /<\/?span\b[^>]*>/gi;
+  let match, depth = 0, start = 0, kept = 0, result = '';
+  while ((match = spans.exec(html))) {
+    if (/^<\//.test(match[0])) {
+      if (depth && --depth === 0) { result += html.slice(kept, start); kept = spans.lastIndex; }
+    } else if (depth) depth++;
+    else if (marked.test(match[0])) { depth = 1; start = match.index; }
+  }
+  return result + html.slice(kept);
 }
 
 function unhex(value) { return Uint8Array.from(value.match(/../g), part => Number.parseInt(part, 16)); }
@@ -251,10 +338,10 @@ function videoRange(value, size) {
   return { offset: Number(start), length: Number(end - start + 1n) };
 }
 
-async function videoAsset(request, env, key) {
+async function videoAsset(request, env, key, state) {
   const head = request.method === 'HEAD', bucket = env.MERCH_PREVIEW_ASSETS;
   const responseHeaders = headers({ 'Content-Type': mediaTypes.mp4, 'Accept-Ranges': 'bytes' });
-  if (!gateEnabled(env)) {
+  if (state.open) {
     responseHeaders.set('Cache-Control', 'no-store, max-age=0');
     responseHeaders.delete('Vary'); responseHeaders.delete('X-Robots-Tag');
   }
@@ -298,13 +385,21 @@ export async function merchPreview(request, env, ctx) {
       const runtime = createGoodsRuntime(env);
       return runtime ? await runtime.handler(request, ctx) : reply('Webhook unavailable.', 503, {}, head);
     }
-    if (url.protocol !== 'https:' || !configReady(env)) return reply('The collection is temporarily unavailable.', 503, {}, head);
+    const state = launchState(env);
+    const ready = configReady(env, state);
+    if (!legacy && pathname === `${PREVIEW_PATH}/api/launch-status`) {
+      if (!['GET', 'HEAD'].includes(request.method)) return reply('Method not allowed.', 405, { Allow: 'GET, HEAD' }, head);
+      if (url.protocol !== 'https:') return reply('Launch status unavailable.', 503, {}, head);
+      return reply(JSON.stringify({ open: state.open && ready, serverTime: new Date(state.now).toISOString(), launchAt: state.launchAt }), 200,
+        { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store, max-age=0' }, head);
+    }
+    if (url.protocol !== 'https:' || !ready) return reply('The collection is temporarily unavailable.', 503, {}, head);
     if (legacy && ['GET', 'HEAD'].includes(request.method)) {
       // Keep old links local; the canonical Goods route applies the access policy.
       return reply('', 308, { Location: pathname + url.search }, head);
     }
     // Page access uses the existing server-only password and signed cookie.
-    if (gateEnabled(env) && (pathname === `${PREVIEW_PATH}/login` || pathname === `${PREVIEW_PATH}/logout`)) {
+    if (!state.open && (pathname === `${PREVIEW_PATH}/login` || pathname === `${PREVIEW_PATH}/logout`)) {
       if (request.method !== 'POST') return reply('Method not allowed.', 405, { Allow: 'POST' }, head);
       if (request.headers.get('Origin') !== url.origin || request.headers.get('Sec-Fetch-Site') === 'cross-site') return reply('Request not allowed.', 403);
       if (pathname === `${PREVIEW_PATH}/logout`) {
@@ -312,12 +407,12 @@ export async function merchPreview(request, env, ctx) {
       }
       const key = hex(await hash(`merch-login:${request.headers.get('CF-Connecting-IP') || 'unknown'}`));
       const limit = await env.MERCH_PREVIEW_LIMIT.limit({ key });
-      if (!limit?.success) return loginPage('Too many attempts. Please try again in a minute.', 429, false, { 'Retry-After': '60' });
+      if (!limit?.success) return loginPage('Too many attempts. Please try again in a minute.', 429, false, { 'Retry-After': '60' }, state);
       const password = await readLogin(request);
       // Malformed and incorrect submissions receive the same response.
       const suppliedHash = await hash(password || '');
       if (!equalDigest(suppliedHash, unhex(env.MERCH_PREVIEW_PASSWORD_SHA256)) || password === null) {
-        return loginPage('That password did not match. Please try again.', 401);
+        return loginPage('That password did not match. Please try again.', 401, false, {}, state);
       }
       return reply('', 303, { Location: `${PREVIEW_PATH}/`, 'Set-Cookie': cookie(await createSession(url.origin, env)) });
     }
@@ -333,7 +428,7 @@ export async function merchPreview(request, env, ctx) {
     // Draft mappings and provisioned credentials cannot turn checkout on by themselves.
     if (pathname.startsWith(`${PREVIEW_PATH}/api/`)) {
       if (legacy) return reply('Not found.', 404, {}, head);
-      const authorize = candidate => gateEnabled(env)
+      const authorize = candidate => !state.open
         ? authenticated(candidate, env, new URL(candidate.url).origin)
         : new URL(candidate.url).protocol === 'https:';
       const rateLimit = async candidate => {
@@ -373,19 +468,20 @@ export async function merchPreview(request, env, ctx) {
     if (!['GET', 'HEAD'].includes(request.method)) return reply('Method not allowed.', 405, { Allow: 'GET, HEAD' }, head);
     const name = assetName(pathname);
     if (!name) return reply('Not found.', 404, {}, head);
-    if (gateEnabled(env) && !await authenticated(request, env, url.origin)) {
-      return name === 'index.html' ? loginPage('', 200, head) : reply('Authentication required.', 401, {}, head);
+    if (!state.open && !await authenticated(request, env, url.origin)) {
+      return name === 'index.html' ? loginPage('', 200, head, {}, state) : reply('Authentication required.', 401, {}, head);
     }
     if (pathname === PREVIEW_PATH) return reply('', 308, { Location: `${PREVIEW_PATH}/${url.search}` }, head);
     const key = `${env.MERCH_PREVIEW_PREFIX}/${name}`;
-    if (name.endsWith('.mp4')) return await videoAsset(request, env, key);
+    if (name.endsWith('.mp4')) return await videoAsset(request, env, key, state);
     const object = await env.MERCH_PREVIEW_ASSETS[head ? 'head' : 'get'](key);
     if (!object) return reply('Not found.', 404, {}, head);
     const contentType = mediaTypes[name.split('.').pop().toLowerCase()];
-    if (gateEnabled(env)) return new Response(head ? null : object.body, { status: 200, headers: headers({ 'Content-Type': contentType }) });
+    if (!state.open) return new Response(head ? null : object.body, { status: 200, headers: headers({ 'Content-Type': contentType }) });
     const publicHeaders = headers({ 'Content-Type': contentType, 'Cache-Control': 'no-store, max-age=0' });
     publicHeaders.delete('Vary'); publicHeaders.delete('X-Robots-Tag');
-    return new Response(head ? null : object.body, { status: 200, headers: publicHeaders });
+    const body = head ? null : name === 'index.html' ? publicIndex(await new Response(object.body).text()) : object.body;
+    return new Response(body, { status: 200, headers: publicHeaders });
   } catch (_) {
     // No input, credentials, cookies or storage errors are logged or reflected.
     return reply('The collection is temporarily unavailable.', 503, {}, head);

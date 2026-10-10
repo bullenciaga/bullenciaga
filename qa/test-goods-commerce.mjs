@@ -4,7 +4,7 @@ import {merchPreview} from '../src/merch-preview.mjs';
 import mappings from '../src/goods-mappings.mjs';
 const origin='https://bullenciaga.com';
 let calls=[];
-const env={MERCH_PREVIEW_PREFIX:'fixture',MERCH_PREVIEW_ASSETS:{get:async()=>({body:'export const example=1;'}),head:async()=>({})},MERCH_PREVIEW_LIMIT:{limit:async({key})=>{calls.push(key);return {success:true};}}};
+const env={MERCH_PREVIEW_PROTECTED:'0',MERCH_PREVIEW_PREFIX:'fixture',MERCH_PREVIEW_ASSETS:{get:async()=>({body:'export const example=1;'}),head:async()=>({})},MERCH_PREVIEW_LIMIT:{limit:async({key})=>{calls.push(key);return {success:true};}}};
 const req=(path,opts={})=>new Request(origin+path,opts);
 test('public catalogue is rate limited and reveals no variants when sales are disabled',async()=>{calls=[];const r=await merchPreview(req('/goods/api/catalog'),env);assert.equal(r.status,200);const data=await r.json();assert.deepEqual(data.variants,[]);assert.equal(data.salesEnabled,false);assert.match(r.headers.get('Content-Security-Policy'),/connect-src 'self'/);assert.match(r.headers.get('Vary'),/Cookie/);assert.match(r.headers.get('Cache-Control'),/private, no-store/);assert.match(r.headers.get('X-Robots-Tag'),/noindex/);assert.equal(calls.length,1);assert.match(calls[0],/^[a-f0-9]{64}$/);});
 test('provisioning token or runtime flag alone cannot activate checkout',async()=>{for(const overrides of [{GOODS_STOREFRONT_TOKEN:'fixture-token'},{GOODS_CHECKOUT_ENABLED:'1'}]){const r=await merchPreview(req('/goods/api/checkout',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({currency:'USD',items:[]})}),{...env,...overrides});assert.equal(r.status,409);assert.equal((await r.json()).code,'NOT_OPEN');}});
