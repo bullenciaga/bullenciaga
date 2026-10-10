@@ -36,6 +36,7 @@ const pageChecks = [
   ['/giveaways', /<title>BULLENCIAGA — Giveaways/i],
   ['/tape', /<title>THE TAPE — Live \$BULLEN Market/i],
   ['/patchnotes', /<title>BULLENCIAGA — House Record/i],
+  ['/patchnotes-006', /<title>BULLENCIAGA — House Record · Edition 006 Archive/i],
   ['/patchnotes-005', /<title>BULLENCIAGA — House Record · Edition 005 Archive/i],
   ['/patchnotes-004', /<title>BULLENCIAGA — House Record · Edition 004 Archive/i],
   ['/patchnotes-003', /<title>BULLENCIAGA — House Record · Edition 003 Archive/i],
@@ -131,14 +132,17 @@ async function fetchRedirectChecked(path) {
 }
 
 for (const [path, marker] of effectivePageChecks) {
-  if (smokePhase !== 'post-release' && path === '/patchnotes-005') continue;
+  if (smokePhase !== 'post-release' && path === '/patchnotes-006') continue;
   const { url } = await fetchChecked(path, async (response, url) => {
     assert.match(response.headers.get('content-type') ?? '', /text\/html/i, `${url} did not return HTML`);
     const body = await response.text();
     assert(marker.test(body), `${url.pathname} is missing its expected build marker`);
     if (smokePhase === 'post-release' && path === '/patchnotes') {
-      assert(body.includes('Public edition 006') && body.includes('href="/patchnotes-005"')
-        && body.includes('<span>The House</span><span>keeps moving.</span>'), 'House Record edition 006 has not reached this edge');
+      assert(body.includes('Public edition 007') && body.includes('href="/patchnotes-006"')
+        && body.includes('worn and heard.'), 'House Record edition 007 has not reached this edge');
+    }
+    if (path === '/patchnotes-006') {
+      assert(body.includes('Public edition 006') && body.includes('record-archive-notice') && body.includes('href="/patchnotes"'), 'Edition 006 archive has not reached this edge');
     }
     if (path === '/patchnotes-005') {
       assert(body.includes('Public edition 005') && body.includes('record-archive-notice') && body.includes('href="/patchnotes"'), 'Edition 005 archive has not reached this edge');
