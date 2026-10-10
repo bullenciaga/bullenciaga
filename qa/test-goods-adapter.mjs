@@ -53,7 +53,7 @@ test('checkout cancels an oversized chunked body at20KB and rejects malformed by
 
 test('public Goods route supplies one canonical privacy header for commerce responses',async()=>{
  const {merchPreview}=await import('../src/merch-preview.mjs');
- const env={MERCH_PREVIEW_PREFIX:'fixture',MERCH_PREVIEW_ASSETS:{get:async()=>null,head:async()=>null},MERCH_PREVIEW_LIMIT:{limit:async()=>({success:true})}};
+ const env={MERCH_PREVIEW_PROTECTED:'0',MERCH_PREVIEW_PREFIX:'fixture',MERCH_PREVIEW_ASSETS:{get:async()=>null,head:async()=>null},MERCH_PREVIEW_LIMIT:{limit:async()=>({success:true})}};
  const r=await merchPreview(new Request('https://bullenciaga.com/goods/api/catalog'),env);
  assert.equal(r.status,200);assert.equal(r.headers.get('Cache-Control'),'private, no-store, max-age=0');assert.equal(r.headers.get('X-Content-Type-Options'),'nosniff');assert.equal(r.headers.get('Content-Type'),'application/json; charset=utf-8');
 });

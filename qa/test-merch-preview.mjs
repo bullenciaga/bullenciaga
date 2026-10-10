@@ -22,6 +22,7 @@ const objects=new Map([
  [`${prefix}/report.json`,'private report'],
 ]);
 const env={
+ MERCH_PREVIEW_PROTECTED:'0',
  MERCH_PREVIEW_PREFIX:prefix,
  MERCH_PREVIEW_LIMIT:{async limit(){return{success:true}}},
  MERCH_PREVIEW_ASSETS:{
