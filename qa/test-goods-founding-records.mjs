@@ -54,7 +54,7 @@ async function harness(t,items,{queued=false}={}){
  const provider={
   template:async()=>structuredClone(template),
   createCustomization:async body=>{providerWrites.push(['customization',body]);return {customizationId:'fixture-customization',images:[{url:'https://example.invalid/preview.jpg'}]};},
-  createProduct:async body=>{providerWrites.push(['product',body]);const id='fixture-product-'+products.size;products.set(id,{id,type:'STANDARD',access:{type:'HIDDEN'},state:{type:'AVAILABLE'},variants:[{id:'variant-'+id,unitPrice:{value:54.99,currency:'USD'},attributes:{color:{name:'Butter'},size:{name:'M'}},stock:{type:'UNLIMITED'}}]});return {productId:id,images:[{url:'https://example.invalid/final.jpg'}]};},
+  createProduct:async body=>{providerWrites.push(['product',body]);const id='fixture-product-'+products.size;products.set(id,{id,type:'STANDARD',access:{type:'HIDDEN'},state:{type:'AVAILABLE'},variants:[{id:'variant-'+id,unitPrice:{value:49.99,currency:'USD'},attributes:{color:{name:'Butter'},size:{name:'M'}},stock:{type:'UNLIMITED'}}]});return {productId:id,images:[{url:'https://example.invalid/final.jpg'}]};},
   getProduct:async id=>structuredClone(products.get(id)),
  };
  const now=Date.parse('2026-10-10T12:00:00Z');
