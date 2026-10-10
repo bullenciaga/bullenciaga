@@ -9,20 +9,21 @@ const archive002 = read('patchnotes-002.html');
 const archive003 = read('patchnotes-003.html');
 const archive004 = read('patchnotes-004.html');
 const archive005 = read('patchnotes-005.html');
+const archive006 = read('patchnotes-006.html');
 const originalBody = archive.slice(archive.indexOf('  <section class="hero">'), archive.indexOf('  <footer'));
 assert.equal(createHash('sha256').update(originalBody).digest('hex'),
   '6ea46dbd3c313fcd51b4830ec733bfa7aa804b0dc310181ed709bcd012f48c11',
   'Edition 001 release text and layout must remain intact');
 assert.equal(createHash('sha256').update(archive002.slice(archive002.indexOf('  <section class="hero"'), archive002.indexOf('  <footer'))).digest('hex'), '9bde9dc85451aed2698a6dde37fa42025a83d49273d2717418c89272a33b742e', 'Edition 002 article must remain intact');
 assert.equal(createHash('sha256').update(archive003.slice(archive003.indexOf('  <section class="hero"'), archive003.indexOf('  <footer'))).digest('hex'), 'fa0ded96869e1f5ce56f821d370e92d5ad1cec95391f8df42bdb90aecef9e6c9', 'Edition 003 article must remain intact');
-assert.match(current, /Public edition 006/);
-assert.match(current, /Published 2 October 2026/);
+assert.match(current, /Public edition 007/);
+assert.match(current, /Published 10 October 2026/);
 assert.match(current, /href="\/patchnotes-001"/);
 assert.match(archive002, /live-stream access and end-to-end delivery remain to be verified/i);
 assert.match(archive, /class="record-archive-notice"/);
 assert.match(archive, /f='patchnotes'/, 'Archive must retain House Record shared-shell identity');
 assert.match(archive, /href="\/patchnotes"/);
-for (const [source, canonical] of [[current, 'patchnotes'], [archive, 'patchnotes-001'], [archive002, 'patchnotes-002'], [archive003, 'patchnotes-003'], [archive004, 'patchnotes-004'], [archive005, 'patchnotes-005']]) {
+for (const [source, canonical] of [[current, 'patchnotes'], [archive, 'patchnotes-001'], [archive002, 'patchnotes-002'], [archive003, 'patchnotes-003'], [archive004, 'patchnotes-004'], [archive005, 'patchnotes-005'], [archive006, 'patchnotes-006']]) {
   assert(source.includes(`<link rel="canonical" href="https://bullenciaga.com/${canonical}">`));
   assert(source.includes(`<meta property="og:url" content="https://bullenciaga.com/${canonical}">`));
   assert(source.includes('href="/favicons/patchnotes.svg"'));
@@ -32,7 +33,7 @@ for (const [source, canonical] of [[current, 'patchnotes'], [archive, 'patchnote
   for (const [, hash] of source.matchAll(/href="#([^"]+)"/g)) assert(ids.includes(hash), `Missing anchor ${hash}`);
   for (const [, route] of source.matchAll(/href="(\/(?!\/)[^"#?]*)/g)) {
     if (!route || route === '/') continue;
-    if (route === '/goods/') {
+    if (route === '/goods/' || route === '/goods/assets/videos/goods-showcase-v1-1080.mp4') {
       assert(fs.readFileSync(new URL('../src/merch-preview.mjs', import.meta.url), 'utf8').includes('/goods'), 'Goods must remain a Worker-served storefront');
       continue;
     }
@@ -49,10 +50,10 @@ for (const href of ['/ledger', '/passport', 'https://bullensaga.com/registrar',
 }
 for (const href of ['/buy', '/lock', '/ledger', '/whitepaper.pdf', '/giveaways#follow500', 'https://bullenciaga.com/#gallery', 'https://bullensaga.com/case', 'https://bullensaga.com/funding', 'https://bullenciaga.com/discord']) assert(archive004.includes(`href="${href}"`), `Missing edition 004 destination ${href}`);
 assert.match(archive004, /not the actual gameplay or a playable demo/);
-for (const source of [current, archive, archive002, archive003, archive004, archive005]) {
+for (const source of [current, archive, archive002, archive003, archive004, archive005, archive006]) {
   assert(source.includes('src="/house-record.js"'));
   assert(source.includes('<details class="record-picker">'));
-  for (const route of ['/patchnotes', '/patchnotes-005', '/patchnotes-004', '/patchnotes-003', '/patchnotes-002', '/patchnotes-001']) assert(source.includes(`href="${route}"`));
+  for (const route of ['/patchnotes', '/patchnotes-006', '/patchnotes-005', '/patchnotes-004', '/patchnotes-003', '/patchnotes-002', '/patchnotes-001']) assert(source.includes(`href="${route}"`));
   assert(source.includes('aria-current="page"'));
 }
 assert.doesNotMatch(current, /href="[^"]*(?:delivery|admin|shares|control-room)[^"]*"/i, 'Private operator surfaces must not be linked');
@@ -61,7 +62,7 @@ const mobile = shared.slice(shared.indexOf('@media (max-width: 820px)'));
 assert.match(fs.readFileSync(new URL('../site/bullen-header.css', import.meta.url), 'utf8'), /bullen-header-control\{min-height:44px/);
 assert.doesNotMatch(shared.slice(0, shared.indexOf('@media (max-width: 820px)')), /width: 112px;/,
   'Wider Jump To must be mobile-only');
-console.log('House Record: current edition, immutable 001/002/003/004/005 release bodies, archive navigation, public links, mobile-only control: ok');
+console.log('House Record: current edition, immutable 001/002/003/004/005/006 release bodies, archive navigation, public links, mobile-only control: ok');
 
 const body004 = archive004.slice(archive004.indexOf('  <section class="hero"'), archive004.indexOf('  <footer')).replace(/<details class="record-picker">[\s\S]*?<\/details>/g, '');
 assert.equal(createHash('sha256').update(body004).digest('hex'), '3b6ba42bc86eef8fd575baee4fa6fcec5a92a910d9255f27883281b95900ed09', 'Edition 004 release prose/layout must remain intact; archive navigation may evolve');
@@ -69,18 +70,40 @@ for (const href of ['/rooms', '/refer', '/objects', '/passport', '/raiders', '/g
 assert.match(archive005, /Ledger compatibility is new and needs more testing across wallets and devices/);
 assert.match(archive005, /Older collection gaps remain disclosed/);
 const currentArticle = current.slice(current.indexOf('  <section class="hero"'), current.indexOf('  <section class="record-archive"'));
-assert.doesNotMatch(currentArticle, /on display\.|ondisplay|BULLENSAGA|bullensaga/);
+assert.doesNotMatch(currentArticle, /on display\.|ondisplay|paired.token|governance.token/i);
 
 const body005 = archive005.slice(archive005.indexOf('  <section class="hero"'), archive005.indexOf('  <footer')).replace(/<details class="record-picker">[\s\S]*?<\/details>/g, '');
 assert.equal(createHash('sha256').update(body005).digest('hex'), 'ef1fa4f8310e0f90e9a4fd9833fd8f1e0017c1ad6ca26ef55c7c49016ede59bb', 'Edition 005 release prose/layout must remain intact; archive navigation may evolve');
 assert.match(archive005, /record-archive-notice/);
 assert.match(archive005, /f='patchnotes'/);
-for (const href of ['/platform', '/flywheel', '/deepdive', '/what-if-i-held', '/dev', '/lock', '/giveaways', 'https://youtube.com/@bullenciagafilms', 'https://jup.ag/tokens/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN']) assert(currentArticle.includes(`href="${href}"`), `Edition 006 missing public destination ${href}`);
-assert.match(currentArticle, /full video and streaming release are coming soon/);
-assert.match(currentArticle, /Future proposals are labelled separately/);
-assert.match(currentArticle, /Returns are measured in SOL/);
-assert.match(currentArticle, /28 September snapshot/);
-assert.match(currentArticle.replace(/<[^>]+>/g, ''), /212.5M \$BULLEN was relocked for 60 days/);
-assert.match(currentArticle, /new cliff on 1 December/);
-assert.equal((currentArticle.match(/class="entry-number"/g) || []).length, 8);
+const body006 = archive006.slice(archive006.indexOf('  <section class="hero"'), archive006.indexOf('  <footer')).replace(/<details class="record-picker">[\s\S]*?<\/details>/g, '');
+assert.equal(createHash('sha256').update(body006).digest('hex'), '7cb3e749061854ed6a656900aab82b0c5ebb586ca0b97d6a36393a0b864e04a6', 'Edition 006 prose and dated reserve update must remain intact');
+assert.match(archive006, /record-archive-notice/);
+assert.match(archive006, /f='patchnotes'/);
+const article006 = archive006.slice(archive006.indexOf('  <section class="hero"'), archive006.indexOf('  <section class="record-archive"'));
+for (const href of ['/platform', '/flywheel', '/deepdive', '/what-if-i-held', '/dev', '/lock', '/giveaways', 'https://youtube.com/@bullenciagafilms', 'https://jup.ag/tokens/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN']) assert(article006.includes(`href="${href}"`), `Edition 006 missing public destination ${href}`);
+assert.match(article006, /full video and streaming release are coming soon/);
+assert.match(article006, /Future proposals are labelled separately/);
+assert.match(article006, /Returns are measured in SOL/);
+assert.match(article006, /28 September snapshot/);
+assert.match(article006.replace(/<[^>]+>/g, ''), /212.5M \$BULLEN was relocked for 60 days/);
+assert.match(article006, /new cliff on 1 December/);
+assert.equal((article006.match(/class="entry-number"/g) || []).length, 8);
 console.log('Edition 006: public stories, accurate release states, comparison scope and reserve dates: ok');
+
+const publicCopy = currentArticle.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+assert.match(publicCopy, /BULLENSAGA Founding Records/);
+assert.match(publicCopy, /The Herd/);
+assert.match(publicCopy, /House Objects/);
+assert.match(publicCopy, /49\.99/);
+assert.match(publicCopy, /99\.99/);
+assert.match(publicCopy, /50%/);
+assert.match(publicCopy, /net proceeds/i);
+assert.match(publicCopy, /after (?:production and selling )?costs/i);
+assert.match(publicCopy, /250,000/);
+assert.match(publicCopy, /20%/);
+assert.doesNotMatch(publicCopy, /Coinbase (?:exchange )?listing|Coinbase endorse|guaranteed returns/i);
+for (const href of ['/goods/', '/world', 'https://youtu.be/6VHCnOCX_zE']) assert(currentArticle.includes(`href="${href}"`), `Missing edition 007 destination ${href}`);
+assert.match(currentArticle, /width="1920" height="1080"/);
+assert.match(currentArticle, /007-seated-/);
+console.log('Edition 007: live collection, three eligible collections, prices, discount terms and net-proceeds commitment: ok');

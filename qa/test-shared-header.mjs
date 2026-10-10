@@ -75,4 +75,4 @@ media.matches=true;media.emit('change');assert.deepEqual(groupEls.map(g=>g.open)
 for(const overlay of ['.vault-open','.lightbox-open','.wallet-modal-open','.bullen-mobile-buy-open','.explorer-expanded']){exploreButton.emit('click');bodyOverlay=overlay;observerCallback();assert(explorePanel.hidden,`${overlay}: overlay closes the directory`);bodyOverlay='';}
 exploreButton.emit('click');globalEvents.emit('pagehide');assert(explorePanel.hidden);globalEvents.emit('pageshow');assert(explorePanel.hidden);
 assert.equal(shell.dataset.bullenHydrated,'true');
-console.log('Shared header: 30 initial documents, ordered destinations, complete directory, real local anchors, descriptions, Escape/focus, one-panel, mobile disclosure, overlay and history lifecycle: ok');
+console.log('Shared header: 31 initial documents, ordered destinations, complete directory, real local anchors, descriptions, Escape/focus, one-panel, mobile disclosure, overlay and history lifecycle: ok');

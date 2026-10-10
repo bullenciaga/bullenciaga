@@ -50,7 +50,8 @@ assert.equal(png.readUInt32BE(16), 1200);
 assert.equal(png.readUInt32BE(20), 630);
 assert(png.byteLength < 2_000_000);
 // The owner-approved Edition 006 links the record. It stays out of the homepage and shared navigation.
-for (const name of readdirSync(site).filter(name => /\.(html|js)$/.test(name) && !['dev.html', 'patchnotes.html'].includes(name))) {
+// Edition 006 retains its expressly approved editorial link in the archive.
+for (const name of readdirSync(site).filter(name => /\.(html|js)$/.test(name) && !['dev.html', 'patchnotes-006.html'].includes(name))) {
   assert.doesNotMatch(read(name), /(?:href\s*[=:]\s*["'`]https:\/\/bullenciaga.com\/dev(?:["'`#?])|href\s*[=:]\s*["'`]\/dev(?:["'`#?]))/, `${name} must not link to /dev`);
 }
 console.log('Developer record: exact receipt totals, scope, share card and restricted editorial link verified.');

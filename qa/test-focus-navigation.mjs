@@ -77,7 +77,7 @@ for (const name of fs.readdirSync(site).filter(name => name.endsWith('.html'))) 
   assert.equal((html.match(/src="\/bullen-navigation\.js"/g)||[]).length,1,`${name}: shared fragment navigation coverage`);
   documents++;
 }
-assert.equal(documents,30);
+assert.equal(documents,31);
 assert(!read('shares.html').includes('src="/bullen-ui.js"'),'private Shares does not acquire the global legacy body skin');
 assert.match(read('bullen-focus.css'),/html:not\(\[data-focus-navigation="keyboard"\]\) :focus/,'neutral before JS executes');
 assert.match(read('collector-tools.css'),/html\[data-focus-navigation="keyboard"\] \.collector-palette input:focus-visible\+span/);

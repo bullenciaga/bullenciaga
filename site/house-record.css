@@ -85,3 +85,74 @@ html[data-focus-navigation="keyboard"] .record-picker summary:focus-visible{outl
 @media(max-width:900px){.record--006 .hero{grid-template-columns:1fr}.record--006 .edition{max-width:100%}}
 @media(max-width:760px){.record--006 .record-reserves{gap:18px}.record--006 .principle{padding:28px 20px}}
 @media(max-width:420px){.record--006 .record-reserves{grid-template-columns:1fr}.record--006 .record-reserves>div+div{padding-top:18px;border-top:1px solid var(--record-line)}}
+
+/* Edition 007: the collection and the record, with full-frame media. */
+.record--007 h1{max-width:850px;font-size:clamp(40px,5.7vw,72px);line-height:1.06;letter-spacing:-.05em}
+.record--007 h1 span{display:block}
+.record--007 .hero{grid-template-columns:minmax(0,1fr) minmax(230px,.37fr);align-items:end;gap:40px;padding-bottom:32px;border-bottom:0}
+.record--007 .eyebrow{display:flex;flex-wrap:wrap;gap:8px 24px;line-height:1.7}
+.record--007 .lede{max-width:58ch;font-size:14px;line-height:1.9}
+.record--007 .edition strong{font-size:23px;line-height:1.3;text-wrap:balance}
+.record--007 .record-campaign{margin:0;border:1px solid var(--record-line);background:#191612}
+.record--007 .record-campaign img{display:block;width:100%;height:auto;aspect-ratio:1920/1084;object-fit:contain}
+.record--007 figure figcaption{display:flex;justify-content:space-between;gap:10px 24px;padding:15px 18px;background:var(--record-panel);color:var(--record-muted);font:10px/1.7 'Space Mono',monospace}
+.record--007 figure figcaption span:first-child{color:var(--record-gold);letter-spacing:.14em}
+.record--007 .summary-item{padding:24px 22px}
+.record--007 .summary-item b{font-size:clamp(20px,2.5vw,30px);line-height:1.2}
+.record--007 .release{padding-top:64px}
+.record--007 .release-head{align-items:center;padding-bottom:24px}
+.record--007 .release-head h2{max-width:25ch;line-height:1.2;text-wrap:balance}
+.record--007 .record-story{display:grid;grid-template-columns:minmax(200px,.55fr) minmax(0,1fr);gap:64px;border-top:1px solid var(--record-line);padding:32px 0 10px}
+.record--007 .record-story-intro{align-self:start}
+.record--007 .record-kicker{margin:0;color:var(--record-gold-light);font:500 clamp(23px,2.7vw,31px)/1.5 Poppins,sans-serif;letter-spacing:-.035em;text-wrap:balance}
+.record--007 .record-prose{min-width:0}
+.record--007 .record-prose p{margin:0;color:rgba(245,243,238,.7);font:400 14px/1.9 Poppins,sans-serif;text-wrap:pretty}
+.record--007 .record-prose p+p{margin-top:20px}
+.record--007 .record-prose strong{color:var(--record-ink);font-weight:500}
+.record--007 .record-link{max-width:100%;line-height:1.7;text-wrap:pretty}
+.record--007 .record-link>span{flex:none}
+.record--007 .record-chapters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:28px;border:1px solid var(--record-line)}
+.record--007 .record-chapters section{display:flex;flex-direction:column;min-width:0;padding:24px 20px;background:rgba(199,168,105,.025)}
+.record--007 .record-chapters section+section{border-left:1px solid var(--record-line)}
+.record--007 .record-chapters section>span{color:var(--record-gold);font-size:10px;letter-spacing:.12em}
+.record--007 .record-chapters h3{margin:18px 0 0;font:500 20px/1.3 Poppins,sans-serif;letter-spacing:-.025em}
+.record--007 .record-chapters p{flex:1;margin:14px 0 12px;color:rgba(245,243,238,.6);font:400 12px/1.85 Poppins,sans-serif;text-wrap:pretty}
+.record--007 .record-chapters a{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;color:var(--record-gold-light);font-size:10px;line-height:1.6;text-decoration:none}
+.record--007 .record-chapters a:hover{text-decoration:underline;text-underline-offset:5px}
+.record--007 .record-film{margin:32px 0 0;border:1px solid var(--record-line);background:#111}
+.record--007 .record-film video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#111;object-fit:contain}
+.record--007 .record-benefit-value{display:block;font-size:clamp(32px,4.5vw,48px);line-height:1.3;margin-bottom:8px}
+.record--007 .record-commitment{display:grid;grid-template-columns:minmax(240px,.62fr) minmax(0,1fr);align-items:start;gap:42px;padding:36px;border:1px solid var(--record-line);background:linear-gradient(135deg,rgba(199,168,105,.08),transparent 70%)}
+.record--007 .record-commitment-figure strong{display:block;color:var(--record-gold-light);font:500 clamp(30px,4vw,43px)/1.25 Poppins,sans-serif;letter-spacing:-.04em}
+.record--007 .record-commitment-figure span{display:block;max-width:24ch;margin-top:14px;color:var(--record-gold);font-size:10px;line-height:1.8;letter-spacing:.12em}
+.record--007 .record-music{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1fr);gap:42px;border-top:1px solid var(--record-line);padding-top:28px;align-items:start}
+.record--007 .record-music-art{display:block;overflow:hidden;border:1px solid var(--record-line);background:var(--record-panel);text-decoration:none}
+.record--007 .record-music-art img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover}
+.record--007 .record-music-art>span{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;padding:18px;color:var(--record-gold-light);font-size:10px;line-height:1.6;letter-spacing:.1em}
+.record--007 .record-music-art:hover{border-color:var(--record-gold)}
+.record--007 .record-music-art svg{flex:none}
+.record--007 .record-listen{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
+.record--007 .record-listen a{display:flex;align-items:center;gap:12px;min-height:48px;padding:12px 16px;border:1px solid var(--record-line);font-size:11px;text-decoration:none}
+.record--007 .record-listen a:hover{border-color:var(--record-gold);color:var(--record-gold-light)}
+.record--007 .record-listen img{display:block;width:20px;height:20px}
+.record--007 .record-roundup h3{margin:0;font-size:24px;line-height:1.25;text-wrap:balance}
+.record--007 .record-roundup p{font:400 13px/1.85 Poppins,sans-serif;color:rgba(245,243,238,.65)}
+.record--007 .record-roundup p strong{color:var(--record-ink);font-weight:500}
+.record--007 .principle blockquote{font-size:clamp(28px,4.3vw,48px);text-wrap:balance}
+.record--007 .principle{margin-top:60px}
+@media(max-width:1000px){.record--007 .hero{grid-template-columns:1fr;gap:24px}.record--007 .edition{display:none}.record--007 .record-story{gap:36px}.record--007 .record-chapters{grid-template-columns:repeat(2,minmax(0,1fr))}.record--007 .record-chapters section:nth-child(3){border-left:0}.record--007 .record-chapters section:nth-child(n+3){border-top:1px solid var(--record-line)}}
+@media(max-width:760px){.record--007 h1{font-size:clamp(34px,7.8vw,56px);line-height:1.08}.record--007 .hero{padding:28px 0 24px}.record--007 .lede{font-size:12px;line-height:1.9}.record--007 .summary-item{padding:18px 20px}.record--007 .release{padding-top:46px}.record--007 .release-head{align-items:flex-start}.record--007 .release-head h2{font-size:clamp(27px,6.9vw,40px)}.record--007 .record-story{grid-template-columns:1fr;gap:22px;padding-top:24px}.record--007 .record-kicker{font-size:25px}.record--007 .record-story-intro .record-link{margin-top:10px}.record--007 .record-prose p{font-size:13px;line-height:1.9}.record--007 figure figcaption{flex-direction:column;gap:5px;padding:13px 14px;font-size:9px}.record--007 .record-chapters{margin-top:24px}.record--007 .record-chapters section{padding:20px 16px}.record--007 .record-chapters h3{font-size:18px}.record--007 .record-chapters p{font-size:11px}.record--007 .record-chapters a{font-size:9px}.record--007 .record-film{margin-top:24px}.record--007 .record-commitment{grid-template-columns:1fr;gap:24px;padding:24px 20px}.record--007 .record-commitment-figure span{max-width:none}.record--007 .record-music{grid-template-columns:1fr;gap:28px;padding-top:24px}.record--007 .record-music-art{width:min(420px,100%);margin:auto}.record--007 .record-listen a{padding:12px;font-size:10px}.record--007 .record-roundup h3{font-size:22px}.record--007 .principle{margin-top:46px;padding:28px 20px}}
+
+/* The still remains visible until deliberate playback starts. */
+.record--007 .record-film-stage{position:relative;aspect-ratio:16/9;background:#090909}
+.record--007 .record-film-play{position:absolute;inset:0;display:grid;place-items:center;width:100%;height:100%;padding:0;border:0;background:#090909;color:#f5f3ee;cursor:pointer}
+.record--007 .record-film-play[hidden]{display:none}
+.record--007 .record-film-play>img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover}
+.record--007 .record-film-play>span{position:relative;display:flex;align-items:center;gap:13px;padding:18px 22px;border:1px solid #ead9aa99;background:#050505dc;color:#ead9aa}
+.record--007 .record-film-play b{font:400 11px/1.5 'Space Mono',monospace;letter-spacing:.04em}
+.record--007 .record-film-play svg{flex:none}
+.record--007 .record-film-play:hover>span{background:#050505;color:#fff}
+.record--007 .record-film-play:disabled{cursor:wait}
+.record--007 .record-film-status{padding:16px;margin:0;color:#ead9aa;font:12px/1.8 'Space Mono',monospace}
+.record--007 .record-film-status[hidden]{display:none}
+@media(max-width:420px){.record--007 .record-film-play>span{padding:13px 15px;gap:10px}.record--007 .record-film-play b{font-size:10px}}
