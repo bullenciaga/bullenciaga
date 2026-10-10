@@ -7,6 +7,9 @@
   let wallet = '', requestId = 0, timer, latestSlot = 0, ready = false, destroyed = false, lastRuleState = '';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const integer = value => typeof value === 'string' && /^\d+$/.test(value);
+  const policies = new Set(['herd777-paired-buy-exclusion-v1', 'herd777-paired-buy-exclusion-v2']);
+  const phases = new Set(['not-started', 'live', 'sealed', 'committed', 'drawn', 'review']);
+  const prizeOrder = [777, 703, 159, 31, 959];
   function validAddress(value) {
     if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value)) return false;
     const alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
@@ -22,33 +25,42 @@
   }
   const date = ms => new Date(ms).toLocaleString('en-GB', { timeZone: 'UTC', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) + ' UTC';
   async function display(data, id) {
-    if (data.campaign !== 'herd777-250m' || data.targetRaw !== '250000000000000' || data.entryUnitRaw !== '1000000') throw Error('Unexpected campaign');
+    if (data.campaign !== 'herd777-250m' || data.targetRaw !== '250000000000000' || data.entryUnitRaw !== '1000000' || typeof data.ready !== 'boolean' || !phases.has(data.phase)) throw Error('Unexpected campaign');
     const amendment = data.ruleAmendment;
     const legacy = amendment === undefined;
-    if (!legacy && (!amendment || (amendment.appliedAt !== null && (!Number.isSafeInteger(amendment.appliedAt) || amendment.appliedAt < 0)) || (amendment.excludedBuyRaw !== null && !integer(amendment.excludedBuyRaw)) || (amendment.excludedBuyTransactions !== null && (!Number.isSafeInteger(amendment.excludedBuyTransactions) || amendment.excludedBuyTransactions < 0)) || amendment.id !== 'herd777-paired-buy-exclusion-v1' || amendment.announcedDate !== '2026-10-10' || amendment.effectiveFromSlot !== 450578603 || !['pending', 'applied', 'conflict'].includes(amendment.status) || !Number.isSafeInteger(amendment.classifiedTransactions) || amendment.classifiedTransactions < 0 || (amendment.totalTransactions !== null && (!Number.isSafeInteger(amendment.totalTransactions) || amendment.totalTransactions < amendment.classifiedTransactions)))) throw Error('Unverified rule amendment');
+    if (!legacy && (!amendment || (amendment.appliedAt !== null && (!Number.isSafeInteger(amendment.appliedAt) || amendment.appliedAt < 0 || amendment.appliedAt > 8640000000000000)) || (amendment.excludedBuyRaw !== null && !integer(amendment.excludedBuyRaw)) || (amendment.excludedBuyTransactions !== null && (!Number.isSafeInteger(amendment.excludedBuyTransactions) || amendment.excludedBuyTransactions < 0)) || !policies.has(amendment.id) || amendment.announcedDate !== '2026-10-10' || amendment.effectiveFromSlot !== 450578603 || !['pending', 'applied', 'conflict'].includes(amendment.status) || !Number.isSafeInteger(amendment.classifiedTransactions) || amendment.classifiedTransactions < 0 || (amendment.totalTransactions !== null && (!Number.isSafeInteger(amendment.totalTransactions) || amendment.totalTransactions < amendment.classifiedTransactions)))) throw Error('Unverified rule amendment');
+    const revisionTwo = !legacy && amendment.id === 'herd777-paired-buy-exclusion-v2';
     const amendmentPending = legacy || amendment.status === 'pending';
     const amendmentConflict = !legacy && amendment.status === 'conflict';
     let amendmentMessage;
     if (legacy) {
-      amendmentMessage = 'Amendment pending; showing previous-rule total.';
+      amendmentMessage = 'Amendment pending; showing the previous verified calculation.';
     } else if (amendmentPending) {
-      amendmentMessage = 'Recalculation in progress. ' + amendment.classifiedTransactions.toLocaleString('en-US') + (amendment.totalTransactions !== null ? ' of ' + amendment.totalTransactions.toLocaleString('en-US') : '') + ' transactions reviewed. Corrected progress and entries will replace the previous-rule results together after full verification.';
+      amendmentMessage = (revisionTwo ? 'Updated amendment: recalculation in progress. ' : 'Recalculation in progress. ') + amendment.classifiedTransactions.toLocaleString('en-US') + (amendment.totalTransactions !== null ? ' of ' + amendment.totalTransactions.toLocaleString('en-US') : '') + ' transactions reviewed. Corrected progress and entries will replace the last verified results together after full verification.';
     } else if (amendmentConflict) {
       amendmentMessage = 'Amendment not applied: the campaign has already closed and needs review. Its original sealed record is preserved.';
     } else {
       if (!Number.isSafeInteger(amendment.appliedAt) || !integer(amendment.excludedBuyRaw) || !Number.isSafeInteger(amendment.excludedBuyTransactions) || amendment.excludedBuyTransactions < 0) throw Error('Unverified recalculation');
-      amendmentMessage = 'Amendment applied to the entire campaign · ' + date(amendment.appliedAt) + '. ' + amendment.excludedBuyTransactions.toLocaleString('en-US') + ' paired-token ' + (amendment.excludedBuyTransactions === 1 ? 'buy excluded' : 'buys excluded') + ' · ' + tokens(amendment.excludedBuyRaw) + ' BULLEN excluded from shared progress.';
+      amendmentMessage = (revisionTwo ? 'Updated amendment' : 'Amendment') + ' applied to the entire campaign · ' + date(amendment.appliedAt) + '. ' + amendment.excludedBuyTransactions.toLocaleString('en-US') + ' paired-token ' + (amendment.excludedBuyTransactions === 1 ? 'buy excluded' : 'buys excluded') + ' · ' + tokens(amendment.excludedBuyRaw) + ' BULLEN excluded from shared progress.';
     }
     if (!data.ready) {
+      el('amendment-update').hidden = !revisionTwo;
+      el('counting-update').hidden = !revisionTwo;
       el('amendment-status').textContent = legacy ? 'Amendment pending. Waiting for the last verified campaign total.' : amendmentMessage;
       el('status').textContent = data.phase === 'not-started' ? 'The campaign count is being prepared. Check back shortly.' : 'Verifying the full history. The count will appear when reconciliation is complete.';
       if (wallet) output.textContent = 'Entries are being verified. Please check again shortly; no total is assumed.';
       return;
     }
-    if (!integer(data.buyRaw) || !integer(data.remainingRaw) || !Number.isSafeInteger(data.observedSlot) || !Number.isSafeInteger(data.observedAt) || (wallet && (!integer(data.entries) || data.wallet !== wallet))) throw Error('Unverified response');
+    if (!integer(data.buyRaw) || !integer(data.remainingRaw) || !Number.isSafeInteger(data.observedSlot) || data.observedSlot <= 450578603 || !Number.isSafeInteger(data.observedAt) || data.observedAt < 0 || data.observedAt > 8640000000000000 || (wallet && (!integer(data.entries) || data.wallet !== wallet))) throw Error('Unverified response');
+    const rawBought = BigInt(data.buyRaw), rawTarget = BigInt(data.targetRaw);
+    if (BigInt(data.remainingRaw) !== (rawBought >= rawTarget ? 0n : rawTarget - rawBought) || !Number.isFinite(Number(data.buyRaw))) throw Error('Inconsistent progress');
+    if (data.snapshotHash && !/^[a-f0-9]{64}$/.test(data.snapshotHash)) throw Error('Unverified snapshot');
+    if (data.phase === 'drawn' && (!data.snapshotHash || !Array.isArray(data.winners) || data.winners.length !== 5 || new Set(data.winners.map(w => w.wallet)).size !== 5 || data.winners.some((winner, index) => winner.position !== prizeOrder[index] || !validAddress(winner.wallet)))) throw Error('Invalid draw record');
     if (data.observedSlot < latestSlot) return;
     latestSlot = data.observedSlot;
     lastRuleState = amendmentPending ? 'pending' : amendment.status;
+    el('amendment-update').hidden = !revisionTwo;
+    el('counting-update').hidden = !revisionTwo;
     el('amendment-status').textContent = amendmentMessage;
     const bought = el('bought');
     if (!ready && !reduced.matches) {
@@ -65,16 +77,15 @@
     el('remaining').textContent = tokens(data.buyRaw) + ' bought · ' + tokens(data.remainingRaw) + ' to go';
     el('observed').textContent = (amendmentPending ? 'Last verified before recalculation · ' : 'Verified · ') + date(data.observedAt);
     el('progress').setAttribute('aria-busy', 'false');
-    el('status').textContent = amendmentPending ? (legacy ? 'Amendment pending; showing previous-rule total.' : 'Last verified before recalculation. The displayed progress and entries still use the previous rules.') : amendmentConflict ? 'Amendment requires review. The original sealed count and entries are unchanged.' : data.phase === 'drawn' ? 'Complete. The five winning wallets are below.' : ['sealed', 'committed'].includes(data.phase) ? 'Target reached. Entries are sealed; the draw is being verified.' : data.phase === 'review' ? 'Selection is paused for verification. The sealed entries are unchanged.' : data.catchingUp ? 'Verification is catching up. Showing the last verified count.' : 'Counting qualifying buys. Wallet entries update with each verified snapshot.';
+    el('status').textContent = amendmentPending ? (legacy ? 'Amendment pending; showing the previous verified calculation.' : 'Last verified before recalculation. The displayed progress and entries come from the previous verified calculation.') : amendmentConflict ? 'Amendment requires review. The original sealed count and entries are unchanged.' : data.phase === 'drawn' ? 'Complete. The five winning wallets are below.' : ['sealed', 'committed'].includes(data.phase) ? 'Target reached. Entries are sealed; the draw is being verified.' : data.phase === 'review' ? 'Selection is paused for verification. The sealed entries are unchanged.' : data.catchingUp ? 'Verification is catching up. Showing the last verified count.' : 'Counting qualifying buys. Wallet entries update with each verified snapshot.';
     if (data.snapshotHash) el('snapshot-link').hidden = false;
     if (wallet) {
-      output.textContent = BigInt(data.entries).toLocaleString('en-US') + ' entries · ' + (amendmentPending ? 'Last verified before recalculation · ' : '') + date(data.observedAt) + '. ' + (data.phase === 'live' ? 'Keep qualifying tokens in this wallet through the closing snapshot.' : 'These are the entries recorded at closing.') + (amendmentPending ? ' These previous-rule entries will be replaced after full verification.' : amendmentConflict ? ' The amendment has not changed these entries.' : data.catchingUp ? ' A fresh verification is pending.' : '');
+      output.textContent = BigInt(data.entries).toLocaleString('en-US') + ' entries · ' + (amendmentPending ? 'Last verified before recalculation · ' : '') + date(data.observedAt) + '. ' + (data.phase === 'live' ? 'Keep qualifying tokens in this wallet through the closing snapshot.' : 'These are the entries recorded at closing.') + (amendmentPending ? ' These entries from the previous verified calculation will be replaced after full verification.' : amendmentConflict ? ' The amendment has not changed these entries.' : data.catchingUp ? ' A fresh verification is pending.' : '');
       output.dataset.result = 'ready';
     }
-    if (data.phase === 'drawn' && Array.isArray(data.winners) && data.winners.length === 5) {
+    if (data.phase === 'drawn') {
       const list = el('winner-list'); list.replaceChildren();
       for (const winner of data.winners) {
-        if (![777, 703, 159, 31, 959].includes(winner.position) || !validAddress(winner.wallet)) throw Error('Invalid draw record');
         const li = document.createElement('li'), link = document.createElement('a');
         link.href = 'https://solscan.io/account/' + winner.wallet;
         link.textContent = winner.wallet; link.target = '_blank'; link.rel = 'noopener noreferrer';
@@ -97,7 +108,7 @@
     } catch {
       if (id !== requestId || destroyed) return;
       delay = 60000;
-      el('status').textContent = ready ? (lastRuleState === 'pending' ? 'Refresh unavailable. Showing the last verified count under the previous rules; the amendment is still pending.' : 'Refresh unavailable. Showing the last verified count; retrying shortly.') : 'Verification is temporarily unavailable. Retrying shortly.';
+      el('status').textContent = ready ? (lastRuleState === 'pending' ? 'Refresh unavailable. Showing the previous verified calculation; the amendment is still pending.' : 'Refresh unavailable. Showing the last verified count; retrying shortly.') : 'Verification is temporarily unavailable. Retrying shortly.';
       if (!ready) { el('bought').textContent = 'awaiting data'; el('remaining').textContent = 'No unverified total is displayed.'; }
       if (wallet) { output.textContent = 'A verified entry total could not be loaded. Please try again.'; output.dataset.result = ''; }
     } finally {
