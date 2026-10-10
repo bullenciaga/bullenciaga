@@ -15,7 +15,7 @@ const mediaTypes = {
   js: 'text/javascript; charset=utf-8', mjs: 'text/javascript; charset=utf-8', json: 'application/json; charset=utf-8',
   png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp',
   avif: 'image/avif', svg: 'image/svg+xml', ico: 'image/x-icon',
-  woff: 'font/woff', woff2: 'font/woff2',
+  woff: 'font/woff', woff2: 'font/woff2', mp4: 'video/mp4',
 };
 
 function headers(extra = {}) {
@@ -225,7 +225,64 @@ function assetName(pathname) {
     || /^goods-(?:commerce|benefits|benefits-ui|preview)(?:-v[0-9]+)?\.mjs$/.test(relative);
   const visual = /^(?:assets|images)\//.test(relative)
     && /^(?:png|jpg|jpeg|webp|avif|svg|ico|woff|woff2)$/.test(extension);
-  return mediaTypes[extension] && (root || visual) ? relative : null;
+  const video = /^assets\/videos\/[A-Za-z0-9][A-Za-z0-9._-]*\.mp4$/.test(relative);
+  return mediaTypes[extension] && (root || visual || video) ? relative : null;
+}
+
+// A single byte range is enough for native video players. Unknown units and
+// multiple ranges are ignored (200); malformed/unsatisfiable bytes get 416.
+function videoRange(value, size) {
+  if (!value || !/^bytes=/i.test(value) || value.includes(',')) return null;
+  const match = /^bytes=(\d*)-(\d*)$/i.exec(value);
+  if (!match || (!match[1] && !match[2]) || size === 0) return false;
+  const total = BigInt(size);
+  let start, end;
+  if (!match[1]) {
+    const suffix = BigInt(match[2]);
+    if (suffix === 0n) return false;
+    start = suffix < total ? total - suffix : 0n;
+    end = total - 1n;
+  } else {
+    start = BigInt(match[1]);
+    end = match[2] ? BigInt(match[2]) : total - 1n;
+    if (start >= total || end < start) return false;
+    if (end >= total) end = total - 1n;
+  }
+  return { offset: Number(start), length: Number(end - start + 1n) };
+}
+
+async function videoAsset(request, env, key) {
+  const head = request.method === 'HEAD', bucket = env.MERCH_PREVIEW_ASSETS;
+  const responseHeaders = headers({ 'Content-Type': mediaTypes.mp4, 'Accept-Ranges': 'bytes' });
+  if (!gateEnabled(env)) {
+    responseHeaders.set('Cache-Control', 'no-store, max-age=0');
+    responseHeaders.delete('Vary'); responseHeaders.delete('X-Robots-Tag');
+  }
+  // No validators are exposed by this private, no-store route, so If-Range
+  // cannot validate a previous response. HEAD must ignore Range (RFC 9110).
+  const rangeHeader = !head && !request.headers.has('If-Range') ? request.headers.get('Range') : null;
+  let object = await bucket[head || rangeHeader ? 'head' : 'get'](key);
+  if (!object) return reply('Not found.', 404, {}, head);
+  if (!Number.isSafeInteger(object.size) || object.size < 0) throw new Error('Invalid video metadata');
+  const range = videoRange(rangeHeader, object.size);
+  if (range === false) {
+    return reply('Range not satisfiable.', 416, { 'Accept-Ranges': 'bytes', 'Content-Range': `bytes */${object.size}` });
+  }
+  const size = object.size;
+  if (!head && rangeHeader) {
+    // Pin a partial read to its metadata; never buffer a whole video to slice it.
+    if (range && !object.etag) throw new Error('Missing video validator');
+    const options = range ? { range, onlyIf: { etagMatches: object.etag } } : undefined;
+    object = await bucket.get(key, options);
+    if (!object) return reply('Not found.', 404);
+    if (!object.body || object.size !== size || (range && (object.range?.offset !== range.offset || object.range?.length !== range.length))) {
+      await object.body?.cancel();
+      throw new Error('Video changed during read');
+    }
+  }
+  responseHeaders.set('Content-Length', String(range ? range.length : size));
+  if (range) responseHeaders.set('Content-Range', `bytes ${range.offset}-${range.offset + range.length - 1}/${size}`);
+  return new Response(head ? null : object.body, { status: range ? 206 : 200, headers: responseHeaders });
 }
 
 export async function merchPreview(request, env, ctx) {
@@ -321,6 +378,7 @@ export async function merchPreview(request, env, ctx) {
     }
     if (pathname === PREVIEW_PATH) return reply('', 308, { Location: `${PREVIEW_PATH}/${url.search}` }, head);
     const key = `${env.MERCH_PREVIEW_PREFIX}/${name}`;
+    if (name.endsWith('.mp4')) return await videoAsset(request, env, key);
     const object = await env.MERCH_PREVIEW_ASSETS[head ? 'head' : 'get'](key);
     if (!object) return reply('Not found.', 404, {}, head);
     const contentType = mediaTypes[name.split('.').pop().toLowerCase()];

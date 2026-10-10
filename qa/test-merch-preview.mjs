@@ -124,3 +124,4 @@ for(const name of ['production','staging']){
 }
 assert.match(readFileSync(new URL('./release-fingerprint.mjs',import.meta.url),'utf8'),/'src\/merch-preview\.mjs'/);
 console.log('Public Goods: anonymous catalogue/assets, safe legacy redirects, private-bucket allowlist, retired preview forms, traversal defenses and route isolation passed.');
+await import('./test-goods-video.mjs');
