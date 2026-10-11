@@ -26,6 +26,7 @@ export function createGoodsRuntime(env,{authorize=async()=>false,rateLimit=async
  return {
   handler,
   checkoutBenefit:handler.checkoutBenefit,
+  resolveCustomCart:handler.resolveCustomCart,
   scheduled:()=>handler.reconcile(),
   async queue(batch){
    for(const message of batch.messages){

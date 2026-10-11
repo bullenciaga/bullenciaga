@@ -456,6 +456,7 @@ export async function merchPreview(request, env, ctx) {
         storefrontToken: env.GOODS_STOREFRONT_TOKEN,
         authorize, rateLimit,
         checkoutBenefit: runtime?.checkoutBenefit,
+        resolveCustomCart: runtime?.resolveCustomCart,
       });
       const result = await handler(request);
       if (!result) return reply('Not found.', 404, {}, head);
