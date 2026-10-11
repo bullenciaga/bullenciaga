@@ -6,6 +6,28 @@ export default {
   "checkoutOrigin": "https://store.bullenciaga.com",
   "variants": [
     {
+      "product": "house-ritual-mug",
+      "colour": "H06-MUG",
+      "size": "11 oz",
+      "productId": "e644fa57-25d8-427b-b236-1a3c894ac4c9",
+      "slug": "house-ritual-mug",
+      "variantId": "dced83fe-7a2f-48c4-8276-39e8709b023e",
+      "expectedColor": "Black",
+      "expectedSize": "11oz",
+      "enabled": true
+    },
+    {
+      "product": "house-ritual-rocks-glass",
+      "colour": "H07-GLASS",
+      "size": "One size",
+      "productId": "916f66fc-2674-4c76-86db-b2471a6a102c",
+      "slug": "house-ritual-rocks-glass",
+      "variantId": "0fce7614-c81e-4435-b3c3-ebe2351fc24a",
+      "expectedColor": "Clear",
+      "expectedSize": "OneSize",
+      "enabled": true
+    },
+    {
       "product": "nocturne-atlas-cushion",
       "colour": "HL03",
       "size": "16 × 16 in",

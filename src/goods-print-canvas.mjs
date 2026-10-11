@@ -1,4 +1,4 @@
-/** Exact pixel placement for AS Colour 5080 front and 5151 back regions.
+/** Exact pixel placement for AS Colour garments and verified 11oz mug wraps.
  * No resize, interpolation or AI changes. Bounded PNG8 RGB/RGBA only. */
 const SIGNATURE=new Uint8Array([137,80,78,71,13,10,26,10]);
 const crcTable=Uint32Array.from({length:256},(_,n)=>{for(let i=0;i<8;i++)n=n&1?0xedb88320^(n>>>1):n>>>1;return n>>>0});
@@ -42,22 +42,30 @@ export async function decodePrintPNG(bytes,{maxSide=2600}={}){
 }
 /** Region dimensions are from the live supplier template, never a client value. */
 export async function makeSquarePrintCanvas(asset,dimensions,garment='tee'){
- if(!['tee','hoodie'].includes(garment))review();
+ if(!['tee','hoodie','mug'].includes(garment))review();
  if(asset.width!==asset.height||asset.width<1024||asset.width>2600||asset.contentType!=='image/png')review();
- if(dimensions?.inchesWidth!==15.5||dimensions?.inchesHeight!==19.6)review();
+ const mug=garment==='mug';
+ const mugBlack=dimensions?.inchesWidth===7.5&&Math.abs(dimensions?.inchesHeight-925/300)<.00001;
+ const mugWhite=dimensions?.inchesWidth===9&&dimensions?.inchesHeight===3.5;
+ if(mug?(!mugBlack&&!mugWhite):(dimensions?.inchesWidth!==15.5||dimensions?.inchesHeight!==19.6))review();
  const source=await decodePrintPNG(asset.bytes);if(source.width!==asset.width||source.height!==asset.height)review();
  // The same physical square for every eligible original. Keep the original
  // pixels; a lower-resolution source is honestly a softer, larger print.
- const region=garment==='hoodie'?'back':'front',inch=garment==='hoodie'?12:12.6;
+ const region=mug?'default':garment==='hoodie'?'back':'front',inch=mug?2.4:garment==='hoodie'?12:12.6;
  const dpi=source.width/inch,width=Math.round(dimensions.inchesWidth*dpi),height=Math.round(dimensions.inchesHeight*dpi);
  // The hoodie uses the collection's approved rear placement below the hood.
- const x=Math.floor((width-source.width)/2),y=Math.round(dpi*(garment==='hoodie'?4.5:1));if(x<0||y+source.height>height)review();
+ // Printful 11oz guide face axes: black375/1875 on2250; white586/2116 on2700.
+ const offsets=mug?(mugBlack?[1.25,6.25]:[586/300,2116/300]).map(center=>Math.round(center*dpi-source.width/2)):[Math.floor((width-source.width)/2)];
+ const x=offsets[0],y=mug?Math.floor((height-source.height)/2):Math.round(dpi*(garment==='hoodie'?4.5:1));
+ if(offsets.some(left=>left<0||left+source.width>width)||y<0||y+source.height>height)review();
  let row=0;const raw=new ReadableStream({pull(controller){
   if(row>=height){controller.close();return}
   const out=new Uint8Array(width*4+1),sy=row-y;
   if(sy>=0&&sy<source.height){const input=source.rows.subarray(sy*(source.stride+1)+1,(sy+1)*(source.stride+1));
-   if(source.channels===4)out.set(input,1+x*4);
-   else for(let sx=0;sx<source.width;sx++){const d=1+(x+sx)*4,s=sx*3;out[d]=input[s];out[d+1]=input[s+1];out[d+2]=input[s+2];out[d+3]=255}
+   for(const left of offsets){
+    if(source.channels===4)out.set(input,1+left*4);
+    else for(let sx=0;sx<source.width;sx++){const d=1+(left+sx)*4,s=sx*3;out[d]=input[s];out[d+1]=input[s+1];out[d+2]=input[s+2];out[d+3]=255}
+   }
   }
   row++;controller.enqueue(out);
  }});
@@ -67,5 +75,5 @@ export async function makeSquarePrintCanvas(asset,dimensions,garment='tee'){
  const bytes=concat([SIGNATURE,chunk('IHDR',header),...source.profiles,chunk('pHYs',physical),...data,chunk('IEND',new Uint8Array())]);
  const physicalInches=source.width/width*dimensions.inchesWidth,cm=Math.round(physicalInches*2.54*10)/10;
  const effectiveDpi=Math.round(source.width/physicalInches),lowResolution=effectiveDpi<150;
- return {...asset,bytes,width,height,placementStrategy:'FULL_REGION',printInfo:{region,widthInches:Number(physicalInches.toFixed(2)),widthCm:cm,sourcePixels:source.width,dpi:effectiveDpi,small:false,lowResolution,upscaled:false,pixelOffset:{x,y},canvasPixels:{width,height}},printMessage:`Square ${region} print: approximately ${cm} × ${cm} cm. Original ${source.width}px artwork at about ${effectiveDpi} dpi, with the original pixels preserved.${lowResolution?' Fine detail may look softer at this size.':''}`};
+ return {...asset,bytes,width,height,placementStrategy:'FULL_REGION',printInfo:{region,...(mug?{copies:2,pixelOffsets:offsets.map(x=>({x,y}))}:{}),widthInches:Number(physicalInches.toFixed(2)),widthCm:cm,sourcePixels:source.width,dpi:effectiveDpi,small:false,lowResolution,upscaled:false,pixelOffset:{x,y},canvasPixels:{width,height}},printMessage:`Square ${mug?'print on both sides':`${region} print`}: approximately ${cm} × ${cm} cm. Original ${source.width}px artwork at about ${effectiveDpi} dpi, with the original pixels preserved.${lowResolution?' Fine detail may look softer at this size.':''}`};
 }

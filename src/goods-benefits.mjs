@@ -36,16 +36,19 @@ const REQUEST_TTL = 24 * 60 * 60 * 1000;
 // regular catalogue prices. Derive margin from each live supplier template cost.
 const CUSTOM_PRICES = Object.freeze({S:49.99,M:49.99,L:49.99,XL:49.99,'2XL':49.99,'3XL':49.99});
 const HOODIE_PRICES = Object.freeze({S:99.99,M:99.99,L:99.99,XL:99.99,'2XL':99.99,'3XL':99.99});
+const MUG_PRICES = Object.freeze({'11oz':29.99});
+const MUG_TEMPLATES = Object.freeze({Black:'pro_dWMJDO04TgWcXKGQohVnHw',White:'pro_4v5OfYhyRx62KW5b7Oj6Uw'});
 const CUSTOM_GARMENTS = Object.freeze({
  tee:{templateId:TEMPLATE,label:'Heavy tee',template:'AS Colour Heavy T-shirt',printRegion:'front',printWidthCm:32,extraPrintCost:0,prices:CUSTOM_PRICES},
  // Two-region 5151 cost verified against supplier unitCost; every newly created
  // product is read back before checkout so a changed surcharge cannot overcharge.
  hoodie:{templateId:'pro_PpTzovAMQWC_bvGw0IHh4w',label:'French terry hoodie',template:'AS Colour French Terry Hoodie',printRegion:'back',printWidthCm:30.5,extraPrintCost:6.87,prices:HOODIE_PRICES},
+ mug:{templateId:MUG_TEMPLATES.Black,label:'Ceramic mug',template:'Glossy ceramic mug',printRegion:'default',printWidthCm:6.1,extraPrintCost:0,prices:MUG_PRICES},
 });
 // The collection's outlined 95 mm chest wordmark, on full 4650×3600 front canvases.
 const HOODIE_CHEST_IMAGES = Object.freeze({bone:'540194794',ink:'1129720262'});
 function garmentConfig(garment='tee'){
- if(typeof garment!=='string'||!Object.hasOwn(CUSTOM_GARMENTS,garment))fail('INVALID_GARMENT','Choose a custom tee or hoodie.',400);
+ if(typeof garment!=='string'||!Object.hasOwn(CUSTOM_GARMENTS,garment))fail('INVALID_GARMENT','Choose a custom tee, hoodie or mug.',400);
  return CUSTOM_GARMENTS[garment];
 }
 function hoodieChestImage(colour,hex){
@@ -136,11 +139,18 @@ function productOpen(product){return ['PUBLIC','HIDDEN'].includes(product?.acces
 function availableStock(stock){return stock?.type==='UNLIMITED' || (stock?.type==='LIMITED' && Number.isInteger(stock.inStock) && stock.inStock>0);}
 export function normalizeCustomOptions(template,prices,garment='tee') {
  const config=garmentConfig(garment);prices=prices||config.prices;
- if(template?.productId!==config.templateId || !Array.isArray(template.colorVariants))throw unavailable();
- return {template:config.template,colours:template.colorVariants.filter(c=>c.available===true).map(c=>({name:c.color.name,hex:c.color.hex,sizes:c.sizeVariants.filter(s=>s.available===true&&s.price?.currency==='USD'&&Number.isFinite(Number(s.price.amount))&&Number(s.price.amount)>0&&Number.isFinite(prices[s.size])&&prices[s.size]>Number(s.price.amount)+config.extraPrintCost).map(s=>({name:s.size,price:prices[s.size],currency:'USD'}))})).filter(c=>c.sizes.length)};
+ const mugColour=garment==='mug'?Object.keys(MUG_TEMPLATES).find(colour=>MUG_TEMPLATES[colour]===template?.productId):null;
+ if((garment==='mug'?!mugColour:template?.productId!==config.templateId) || !Array.isArray(template.colorVariants))throw unavailable();
+ return {template:config.template,colours:template.colorVariants.filter(c=>c.available===true&&(!mugColour||c.color.name===mugColour)).map(c=>({name:c.color.name,hex:c.color.hex,sizes:c.sizeVariants.filter(s=>s.available===true&&s.price?.currency==='USD'&&Number.isFinite(Number(s.price.amount))&&Number(s.price.amount)>0&&Number.isFinite(prices[s.size])&&prices[s.size]>Number(s.price.amount)+config.extraPrintCost).map(s=>({name:s.size,price:prices[s.size],currency:'USD'}))})).filter(c=>c.sizes.length)};
 }
 function customPreviews(images,colour,garment){
  if(garment==='tee'){const url=firstPreview(images);return url?[{region:'front',url}]:[];}
+ if(garment==='mug'){
+  const views=(images||[]).filter(i=>i?.region==='default'&&i?.color===colour&&i?.size==='11oz');
+  const front=firstPreview(views.slice(0,1)),back=firstPreview(views.slice(2,3));
+  if(!front||!back)fail('PREVIEW_REVIEW','The House needs to review both sides of this mug before checkout.',409);
+  return [{region:'front',url:front},{region:'back',url:back}];
+ }
  return ['back','front'].map(region=>{
   const url=firstPreview((images||[]).filter(i=>i?.region===region&&i?.color===colour));
   if(!url)fail('PREVIEW_REVIEW','The House needs to review both sides of this hoodie before checkout.',409);
@@ -161,7 +171,10 @@ export function createFourthwallBenefitsClient({username,password,storefrontToke
  }
  return {
   template:()=>call(`/product-templates/${TEMPLATE}`),
-  customTemplate:garment=>call(`/product-templates/${garmentConfig(garment).templateId}`),
+  customTemplate:(garment,colour)=>{
+   const config=garmentConfig(garment),id=garment==='mug'?MUG_TEMPLATES[colour]:config.templateId;
+   if(!id)throw unavailable();return call(`/product-templates/${id}`);
+  },
   getProduct:id=>call(`/products/${encodeURIComponent(id)}`),
   getStorefrontProduct:id=>call(`/products/${encodeURIComponent(id)}`,{storefront:true}),
   getPromotion:id=>call(`/promotions/${encodeURIComponent(id)}`),
@@ -179,11 +192,13 @@ export function createFourthwallBenefitsClient({username,password,storefrontToke
   },
   createCustomization:({imageId,colour,colourHex,size,placementStrategy='PLACEMENT_ID',garment='tee'})=>{
    const config=garmentConfig(garment);
-   if(garment==='hoodie'&&placementStrategy!=='FULL_REGION')throw unavailable();
+   if(['hoodie','mug'].includes(garment)&&placementStrategy!=='FULL_REGION')throw unavailable();
+   const templateId=garment==='mug'?MUG_TEMPLATES[colour]:config.templateId;if(!templateId)throw unavailable();
    const regions=garment==='hoodie'
     ?[{region:'front',placementStrategy:'FULL_REGION',imageId:hoodieChestImage(colour,colourHex)},{region:'back',placementStrategy:'FULL_REGION',imageId}]
+    :garment==='mug'?[{region:'default',placementStrategy:'FULL_REGION',imageId}]
     :[{region:'front',placementStrategy,...(placementStrategy==='PLACEMENT_ID'?{placementId:'largeCenter'}:{}),imageId}];
-   return call('/customizations',{method:'POST',body:{productTemplateId:config.templateId,regions,colors:[colour],sizes:[size]}});
+   return call('/customizations',{method:'POST',body:{productTemplateId:templateId,regions,colors:[colour],sizes:[size]}});
   },
   createProduct:({customizationId,name,description,profitMargin})=>call('/products',{method:'POST',body:{type:'customization',customizationId,name,description,profitMargin,publishOnCreate:false}}),
   async createCart({variantId,metadata,code}){
@@ -301,13 +316,19 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
  async function session(request,required=true){const token=readToken(request);const value=token?await store.session(await hash(token),now()):null;if(!value&&required)fail('WALLET_REQUIRED','Connect and verify your wallet again.',401);return value}
  async function guard(request){if(!(await authorize(request)))fail('AUTH_REQUIRED','Please unlock the collection again.',401);if(!(await rateLimit(request)))fail('RATE_LIMIT','Please wait a moment and try again.',429);if(request.method!=='GET')sameOrigin(request)}
  async function quotas(wallet){const [discount,custom]=await Promise.all([store.count(wallet,'discount'),store.count(wallet,'custom')]);return {discount:{completedOrders:discount,remainingOrders:Math.max(0,MAX_ORDERS-discount),limit:MAX_ORDERS},custom:{completedOrders:custom,remainingOrders:Math.max(0,MAX_ORDERS-custom),limit:MAX_ORDERS}}}
- const templateFor=garment=>garment==='tee'?provider.template():provider.customTemplate(garment);
- const pricesFor=garment=>garment==='tee'?customPrices:HOODIE_PRICES;
+ const templateFor=(garment,colour)=>garment==='tee'?provider.template():provider.customTemplate(garment,colour);
+ const pricesFor=garment=>garment==='tee'?customPrices:garmentConfig(garment).prices;
  async function options(){
-  const ids=typeof provider.customTemplate==='function'?['tee','hoodie']:['tee'];
+  const ids=typeof provider.customTemplate==='function'?['tee','hoodie','mug']:['tee'];
   const products=await Promise.all(ids.map(async id=>{
    const config=garmentConfig(id),details={id,label:config.label,printRegion:config.printRegion,printWidthCm:config.printWidthCm};
-   try{return {...details,...normalizeCustomOptions(await templateFor(id),pricesFor(id),id)}}
+   try{
+    if(id==='mug'){
+     const choices=await Promise.all(Object.keys(MUG_TEMPLATES).map(async colour=>{try{return normalizeCustomOptions(await templateFor(id,colour),pricesFor(id),id).colours}catch{return []}}));
+     const colours=choices.flat();return {...details,template:config.template,colours,...(!colours.length?{unavailable:true}:{})};
+    }
+    return {...details,...normalizeCustomOptions(await templateFor(id),pricesFor(id),id)}
+   }
    catch{ return {...details,template:config.template,colours:[],unavailable:true}; }
   }));
   return {template:products[0].template,colours:products[0].colours,products,collections:GOODS_OFFICIAL_COLLECTIONS};
@@ -433,8 +454,9 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   try{
    const garment=r.garment||'tee',config=garmentConfig(garment);
    const asset=await chain.owned(r.wallet,r.mint);if(!asset)fail('NFT_NOT_OWNED','This NFT is no longer held by the verified wallet.',409);
-   const template=await templateFor(garment),opt=normalizeCustomOptions(template,pricesFor(garment),garment),choice=opt.colours.find(c=>c.name===r.colour)?.sizes.find(s=>s.name===r.size);if(!choice||choice.price!==r.price)fail('VARIANT_CHANGED','This colour or size changed. Please choose again.',409);
+   const template=await templateFor(garment,r.colour),opt=normalizeCustomOptions(template,pricesFor(garment),garment),choice=opt.colours.find(c=>c.name===r.colour)?.sizes.find(s=>s.name===r.size);if(!choice||choice.price!==r.price)fail('VARIANT_CHANGED','This colour or size changed. Please choose again.',409);
    if(garment==='hoodie'&&!['front','back'].every(region=>template.customizableAreas?.some(a=>a.regionId===region&&a.available===true&&a.supportsBackendRendering===true&&a.productionMethod==='DTG'&&a.dimensions?.inchesWidth===15.5&&a.dimensions?.inchesHeight===(region==='front'?12:19.6))))throw unavailable();
+   if(garment==='mug'&&!template.customizableAreas?.some(a=>a.regionId==='default'&&a.available===true&&a.supportsBackendRendering===true&&a.productionMethod==='SUBLIMATION'))throw unavailable();
    const cost=Number(template.colorVariants.find(c=>c.color.name===r.colour)?.sizeVariants.find(s=>s.size===r.size)?.price?.amount);
    const profitMargin=Math.round((r.price-cost-config.extraPrintCost)*100)/100;if(!Number.isFinite(profitMargin)||profitMargin<=0)throw unavailable();
    // Retain completed operation IDs on explicit429. Never recreate a product
@@ -444,6 +466,7 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
      if(!r.image_id){
       let printable=await resolvePrintAsset(asset,garment);
       if(!printable.imageId){try{printable=await makeSquarePrintCanvas(printable,template.customizableAreas?.find(a=>a.regionId===config.printRegion)?.dimensions,garment)}catch{fail('ARTWORK_REVIEW','This artwork needs print-file preparation by the House before checkout.',409)}}
+      if(garment==='mug'&&(printable.printInfo?.region!=='default'||printable.printInfo?.copies!==2))fail('ARTWORK_REVIEW','This artwork needs the mug layout before checkout.',409);
       if(garment==='hoodie'&&printable.printInfo?.region!=='back')fail('ARTWORK_REVIEW','This artwork needs the hoodie back-print layout before checkout.',409);
       if(printable.printInfo)await store.update(id,{print_info:JSON.stringify(printable.printInfo),message:printable.printMessage||null},now());
       await beforeWrite();const imageId=printable.imageId||await provider.uploadImage(printable);await store.update(id,{image_id:imageId,stage:'customization_pending'},now());r=await store.request(id);
@@ -452,20 +475,21 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
      const previews=customPreviews(design.images,r.colour,garment);if(!previews.length)throw unavailable();
      await store.update(id,{customization_id:design.customizationId,preview:previews[0].url,previews:JSON.stringify(previews),stage:'customized'},now());r=await store.request(id);
     }
-    const printInfo=parseJSON(r.print_info),name=`${asset.name} — Custom ${garment==='hoodie'?'French Terry Hoodie':'Heavy Tee'} [${id.slice(0,8)}]`;
-    const sizeCopy=printInfo?` Square ${config.printRegion} print: approximately ${printInfo.widthCm} × ${printInfo.widthCm} cm.`:` Square ${config.printRegion} artwork.`;
+    const printInfo=parseJSON(r.print_info),name=`${asset.name} — Custom ${garment==='hoodie'?'French Terry Hoodie':garment==='mug'?'Ceramic Mug':'Heavy Tee'} [${id.slice(0,8)}]`;
+    const placementCopy=garment==='mug'?'print on both sides':`${config.printRegion} print`;
+    const sizeCopy=printInfo?` Square ${placementCopy}: approximately ${printInfo.widthCm} × ${printInfo.widthCm} cm.`:` Square ${config.printRegion} artwork.`;
     await beforeWrite();if(!await store.claimProductWrite(id,now()))fail('CUSTOM_DISCARDED','This saved design is no longer being prepared.',409);
-    const material=garment==='hoodie'?'Your official BULLENCIAGA artwork, printed on the back of a premium AS Colour 5151 hoodie. 500 gsm, 100% cotton French terry. BULLENCIAGA wordmark on the chest.':'Your official BULLENCIAGA artwork, printed on a premium AS Colour 5080 heavyweight cotton tee.';
+    const material=garment==='hoodie'?'Your official BULLENCIAGA artwork, printed on the back of a premium AS Colour 5151 hoodie. 500 gsm, 100% cotton French terry. BULLENCIAGA wordmark on the chest.':garment==='mug'?'Your official BULLENCIAGA artwork, printed on both sides of an 11oz glossy ceramic mug. Dishwasher and microwave safe.':'Your official BULLENCIAGA artwork, printed on a premium AS Colour 5080 heavyweight cotton tee.';
     const result=await provider.createProduct({customizationId:r.customization_id,name,description:material+sizeCopy+' Made to order.',profitMargin});
     // Product responses can list the front first without region labels. Retain
     // the two explicitly labelled customization views for a hoodie.
-    if(!result.productId)throw unavailable();const preview=garment==='hoodie'?r.preview:firstPreview(result.images)||r.preview;
+    if(!result.productId)throw unavailable();const preview=garment!=='tee'?r.preview:firstPreview(result.images)||r.preview;
     await store.update(id,{product_id:result.productId,preview,...(garment==='tee'?{previews:JSON.stringify([{region:'front',url:preview}])}:{}),stage:'product_created'},now());r=await store.request(id);
    }
    await beforeWrite();const product=await provider.getProduct(r.product_id);
    const variant=productVariants(product).find(v=>v.attributes?.color?.name===r.colour&&v.attributes?.size?.name===r.size);
    if(product.access?.type!=='HIDDEN'||!productOpen(product)||!variant || variant.unitPrice?.currency!=='USD'||!Number.isFinite(variantPrice(variant))||Math.abs(variantPrice(variant)-r.price)>0.001||!availableStock(variant.stock))throw unavailable();
-   const info=parseJSON(r.print_info),message=info?`Square ${config.printRegion} print: approximately ${info.widthCm} × ${info.widthCm} cm. ${garment==='hoodie'?'BULLENCIAGA wordmark on the chest. ':''}Original ${info.sourcePixels}px artwork at about ${info.dpi} dpi, with the original pixels preserved.${info.lowResolution?' Fine detail may look softer at this size.':''}`:null;
+   const info=parseJSON(r.print_info),message=info?`Square ${garment==='mug'?'print on both sides':`${config.printRegion} print`}: approximately ${info.widthCm} × ${info.widthCm} cm. ${garment==='hoodie'?'BULLENCIAGA wordmark on the chest. ':''}Original ${info.sourcePixels}px artwork at about ${info.dpi} dpi, with the original pixels preserved.${info.lowResolution?' Fine detail may look softer at this size.':''}`:null;
    await store.readyCustom(id,variant.id,message,now());
   }catch(error){
    r=await store.request(id);
@@ -495,7 +519,7 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   const previous=await store.idempotent(wallet,'custom',idempotencyKey);if(previous){if(previous.mint!==mint||previous.colour!==colour||previous.size!==size||(previous.garment||'tee')!==garment)fail('REQUEST_CONFLICT','That request identifier has already been used.',409);return publicCustom(previous)}
   const outstanding=await store.customChoice(wallet,mint,colour,size,garment);if(outstanding&&outstanding.expires_at>now())return publicCustom(outstanding);
   const asset=await chain.owned(wallet,mint);if(!asset)fail('NFT_NOT_OWNED','Choose an official BULLENCIAGA NFT held in this wallet.',403);
-  const opt=normalizeCustomOptions(await templateFor(garment),pricesFor(garment),garment),choice=opt.colours.find(c=>c.name===colour)?.sizes.find(s=>s.name===size);if(!choice)fail('VARIANT_UNAVAILABLE','Choose an available colour and size.',409);
+  const opt=normalizeCustomOptions(await templateFor(garment,colour),pricesFor(garment),garment),choice=opt.colours.find(c=>c.name===colour)?.sizes.find(s=>s.name===size);if(!choice)fail('VARIANT_UNAVAILABLE','Choose an available colour and size.',409);
   const id=randomId();
   if(!(await store.reserve({id,wallet,kind:'custom',key:idempotencyKey,state:'preparing',stage:'queued',now:now(),expiresAt:now()+requestTTL,mint,colour,size,garment,name:asset.name,image:asset.image,price:choice.price}))){
    const duplicate=await store.customChoice(wallet,mint,colour,size,garment);if(duplicate&&duplicate.expires_at>now())return publicCustom(duplicate);
