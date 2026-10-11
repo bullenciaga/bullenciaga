@@ -97,7 +97,7 @@ const iphoneNavigation = `<style data-bullen-navigation>
 const website = {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const rareFourRead = rareFourPreviewRead(request);
+    const rareFourRead = rareFourPreviewRead(request, env);
     if (rareFourRead) return rareFourRead;
     if (['/goods', '/merch'].some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) return merchPreview(request, env, ctx);
     if (url.pathname === '/platform/signups') return platformSignupsAdmin(request, env);
