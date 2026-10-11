@@ -24,7 +24,7 @@ export default {
       "slug": "house-ritual-rocks-glass",
       "variantId": "0fce7614-c81e-4435-b3c3-ebe2351fc24a",
       "expectedColor": "Clear",
-      "expectedSize": "OneSize",
+      "expectedSize": "One Size",
       "enabled": true
     },
     {
