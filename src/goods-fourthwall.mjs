@@ -54,7 +54,7 @@ async function readCheckoutBody(request) {
   catch{throw new ShopError('INVALID','Invalid request.');}
 }
 
-export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,authorize,rateLimit,checkoutBenefit}) {
+export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,authorize,rateLimit,checkoutBenefit,resolveCustomCart}) {
   validateMappings(config);
   // Integration must explicitly wire the existing protected Goods gate and a shared rate limiter.
   if (typeof authorize!=='function' || typeof rateLimit!=='function') throw new Error('Existing gate and rate limiter are required');
@@ -88,21 +88,31 @@ export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,autho
     let body;try{body=JSON.parse(bodyText);}catch{throw new ShopError('INVALID','Invalid request.');}
     if(!body || typeof body!=='object' || body.currency!==config.currency || !Array.isArray(body.items) || body.items.length===0 || body.items.length>50)throw new ShopError('INVALID','Please review your bag.');
     if(body.holderDiscount!==undefined && typeof body.holderDiscount!=='boolean')throw new ShopError('INVALID','Please review the holder discount selection.');
-    const seen=new Set(),selected=[];
+    const seen=new Set(),selected=[],customItems=[];
     for(const item of body.items){
       if(!item || typeof item!=='object')throw new ShopError('INVALID','Please review your bag.');
+      if(Object.hasOwn(item,'customRequestId')){
+        if(typeof item.customRequestId!=='string'||!/^[a-zA-Z0-9_-]{1,80}$/.test(item.customRequestId)||seen.has('custom:'+item.customRequestId)||item.quantity!==1||!money(item.expectedUnitPrice)||Object.keys(item).some(key=>!['customRequestId','quantity','expectedUnitPrice'].includes(key)))throw new ShopError('INVALID','A custom selection has changed. Please review your bag.');
+        seen.add('custom:'+item.customRequestId);customItems.push(item);continue;
+      }
       const mapping=mappings.get(KEY(item));
       if(!mapping || !mapping.enabled || mapping.variantId!==item.variantId || seen.has(item.variantId) || !Number.isInteger(item.quantity) || item.quantity<1 || item.quantity>20 || !money(item.expectedUnitPrice))throw new ShopError('INVALID','A selection has changed. Please review your bag.');
       seen.add(item.variantId);selected.push(mapping);
     }
-    const current=await catalogue(selected,false);
+    if(customItems.length&&typeof resolveCustomCart!=='function')throw new ShopError('BENEFITS_UNAVAILABLE','Custom pieces are temporarily unavailable. Please try again shortly.',409);
+    const custom=customItems.length?await resolveCustomCart(request,customItems):null;
+    const regular=await catalogue(selected,false),customRows=new Map((custom?.items||[]).map(row=>[row.customRequestId,row]));
+    let regularIndex=0;
+    const current=body.items.map(item=>Object.hasOwn(item,'customRequestId')?customRows.get(item.customRequestId):{...regular[regularIndex],productId:selected[regularIndex++].productId});
+    if(current.some(row=>!row)||new Set(current.map(row=>row.variantId)).size!==current.length)throw unavailable();
     for(let i=0;i<current.length;i++){
       if(!current[i].available || body.items[i].quantity>current[i].maxQuantity)throw new ShopError('UNAVAILABLE','A selection is no longer available. Please review your bag.',409);
       if(Math.round(current[i].unitPrice*100)!==Math.round(body.items[i].expectedUnitPrice*100))throw new ShopError('PRICE_CHANGED','Prices have updated. Review your bag before continuing.',409);
     }
-    const requested=body.items.map(({variantId,quantity})=>({variantId,quantity}));
+    const requested=current.map(({variantId},i)=>({variantId,quantity:body.items[i].quantity}));
     if(body.holderDiscount===true && !checkoutBenefit)throw new ShopError('BENEFITS_UNAVAILABLE','Holder benefits are temporarily unavailable. You can continue at the listed price.',409);
-    const benefit=checkoutBenefit?await checkoutBenefit(request,{holderDiscount:body.holderDiscount===true,productIds:[...new Set(selected.map(v=>v.productId))]}):{metadata:{source:'bullenciaga_goods'}};
+    const benefit=checkoutBenefit?await checkoutBenefit(request,{holderDiscount:body.holderDiscount===true,productIds:[...new Set(current.map(v=>v.productId))]}):{metadata:{source:'bullenciaga_goods'}};
+    await custom?.assertReady();
     const cart=await fourthwall('/v1/carts',{items:requested,metadata:benefit.metadata});
     // Never redirect a silently altered cart or one carrying missing/extra rows.
     if(typeof cart.id!=='string' || !cart.id || !Array.isArray(cart.items) || cart.items.length!==requested.length)throw unavailable();
@@ -112,6 +122,7 @@ export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,autho
       if(index<0 || returned.has(line.variant.id) || line.quantity!==requested[index].quantity || line.variant.unitPrice?.currency!==config.currency || !money(line.variant.unitPrice?.value) || Math.round(line.variant.unitPrice.value*100)!==Math.round(current[index].unitPrice*100))throw new ShopError('PRICE_CHANGED','Your bag changed while opening checkout. Please review it and try again.',409);
       returned.add(line.variant.id);
     }
+    await custom?.assertReady();
     const url=new URL('/cart/checkout',config.checkoutOrigin);url.searchParams.set('cartId',cart.id);url.searchParams.set('currency',config.currency);
     if(benefit.code)url.searchParams.set('coupon',benefit.code);
     return {checkoutUrl:url.href,checkoutHost:url.hostname};

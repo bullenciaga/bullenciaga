@@ -277,7 +277,7 @@ export class GoodsBenefitsStore {
  async startJob(id,now){return changes(await this.run("UPDATE goods_benefit_requests SET stage='working',processing=1,updated_at=? WHERE id=? AND stage='queued' AND state='preparing' AND active=1 AND processing=0 AND discard_requested_at IS NULL AND next_retry_at<=? AND expires_at>?",now,id,now,now))===1}
  async markDiscard(id,wallet,now){return changes(await this.run(`UPDATE goods_benefit_requests SET
   discard_requested_at=COALESCE(discard_requested_at,?),state='discarding',message='Removing this saved design. It cannot be checked out while removal is pending.',updated_at=?
-  WHERE id=? AND wallet=? AND kind='custom' AND state<>'discarded'
+  WHERE id=? AND wallet=? AND kind='custom' AND state NOT IN ('discarded','consumed')
   AND NOT EXISTS(SELECT 1 FROM goods_benefit_orders WHERE request_id=? AND kind='custom' AND status<>'CANCELLED')`,now,now,id,wallet,id))===1}
  readyCustom(id,variant,message,now){return this.run("UPDATE goods_benefit_requests SET state='ready',variant_id=?,stage='ready',next_retry_at=0,message=?,updated_at=? WHERE id=? AND active=1 AND processing=1 AND discard_requested_at IS NULL AND expires_at>?",variant,message,now,id,now)}
  async claimProductWrite(id,now){return changes(await this.run("UPDATE goods_benefit_requests SET stage='product_pending',updated_at=? WHERE id=? AND active=1 AND processing=1 AND discard_requested_at IS NULL AND expires_at>?",now,id,now))===1}
@@ -359,7 +359,7 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   // Retire it first, then require an exhaustive provider-order scan before reuse.
   if(r.product_id&&(ordersCheckedAt===null||!r.retired_at||r.retired_at>ordersCheckedAt))return r;
   await store.run(`UPDATE goods_benefit_requests SET state='discarded',active=0,stage='discarded',message='This saved design has been removed.',updated_at=?
-   WHERE id=? AND processing=0 AND discard_requested_at IS NOT NULL
+   WHERE id=? AND processing=0 AND discard_requested_at IS NOT NULL AND state<>'consumed'
    AND NOT EXISTS(SELECT 1 FROM goods_benefit_orders WHERE request_id=? AND kind='custom' AND status<>'CANCELLED')`,now(),id,id);
   return store.request(id);
  }
@@ -367,7 +367,7 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   assertWritable();const s=await session(request);let r=await store.request(id,s.wallet);
   if(!r||r.kind!=='custom')fail('NOT_FOUND','Custom request not found.',404);
   if(r.state==='discarded')return publicCustom(r);
-  if(await store.hasPaidCustom(id))fail('CUSTOM_PURCHASED','A purchased piece stays in your order history and cannot be discarded.',409);
+  if(r.state==='consumed'||await store.hasPaidCustom(id))fail('CUSTOM_PURCHASED','A purchased piece stays in your order history and cannot be discarded.',409);
   if(!await store.markDiscard(id,s.wallet,now()))fail('CUSTOM_PURCHASED','A purchased piece stays in your order history and cannot be discarded.',409);
   try{r=await finishDiscard(id)}catch{r=await store.request(id)}
   if(r.state!=='discarded'&&ctx?.waitUntil)ctx.waitUntil(reconcile().catch(()=>{}));
@@ -542,21 +542,42 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   // the provider's unreliable promotion-update API. Native sale guards stay above.
   const mac=await hmac(metadataSecret,enc.encode(r.id));return {code:r.code,metadata:{source:'bullenciaga_goods',benefit_request:r.id,benefit_mac:mac}};
  }
- async function customCheckout(request,id,body){
+ async function resolveCustomCart(request,items){
   assertWritable();
-  const s=await session(request),r=await store.request(id,s.wallet);if(!r||r.state!=='ready'||!r.active||r.discard_requested_at||r.expires_at<=now())fail('CUSTOM_NOT_READY','This custom piece is not available for checkout.',409);
-  if(await store.count(s.wallet,'custom')>=MAX_ORDERS)fail('LIMIT_REACHED','This wallet has used its 10 custom orders.',409);
+  await guard(request);const s=await session(request);
+  if(!Array.isArray(items)||!items.length||items.length>MAX_SAVED_CUSTOM||new Set(items.map(item=>item?.customRequestId)).size!==items.length)fail('INVALID_REQUEST','Please review your custom pieces.',400);
+  const ready=async item=>{
+   if(!item||typeof item.customRequestId!=='string'||!/^[a-zA-Z0-9_-]{1,80}$/.test(item.customRequestId)||item.quantity!==1||typeof item.expectedUnitPrice!=='number'||!Number.isFinite(item.expectedUnitPrice)||item.expectedUnitPrice<0)fail('INVALID_REQUEST','Please review your custom pieces.',400);
+   const r=await store.request(item.customRequestId,s.wallet);
+   if(!r||r.kind!=='custom'||r.state!=='ready'||!r.active||r.discard_requested_at||r.expires_at<=now()||!r.product_id||!r.variant_id)fail('CUSTOM_NOT_READY','A custom piece in your bag is no longer available. Please review your saved designs.',409);
+   if(Math.round(r.price*100)!==Math.round(item.expectedUnitPrice*100))fail('PRICE_CHANGED','A custom price has changed. Please review your saved design.',409);
+   return r;
+  };
+  const assertReady=async()=>{
+   const currentSession=await session(request);if(currentSession.wallet!==s.wallet)fail('WALLET_REQUIRED','Connect and verify the wallet for these custom pieces.',401);
+   if(await store.count(s.wallet,'custom')>=MAX_ORDERS)fail('LIMIT_REACHED','This wallet has used its 10 custom orders.',409);
+   return Promise.all(items.map(ready));
+  };
+  const requests=await assertReady(),resolved=[];
   // Ownership at request time is the entitlement. Sharing the link afterward is
   // explicitly allowed; do not require the recipient to own the NFT at payment.
-  const product=await provider.getProduct(r.product_id),variant=productVariants(product).find(v=>v.id===r.variant_id);
-  if(!productOpen(product)||!variant||!availableStock(variant.stock)||variant.unitPrice?.currency!=='USD'||!Number.isFinite(variantPrice(variant))||Math.abs(variantPrice(variant)-r.price)>0.001)fail('VARIANT_CHANGED','This piece is not available at the shown price. Please refresh.',409);
-  const benefit=await checkoutBenefit(request,{holderDiscount:body.holderDiscount===true,productIds:[r.product_id]});
-  const metadata={...benefit.metadata,custom_request:r.id,custom_mac:await hmac(metadataSecret,enc.encode(r.id))};
-  const stillReady=async()=>{const current=await store.request(id,s.wallet);if(!current||current.discard_requested_at||!current.active||current.state!=='ready'||current.expires_at<=now())fail('CUSTOM_NOT_READY','This custom piece is not available for checkout.',409)};
-  await stillReady();
-  const result=await provider.createCart({variantId:r.variant_id,metadata,code:benefit.code});
-  const cartVariant=result.cart?.items?.[0]?.variant;if(!cartVariant||cartVariant.unitPrice?.currency!=='USD'||!Number.isFinite(variantPrice(cartVariant))||Math.abs(variantPrice(cartVariant)-r.price)>0.001)throw unavailable();
-  await stillReady();return {checkoutUrl:result.checkoutUrl};
+  for(const r of requests){
+   const product=await provider.getProduct(r.product_id),variant=productVariants(product).find(v=>v.id===r.variant_id);
+   if(product?.id!==r.product_id||product.type!=='STANDARD'||!productOpen(product)||!variant||variant.attributes?.color?.name!==r.colour||variant.attributes?.size?.name!==r.size||!availableStock(variant.stock)||variant.unitPrice?.currency!=='USD'||!Number.isFinite(variantPrice(variant))||Math.abs(variantPrice(variant)-r.price)>0.001)fail('VARIANT_CHANGED','A custom piece is not available at the shown price or selection. Please review your saved design.',409);
+   resolved.push({customRequestId:r.id,productId:r.product_id,variantId:r.variant_id,unitPrice:r.price,currency:'USD',available:true,maxQuantity:1});
+  }
+  return {items:resolved,assertReady};
+ }
+ async function customCheckout(request,id,body){
+  const s=await session(request),r=await store.request(id,s.wallet);
+  if(!r)fail('CUSTOM_NOT_READY','This custom piece is not available for checkout.',409);
+  const custom=await resolveCustomCart(request,[{customRequestId:id,quantity:1,expectedUnitPrice:r?.price}]),item=custom.items[0];
+  const benefit=await checkoutBenefit(request,{holderDiscount:body.holderDiscount===true,productIds:[item.productId]});
+  const metadata={...benefit.metadata,custom_request:id,custom_mac:await hmac(metadataSecret,enc.encode(id))};
+  await custom.assertReady();
+  const result=await provider.createCart({variantId:item.variantId,metadata,code:benefit.code});
+  const cartVariant=result.cart?.items?.[0]?.variant;if(result.cart?.items?.length!==1||result.cart.items[0].quantity!==1||cartVariant?.id!==item.variantId||cartVariant.unitPrice?.currency!=='USD'||!Number.isFinite(variantPrice(cartVariant))||Math.abs(variantPrice(cartVariant)-item.unitPrice)>0.001)throw unavailable();
+  await custom.assertReady();return {checkoutUrl:result.checkoutUrl};
  }
  async function reconcileOrder(orderId){
   const order=await provider.getOrder(orderId);if(order?.id!==orderId||(!PAID.has(order.status)&&order.status!=='CANCELLED'))return;
@@ -666,6 +687,7 @@ export function createGoodsBenefitsHandler({db,store=new GoodsBenefitsStore(db),
   }catch(error){const e=error instanceof GoodsBenefitError?error:unavailable();return json({error:{code:e.code,message:e.message}},e.status)}
  }
  handler.checkoutBenefit=checkoutBenefit;
+ handler.resolveCustomCart=resolveCustomCart;
  handler.reconcile=reconcile;
  handler.reconcileOrder=reconcileOrder;
  handler.drainEvents=drainEvents;
