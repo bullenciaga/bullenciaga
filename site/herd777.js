@@ -1,15 +1,13 @@
-/* Public, read-only live campaign view. No wallet connection or client-side scoring. */
+/* Read-only entry lookup for the completed campaign. Final awards are static HTML;
+   the original draw API remains a separate, immutable historical record. */
 (() => {
   const form = document.getElementById('h777-form');
   if (!form) return;
-  const el = id => document.getElementById('h777-' + id);
-  const input = el('wallet'), output = el('result'), button = form.querySelector('button');
-  let wallet = '', requestId = 0, timer, latestSlot = 0, ready = false, destroyed = false, lastRuleState = '';
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const integer = value => typeof value === 'string' && /^\d+$/.test(value);
-  const policies = new Set(['herd777-paired-buy-exclusion-v1', 'herd777-paired-buy-exclusion-v2']);
-  const phases = new Set(['not-started', 'live', 'sealed', 'committed', 'drawn', 'review']);
-  const prizeOrder = [777, 703, 159, 31, 959];
+  const input = document.getElementById('h777-wallet');
+  const output = document.getElementById('h777-result');
+  const button = form.querySelector('button');
+  const snapshotHash = 'e891262f5867a95222719f92cbd4d1e9d9ddbb8f9d2e011fe8523f8484d14081';
+  let requestId = 0, controller;
   function validAddress(value) {
     if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value)) return false;
     const alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
@@ -18,112 +16,40 @@
     for (; n > 0; n >>= 8n) bytes++;
     return bytes + (value.match(/^1*/)?.[0].length || 0) === 32;
   }
-  function tokens(raw) {
-    const n = BigInt(raw), whole = (n / 1000000n).toLocaleString('en-US');
-    const fraction = String(n % 1000000n).padStart(6, '0').replace(/0+$/, '');
-    return whole + (fraction ? '.' + fraction : '');
-  }
-  const date = ms => new Date(ms).toLocaleString('en-GB', { timeZone: 'UTC', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) + ' UTC';
-  async function display(data, id) {
-    if (data.campaign !== 'herd777-250m' || data.targetRaw !== '250000000000000' || data.entryUnitRaw !== '1000000' || typeof data.ready !== 'boolean' || !phases.has(data.phase)) throw Error('Unexpected campaign');
-    const amendment = data.ruleAmendment;
-    const legacy = amendment === undefined;
-    if (!legacy && (!amendment || (amendment.appliedAt !== null && (!Number.isSafeInteger(amendment.appliedAt) || amendment.appliedAt < 0 || amendment.appliedAt > 8640000000000000)) || (amendment.excludedBuyRaw !== null && !integer(amendment.excludedBuyRaw)) || (amendment.excludedBuyTransactions !== null && (!Number.isSafeInteger(amendment.excludedBuyTransactions) || amendment.excludedBuyTransactions < 0)) || !policies.has(amendment.id) || amendment.announcedDate !== '2026-10-10' || amendment.effectiveFromSlot !== 450578603 || !['pending', 'applied', 'conflict'].includes(amendment.status) || !Number.isSafeInteger(amendment.classifiedTransactions) || amendment.classifiedTransactions < 0 || (amendment.totalTransactions !== null && (!Number.isSafeInteger(amendment.totalTransactions) || amendment.totalTransactions < amendment.classifiedTransactions)))) throw Error('Unverified rule amendment');
-    const revisionTwo = !legacy && amendment.id === 'herd777-paired-buy-exclusion-v2';
-    const amendmentPending = legacy || amendment.status === 'pending';
-    const amendmentConflict = !legacy && amendment.status === 'conflict';
-    let amendmentMessage;
-    if (legacy) {
-      amendmentMessage = 'Amendment pending; showing the previous verified calculation.';
-    } else if (amendmentPending) {
-      amendmentMessage = (revisionTwo ? 'Updated amendment: recalculation in progress. ' : 'Recalculation in progress. ') + amendment.classifiedTransactions.toLocaleString('en-US') + (amendment.totalTransactions !== null ? ' of ' + amendment.totalTransactions.toLocaleString('en-US') : '') + ' transactions reviewed. Corrected progress and entries will replace the last verified results together after full verification.';
-    } else if (amendmentConflict) {
-      amendmentMessage = 'Amendment not applied: the campaign has already closed and needs review. Its original sealed record is preserved.';
-    } else {
-      if (!Number.isSafeInteger(amendment.appliedAt) || !integer(amendment.excludedBuyRaw) || !Number.isSafeInteger(amendment.excludedBuyTransactions) || amendment.excludedBuyTransactions < 0) throw Error('Unverified recalculation');
-      amendmentMessage = (revisionTwo ? 'Updated amendment' : 'Amendment') + ' applied to the entire campaign · ' + date(amendment.appliedAt) + '. ' + amendment.excludedBuyTransactions.toLocaleString('en-US') + ' paired-token ' + (amendment.excludedBuyTransactions === 1 ? 'buy excluded' : 'buys excluded') + ' · ' + tokens(amendment.excludedBuyRaw) + ' BULLEN excluded from shared progress.';
-    }
-    if (!data.ready) {
-      el('amendment-update').hidden = !revisionTwo;
-      el('counting-update').hidden = !revisionTwo;
-      el('amendment-status').textContent = legacy ? 'Amendment pending. Waiting for the last verified campaign total.' : amendmentMessage;
-      el('status').textContent = data.phase === 'not-started' ? 'The campaign count is being prepared. Check back shortly.' : 'Verifying the full history. The count will appear when reconciliation is complete.';
-      if (wallet) output.textContent = 'Entries are being verified. Please check again shortly; no total is assumed.';
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    controller?.abort();
+    const id = ++requestId, wallet = input.value.trim();
+    output.dataset.result = '';
+    button.disabled = false;
+    if (!validAddress(wallet)) {
+      output.textContent = 'Enter a complete Solana wallet address.';
+      input.focus();
       return;
     }
-    if (!integer(data.buyRaw) || !integer(data.remainingRaw) || !Number.isSafeInteger(data.observedSlot) || data.observedSlot <= 450578603 || !Number.isSafeInteger(data.observedAt) || data.observedAt < 0 || data.observedAt > 8640000000000000 || (wallet && (!integer(data.entries) || data.wallet !== wallet))) throw Error('Unverified response');
-    const rawBought = BigInt(data.buyRaw), rawTarget = BigInt(data.targetRaw);
-    if (BigInt(data.remainingRaw) !== (rawBought >= rawTarget ? 0n : rawTarget - rawBought) || !Number.isFinite(Number(data.buyRaw))) throw Error('Inconsistent progress');
-    if (data.snapshotHash && !/^[a-f0-9]{64}$/.test(data.snapshotHash)) throw Error('Unverified snapshot');
-    if (data.phase === 'drawn' && (!data.snapshotHash || !Array.isArray(data.winners) || data.winners.length !== 5 || new Set(data.winners.map(w => w.wallet)).size !== 5 || data.winners.some((winner, index) => winner.position !== prizeOrder[index] || !validAddress(winner.wallet)))) throw Error('Invalid draw record');
-    if (data.observedSlot < latestSlot) return;
-    latestSlot = data.observedSlot;
-    lastRuleState = amendmentPending ? 'pending' : amendment.status;
-    el('amendment-update').hidden = !revisionTwo;
-    el('counting-update').hidden = !revisionTwo;
-    el('amendment-status').textContent = amendmentMessage;
-    const bought = el('bought');
-    if (!ready && !reduced.matches) {
-      bought.style.opacity = '0';
-      await new Promise(resolve => setTimeout(resolve, 150));
-      if (id !== requestId || destroyed) { bought.style.opacity = ''; return; }
-    }
-    const amount = Number(data.buyRaw) / 1000000, percent = amount / 250000000 * 100;
-    bought.classList.remove('h777-loading');
-    bought.textContent = amount >= 1000000 ? (amount / 1000000).toFixed(2) + 'M' : tokens(data.buyRaw);
-    bought.style.opacity = '';
-    el('percent').textContent = Math.min(percent, 100).toFixed(2) + '%';
-    el('bar').value = Math.min(amount, 250000000);
-    el('remaining').textContent = tokens(data.buyRaw) + ' bought · ' + tokens(data.remainingRaw) + ' to go';
-    el('observed').textContent = (amendmentPending ? 'Last verified before recalculation · ' : 'Verified · ') + date(data.observedAt);
-    el('progress').setAttribute('aria-busy', 'false');
-    el('status').textContent = amendmentPending ? (legacy ? 'Amendment pending; showing the previous verified calculation.' : 'Last verified before recalculation. The displayed progress and entries come from the previous verified calculation.') : amendmentConflict ? 'Amendment requires review. The original sealed count and entries are unchanged.' : data.phase === 'drawn' ? 'Complete. The five winning wallets are below.' : ['sealed', 'committed'].includes(data.phase) ? 'Target reached. Entries are sealed; the draw is being verified.' : data.phase === 'review' ? 'Selection is paused for verification. The sealed entries are unchanged.' : data.catchingUp ? 'Verification is catching up. Showing the last verified count.' : 'Counting qualifying buys. Wallet entries update with each verified snapshot.';
-    if (data.snapshotHash) el('snapshot-link').hidden = false;
-    if (wallet) {
-      output.textContent = BigInt(data.entries).toLocaleString('en-US') + ' entries · ' + (amendmentPending ? 'Last verified before recalculation · ' : '') + date(data.observedAt) + '. ' + (data.phase === 'live' ? 'Keep qualifying tokens in this wallet through the closing snapshot.' : 'These are the entries recorded at closing.') + (amendmentPending ? ' These entries from the previous verified calculation will be replaced after full verification.' : amendmentConflict ? ' The amendment has not changed these entries.' : data.catchingUp ? ' A fresh verification is pending.' : '');
-      output.dataset.result = 'ready';
-    }
-    if (data.phase === 'drawn') {
-      const list = el('winner-list'); list.replaceChildren();
-      for (const winner of data.winners) {
-        const li = document.createElement('li'), link = document.createElement('a');
-        link.href = 'https://solscan.io/account/' + winner.wallet;
-        link.textContent = winner.wallet; link.target = '_blank'; link.rel = 'noopener noreferrer';
-        li.append('HERD #' + winner.position + ' → ', link); list.append(li);
-      }
-      el('winners').hidden = false;
-    }
-    ready = true;
-  }
-  async function refresh() {
-    clearTimeout(timer);
-    if (destroyed || document.hidden) return;
-    const id = ++requestId; let delay = 30000;
+    controller = new AbortController();
+    button.disabled = true;
+    output.textContent = 'Checking the sealed closing entries…';
     try {
-      const response = await fetch('/herd777-api/' + (wallet ? 'entries?wallet=' + encodeURIComponent(wallet) : 'status'), { cache: 'no-store', signal: AbortSignal.timeout(15000) });
+      const response = await fetch('/herd777-api/entries?wallet=' + encodeURIComponent(wallet), {
+        cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)])
+      });
       const data = await response.json();
-      if (id !== requestId || destroyed) return;
-      if (!response.ok && !(response.status === 503 && data.ready === false)) throw Error('Unavailable');
-      await display(data, id);
+      if (id !== requestId) return;
+      if (!response.ok || data.campaign !== 'herd777-250m' || data.ready !== true || data.phase !== 'drawn' ||
+          data.snapshotHash !== snapshotHash || data.observedSlot !== 455416504 || data.wallet !== wallet ||
+          typeof data.entries !== 'string' || !/^\d+$/.test(data.entries)) throw Error('Unverified closing entries');
+      output.textContent = BigInt(data.entries).toLocaleString('en-US') + ' entries recorded at closing. This campaign is completed.';
+      output.dataset.result = 'ready';
     } catch {
-      if (id !== requestId || destroyed) return;
-      delay = 60000;
-      el('status').textContent = ready ? (lastRuleState === 'pending' ? 'Refresh unavailable. Showing the previous verified calculation; the amendment is still pending.' : 'Refresh unavailable. Showing the last verified count; retrying shortly.') : 'Verification is temporarily unavailable. Retrying shortly.';
-      if (!ready) { el('bought').textContent = 'awaiting data'; el('remaining').textContent = 'No unverified total is displayed.'; }
-      if (wallet) { output.textContent = 'A verified entry total could not be loaded. Please try again.'; output.dataset.result = ''; }
+      if (id !== requestId) return;
+      output.textContent = 'The closing entry record could not be loaded. Please try again. The final awards above are unchanged.';
     } finally {
-      if (id === requestId && !destroyed) { button.disabled = false; timer = setTimeout(refresh, delay); }
+      if (id === requestId) button.disabled = false;
     }
-  }
-  form.addEventListener('submit', event => {
-    event.preventDefault();
-    const value = input.value.trim();
-    if (!validAddress(value)) { output.textContent = 'Enter a complete Solana wallet address.'; input.focus(); return; }
-    wallet = value; button.disabled = true; output.dataset.result = '';
-    output.textContent = 'Checking the latest verified entries…'; refresh();
   });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) clearTimeout(timer); else refresh(); });
-  addEventListener('pagehide', () => { destroyed = true; clearTimeout(timer); });
-  addEventListener('pageshow', event => { if (event.persisted) { destroyed = false; refresh(); } });
-  refresh();
+  addEventListener('pagehide', () => { ++requestId; controller?.abort(); button.disabled = false; });
+  addEventListener('pageshow', event => {
+    if (event.persisted && output.dataset.result !== 'ready') output.textContent = 'Read-only check. No connection. No signature.';
+  });
 })();
