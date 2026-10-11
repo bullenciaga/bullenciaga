@@ -40,3 +40,14 @@ test('corruption, oversized source, unknown template dimensions and unsafe forma
  const source=png(1024,1024),corrupt=Buffer.from(source.bytes);corrupt[45]^=1;await assert.rejects(()=>decodePrintPNG(corrupt));await assert.rejects(()=>makeSquarePrintCanvas({...source,width:2601,height:2601},{inchesWidth:15.5,inchesHeight:19.6}));await assert.rejects(()=>makeSquarePrintCanvas(source,{inchesWidth:16,inchesHeight:20}));await assert.rejects(()=>makeSquarePrintCanvas({...source,contentType:'image/jpeg'},{inchesWidth:15.5,inchesHeight:19.6}));
  const bomb=png(10,10),header=Buffer.from(bomb.bytes.subarray(16,29));header.writeUInt32BE(1);header.writeUInt32BE(1,4);const big=Buffer.concat([signature,chunk('IHDR',header),chunk('IDAT',deflateSync(Buffer.alloc(100000))),chunk('IEND',Buffer.alloc(0))]);await assert.rejects(()=>decodePrintPNG(big));
 });
+
+
+test('both verified mug wraps keep two complete square originals at6.1cm, with transparent handle and edge clearance',async()=>{
+ for(const dimensions of[{inchesWidth:7.5,inchesHeight:925/300},{inchesWidth:9,inchesHeight:3.5}]){
+  const source=png(1024,1024),p=await makeSquarePrintCanvas(source,dimensions,'mug'),o=rawOutput(p.bytes),stride=o.w*4+1;
+  assert.equal(p.printInfo.region,'default');assert.equal(p.printInfo.copies,2);assert.equal(p.printInfo.widthCm,6.1);assert.equal(p.printInfo.upscaled,false);assert.equal(p.printInfo.lowResolution,false);assert.match(p.printMessage,/both sides/);
+  for(const{x,y}of p.printInfo.pixelOffsets){assert.ok(x>0&&y>0);assert.ok(x+1024<o.w&&y+1024<o.h);for(let row=0;row<1024;row++)assert.deepEqual(o.raw.subarray((row+y)*stride+1+x*4,(row+y)*stride+1+(x+1024)*4),source.pixels.subarray(row*4096,(row+1)*4096));}
+  assert.ok(o.raw.subarray(0,p.printInfo.pixelOffset.y*stride).every(v=>v===0));
+ }
+ await assert.rejects(()=>makeSquarePrintCanvas(png(1024,1024),{inchesWidth:7.5,inchesHeight:3.6},'mug'));
+});

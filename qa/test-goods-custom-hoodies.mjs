@@ -21,7 +21,8 @@ const enc = new TextEncoder();
 const migrations = readdirSync(new URL('../migrations/goods/', import.meta.url)).filter(name => name.endsWith('.sql')).sort();
 const migrationSQL = name => readFileSync(new URL('../migrations/goods/' + name, import.meta.url), 'utf8');
 
-function template(garment) {
+function template(garment, colour='Black') {
+  if(garment==='mug')return {productId:colour==='Black'?'pro_dWMJDO04TgWcXKGQohVnHw':'pro_4v5OfYhyRx62KW5b7Oj6Uw',colorVariants:[{available:true,color:{name:colour,hex:colour==='Black'?'#171717':'#ffffff'},sizeVariants:[{size:'11oz',available:true,price:{amount:colour==='Black'?8.95:5.95,currency:'USD'}},{size:'15oz',available:true,price:{amount:9.95,currency:'USD'}}]}],customizableAreas:[{regionId:'default',available:true,supportsBackendRendering:true,productionMethod:'SUBLIMATION',dimensions:colour==='Black'?{inchesWidth:7.5,inchesHeight:925/300}:{inchesWidth:9,inchesHeight:3.5}}]};
   return {
     productId: garment === 'hoodie' ? HOODIE_TEMPLATE : TEE_TEMPLATE,
     colorVariants: (garment === 'hoodie' ? HOODIE_COLOURS : ['Black', 'Butter']).map(name => ({
@@ -85,12 +86,12 @@ function previews(colour, id = 'design') {
 async function harness({legacyProvider = false, queued = false} = {}) {
   const db = database(), store = new GoodsBenefitsStore(db), w = await wallet(), mint = (await wallet()).address;
   let time = Date.parse('2026-10-10T12:00:00Z'), owns = true, productCounter = 0, designCounter = 0;
-  let resolve = async (asset, garment = 'tee') => garment === 'hoodie' ? {
+  let resolve = async (asset, garment = 'tee') => garment==='mug'?{imageId:'fixture-two-sided-mug',printInfo:{region:'default',copies:2,widthCm:6.1,sourcePixels:1024,dpi:427,upscaled:false}}:garment === 'hoodie' ? {
     imageId: 'fixture-back-art', placementStrategy: 'FULL_REGION',
     printInfo: {region: 'back', widthCm: 30.5, sourcePixels: 1800, dpi: 150, upscaled: false},
     printMessage: 'Square back print: approximately 30.5 × 30.5 cm. BULLENCIAGA wordmark on the chest.',
   } : {imageId: 'fixture-front-art'};
-  const templates = {tee: template('tee'), hoodie: template('hoodie')};
+  const templates = {tee: template('tee'), hoodie: template('hoodie'),mugBlack:template('mug','Black'),mugWhite:template('mug','White')};
   const products = new Map([['standard', product('standard', 54.99)]]);
   const promotions = new Map(), designs = new Map(), orders = new Map(), calls = [], queue = [];
   const asset = {mint, name: 'HERD #42', image: 'https://gateway.irys.xyz/fixture-art', collection: 'The Herd'};
@@ -117,12 +118,12 @@ async function harness({legacyProvider = false, queued = false} = {}) {
       calls.push(['customization', body]);
       const id = 'design-' + (++designCounter);
       designs.set(id, structuredClone(body));
-      return {customizationId: id, images: body.garment === 'hoodie' ? previews(body.colour, id) : [{url: `https://imgproxy.fourthwall.dev/${id}-tee.jpg`}]};
+      return {customizationId: id, images: body.garment==='mug'?Array.from({length:4},(_,i)=>({region:'default',color:body.colour,size:'11oz',url:`https://imgproxy.fourthwall.dev/${id}-mug-${i}.jpg`})):body.garment === 'hoodie' ? previews(body.colour, id) : [{url: `https://imgproxy.fourthwall.dev/${id}-tee.jpg`}]};
     },
     createProduct: async body => {
       calls.push(['product', body]);
       const design = designs.get(body.customizationId), garment = design.garment || 'tee';
-      const cost = templates[garment].colorVariants.find(c => c.color.name === design.colour).sizeVariants.find(s => s.size === design.size).price.amount;
+      const cost = templates[garment==='mug'?'mug'+design.colour:garment].colorVariants.find(c => c.color.name === design.colour).sizeVariants.find(s => s.size === design.size).price.amount;
       // Emulate the supplier's two-print-area surcharge independently of the handler.
       const actualPrice = Math.round((cost + (garment === 'hoodie' ? 6.87 : 0) + body.profitMargin) * 100) / 100;
       const id = 'custom-' + (++productCounter);
@@ -137,7 +138,7 @@ async function harness({legacyProvider = false, queued = false} = {}) {
     getOrder: async id => structuredClone(orders.get(id)),
     listOrders: async () => ({results: [...orders.values()]}),
   };
-  if (!legacyProvider) provider.customTemplate = async garment => structuredClone(templates[garment]);
+  if (!legacyProvider) provider.customTemplate = async (garment,colour) => structuredClone(templates[garment==='mug'?'mug'+colour:garment]);
   const chain = {
     balance: async () => ({raw: '5000000000000', decimals: 6}),
     list: async () => owns ? [asset] : [],
@@ -207,7 +208,7 @@ test('options retain legacy tee fields and expose distinct print regions, prices
   assert.equal(result.status, 200);
   const {options} = result.body;
   assert.equal(options.template, 'AS Colour Heavy T-shirt');
-  assert.deepEqual(options.products.map(p => p.id), ['tee', 'hoodie']);
+  assert.deepEqual(options.products.map(p => p.id), ['tee', 'hoodie','mug']);
   const tee = options.products.find(p => p.id === 'tee'), hoodie = options.products.find(p => p.id === 'hoodie');
   assert.deepEqual(options.colours, tee.colours);
   assert.equal(tee.printRegion, 'front');
@@ -597,4 +598,52 @@ test('hoodie ownership is rechecked before preparation and rejected without a su
   assert.equal(countCalls(h, 'customization'), 0);
   assert.equal(countCalls(h, 'product'), 0);
   assert.equal(await h.store.count(h.w.address, 'custom'), 0);
+});
+
+
+test('black and white custom mugs use separate templates and exact $29.99 pricing, preserving both previews and discount checkout',async()=>{
+ const h=await harness();await h.login();const discount=await h.api('/discount',{});assert.equal(discount.status,200);const options=(await h.api('/status')).body.options;
+ const mug=options.products.find(p=>p.id==='mug');assert.equal(mug.printWidthCm,6.1);
+ assert.deepEqual(mug.colours.map(c=>[c.name,c.sizes]),['Black','White'].map(name=>[name,[{name:'11oz',price:29.99,currency:'USD'}]]));
+ for(const colour of ['Black','White']){
+  const r=await h.api('/custom',customBody(h,{garment:'mug',colour,size:'11oz',idempotencyKey:'custom-mug-'+colour+'-1234'}));
+  assert.equal(r.status,202);assert.equal(r.body.state,'ready');assert.equal(r.body.price,29.99);assert.equal(r.body.garment,'mug');assert.equal(r.body.previews.length,2);
+  assert.match(r.body.preview,/-mug-0.jpg$/);assert.match(r.body.previews[1].url,/-mug-2.jpg$/);
+  const saved=await h.store.request(r.body.id);assert.equal(saved.garment,'mug');
+  const productCall=h.calls.filter(c=>c[0]==='product').at(-1)[1];assert.equal(productCall.profitMargin,colour==='Black'?21.04:24.04);assert.match(productCall.description,/both sides.*11oz/);assert.match(productCall.name,/Custom Ceramic Mug/);
+  const cart=await h.api(`/custom/${r.body.id}/checkout`,{holderDiscount:true});assert.equal(cart.status,200);assert.match(cart.body.checkoutUrl,/store.bullenciaga.com/);
+  assert.equal(h.calls.filter(c=>c[0]==='cart').at(-1)[1].variantId,saved.variant_id);
+ }
+ assert.equal((await h.api('/status')).body.custom.savedRequests.length,2);
+ const unavailable=await h.api('/custom',customBody(h,{garment:'mug',colour:'White',size:'15oz',idempotencyKey:'custom-mug-invalid-size'}));assert.equal(unavailable.status,409);
+});
+
+test('mug print preparation cannot reuse a tee canvas or an unverified preview',async()=>{
+ const h=await harness();await h.login();h.setResolve(async()=>({imageId:'tee-print',printInfo:{region:'front',widthCm:32}}));
+ const r=await h.api('/custom',customBody(h,{garment:'mug',size:'11oz'}));assert.equal(r.body.state,'review_required');assert.equal(countCalls(h,'customization'),0);assert.equal(countCalls(h,'product'),0);
+ const p=await harness();await p.login();p.provider.createCustomization=async()=>({customizationId:'wrong-preview',images:[{region:'default',color:'White',size:'11oz',url:'https://imgproxy.fourthwall.dev/wrong.jpg'}]});
+ const wrong=await p.api('/custom',customBody(p,{garment:'mug',size:'11oz'}));assert.equal(wrong.body.state,'review_required');assert.equal(countCalls(p,'product'),0);
+});
+
+test('custom mug provider API pins each colour to its verified template and default full print region',async()=>{
+ const calls=[];const client=createFourthwallBenefitsClient({username:'fixture',password:'fixture',fetchImpl:async(url,opts)=>{calls.push([String(url),opts.body?JSON.parse(opts.body):null]);return new Response('{}',{status:200})}});
+ for(const [colour,templateId]of [['Black','pro_dWMJDO04TgWcXKGQohVnHw'],['White','pro_4v5OfYhyRx62KW5b7Oj6Uw']]){
+  await client.customTemplate('mug',colour);assert.ok(calls.at(-1)[0].endsWith(templateId));
+  await client.createCustomization({garment:'mug',colour,size:'11oz',imageId:'original-two-face-canvas',placementStrategy:'FULL_REGION'});
+  assert.deepEqual(calls.at(-1)[1],{productTemplateId:templateId,regions:[{region:'default',placementStrategy:'FULL_REGION',imageId:'original-two-face-canvas'}],colors:[colour],sizes:['11oz']});
+ }
+ assert.throws(()=>client.createCustomization({garment:'mug',colour:'Black',size:'11oz',imageId:'unprepared'}));
+ assert.throws(()=>client.customTemplate('mug','Butter'));
+});
+
+test('mug schema migration preserves every legacy request value and referenced order with foreign keys enforced',()=>{
+ const db=new DatabaseSync(':memory:');db.exec('PRAGMA foreign_keys=ON');
+ for(const name of migrations.filter(n=>!n.startsWith('0007')))db.exec(migrationSQL(name));
+ db.prepare(`INSERT INTO goods_benefit_requests(id,wallet,kind,idempotency_key,state,created_at,updated_at,expires_at,mint,colour,size,price,garment,previews) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run('legacy-hoodie','wallet','custom','legacy-hoodie-key','consumed',1,2,3,'mint','Black','M',99.99,'hoodie','[{"region":"back","url":"https://example.com/saved.jpg"}]');
+ db.prepare('INSERT INTO goods_benefit_orders VALUES(?,?,?,?,?,?)').run('existing-paid-order','wallet','custom','legacy-hoodie','paid',4);
+ const before=db.prepare('SELECT * FROM goods_benefit_requests').all(),orders=db.prepare('SELECT * FROM goods_benefit_orders').all();
+ db.exec('BEGIN');db.exec(migrationSQL('0007_custom_mugs.sql'));db.exec('COMMIT');
+ assert.deepEqual(db.prepare('SELECT * FROM goods_benefit_requests').all(),before);assert.deepEqual(db.prepare('SELECT * FROM goods_benefit_orders').all(),orders);assert.deepEqual(db.prepare('PRAGMA foreign_key_check').all(),[]);
+ db.prepare("UPDATE goods_benefit_requests SET garment='mug' WHERE id='legacy-hoodie'").run();assert.throws(()=>db.prepare("UPDATE goods_benefit_requests SET garment='invalid'").run());
+ assert.throws(()=>db.prepare("DELETE FROM goods_benefit_requests WHERE id='legacy-hoodie'").run(),/FOREIGN KEY/);
 });
