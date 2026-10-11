@@ -2,6 +2,7 @@ import { platformSignupsAdmin } from './platform-signups-admin.mjs';
 import { platformSignup } from './platform-signup.mjs';
 import { merchPreview } from './merch-preview.mjs';
 import { createGoodsRuntime } from './goods-runtime.mjs';
+import { rareFourPreviewRead } from './rare-four-preview.mjs';
 
 // Keep short-domain visits on the established origin for wallets and sessions.
 const aliases = new Set(['bullen.app', 'www.bullen.app']);
@@ -96,6 +97,8 @@ const iphoneNavigation = `<style data-bullen-navigation>
 const website = {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const rareFourRead = rareFourPreviewRead(request);
+    if (rareFourRead) return rareFourRead;
     if (['/goods', '/merch'].some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) return merchPreview(request, env, ctx);
     if (url.pathname === '/platform/signups') return platformSignupsAdmin(request, env);
     if (url.pathname === '/platform/signup') return platformSignup(request, env);
