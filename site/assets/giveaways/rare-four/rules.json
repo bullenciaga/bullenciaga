@@ -1,0 +1,58 @@
+{
+  "mint": "BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN",
+  "tokenProgram": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+  "program": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+  "pool": "9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ",
+  "custodian": "GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd",
+  "collection": "5GXF7Uug7mZy2pj5XDk4LP9yH7oA5oMQEbCT49ggQnVC",
+  "campaign": "rare-four-25m",
+  "targetRaw": "25000000000000",
+  "entryUnitRaw": "100000000000",
+  "entryCap": null,
+  "openingSource": {
+    "campaign": "herd777-250m",
+    "snapshotHash": "e891262f5867a95222719f92cbd4d1e9d9ddbb8f9d2e011fe8523f8484d14081",
+    "slot": 455416504,
+    "utc": "2026-10-10T22:15:24Z",
+    "url": "https://bullenciaga.com/herd777-api/snapshot",
+    "boundary": "exclusive opening slot; inclusive first fully reconciled finalized closing snapshot reaching target"
+  },
+  "seedOffsetSlots": 600,
+  "prizes": [
+    {
+      "position": 875,
+      "assetId": "9dSL86deEYVeFKSec9geUYMPCk3VUHYjmJCe7mKbf7WK",
+      "kind": "draw"
+    },
+    {
+      "position": 853,
+      "assetId": "BJF6hcXmjVaNwDWB8Fj6aNDD8xi8tAGpGUWx6w7Z7LD7",
+      "kind": "draw"
+    },
+    {
+      "position": 677,
+      "assetId": "9PMYRHWz3QWoVpU2gyyTALcq8EMjmyLaEYXmz9jutMmu",
+      "kind": "draw"
+    },
+    {
+      "position": 254,
+      "assetId": "BcP1m6FTKr4sS73otNoVAGCa9njRoBbxsa71tvavB8KT",
+      "kind": "draw"
+    }
+  ],
+  "excludedWallets": [
+    "GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd",
+    "9MP131fa3jir94azmVHZdwQww2Ma9aLtzQUG6CJdV6TZ",
+    "Grsyrh21rnUaqXU73TbisGwNnjSbCQ6mMwNj5yDXzf2e",
+    "FgXGaLnEvXUBbo6UGzRyMxxqGEy17a7S3FsTpPgM4JkV",
+    "Bb8pCvrTtB9EdCkR9siwpfnWXL4vspeUyivFouaQDwx9"
+  ],
+  "entryBasis": "floor(max(0, min(qualifying net buys, closing balance - opening balance)) / 100000 BULLEN)",
+  "progressBasis": "sum of eligible retained new BULLEN across non-excluded wallets, including amounts below one entry",
+  "distinctWallets": false,
+  "decimals": 6,
+  "winCap": null,
+  "selection": "four independent entry-weighted draws with replacement",
+  "qualificationPolicy": "verified-direct-bullen-endpoint-v2; paired-token quote acquisitions excluded; unknown routes pause verification",
+  "retentionPolicy": "Purchase credit is bounded by net direct buying and net balance growth from opening. Incoming transfers alone earn nothing. Sales and outgoing transfers can reduce retained credit; repurchases or returned balances can restore credit only within those two bounds."
+}

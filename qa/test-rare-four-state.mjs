@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {verified,amount,validWallet} from '../site/rare-four-state.mjs';
+const d={campaign:'rare-four-25m',targetRaw:'25000000000000',entryUnitRaw:'100000000000',phase:'live',ready:true,retainedRaw:'99999999999',totalEntries:'0',eligibleWallets:0,observedAt:Date.now()-30000,observedSlot:455416505};
+assert(verified(d));assert.equal(amount(d.retainedRaw),'99,999.999999');assert.equal(amount('25000000000000'),'25,000,000');
+for(const patch of [{campaign:'herd777-250m'},{retainedRaw:null},{targetRaw:'250000000000000'},{entryUnitRaw:'1000000'},{totalEntries:'1'},{eligibleWallets:1},{observedSlot:455416504},{observedAt:Date.now()+600000},{phase:'drawn',winners:[]}])assert(!verified({...d,...patch}),JSON.stringify(patch));
+assert(verified({...d,ready:false,phase:'not-started',retainedRaw:null,totalEntries:null,eligibleWallets:null}));
+assert(validWallet('GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd'));assert(!validWallet('1'.repeat(44)));assert(!validWallet('<script>'));
+const w='GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd';
+assert(verified({...d,retainedRaw:'25000000000000',totalEntries:'250',eligibleWallets:1,phase:'drawn',snapshotHash:'a'.repeat(64),winners:[875,853,677,254].map(position=>({position,wallet:w}))}));
+console.log('PASS rare-four UI state: campaign isolation, precise amounts, boundary, time, impossible counts, complete repeat-winner results, input validation.');

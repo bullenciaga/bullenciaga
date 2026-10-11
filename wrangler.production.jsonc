@@ -66,6 +66,10 @@
     {
       "binding": "CONTROL_AUTH",
       "service": "rpc-proxy"
+    },
+    {
+      "binding": "RARE_FOUR_API",
+      "service": "bullenciaga-rare-four"
     }
   ],
   "r2_buckets": [

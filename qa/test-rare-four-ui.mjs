@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
+import {raw,verified,amount,validWallet} from '../site/rare-four-state.mjs';
+const source=fs.readFileSync(new URL('../site/rare-four.mjs',import.meta.url),'utf8').replace(/^import[^\n]+\n/,'');
+const elements=new Map(),events={},timers=[],calls=[];
+function element(id){if(!elements.has(id))elements.set(id,{id,textContent:'',value:'',style:{},dataset:{},listeners:{},disabled:false,addEventListener(k,f){this.listeners[k]=f},setAttribute(k,v){this[k]=v},querySelector(k){return element(id+' '+k)}});return elements.get(id)}
+element('activeCount').dataset.legacyCount='2';
+let response={campaign:'rare-four-25m',targetRaw:'25000000000000',entryUnitRaw:'100000000000',phase:'live',ready:true,retainedRaw:'200000000000',totalEntries:'2',eligibleWallets:1,observedAt:Date.now()-30000,observedSlot:455416505};let fail=false;
+vm.runInNewContext(source,{raw,verified,amount,validWallet,document:{getElementById:element},addEventListener:(n,f)=>events[n]=f,setTimeout:fn=>{timers.push(fn);return timers.length},clearTimeout(){},AbortController,AbortSignal,encodeURIComponent,Date,BigInt,Number,fetch:async url=>{calls.push(url);if(fail)throw Error('offline');return {ok:true,json:async()=>structuredClone(response)}}});
+await new Promise(setImmediate);assert.equal(element('rf-retained').textContent,'200,000');assert.equal(element('rf-entries').textContent,'2');assert.equal(element('activeCount').textContent,'3');
+fail=true;await timers.shift()();assert.equal(element('rf-retained').textContent,'200,000');assert.match(element('rf-status').textContent,/last verified/i);
+fail=false;response={...response,campaign:'herd777-250m',retainedRaw:'0'};await timers.shift()();assert.equal(element('rf-retained').textContent,'200,000');
+response={...response,campaign:'rare-four-25m',retainedRaw:'24900000000000',totalEntries:'249'};await timers.shift()();assert.equal(element('rf-remaining').textContent,'100,000');
+response={...response,retainedRaw:'24899999000000',totalEntries:'248',observedSlot:455416506};await timers.shift()();assert.equal(element('rf-retained').textContent,'24,899,999');assert.equal(element('rf-entries').textContent,'248');assert.equal(element('rf-remaining').textContent,'100,001');assert.equal(element('rf-progress')['aria-valuenow'],'24899999');assert.equal(element('rf-fill').style.width,'99.59%');
+fail=true;await timers.shift()();assert.equal(element('rf-retained').textContent,'24,899,999');assert.equal(element('rf-entries').textContent,'248');assert.equal(element('rf-remaining').textContent,'100,001');fail=false;
+element('rf-wallet').value='not-a-wallet';await element('rf-form').listeners.submit({preventDefault(){}});assert.match(element('rf-result').textContent,/complete Solana/);
+response={...response,campaign:'rare-four-25m',retainedRaw:'200000000000',totalEntries:'2',wallet:'GV7XDVAkra3Kjr4b2f2nyYrhL9gqEx5gvevdkTBzyYmd',entries:'1',countedRaw:'100000000000'};element('rf-wallet').value=response.wallet;await element('rf-form').listeners.submit({preventDefault(){}});assert.match(element('rf-result').textContent,/1 entries.*100,000/);assert.equal(element('rf-form button').disabled,false);
+fail=true;await element('rf-form').listeners.submit({preventDefault(){}});assert.match(element('rf-result').textContent,/could not be verified/);assert.equal(element('rf-form button').disabled,false);assert(calls.every(x=>x.startsWith('/rare-four-api/')));
+console.log('PASS rare-four UI: live one-token sell reduces progress/entries and increases remaining; outage preserves that lower total; campaign isolation, counts, input and lookup controls pass.');

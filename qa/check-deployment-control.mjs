@@ -117,5 +117,5 @@ for (const [config, suffix] of [[productionConfig, ''], [stagingConfig, '-stagin
   assert.equal(consumer.max_concurrency, 1, 'provider design rendering must run serially');
 }
 
-assert.deepEqual(stagingConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy-staging"}], "staging owner authentication stays in staging");
-assert.deepEqual(productionConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy"}], "only the existing owner authorization service is bound");
+assert.deepEqual(stagingConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy-staging"},{binding:"RARE_FOUR_API",service:"bullenciaga-rare-four-staging"}], "staging authentication and giveaway stay isolated");
+assert.deepEqual(productionConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy"},{binding:"RARE_FOUR_API",service:"bullenciaga-rare-four"}], "only existing authentication and the approved isolated giveaway are bound");
