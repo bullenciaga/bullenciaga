@@ -102,6 +102,11 @@ const website = {
     if (['/goods', '/merch'].some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) return merchPreview(request, env, ctx);
     if (url.pathname === '/platform/signups') return platformSignupsAdmin(request, env);
     if (url.pathname === '/platform/signup') return platformSignup(request, env);
+    // Only old public documents move; signup and private admin endpoints stay fixed.
+    if (['/platform', '/platform/', '/platform.html'].includes(url.pathname)) {
+      url.pathname = '/access';
+      return Response.redirect(url.toString(), 308);
+    }
     const userAgent = request.headers.get('User-Agent') || '';
     const iphoneChrome = /\biPhone\b/i.test(userAgent) && /\bCriOS\//i.test(userAgent);
     const documentPath = !url.pathname.split('/').pop().includes('.') || /\.html$/i.test(url.pathname);

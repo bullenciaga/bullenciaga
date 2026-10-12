@@ -27,7 +27,7 @@ assert.equal((await platformSignup(req(),{})).status,503);
 assert.equal((await platformSignup(req(),{...env,PLATFORM_SIGNUPS:{prepare(){throw Error('database offline')}}})).status,503);
 const rows=db.prepare('SELECT * FROM preview_signups').all();
 assert.deepEqual(Object.keys(rows[0]),['id','method','contact','created_at','consent_version']);
-for(const file of ['platform.html','platform.css','platform.js']) {
+for(const file of ['access.html','platform.css','platform.js']) {
  const text=readFileSync(new URL('../site/'+file,import.meta.url),'utf8');
  assert.doesNotMatch(text,/ondisplay|on display|supabase|xvhbsik|collect\/_expo/i,'anonymous page must not disclose product identity or backend');
 }

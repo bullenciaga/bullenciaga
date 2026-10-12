@@ -11,14 +11,14 @@
   X-Frame-Options: DENY
   Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self' data:; img-src 'self' https://bullenciaga-img-proxy.bullenciaga-e5c.workers.dev; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'
 
-/platform
+/access
   Referrer-Policy: no-referrer
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self' data:; img-src 'self'; media-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'
 
-/platform.html
+/access.html
   Referrer-Policy: no-referrer
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
