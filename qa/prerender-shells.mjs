@@ -13,7 +13,7 @@ const chevron = '<span class="bullen-header-chevron" aria-hidden="true"></span>'
 const external = ' target="_blank" rel="noopener noreferrer"';
 const extraLink = ([href,label]) => `<a href="${escape(href)}"${external}>${escape(label)}<span aria-hidden="true">↗</span></a>`;
 const shell = (name,source) => {
- const page=name.replace(/\.html$/,''),active=page.startsWith('patchnotes-')?'patchnotes':page;
+ const page=name.replace(/\.html$/,''),active=page.startsWith('patchnotes-')?'patchnotes':page==='access'?'platform':page;
  const label=labels[active]||'The House';
  const sections=(pageSections[page]||[]).filter(([id])=>source.includes(`id="${id}"`));
  const current=key=>key===active?' aria-current="page"':'';
@@ -30,7 +30,7 @@ for(const name of (await fs.readdir(site)).filter(n=>n.endsWith('.html')).sort()
  // The approved shared shell owns site navigation. Keep useful page controls
  // in a separate local toolbar; World identity is editorial content, untouched.
  if(!marker.test(source)){
-  if(name==='platform.html') source=source.replace(/<header>([\s\S]*?)<\/header>/,(_,inside)=>`<div class="bullen-page-toolbar" data-page-toolbar="platform">${inside.replace(/<a class="brand"[\s\S]*?<\/a>/,'')}</div>`);
+  if(name==='access.html') source=source.replace(/<header>([\s\S]*?)<\/header>/,(_,inside)=>`<div class="bullen-page-toolbar" data-page-toolbar="platform">${inside.replace(/<a class="brand"[\s\S]*?<\/a>/,'')}</div>`);
   if(name==='flywheel.html') source=source.replace(/<header>([\s\S]*?)<\/header>/,(_,inside)=>`<div class="bullen-page-toolbar" data-page-toolbar="flywheel">${inside.replace(/<a class="brand"[\s\S]*?<\/a>/,'').replace(/<nav aria-label="Page sections">[\s\S]*?<\/nav>/,'')}</div>`).replace("document.querySelectorAll('header nav a')","document.querySelectorAll('#bullen-contents-panel a')");
   if(name==='shares.html') source=source.replace(/<header>([\s\S]*?)<\/header>/,(_,inside)=>`<div class="bullen-page-toolbar" data-page-toolbar="shares">${inside.replace(/<a [\s\S]*?<\/a>/,'')}</div>`);
   if(name==='raiders.html') source=source.replace(/<header class="masthead">[\s\S]*?<\/header>/,'');

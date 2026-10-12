@@ -25,7 +25,7 @@ for (const host of ['bullen.app', 'www.bullen.app']) for (const path of paths) {
 console.log(JSON.stringify({ok:true, results}, null, 2));
 
 // Catch plain-HTTP page regressions that an HTTPS-only release smoke misses.
-const securePaths = ['/', '/world', '/world/', '/buy', '/platform', '/goods/', '/proof', '/world?ref=a%2Fb&tag=x+y&tag=z&empty='];
+const securePaths = ['/', '/world', '/world/', '/buy', '/platform', '/access', '/goods/', '/proof', '/world?ref=a%2Fb&tag=x+y&tag=z&empty='];
 const upgrades = [];
 for (const host of ['bullenciaga.com', 'www.bullenciaga.com']) for (const path of securePaths) {
   let result;

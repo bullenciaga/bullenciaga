@@ -7,7 +7,7 @@ const site=new URL('../site/',import.meta.url);
 const headerCss=fs.readFileSync(new URL('bullen-header.css',site),'utf8');
 const headers=fs.readFileSync(new URL('_headers',site),'utf8');
 assert.equal((headers.match(/font-src 'self' data:;/g)||[]).length,7,'Every protected CSP route allows only local/embedded fonts');
-assert.equal(crypto.createHash('sha256').update(headers.replace(/font-src[^;]+; ?/g,'')).digest('hex'),'a361fc63a4db8f4bc1501f2c3002298b4e585672e2c02c0c575b59e0446687b7','All non-font security/cache/privacy directives remain exact');
+assert.equal(crypto.createHash('sha256').update(headers.replace(/^\/access(?=\n|\.html)/gm,'/platform').replace(/font-src[^;]+; ?/g,'')).digest('hex'),'a361fc63a4db8f4bc1501f2c3002298b4e585672e2c02c0c575b59e0446687b7','All non-font security/cache/privacy directives remain exact');
 const embeddedFonts=[...headerCss.matchAll(/data:font\/woff2;base64,([^']+)/g)].map(m=>Buffer.from(m[1],'base64'));
 assert.equal(embeddedFonts.length,2);
 assert.equal((headerCss.match(/font-display:block/g)||[]).length,2,'Embedded navigation faces render deterministically without an optional-font fallback');
@@ -19,7 +19,7 @@ assert(!groups.flatMap(([,keys])=>keys).includes('world'));
 assert.equal(new Set([...featured,...groups.flatMap(([,keys])=>keys)]).size,21);
 for(const [,keys] of groups)for(const key of keys){assert(descriptions[key]?.length>10);assert(destinations[key]);assert(labels[key]);}
 assert.equal(socials.length,4);assert.equal(resources.length,11);
-const oldDestinations=['/buy','/objects.html','/giveaways.html','/stats.html','/deepdive','/tape.html','/chart.html','/curve.html','/refer.html','/thedrop.html','/patchnotes.html','/lock.html','/ledger.html','/passport.html','/rooms.html','/world','/platform','/flywheel','https://bullensaga.com/'];
+const oldDestinations=['/buy','/objects.html','/giveaways.html','/stats.html','/deepdive','/tape.html','/chart.html','/curve.html','/refer.html','/thedrop.html','/patchnotes.html','/lock.html','/ledger.html','/passport.html','/rooms.html','/world','/access','/flywheel','https://bullensaga.com/'];
 for(const href of oldDestinations)assert(Object.values(destinations).includes(href),href);
 for(const name of fs.readdirSync(site).filter(name=>name.endsWith('.html'))){
  const html=fs.readFileSync(new URL(name,site),'utf8');
