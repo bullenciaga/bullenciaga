@@ -48,11 +48,13 @@
     "Bb8pCvrTtB9EdCkR9siwpfnWXL4vspeUyivFouaQDwx9"
   ],
   "entryBasis": "floor(max(0, min(qualifying net buys, closing balance - opening balance)) / 100000 BULLEN)",
-  "progressBasis": "sum of eligible retained new BULLEN across non-excluded wallets, including amounts below one entry",
+  "progressBasis": "sum of whole entries rounded down per wallet, multiplied by 100000 BULLEN; incomplete batches do not advance shared progress",
   "distinctWallets": false,
   "decimals": 6,
   "winCap": null,
   "selection": "four independent entry-weighted draws with replacement",
   "qualificationPolicy": "verified-direct-bullen-endpoint-v2; paired-token quote acquisitions excluded; unknown routes pause verification",
-  "retentionPolicy": "Purchase credit is bounded by net direct buying and net balance growth from opening. Incoming transfers alone earn nothing. Sales and outgoing transfers can reduce retained credit; repurchases or returned balances can restore credit only within those two bounds."
+  "retentionPolicy": "Purchase credit is bounded by net direct buying and net balance growth from opening. Incoming transfers alone earn nothing. Sales and outgoing transfers can reduce retained credit; repurchases or returned balances can restore credit only within those two bounds.",
+  "rulesVersion": 2,
+  "targetEntries": "250"
 }
