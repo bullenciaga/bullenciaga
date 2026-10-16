@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">BULLENCIAGA World</title>
+  <desc id="desc">A glossy teal sphere with a soft magenta reflection.</desc>
+  <defs>
+    <radialGradient id="sphere" cx="30%" cy="25%" r="83%">
+      <stop stop-color="#d5fff4"/>
+      <stop offset=".18" stop-color="#74eee0"/>
+      <stop offset=".43" stop-color="#23b5b4"/>
+      <stop offset=".73" stop-color="#12536c"/>
+      <stop offset="1" stop-color="#111128"/>
+    </radialGradient>
+    <radialGradient id="magenta" cx="91%" cy="76%" r="76%">
+      <stop stop-color="#f8b0e2" stop-opacity=".96"/>
+      <stop offset=".2" stop-color="#bc4b9e" stop-opacity=".86"/>
+      <stop offset=".52" stop-color="#9b388c" stop-opacity=".17"/>
+      <stop offset="1" stop-color="#9b388c" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shine">
+      <stop stop-color="#ffffff" stop-opacity=".93"/>
+      <stop offset=".4" stop-color="#e9fff8" stop-opacity=".7"/>
+      <stop offset="1" stop-color="#e9fff8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="rim" cx="50%" cy="50%" r="50%">
+      <stop offset=".87" stop-color="#b6fff1" stop-opacity="0"/>
+      <stop offset="1" stop-color="#b6fff1" stop-opacity=".35"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="28" fill="url(#sphere)"/>
+  <circle cx="32" cy="32" r="28" fill="url(#magenta)"/>
+  <circle cx="32" cy="32" r="28" fill="url(#rim)"/>
+  <ellipse cx="23" cy="17" rx="13" ry="7" transform="rotate(-35 23 17)" fill="url(#shine)"/>
+</svg>
