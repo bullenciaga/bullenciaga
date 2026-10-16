@@ -74,24 +74,24 @@ function countdownParts(now, launchAt) {
 }
 
 // This Goods-specific share card is public; catalogue assets and wallet APIs stay protected.
-const GOODS_SOCIAL_META = `<meta name="description" content="Signature pieces. House statements. The BULLENCIAGA collection.">
+const GOODS_SOCIAL_META = `<meta name="description" content="House signatures meet MAKE IT LOOK EASY. Discover the music drop, heavy cotton and framed art.">
 <link rel="canonical" href="https://bullenciaga.com/goods/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BULLENCIAGA">
 <meta property="og:title" content="Goods — BULLENCIAGA">
-<meta property="og:description" content="Signature pieces. House statements. The BULLENCIAGA collection.">
+<meta property="og:description" content="House signatures meet MAKE IT LOOK EASY. Discover the music drop, heavy cotton and framed art.">
 <meta property="og:url" content="https://bullenciaga.com/goods/">
-<meta property="og:image" content="https://bullenciaga.com/assets/social/goods-collection-01-v1.jpg">
-<meta property="og:image:secure_url" content="https://bullenciaga.com/assets/social/goods-collection-01-v1.jpg">
+<meta property="og:image" content="https://bullenciaga.com/assets/social/goods-mile-v1.jpg">
+<meta property="og:image:secure_url" content="https://bullenciaga.com/assets/social/goods-mile-v1.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Bull, Lily and Sakura wearing the BULLENCIAGA House collection during a studio photoshoot.">
+<meta property="og:image:alt" content="Sakura in the cream signature tee, the Bull in his emblem hoodie and Lily previewing a cubist all-over hoodie.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Goods — BULLENCIAGA">
-<meta name="twitter:description" content="Signature pieces. House statements. The BULLENCIAGA collection.">
-<meta name="twitter:image" content="https://bullenciaga.com/assets/social/goods-collection-01-v1.jpg">
-<meta name="twitter:image:alt" content="Bull, Lily and Sakura wearing the BULLENCIAGA House collection during a studio photoshoot.">`;
+<meta name="twitter:description" content="House signatures meet MAKE IT LOOK EASY. Discover the music drop, heavy cotton and framed art.">
+<meta name="twitter:image" content="https://bullenciaga.com/assets/social/goods-mile-v1.jpg">
+<meta name="twitter:image:alt" content="Sakura in the cream signature tee, the Bull in his emblem hoodie and Lily previewing a cubist all-over hoodie.">`;
 
 function loginPage(message = '', status = 200, head = false, extra = {}, state = launchState({ MERCH_PREVIEW_PROTECTED: '1' })) {
   const nonce = hex(crypto.getRandomValues(new Uint8Array(16)));
