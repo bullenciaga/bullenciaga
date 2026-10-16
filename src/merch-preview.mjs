@@ -6,6 +6,9 @@ import { createGoodsRuntime } from './goods-runtime.mjs';
 // are separate boundaries; Fourthwall callbacks retain their HMAC authentication.
 const SESSION_COOKIE = '__Secure-bullen_merch';
 const PREVIEW_PATH = '/goods';
+// A fresh share identity for this collection. Visitors see the same Goods
+// document; its presentation module moves them to the music drop in place.
+const GOODS_CAMPAIGN_PATH = '/goods/make-it-look-easy';
 const LEGACY_PATH = '/merch';
 const SESSION_SECONDS = 12 * 60 * 60;
 const MAX_LOGIN_BYTES = 2048;
@@ -81,17 +84,17 @@ const GOODS_SOCIAL_META = `<meta name="description" content="House signatures me
 <meta property="og:title" content="Goods — BULLENCIAGA">
 <meta property="og:description" content="House signatures meet MAKE IT LOOK EASY. Discover the music drop, heavy cotton and framed art.">
 <meta property="og:url" content="https://bullenciaga.com/goods/">
-<meta property="og:image" content="https://bullenciaga.com/assets/social/goods-mile-v1.jpg">
-<meta property="og:image:secure_url" content="https://bullenciaga.com/assets/social/goods-mile-v1.jpg">
+<meta property="og:image" content="https://bullenciaga.com/assets/social/goods-mile-v2.jpg">
+<meta property="og:image:secure_url" content="https://bullenciaga.com/assets/social/goods-mile-v2.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Sakura in the cream signature tee, the Bull in his emblem hoodie and Lily previewing a cubist all-over hoodie.">
+<meta property="og:image:alt" content="Sakura in the cream signature tee, the tall Bull in his black emblem hoodie and Lily in the MAKE IT LOOK EASY cubist hoodie. House signatures. New rhythms.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Goods — BULLENCIAGA">
 <meta name="twitter:description" content="House signatures meet MAKE IT LOOK EASY. Discover the music drop, heavy cotton and framed art.">
-<meta name="twitter:image" content="https://bullenciaga.com/assets/social/goods-mile-v1.jpg">
-<meta name="twitter:image:alt" content="Sakura in the cream signature tee, the Bull in his emblem hoodie and Lily previewing a cubist all-over hoodie.">`;
+<meta name="twitter:image" content="https://bullenciaga.com/assets/social/goods-mile-v2.jpg">
+<meta name="twitter:image:alt" content="Sakura in the cream signature tee, the tall Bull in his black emblem hoodie and Lily in the MAKE IT LOOK EASY cubist hoodie. House signatures. New rhythms.">`;
 
 function loginPage(message = '', status = 200, head = false, extra = {}, state = launchState({ MERCH_PREVIEW_PROTECTED: '1' })) {
   const nonce = hex(crypto.getRandomValues(new Uint8Array(16)));
@@ -300,7 +303,7 @@ async function readLogin(request) {
 }
 
 function assetName(pathname) {
-  if (pathname === PREVIEW_PATH || pathname === `${PREVIEW_PATH}/`) return 'index.html';
+  if (pathname === PREVIEW_PATH || pathname === `${PREVIEW_PATH}/` || pathname === GOODS_CAMPAIGN_PATH) return 'index.html';
   const relative = pathname.slice(PREVIEW_PATH.length + 1);
   // No encoded separators, dot segments, hidden files or double decoding.
   if (relative.length > 512 || !relative.split('/').every(part => /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(part))) return null;
@@ -481,7 +484,11 @@ export async function merchPreview(request, env, ctx) {
     if (!state.open) return new Response(head ? null : object.body, { status: 200, headers: headers({ 'Content-Type': contentType }) });
     const publicHeaders = headers({ 'Content-Type': contentType, 'Cache-Control': 'no-store, max-age=0' });
     publicHeaders.delete('Vary'); publicHeaders.delete('X-Robots-Tag');
-    const body = head ? null : name === 'index.html' ? publicIndex(await new Response(object.body).text()) : object.body;
+    let body = head ? null : name === 'index.html' ? publicIndex(await new Response(object.body).text()) : object.body;
+    if (name === 'index.html' && pathname === GOODS_CAMPAIGN_PATH && !head) {
+      body = body.replace('<meta property="og:url" content="https://bullenciaga.com/goods/">',
+        `<meta property="og:url" content="https://bullenciaga.com${GOODS_CAMPAIGN_PATH}">`);
+    }
     return new Response(body, { status: 200, headers: publicHeaders });
   } catch (_) {
     // No input, credentials, cookies or storage errors are logged or reflected.

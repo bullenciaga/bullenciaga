@@ -215,9 +215,9 @@ for (const problem of ['style-error', 'missing-api', 'failed-font', 'missing-fac
 
 // Crawlers receive complete metadata without JavaScript or an authentication
 // bypass. A single approved share image lives in ordinary public site assets.
-const socialImage = `${origin}/assets/social/goods-mile-v1.jpg`;
+const socialImage = `${origin}/assets/social/goods-mile-v2.jpg`;
 const socialDescription = 'House signatures meet MAKE IT LOOK EASY. Discover the music drop, heavy cotton and framed art.';
-const socialAlt = 'Sakura in the cream signature tee, the Bull in his emblem hoodie and Lily previewing a cubist all-over hoodie.';
+const socialAlt = 'Sakura in the cream signature tee, the tall Bull in his black emblem hoodie and Lily in the MAKE IT LOOK EASY cubist hoodie. House signatures. New rhythms.';
 function shareMetadata(body) {
   const expected = {
     description: socialDescription,
