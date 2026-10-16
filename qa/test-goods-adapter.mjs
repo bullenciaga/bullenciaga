@@ -68,7 +68,7 @@ const releaseMappings=(await import('../src/goods-mappings.mjs')).default;
 test('approved catalogue has one route per selection and no variant shared across selections',()=>{
  assert.doesNotThrow(()=>validateMappings(releaseMappings));
  const rows=releaseMappings.variants;
- assert.equal(rows.length,147);assert.equal(new Set(rows.map(x=>x.product)).size,30);
+ assert.equal(rows.length,155);assert.equal(new Set(rows.map(x=>x.product)).size,32);
  assert.equal(new Set(rows.map(x=>[x.product,x.colour,x.size].join('|'))).size,rows.length);
  assert.equal(new Set(rows.map(x=>x.variantId)).size,rows.length);
  const retired=new Set(['53ffe548-2e95-482d-909c-f3e592b17aed','6fc7156c-8666-46de-b939-48b228717f75']);
@@ -108,4 +108,17 @@ test('embroidered colours resolve to the approved pocketed blanks, including Cre
   record.variants[0].attributes.color.name=colour==='E01S'?'Arona':'Cream';
   assert.throws(()=>normalizeVariant(route,record,'USD'),'A swapped supplier colour must fail closed');
  }
+});
+
+// Verified 2026-10-16 supplier IDs: only the finished tee and print are purchasable.
+test('Make It Look Easy maps the faded tee and both framed sizes without a speculative hoodie',()=>{
+ const rows=releaseMappings.variants.filter(x=>x.product.startsWith('make-it-look-easy-'));
+ assert.equal(rows.length,8);
+ const tee=rows.filter(x=>x.product==='make-it-look-easy-tee');
+ assert.deepEqual(tee.map(x=>x.size),['S','M','L','XL','2XL','3XL']);
+ assert.ok(tee.every(x=>x.productId==='e97dd341-3cf8-4761-a3fe-5de36efdc42e'&&x.expectedColor==='Faded Black'&&x.size===x.expectedSize));
+ assert.equal(tee.find(x=>x.size==='S').variantId,'22d86610-8c10-4e0f-89c8-176790c6ce5c');
+ const print=rows.filter(x=>x.product==='make-it-look-easy-print');
+ assert.deepEqual(print.map(x=>[x.size,x.variantId]),[['12 × 16 in','fe106107-a034-4302-b4bd-4e2213f81882'],['18 × 24 in','7ae1553a-9b8a-40f4-922e-e0402ac19c0b']]);
+ assert.ok(print.every(x=>x.productId==='8d33ff20-3e05-4e4a-9f06-b884b7b814e9'&&x.expectedColor==='Black'));
 });

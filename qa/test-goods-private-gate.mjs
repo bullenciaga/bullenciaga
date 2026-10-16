@@ -215,9 +215,9 @@ for (const problem of ['style-error', 'missing-api', 'failed-font', 'missing-fac
 
 // Crawlers receive complete metadata without JavaScript or an authentication
 // bypass. A single approved share image lives in ordinary public site assets.
-const socialImage = `${origin}/assets/social/goods-collection-01-v1.jpg`;
-const socialDescription = 'Signature pieces. House statements. The BULLENCIAGA collection.';
-const socialAlt = 'Bull, Lily and Sakura wearing the BULLENCIAGA House collection during a studio photoshoot.';
+const socialImage = `${origin}/assets/social/goods-mile-v1.jpg`;
+const socialDescription = 'House signatures meet MAKE IT LOOK EASY. Discover the music drop, heavy cotton and framed art.';
+const socialAlt = 'Sakura in the cream signature tee, the Bull in his emblem hoodie and Lily previewing a cubist all-over hoodie.';
 function shareMetadata(body) {
   const expected = {
     description: socialDescription,

@@ -6,6 +6,94 @@ export default {
   "checkoutOrigin": "https://store.bullenciaga.com",
   "variants": [
     {
+      "product": "make-it-look-easy-tee",
+      "colour": "MILE-TEE",
+      "size": "S",
+      "productId": "e97dd341-3cf8-4761-a3fe-5de36efdc42e",
+      "slug": "make-it-look-easy-faded-heavy-tee",
+      "variantId": "22d86610-8c10-4e0f-89c8-176790c6ce5c",
+      "expectedColor": "Faded Black",
+      "expectedSize": "S",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-tee",
+      "colour": "MILE-TEE",
+      "size": "M",
+      "productId": "e97dd341-3cf8-4761-a3fe-5de36efdc42e",
+      "slug": "make-it-look-easy-faded-heavy-tee",
+      "variantId": "548aa2dc-66c5-4d70-92b8-332fc569695a",
+      "expectedColor": "Faded Black",
+      "expectedSize": "M",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-tee",
+      "colour": "MILE-TEE",
+      "size": "L",
+      "productId": "e97dd341-3cf8-4761-a3fe-5de36efdc42e",
+      "slug": "make-it-look-easy-faded-heavy-tee",
+      "variantId": "679a1217-dbbf-477c-bde6-6d8430044cf1",
+      "expectedColor": "Faded Black",
+      "expectedSize": "L",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-tee",
+      "colour": "MILE-TEE",
+      "size": "XL",
+      "productId": "e97dd341-3cf8-4761-a3fe-5de36efdc42e",
+      "slug": "make-it-look-easy-faded-heavy-tee",
+      "variantId": "097222d2-dbbe-40e7-b890-d4d4eecddf06",
+      "expectedColor": "Faded Black",
+      "expectedSize": "XL",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-tee",
+      "colour": "MILE-TEE",
+      "size": "2XL",
+      "productId": "e97dd341-3cf8-4761-a3fe-5de36efdc42e",
+      "slug": "make-it-look-easy-faded-heavy-tee",
+      "variantId": "24fd4dfd-7631-4119-9d90-a9011299178d",
+      "expectedColor": "Faded Black",
+      "expectedSize": "2XL",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-tee",
+      "colour": "MILE-TEE",
+      "size": "3XL",
+      "productId": "e97dd341-3cf8-4761-a3fe-5de36efdc42e",
+      "slug": "make-it-look-easy-faded-heavy-tee",
+      "variantId": "df368441-8d1e-483a-a19c-343edb0af0e1",
+      "expectedColor": "Faded Black",
+      "expectedSize": "3XL",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-print",
+      "colour": "MILE-PRINT",
+      "size": "12 × 16 in",
+      "productId": "8d33ff20-3e05-4e4a-9f06-b884b7b814e9",
+      "slug": "make-it-look-easy-framed-print",
+      "variantId": "fe106107-a034-4302-b4bd-4e2213f81882",
+      "expectedColor": "Black",
+      "expectedSize": "12\" x 16\"",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-print",
+      "colour": "MILE-PRINT",
+      "size": "18 × 24 in",
+      "productId": "8d33ff20-3e05-4e4a-9f06-b884b7b814e9",
+      "slug": "make-it-look-easy-framed-print",
+      "variantId": "7ae1553a-9b8a-40f4-922e-e0402ac19c0b",
+      "expectedColor": "Black",
+      "expectedSize": "18\" x 24\"",
+      "enabled": true
+    },
+    {
       "product": "house-ritual-mug",
       "colour": "H06-MUG",
       "size": "11 oz",
