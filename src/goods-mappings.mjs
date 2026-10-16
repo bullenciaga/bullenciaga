@@ -6,6 +6,127 @@ export default {
   "checkoutOrigin": "https://store.bullenciaga.com",
   "variants": [
     {
+      "product": "make-it-look-easy-hoodie",
+      "colour": "MILE-HOODIE",
+      "size": "2XS",
+      "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
+      "slug": "make-it-look-easy-cotton-all-over-hoodie",
+      "variantId": "4b34b04c-30b1-4c3c-8a23-a20da5351c5b",
+      "expectedColor": "White",
+      "expectedSize": "2XS",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-hoodie",
+      "colour": "MILE-HOODIE",
+      "size": "XS",
+      "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
+      "slug": "make-it-look-easy-cotton-all-over-hoodie",
+      "variantId": "7d2f128f-c85e-4800-8e46-bcbf6df46d68",
+      "expectedColor": "White",
+      "expectedSize": "XS",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-hoodie",
+      "colour": "MILE-HOODIE",
+      "size": "S",
+      "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
+      "slug": "make-it-look-easy-cotton-all-over-hoodie",
+      "variantId": "9904f72d-8dad-4194-8fac-25d704999550",
+      "expectedColor": "White",
+      "expectedSize": "S",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-hoodie",
+      "colour": "MILE-HOODIE",
+      "size": "M",
+      "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
+      "slug": "make-it-look-easy-cotton-all-over-hoodie",
+      "variantId": "6c17c553-5f51-4581-a862-6179c5fbb3a0",
+      "expectedColor": "White",
+      "expectedSize": "M",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-hoodie",
+      "colour": "MILE-HOODIE",
+      "size": "L",
+      "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
+      "slug": "make-it-look-easy-cotton-all-over-hoodie",
+      "variantId": "b1875d89-08e3-4dc7-ae28-cfb6aebc0305",
+      "expectedColor": "White",
+      "expectedSize": "L",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-hoodie",
+      "colour": "MILE-HOODIE",
+      "size": "XL",
+      "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
+      "slug": "make-it-look-easy-cotton-all-over-hoodie",
+      "variantId": "86d93662-e633-4918-a022-857b6ca96dce",
+      "expectedColor": "White",
+      "expectedSize": "XL",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-hoodie",
+      "colour": "MILE-HOODIE",
+      "size": "2XL",
+      "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
+      "slug": "make-it-look-easy-cotton-all-over-hoodie",
+      "variantId": "e7add605-c5a3-4e60-88e4-0e70d7bd77ce",
+      "expectedColor": "White",
+      "expectedSize": "2XL",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-hoodie",
+      "colour": "MILE-HOODIE",
+      "size": "3XL",
+      "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
+      "slug": "make-it-look-easy-cotton-all-over-hoodie",
+      "variantId": "61533e91-cfe1-4e07-b8b2-c4da1dfcdfbf",
+      "expectedColor": "White",
+      "expectedSize": "3XL",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-hoodie",
+      "colour": "MILE-HOODIE",
+      "size": "4XL",
+      "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
+      "slug": "make-it-look-easy-cotton-all-over-hoodie",
+      "variantId": "e5d91e59-5a3e-4c71-ab7a-32e4664f8b07",
+      "expectedColor": "White",
+      "expectedSize": "4XL",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-hoodie",
+      "colour": "MILE-HOODIE",
+      "size": "5XL",
+      "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
+      "slug": "make-it-look-easy-cotton-all-over-hoodie",
+      "variantId": "95b019dd-3350-49e5-a387-a3e26df28f9f",
+      "expectedColor": "White",
+      "expectedSize": "5XL",
+      "enabled": true
+    },
+    {
+      "product": "make-it-look-easy-hoodie",
+      "colour": "MILE-HOODIE",
+      "size": "6XL",
+      "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
+      "slug": "make-it-look-easy-cotton-all-over-hoodie",
+      "variantId": "2486f95c-9be1-496a-8a1f-bbefabe012d0",
+      "expectedColor": "White",
+      "expectedSize": "6XL",
+      "enabled": true
+    },
+    {
       "product": "make-it-look-easy-tee",
       "colour": "MILE-TEE",
       "size": "S",
@@ -74,7 +195,7 @@ export default {
     {
       "product": "make-it-look-easy-print",
       "colour": "MILE-PRINT",
-      "size": "12 × 16 in",
+      "size": "12 \u00d7 16 in",
       "productId": "8d33ff20-3e05-4e4a-9f06-b884b7b814e9",
       "slug": "make-it-look-easy-framed-print",
       "variantId": "fe106107-a034-4302-b4bd-4e2213f81882",
@@ -85,7 +206,7 @@ export default {
     {
       "product": "make-it-look-easy-print",
       "colour": "MILE-PRINT",
-      "size": "18 × 24 in",
+      "size": "18 \u00d7 24 in",
       "productId": "8d33ff20-3e05-4e4a-9f06-b884b7b814e9",
       "slug": "make-it-look-easy-framed-print",
       "variantId": "7ae1553a-9b8a-40f4-922e-e0402ac19c0b",
@@ -118,7 +239,7 @@ export default {
     {
       "product": "nocturne-atlas-cushion",
       "colour": "HL03",
-      "size": "16 × 16 in",
+      "size": "16 \u00d7 16 in",
       "productId": "2673c388-7839-4433-b082-42f4cef30fcf",
       "slug": "nocturne-atlas-cushion",
       "variantId": "155d6120-3d39-4055-9cd6-5998426505a9",
@@ -129,7 +250,7 @@ export default {
     {
       "product": "villa-perpetua-cushion",
       "colour": "HL02",
-      "size": "16 × 16 in",
+      "size": "16 \u00d7 16 in",
       "productId": "344bede4-cc49-4bb2-bdb8-40fe20a9913e",
       "slug": "villa-perpetua-cushion",
       "variantId": "d3f909a6-cb3e-41bf-8997-a59bbb5a9454",
@@ -965,40 +1086,40 @@ export default {
     {
       "product": "house-table-coaster",
       "colour": "HL01-P01",
-      "size": "1 coaster · 3.74 × 3.74 in",
+      "size": "1 coaster \u00b7 3.74 \u00d7 3.74 in",
       "productId": "ca88e458-18ab-49c7-bdee-844418d7681a",
       "slug": "lily-aurelia-coaster",
       "variantId": "2fa8caca-c947-4893-959e-284044e0ad16",
       "expectedColor": "All-Over Print",
-      "expectedSize": "3.74″×3.74″",
+      "expectedSize": "3.74\u2033\u00d73.74\u2033",
       "enabled": true
     },
     {
       "product": "house-table-coaster",
       "colour": "HL01-P02",
-      "size": "1 coaster · 3.74 × 3.74 in",
+      "size": "1 coaster \u00b7 3.74 \u00d7 3.74 in",
       "productId": "a36f7b3b-c212-495a-bf9f-2e78eb01421a",
       "slug": "sakura-selene-coaster",
       "variantId": "8ff16332-c3da-4e87-b5f2-462ffb0ff07c",
       "expectedColor": "All-Over Print",
-      "expectedSize": "3.74″×3.74″",
+      "expectedSize": "3.74\u2033\u00d73.74\u2033",
       "enabled": true
     },
     {
       "product": "house-table-coaster",
       "colour": "HL01-P03",
-      "size": "1 coaster · 3.74 × 3.74 in",
+      "size": "1 coaster \u00b7 3.74 \u00d7 3.74 in",
       "productId": "9cb7365a-7c76-4c83-9db3-1301130e7972",
       "slug": "the-celestial-atelier-coaster",
       "variantId": "a70d72dd-bb3d-4836-b365-f16cd6ea8bbe",
       "expectedColor": "All-Over Print",
-      "expectedSize": "3.74″×3.74″",
+      "expectedSize": "3.74\u2033\u00d73.74\u2033",
       "enabled": true
     },
     {
       "product": "square-worlds",
       "colour": "SW-P01",
-      "size": "12 × 12 in",
+      "size": "12 \u00d7 12 in",
       "productId": "7051e4bb-0603-4378-85a7-1c9ea273b8fb",
       "slug": "lily-aurelia-framed-print",
       "variantId": "af6b11eb-7343-4390-834e-37b9d16dfcf7",
@@ -1009,7 +1130,7 @@ export default {
     {
       "product": "square-worlds",
       "colour": "SW-P01",
-      "size": "16 × 16 in",
+      "size": "16 \u00d7 16 in",
       "productId": "7051e4bb-0603-4378-85a7-1c9ea273b8fb",
       "slug": "lily-aurelia-framed-print",
       "variantId": "ba395e35-cf60-484d-811e-dd1957d75ea5",
@@ -1031,7 +1152,7 @@ export default {
     {
       "product": "square-worlds",
       "colour": "SW-P02",
-      "size": "12 × 12 in",
+      "size": "12 \u00d7 12 in",
       "productId": "2d76dea5-10c7-4cd4-a097-749c39118fca",
       "slug": "sakura-selene-framed-print",
       "variantId": "e1049c73-59be-4cdd-aa0c-70b5f94322f9",
@@ -1042,7 +1163,7 @@ export default {
     {
       "product": "square-worlds",
       "colour": "SW-P02",
-      "size": "16 × 16 in",
+      "size": "16 \u00d7 16 in",
       "productId": "2d76dea5-10c7-4cd4-a097-749c39118fca",
       "slug": "sakura-selene-framed-print",
       "variantId": "62461503-754d-4d1b-8efe-21605afb46b2",
@@ -1064,7 +1185,7 @@ export default {
     {
       "product": "square-worlds",
       "colour": "SW-P03",
-      "size": "12 × 12 in",
+      "size": "12 \u00d7 12 in",
       "productId": "53ae1f29-2a52-46d3-93fd-9fe79354a07d",
       "slug": "the-celestial-atelier-framed-print",
       "variantId": "744b83b7-719a-44f4-819f-12b226161329",
@@ -1075,7 +1196,7 @@ export default {
     {
       "product": "square-worlds",
       "colour": "SW-P03",
-      "size": "16 × 16 in",
+      "size": "16 \u00d7 16 in",
       "productId": "53ae1f29-2a52-46d3-93fd-9fe79354a07d",
       "slug": "the-celestial-atelier-framed-print",
       "variantId": "1f75b0bb-b0ae-4766-aaad-4f1da0f0ff1f",
@@ -1086,7 +1207,7 @@ export default {
     {
       "product": "square-worlds",
       "colour": "SW-A01",
-      "size": "12 × 12 in",
+      "size": "12 \u00d7 12 in",
       "productId": "6003416e-30b5-4687-8392-c125376e6e0a",
       "slug": "villa-perpetua-framed-print",
       "variantId": "4dcf1aa9-d282-4951-be93-14011c8b28a5",
@@ -1097,7 +1218,7 @@ export default {
     {
       "product": "square-worlds",
       "colour": "SW-A01",
-      "size": "16 × 16 in",
+      "size": "16 \u00d7 16 in",
       "productId": "6003416e-30b5-4687-8392-c125376e6e0a",
       "slug": "villa-perpetua-framed-print",
       "variantId": "baef3795-9573-40f1-b7de-553edb06318f",
@@ -1108,7 +1229,7 @@ export default {
     {
       "product": "square-worlds",
       "colour": "SW-A02",
-      "size": "12 × 12 in",
+      "size": "12 \u00d7 12 in",
       "productId": "ee1f2800-6f63-4491-b4a1-7d48b28ab0b0",
       "slug": "nocturne-atlas-framed-print",
       "variantId": "52400fdc-0f97-464e-b1b7-60b8f53e00a1",
@@ -1119,7 +1240,7 @@ export default {
     {
       "product": "square-worlds",
       "colour": "SW-A02",
-      "size": "16 × 16 in",
+      "size": "16 \u00d7 16 in",
       "productId": "ee1f2800-6f63-4491-b4a1-7d48b28ab0b0",
       "slug": "nocturne-atlas-framed-print",
       "variantId": "f0f0253b-ff34-4b89-bdb7-b8469290e78e",
@@ -1130,7 +1251,7 @@ export default {
     {
       "product": "house-of-possibilities",
       "colour": "A01",
-      "size": "12 × 16 in",
+      "size": "12 \u00d7 16 in",
       "productId": "1183b9ee-9191-4529-b4dc-f18f2d83bd20",
       "slug": "the-house-of-possibilities-framed-print",
       "variantId": "539d95cc-38f9-475c-bcc1-3c1e5c9b78c5",
@@ -1141,7 +1262,7 @@ export default {
     {
       "product": "house-of-possibilities",
       "colour": "A01",
-      "size": "18 × 24 in",
+      "size": "18 \u00d7 24 in",
       "productId": "1183b9ee-9191-4529-b4dc-f18f2d83bd20",
       "slug": "the-house-of-possibilities-framed-print",
       "variantId": "b87a38dc-507c-4eb3-b3d1-2518d5303024",
@@ -1152,7 +1273,7 @@ export default {
     {
       "product": "mind-never-closes",
       "colour": "A02",
-      "size": "12 × 16 in",
+      "size": "12 \u00d7 16 in",
       "productId": "44b0840c-47b0-4636-9682-f954576eed19",
       "slug": "a-mind-that-never-closes-framed-print",
       "variantId": "6bb8da7f-21ac-4f59-a424-9e97843b46ac",
@@ -1163,7 +1284,7 @@ export default {
     {
       "product": "mind-never-closes",
       "colour": "A02",
-      "size": "18 × 24 in",
+      "size": "18 \u00d7 24 in",
       "productId": "44b0840c-47b0-4636-9682-f954576eed19",
       "slug": "a-mind-that-never-closes-framed-print",
       "variantId": "e1d3478f-bf73-45e7-b136-60be39bca58d",

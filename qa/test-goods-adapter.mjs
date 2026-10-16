@@ -68,7 +68,7 @@ const releaseMappings=(await import('../src/goods-mappings.mjs')).default;
 test('approved catalogue has one route per selection and no variant shared across selections',()=>{
  assert.doesNotThrow(()=>validateMappings(releaseMappings));
  const rows=releaseMappings.variants;
- assert.equal(rows.length,155);assert.equal(new Set(rows.map(x=>x.product)).size,32);
+ assert.equal(rows.length,166);assert.equal(new Set(rows.map(x=>x.product)).size,33);
  assert.equal(new Set(rows.map(x=>[x.product,x.colour,x.size].join('|'))).size,rows.length);
  assert.equal(new Set(rows.map(x=>x.variantId)).size,rows.length);
  const retired=new Set(['53ffe548-2e95-482d-909c-f3e592b17aed','6fc7156c-8666-46de-b939-48b228717f75']);
@@ -110,10 +110,15 @@ test('embroidered colours resolve to the approved pocketed blanks, including Cre
  }
 });
 
-// Verified 2026-10-16 supplier IDs: only the finished tee and print are purchasable.
-test('Make It Look Easy maps the faded tee and both framed sizes without a speculative hoodie',()=>{
+// Verified 2026-10-16 supplier IDs: the completed music drop is purchasable.
+test('Make It Look Easy maps the tee, framed print and verified cotton hoodie',()=>{
  const rows=releaseMappings.variants.filter(x=>x.product.startsWith('make-it-look-easy-'));
- assert.equal(rows.length,8);
+ assert.equal(rows.length,19);
+ const hoodie=rows.filter(x=>x.product==='make-it-look-easy-hoodie');
+ assert.deepEqual(hoodie.map(x=>x.size),['2XS','XS','S','M','L','XL','2XL','3XL','4XL','5XL','6XL']);
+ assert.ok(hoodie.every(x=>x.productId==='33f5fa63-0763-4712-9b18-eb193a628a88'&&x.expectedColor==='White'&&x.size===x.expectedSize));
+ assert.equal(hoodie[0].variantId,'4b34b04c-30b1-4c3c-8a23-a20da5351c5b');
+ assert.equal(hoodie.at(-1).variantId,'2486f95c-9be1-496a-8a1f-bbefabe012d0');
  const tee=rows.filter(x=>x.product==='make-it-look-easy-tee');
  assert.deepEqual(tee.map(x=>x.size),['S','M','L','XL','2XL','3XL']);
  assert.ok(tee.every(x=>x.productId==='e97dd341-3cf8-4761-a3fe-5de36efdc42e'&&x.expectedColor==='Faded Black'&&x.size===x.expectedSize));
