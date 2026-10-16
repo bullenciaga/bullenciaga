@@ -106,6 +106,45 @@ a:hover>.link-arrow { color: #e3d2f4; }
 footer { text-align: center; padding-top: 27px; }
 .footer-line { display: block; width: 22px; height: 1px; margin: 0 auto 15px; background: #61586e; }
 footer p { font-size: 10px; letter-spacing: .06em; color: #8b8593; }
+/* Latest release: the record's cubist palette within the shared House layout. */
+.release-cubist {
+  position: relative;
+  isolation: isolate;
+  color-scheme: light;
+  color: #171615;
+  border: 1px solid #d5ba91;
+  border-radius: 12px;
+  background: #f1e5ce;
+  box-shadow: 0 20px 65px rgba(0, 0, 0, .2);
+  --bullen-focus: #132f98;
+}
+.release-cubist::before, .release-cubist::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+.release-cubist::before {
+  inset: 0;
+  background: linear-gradient(128deg, transparent 76%, rgba(196, 141, 54, .17) 76%, rgba(196, 141, 54, .17) 86%, transparent 86%);
+}
+.release-cubist::after {
+  inset: auto 0 0;
+  height: 5px;
+  background: linear-gradient(100deg, #163fa6 0 57%, #b34226 57% 82%, #1e1b18 82%);
+}
+.release-cubist .release-art { border-color: #c1a980; border-radius: 5px; }
+.release-cubist .eyebrow { color: #983820; font-weight: 600; }
+.release-cubist .release-dot { width: 6px; height: 6px; border-radius: 0; transform: rotate(45deg); background: #b34226; box-shadow: none; }
+.release-cubist h2 { font-weight: 600; text-transform: uppercase; letter-spacing: -.05em; line-height: 1.05; }
+.release-cubist h2 span { color: #173c9a; }
+.release-cubist .release-artist { color: #605344; }
+.release-cubist .listen-link { color: #fff8eb; background: #182b5c; border-color: #182b5c; border-radius: 5px; }
+.release-cubist .listen-link small { color: #d0daf1; }
+.release-cubist .link-arrow { color: #d0daf1; }
+.release-cubist .listen-link:hover { background: #203b7d; border-color: #203b7d; }
+.release-cubist .listen-link:hover .link-arrow { color: #fff8eb; }
+.release-previous { margin-top: 24px; }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass { background: linear-gradient(130deg, #24222a, #19181e 65%); }
 }
@@ -159,6 +198,7 @@ footer p { font-size: 10px; letter-spacing: .06em; color: #8b8593; }
   *, *::before, *::after { transition: none !important; }
 }
 @media (forced-colors: active) {
-  .glass, .listen-link { border: 1px solid CanvasText; }
+  .glass, .listen-link, .release-cubist { border: 1px solid CanvasText; }
+  .release-cubist::before, .release-cubist::after { display: none; }
   .link-arrow, .service-icon { color: LinkText; }
 }
