@@ -47,24 +47,27 @@ export function buildGoodsXFeed(catalogue){
  });
  return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0"><channel><title>BULLENCIAGA Goods</title><link>'+ORIGIN+'/goods/</link><description>House signatures and the Make It Look Easy music drop.</description>'+items.join('\n')+'</channel></rss>\n';
 }
-export async function goodsXFeed(request,env,ctx,{fetchImpl=fetch,cache=globalThis.caches?.default}={}){
+export async function goodsXFeed(request,env,ctx,{fetchImpl=fetch,cache=globalThis.caches?.default,now=Date.now}={}){
  const head=request.method==='HEAD';
- const headers={'Content-Type':'application/xml; charset=utf-8','X-Content-Type-Options':'nosniff','Cache-Control':'no-store','X-Robots-Tag':'noindex'};
+ const headers={'Content-Type':'application/xml; charset=utf-8','X-Content-Type-Options':'nosniff','Cache-Control':'no-store','CDN-Cache-Control':'no-store','Cloudflare-CDN-Cache-Control':'no-store','X-Robots-Tag':'noindex'};
  if(!['GET','HEAD'].includes(request.method))return new Response(null,{status:405,headers:{...headers,Allow:'GET, HEAD'}});
  if(env.GOODS_CHECKOUT_ENABLED!=='1'||!mappings.salesEnabled||!env.GOODS_STOREFRONT_TOKEN)return new Response(null,{status:503,headers});
- const cacheKey=new Request(ORIGIN+GOODS_X_FEED_PATH+'?schema=20261017-v1');
+ const cacheKey=new Request(ORIGIN+GOODS_X_FEED_PATH+'?schema=20261017-v2');
  // A private staging shop must never consume or fill the public feed cache.
  const useCache=new URL(request.url).hostname==='bullenciaga.com'||new URL(request.url).hostname==='www.bullenciaga.com';
  try{
   let cached=useCache?await cache?.match(cacheKey):null;
-  if(cached)return new Response(head?null:cached.body,{headers:cached.headers});
+  const generatedAt=Number(cached?.headers.get('X-Goods-Feed-Generated-At')||NaN),age=now()-generatedAt;
+  if(cached&&Number.isFinite(age)&&age>=0&&age<TTL*1000)return new Response(head?null:cached.body,{headers});
   const handler=createGoodsHandler({config:mappings,storefrontToken:env.GOODS_STOREFRONT_TOKEN,fetchImpl,authorize:async()=>true,rateLimit:async()=>true});
   const response=await handler(new Request(ORIGIN+'/goods/api/catalog'));
   if(!response.ok)throw Error('Catalog unavailable');
   const body=buildGoodsXFeed(await response.json());
-  const result=new Response(body,{headers:{...headers,'Cache-Control':`public, max-age=${TTL}, must-revalidate`}});
+  // Bound our internal cache independently of Cloudflare's zone/browser TTL.
+  // Public feed responses bypass downstream caches so X sees current prices.
+  const result=new Response(body,{headers:{'Content-Type':headers['Content-Type'],'Cache-Control':`public, max-age=${TTL}, must-revalidate`,'X-Goods-Feed-Generated-At':String(now())}});
   if(useCache&&cache){const store=cache.put(cacheKey,result.clone()).catch(()=>{});if(ctx?.waitUntil)ctx.waitUntil(store);else await store;}
-  return new Response(head?null:result.body,{headers:result.headers});
+  return new Response(head?null:result.body,{headers});
  }catch{
   // Do not replace a merchant's imported catalog with empty or guessed data.
   return new Response(head?null:'Catalog temporarily unavailable. Please retry.',{status:503,headers:{...headers,'Content-Type':'text/plain; charset=utf-8','Retry-After':'300'}});
