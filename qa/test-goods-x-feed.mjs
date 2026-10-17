@@ -25,12 +25,16 @@ test('product metadata keeps ordinary Goods unchanged and escapes query values',
  assert.equal(goodsProductMetadata(html,new URL('https://bullenciaga.com/goods/?product=%3Cscript%3E')),html);
 });
 test('read-only upstream refresh, bounded cache, GET/HEAD, provider failure and disabled checkout',async()=>{
+ let clock=1_800_000_000_000;const now=()=>clock;
  const u=upstream(),store=new Map(),cache={match:async k=>store.get(k.url)?.clone(),put:async(k,v)=>store.set(k.url,v)};
- const r=await goodsXFeed(request(),env,null,{fetchImpl:u.fetch,cache});assert.equal(r.status,200);assert.match(r.headers.get('content-type'),/application\/xml/);assert.match(r.headers.get('cache-control'),/max-age=900/);assert.ok((await r.text()).includes('53.99 USD'));const calls=u.calls;assert.ok(calls>0);
- const head=await goodsXFeed(request('HEAD'),env,null,{fetchImpl:u.fetch,cache});assert.equal(head.status,200);assert.equal(await head.text(),'');assert.equal(u.calls,calls);
+ const r=await goodsXFeed(request(),env,null,{fetchImpl:u.fetch,cache,now});assert.equal(r.status,200);assert.match(r.headers.get('content-type'),/application\/xml/);assert.equal(r.headers.get('cache-control'),'no-store');assert.equal(r.headers.get('cdn-cache-control'),'no-store');assert.equal(r.headers.get('cloudflare-cdn-cache-control'),'no-store');assert.match([...store.values()][0].headers.get('cache-control'),/max-age=900/);assert.ok((await r.text()).includes('53.99 USD'));const calls=u.calls;assert.ok(calls>0);
+ const head=await goodsXFeed(request('HEAD'),env,null,{fetchImpl:u.fetch,cache,now});assert.equal(head.status,200);assert.equal(await head.text(),'');assert.equal(u.calls,calls);
  const fail=await goodsXFeed(request(),env,null,{fetchImpl:async()=>{throw Error('fixture-only')},cache:null});assert.equal(fail.status,503);assert.ok(!(await fail.text()).includes('fixture-only'));assert.equal(fail.headers.get('cache-control'),'no-store');
- assert.equal((await goodsXFeed(request('POST'),env,null,{fetchImpl:u.fetch,cache})).status,405);
- assert.equal((await goodsXFeed(request(),{...env,GOODS_CHECKOUT_ENABLED:'0'},null,{fetchImpl:u.fetch,cache})).status,503);assert.equal(u.calls,calls);
+ assert.equal((await goodsXFeed(request('POST'),env,null,{fetchImpl:u.fetch,cache,now})).status,405);
+ assert.equal((await goodsXFeed(request(),{...env,GOODS_CHECKOUT_ENABLED:'0'},null,{fetchImpl:u.fetch,cache,now})).status,503);assert.equal(u.calls,calls);
+ clock+=901_000;
+ const expiredFailure=await goodsXFeed(request(),env,null,{fetchImpl:async()=>{throw Error('down')},cache,now});assert.equal(expiredFailure.status,503,'Never serve expired prices if the CDN retained an old entry');
+ const refreshed=await goodsXFeed(request(),env,null,{fetchImpl:u.fetch,cache,now});assert.equal(refreshed.status,200);assert.equal(u.calls,calls*2);assert.equal(refreshed.headers.get('cache-control'),'no-store');
 });
 test('private and scheduled-before-launch shop never expose the feed',async()=>{
  for(const mode of ['1','scheduled']){
