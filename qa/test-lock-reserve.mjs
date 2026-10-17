@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const html = fs.readFileSync(new URL('../site/lock.html', import.meta.url), 'utf8');
 const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1)[1];
 const mint = 'BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN';
-const firstCliff = Date.parse('2026-10-11T17:00:00Z');
+const firstCliff = Date.parse('2026-11-01T18:00:00Z');
 const lastCliff = Date.parse('2026-12-01T18:00:00Z');
 const settle = () => new Promise(resolve => setImmediate(resolve));
 
@@ -42,12 +42,12 @@ function mount(at) {
   };
 }
 
-assert.match(html,/Fbw46U6eRhWwkEfABXFhNBR5yS4JVx7GU67Uhf9T6dLz/);
-assert.match(html,/89tTxxVmubQgW84jYdV11NgUCCxvW3LEbrvGKHDkEZip/);
+assert.match(html,/GDupLrHAWRDjRwRm1EbaZgUpokXTaet8V8Sx4YXLNbig/);
+assert.match(html,/77ZDopFakotMNBkevreQWBQtFsuUPNsSQchG7vUgsA1G/);
 assert.match(html,/5uquyi4cQ4PV6bLUpBBp5rhuV3kMDjv8pGFKkKm4JmH1/);
 assert.match(html,/H6cULEt3UrJVT3rVvSkTazV5Kk1LXAYcqMGRJjxhuUpA/);
 assert.match(html,/01 Dec 2026 · 19:00 CET/,'December uses winter time in Warsaw');
-assert.match(html,/11 Oct 2026 · 19:00 CEST/,'October weekly cliff retains summer time in Warsaw');
+assert.match(html,/01 Nov 2026 · 19:00 CET/,'November cliff uses winter time in Warsaw');
 assert.doesNotMatch(html,/GkrEDh76bcovVr3xPbxtUeXWEAJhfhTLQ2Z3oSVHCXB9|7Pz8CoXocwLEYgxhBTUfUx32TYjM62pwWoLK6EFiN89o|2026-10-04T17:00:00Z/,'Previous claimed escrow is not a current reserve');
 assert.doesNotMatch(html,/A6TLCJ8Kasy53pqzKwt2TtJ68JqCZgCi8p6Jo5g7VkuM|84iH6gSnokn6eWLqQyZsa7otgurf8g76dvxVNQQjBeoW|2026-10-02T17:00:00Z/);
 assert.doesNotMatch(html, /J6vSzqFLcTWYyg8aPfKSBpnMegvizygzvLKumEUhGATB|3EbJKQu31nVxHK9zAaRKpNLYAP7tkY1tHrSPPH2pACiw|2026-09-27T17:00:00Z/);
@@ -106,3 +106,5 @@ page.refresh(); await settle();
 assert.equal(page.values[0].textContent,'(USD unavailable)');
 assert.equal(page.values[1].textContent,'(USD unavailable)');
 console.log('Lock reserve: verified replacement, cliff transitions, live totals, stale/error states and USD estimates passed');
+
+assert.doesNotMatch(html,/Fbw46U6eRhWwkEfABXFhNBR5yS4JVx7GU67Uhf9T6dLz|89tTxxVmubQgW84jYdV11NgUCCxvW3LEbrvGKHDkEZip|2026-10-11T17:00:00Z|weekly renewal cycle/,'Retired lock and cadence are not advertised as current');
