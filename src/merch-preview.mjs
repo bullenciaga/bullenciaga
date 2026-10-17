@@ -1,3 +1,4 @@
+import { goodsXFeed, GOODS_X_FEED_PATH, goodsProductMetadata } from './goods-x-feed.mjs';
 import { createGoodsHandler } from './goods-fourthwall.mjs';
 import goodsMappings from './goods-mappings.mjs';
 import { createGoodsRuntime } from './goods-runtime.mjs';
@@ -401,6 +402,11 @@ export async function merchPreview(request, env, ctx) {
       // Keep old links local; the canonical Goods route applies the access policy.
       return reply('', 308, { Location: pathname + url.search }, head);
     }
+    // X receives a read-only catalog only after the shop is publicly open.
+    if (!legacy && pathname === GOODS_X_FEED_PATH) {
+      if (!state.open) return reply('Not found.', 404, {}, head);
+      return goodsXFeed(request, env, ctx);
+    }
     // Page access uses the existing server-only password and signed cookie.
     if (!state.open && (pathname === `${PREVIEW_PATH}/login` || pathname === `${PREVIEW_PATH}/logout`)) {
       if (request.method !== 'POST') return reply('Method not allowed.', 405, { Allow: 'POST' }, head);
@@ -485,6 +491,7 @@ export async function merchPreview(request, env, ctx) {
     const publicHeaders = headers({ 'Content-Type': contentType, 'Cache-Control': 'no-store, max-age=0' });
     publicHeaders.delete('Vary'); publicHeaders.delete('X-Robots-Tag');
     let body = head ? null : name === 'index.html' ? publicIndex(await new Response(object.body).text()) : object.body;
+    if (name === 'index.html' && !head) body = goodsProductMetadata(body, url);
     if (name === 'index.html' && pathname === GOODS_CAMPAIGN_PATH && !head) {
       body = body.replace('<meta property="og:url" content="https://bullenciaga.com/goods/">',
         `<meta property="og:url" content="https://bullenciaga.com${GOODS_CAMPAIGN_PATH}">`);
