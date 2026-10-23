@@ -13,5 +13,6 @@ GitHub's Actions tab contains public workflow results. A commit or successful
 unit test alone does not establish which version is currently serving traffic.
 
 Credentials, account administration and recovery procedures are maintained
-outside this public repository. Website releases do not deploy the separate
-backend services or change on-chain balances.
+outside this public repository. The isolated campaign service is deployed before
+its website frontend. Other backend services and on-chain balances are not
+changed by this release pipeline.

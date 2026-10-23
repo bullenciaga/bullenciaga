@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import {campaign,ownerKey} from './fixture.mjs';
+import {campaign,ownerKey,testWallet} from './fixture.mjs';
 const require=createRequire(import.meta.url),root=process.env.CAMPAIGN_WRANGLER_MODULES;
 const {Miniflare,convertV4MiniflareOptions}=require(root?root+'/miniflare':'miniflare'),{build}=require(root?root+'/esbuild':'esbuild');
 const dir=await fs.mkdtemp(path.join(os.tmpdir(),'campaign-workerd-'));
@@ -18,5 +18,11 @@ try{
   r=await mf.dispatchFetch('https://campaigns.test/campaigns/api/admin/campaigns',{method:'POST',headers:{Origin:'https://campaigns.test',Authorization:'Bearer '+ownerKey,'Content-Type':'application/json'},body:JSON.stringify(campaign())});assert.equal(r.status,201,await r.clone().text());const c=await r.json();
   r=await mf.dispatchFetch('https://campaigns.test/campaigns/api/admin/campaigns/'+c.id+'/status',{method:'POST',headers:{Origin:'https://campaigns.test',Authorization:'Bearer '+ownerKey,'Content-Type':'application/json'},body:JSON.stringify({status:'live',revision:1})});assert.equal(r.status,200,await r.clone().text());
   r=await mf.dispatchFetch('https://campaigns.test/campaigns/api/campaigns');assert.equal((await r.json()).campaigns.length,1);
-  console.log('workerd: durable SQLite schema, service authentication, campaign creation, publication and public reads passed');
+  const wallet=testWallet(),post=async(path,data,cookie='')=>mf.dispatchFetch('https://campaigns.test/campaigns/api'+path,{method:'POST',headers:{Origin:'https://campaigns.test','Content-Type':'application/json',Cookie:cookie},body:JSON.stringify(data)});
+  r=await post('/wallet/challenge',{wallet:wallet.address});assert.equal(r.status,200,await r.clone().text());const challenge=await r.json();
+  r=await post('/wallet/verify',{id:challenge.id,signature:wallet.sign(challenge.message)});assert.equal(r.status,200,await r.clone().text());const session=r.headers.get('Set-Cookie').split(';')[0];
+  r=await post('/campaigns/'+c.slug+'/join',{accepted:true,revision:2,contact:'local fixture only'},session);assert.equal(r.status,200,await r.clone().text());
+  r=await post('/campaigns/'+c.slug+'/actions/free/claim',{},session);assert.equal(r.status,200,await r.clone().text());assert.equal((await r.json()).points,1);
+  r=await post('/campaigns/'+c.slug+'/actions/free/claim',{},session);assert.equal((await r.json()).duplicate,true);
+  console.log('workerd: durable SQLite schema, service authentication, creation, publication, wallet sign-in, consent, claims and duplicate prevention passed');
 }finally{await mf.dispose();await fs.rm(dir,{recursive:true,force:true});}

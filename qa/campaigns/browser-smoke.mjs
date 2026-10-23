@@ -8,7 +8,7 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.CA
 try{
   const context=await browser.newContext({viewport:{width:1440,height:1050},deviceScaleFactor:1});
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
-  const capture=async name=>{await page.screenshot({path:`${out}/${name}.png`,fullPage:true});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`${name}: horizontal overflow`);};
+  const capture=async name=>{await page.screenshot({path:`${out}/${name}.png`,fullPage:!name.includes('mobile')});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`${name}: horizontal overflow`);};
   await page.goto(base+'/campaigns');await page.getByRole('heading',{name:'Good company. Better odds.'}).waitFor();await page.locator('.hero-art img').evaluate(img=>img.decode());await capture('public-desktop');
   await page.goto(base+'/campaigns/preview');await page.getByRole('heading',{name:'A little House favour.'}).waitFor();await page.locator('.detail-image').evaluate(img=>img.decode());await capture('campaign-desktop');
   await page.setViewportSize({width:390,height:844});await capture('campaign-mobile');await page.getByRole('button',{name:/Put your name in the room/}).click();await page.getByRole('button',{name:'Claim entries',exact:true}).first().click();assert.match(await page.locator('#toast').innerText(),/preview/);
