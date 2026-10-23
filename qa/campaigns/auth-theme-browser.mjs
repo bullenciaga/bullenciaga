@@ -1,0 +1,34 @@
+import fs from 'node:fs/promises';
+import {createRequire} from 'node:module';
+import assert from 'node:assert/strict';
+const require=createRequire(import.meta.url),{chromium}=require(process.env.CAMPAIGN_PLAYWRIGHT||'playwright');
+const base=process.env.CAMPAIGN_TEST_BASE||'http://127.0.0.1:8839',out=process.env.CAMPAIGN_SCREENSHOTS||'/tmp/campaign-auth-screens';
+if(!/^http:\/\/127\.0\.0\.1:\d+$/.test(base))throw new Error('This test only permits the local fixture.');
+await fs.mkdir(out,{recursive:true});
+const browser=await chromium.launch({headless:true,executablePath:process.env.CAMPAIGN_CHROME||undefined});
+try{
+  const context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage(),errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  const capture=async name=>{assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await page.screenshot({path:`${out}/${name}.png`,fullPage:!name.includes('mobile')});};
+  await page.goto(base+'/campaigns');await page.getByRole('heading',{name:'Good company. Better odds.'}).waitFor();
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');await capture('landing-dark');
+  await page.getByRole('button',{name:'Switch to light mode'}).click();assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
+  await page.reload();await page.getByRole('heading',{name:'Good company. Better odds.'}).waitFor();assert.equal(await page.locator('html').getAttribute('data-theme'),'light');await capture('landing-light');
+  await page.getByRole('button',{name:'Switch to dark mode'}).click();await page.locator('#account-button').click();await page.getByRole('button',{name:'Continue with email'}).click();
+  await page.getByLabel('Email address').fill('browser@example.test');await capture('email-address-dark');
+  await page.getByRole('button',{name:'Send my sign-in code'}).click();await page.getByLabel('Email code').waitFor();
+  assert.match(await page.locator('#account-content').innerText(),/b…@example.test/);await capture('email-code-dark');
+  await page.getByLabel('Email code').fill('22223333');await page.getByRole('button',{name:'Verify & continue'}).click();await page.getByText('That code is invalid or expired.',{exact:false}).waitFor();assert.equal(await page.locator('#account-dialog').isVisible(),true);
+  await page.getByLabel('Email code').fill('11112222');await page.getByRole('button',{name:'Verify & continue'}).click();await page.locator('#account-dialog').waitFor({state:'hidden'});
+  assert.match(await page.locator('#account-button').innerText(),/Your account/);
+  await page.reload();await page.locator('#account-button').click();await page.getByText('b…@example.test',{exact:true}).waitFor();await capture('linked-email-dark');
+  await page.getByRole('button',{name:'Sign out of campaigns'}).click();await page.locator('#account-dialog').waitFor({state:'hidden'});
+  await page.setViewportSize({width:390,height:844});await page.locator('#account-button').click();await page.getByRole('button',{name:'Continue with email'}).click();await capture('email-mobile-dark');
+  await page.getByRole('button',{name:'Close',exact:true}).click();await page.getByRole('button',{name:'Switch to light mode'}).click();await page.locator('#account-button').click();await page.getByRole('button',{name:'Continue with email'}).click();await capture('email-mobile-light');
+  await page.getByRole('button',{name:'Close',exact:true}).click();await page.setViewportSize({width:320,height:700});await capture('landing-mobile-320');
+  const fresh=await browser.newContext({viewport:{width:390,height:844},colorScheme:'light'}),freshPage=await fresh.newPage();
+  await freshPage.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw new Error('blocked');}});});
+  await freshPage.goto(base+'/campaigns/preview');await freshPage.getByRole('heading',{name:'A little House favour.'}).waitFor();assert.equal(await freshPage.locator('html').getAttribute('data-theme'),'dark');
+  await freshPage.getByRole('button',{name:'Switch to light mode'}).click();assert.equal(await freshPage.locator('html').getAttribute('data-theme'),'light');
+  assert.deepEqual(errors,[]);console.log(JSON.stringify({ok:true,flows:['default-dark','light-preference-persists','email-request','masked-address','invalid-code','email-session','logout','390px-dialogs','320px-header','blocked-storage-fallback'],screenshots:out}));
+}finally{await browser.close();}

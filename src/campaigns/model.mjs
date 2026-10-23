@@ -1,5 +1,5 @@
 // Campaign rules and draw math are shared by the service and executable tests.
-export const VERSION = '1.0.0';
+export const VERSION = '1.1.0';
 export const ACTIONS = {
   free: { label: 'Free entry', provider: null, modes: ['automatic'] },
   visit: { label: 'Visit a page', provider: null, modes: ['visit'] },

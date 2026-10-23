@@ -1,8 +1,10 @@
 import { ACTIONS, VERSION, fail, CampaignError, validateCampaign, canEnter, periodFor, randomToken, sha, b64, unb64, encode, decode58, string, selectWinners } from './model.mjs';
 import { CampaignStore } from './store.mjs';
 import { PROVIDERS, capabilities, exchange, seal, accessToken, verifyAction, verifyPublicXIdentity } from './providers.mjs';
+import { emailConfigured, normalizeEmail, maskEmail, sendEmailCode, verifyEmailCode } from './email.mjs';
 
 const SESSION='__Host-bullen_campaign_session', OAUTH='__Host-bullen_campaign_oauth', XPROOF='__Host-bullen_campaign_x';
+const EMAIL='__Host-bullen_campaign_email';
 const headers={'Content-Type':'application/json; charset=utf-8','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Robots-Tag':'noindex, nofollow, noarchive'};
 const json=(body,status=200,extra={})=>new Response(JSON.stringify(body),{status,headers:{...headers,...extra}});
 const cookie=(name,value,age)=>`${name}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${age}`;
@@ -58,14 +60,17 @@ export class CampaignLedger {
   async route(request,url,now){
     const path=url.pathname.replace(/^\/campaigns\/api/,'')||'/',method=request.method,s=this.store;
     if(path==='/health'&&method==='GET')return json({ok:true,version:VERSION,storage:'durable',mode:'unlinked'});
-    if(path==='/config'&&method==='GET')return json({version:VERSION,actions:ACTIONS,providers:capabilities(this.env),wallet:true});
+    if(path==='/config'&&method==='GET')return json({version:VERSION,actions:ACTIONS,providers:capabilities(this.env),wallet:true,email:{configured:emailConfigured(this.env),codeLength:8,service:'on display.'}});
     if(path==='/me'&&method==='GET'){
       const user=await this.session(request,false);if(!user)return json({authenticated:false});
       return json({authenticated:true,user:s.one('SELECT id,name FROM users WHERE id=?',user),accounts:s.all('SELECT provider,subject,label FROM identities WHERE user_id=?',user)});
     }
     if(path==='/logout'&&method==='POST'){
-      const token=readCookie(request,SESSION);if(token)s.run('DELETE FROM sessions WHERE hash=?',await sha(token));return json({ok:true},200,{'Set-Cookie':cookie(SESSION,'',0)});
+      const token=readCookie(request,SESSION);if(token)s.run('DELETE FROM sessions WHERE hash=?',await sha(token));
+      const emailToken=readCookie(request,EMAIL);if(emailToken)s.run("DELETE FROM challenges WHERE id=? AND kind='email'",await sha(emailToken));
+      const response=json({ok:true},200,{'Set-Cookie':cookie(SESSION,'',0)});response.headers.append('Set-Cookie',cookie(EMAIL,'',0));return response;
     }
+    if(path.startsWith('/email/'))return this.email(request,path.slice(7),now);
     if(path==='/wallet/challenge'&&method==='POST'){
       const data=await body(request);decode58(data.wallet);s.rate('wallet:'+data.wallet,6,now);
       const id=randomToken(),expires=now+300000;
@@ -166,6 +171,60 @@ export class CampaignLedger {
     });
     return json(result);
   }
+  async email(request,phase,now){
+    if(!emailConfigured(this.env))fail('NOT_CONFIGURED','Email sign-in is not connected yet.',503);
+    const s=this.store,current=await this.session(request,false),token=readCookie(request,EMAIL);
+    const id=token.length===43?await sha(token):'';
+    const challenge=id?s.one("SELECT * FROM challenges WHERE id=? AND kind='email' AND expires_at>?",id,now):null;
+    const pending=challenge?JSON.parse(challenge.doc):null;
+    const bound=pending&&pending.user===current;
+    if(phase==='pending'&&request.method==='GET')return json(bound?{pending:true,email:maskEmail(pending.email),expiresAt:challenge.expires_at,retryAt:pending.sentAt+60000}:{pending:false});
+    if(request.method!=='POST')fail('METHOD','Use the email sign-in form.',405);
+    if(phase==='cancel'){
+      if(bound)s.run("DELETE FROM challenges WHERE id=? AND kind='email'",id);
+      return json({ok:true},200,{'Set-Cookie':cookie(EMAIL,'',0)});
+    }
+    const data=await body(request),ipHash=await sha(request.headers.get('CF-Connecting-IP')||'local');
+    if(phase==='start'){
+      const email=normalizeEmail(data.email),emailHash=await sha(email);
+      if(bound&&now-pending.sentAt<60000)fail('EMAIL_LIMIT','Wait a minute before requesting another code.',429);
+      s.rate('email-minute:'+emailHash,1,now);s.rate('email-hour:'+emailHash,6,now,3600000);
+      s.rate('email-ip:'+ipHash,5,now,600000);s.rate('email-day:'+ipHash,20,now,86400000);
+      const nextToken=randomToken(),nextId=await sha(nextToken),expiresAt=now+600000;
+      await sendEmailCode(email,this.env);
+      if(await this.session(request,false)!==current)fail('WRONG_ACCOUNT','Your account changed. Start email sign-in again.',409);
+      s.transaction(()=>{
+        if(bound)s.run("DELETE FROM challenges WHERE id=? AND kind='email'",id);
+        s.run('INSERT INTO challenges VALUES(?,?,?,?)',nextId,'email',JSON.stringify({email,user:current,sentAt:now,attempts:0,verifying:false}),expiresAt);
+      });
+      return json({pending:true,email:maskEmail(email),expiresAt,retryAt:now+60000},200,{'Set-Cookie':cookie(EMAIL,nextToken,600)});
+    }
+    if(phase!=='verify')fail('NOT_FOUND','Not found.',404);
+    s.rate('email-verify:'+ipHash,20,now);
+    if(!bound)fail('EMAIL_EXPIRED','Request a fresh code from this browser.',401);
+    const code=typeof data.code==='string'?data.code.trim():'';
+    if(!/^\d{8}$/.test(code))fail('INVALID_CODE','Enter the eight-digit code from your latest email.',401);
+    const locked=s.transaction(()=>{
+      const fresh=s.one("SELECT * FROM challenges WHERE id=? AND kind='email' AND expires_at>?",id,Date.now());
+      if(!fresh)fail('EMAIL_EXPIRED','Request a fresh code.',401);
+      const d=JSON.parse(fresh.doc);
+      if(d.attempts>=5)fail('EMAIL_LOCKED','Too many attempts. Request a new code.',429);
+      if(d.verifying)fail('EMAIL_CHECKING','Your code is already being checked.',409);
+      d.attempts++;d.verifying=true;s.run('UPDATE challenges SET doc=? WHERE id=?',JSON.stringify(d),id);return d;
+    });
+    try{
+      const identity=await verifyEmailCode(locked.email,code,this.env);
+      if(await this.session(request,false)!==current)fail('WRONG_ACCOUNT','Your account changed. Start email sign-in again.',409);
+      const user=s.transaction(()=>{
+        if(!s.one("DELETE FROM challenges WHERE id=? AND kind='email' AND expires_at>? RETURNING id",id,Date.now()))fail('EMAIL_EXPIRED','This code request was already used or expired.',401);
+        const user=s.identify('email',identity.subject,identity.label,current);s.log(user,'identity.email-verified',user,{service:'shared-account-auth'},now);return user;
+      });
+      const response=json({ok:true},200,{'Set-Cookie':await this.login(user)});response.headers.append('Set-Cookie',cookie(EMAIL,'',0));return response;
+    }finally{
+      const fresh=s.one("SELECT doc FROM challenges WHERE id=? AND kind='email'",id);
+      if(fresh){const d=JSON.parse(fresh.doc);d.verifying=false;s.run('UPDATE challenges SET doc=? WHERE id=?',JSON.stringify(d),id);}
+    }
+  }
   async oauth(request,url,provider,phase,now){
     const s=this.store,p=PROVIDERS[provider];if(!capabilities(this.env)[provider].oauth)fail('NOT_CONFIGURED','Direct social sign-in is not configured. Use wallet sign-in and available public account verification.',503);
     const callback=`${this.env.CAMPAIGNS_ORIGIN}/campaigns/api/oauth/${provider}/callback`;
@@ -194,7 +253,7 @@ export class CampaignLedger {
   }
   async adminRoute(request,url,path,now){
     const s=this.store,method=request.method;
-    if(path==='/config'&&method==='GET')return json({version:VERSION,providers:capabilities(this.env),actions:ACTIONS});
+    if(path==='/config'&&method==='GET')return json({version:VERSION,providers:capabilities(this.env),actions:ACTIONS,email:{configured:emailConfigured(this.env),codeLength:8,service:'on display.'}});
     if(path==='/campaigns'&&method==='GET')return json({campaigns:s.all('SELECT id FROM campaigns ORDER BY created_at DESC LIMIT 200').map(r=>{const c=s.campaign(r.id);return publicCampaign(c,s.stats(c.id));})});
     if(path==='/campaigns'&&method==='POST'){
       const doc=validateCampaign(await body(request));if(s.campaign(doc.slug))fail('SLUG_TAKEN','That campaign link is already in use.',409);
