@@ -5,6 +5,10 @@ An unlinked campaign system at `/campaigns`. The owner studio is
 example. Nothing is added to the site navigation or sitemap. The established
 token giveaways, raiders, Goods, payments and their ledgers are separate.
 
+The campaign pages and owner studio default to dark mode. The header's theme
+button switches to light mode and stores that explicit preference locally.
+Unavailable browser storage does not prevent either theme from working.
+
 ## Campaign lifecycle
 
 Create a draft from a House, creative-submission or blank template. Set the cover,
@@ -59,6 +63,22 @@ not request a transaction. Wallet ownership alone does not prove a unique human.
 Identity uniqueness, duplicate constraints, per-IP/user throttles, review and
 disqualification are basic abuse controls, not a claim of perfect bot detection.
 
+Email sign-in optionally reuses the existing on display. account service. The
+entrant requests an eight-digit code and submits it in the same browser within
+ten minutes. Delivery and verification are rate-limited; five failed code checks
+lock a request. The service must return a confirmed email and stable user ID.
+Typed addresses alone never create campaign identities. An authenticated entrant
+can link email without changing their entrant ID; an email already linked to a
+different entrant cannot be taken over or silently merged.
+
+Campaigns store a namespaced provider ID and masked email label, not the returned
+account-service access or refresh token. The short-lived full email challenge is
+removed on success, cancellation or expiry. The temporary provider session is
+revoked locally after verification; other on display. sessions are unaffected.
+No collection, wallet or private application data is read. The email form explains
+the shared service and that sign-in is not marketing consent. The example page
+keeps email/social sign-in disabled; use `/campaigns` to connect an account.
+
 ## Referrals, review and draws
 
 Referrals are attributed at join, cannot be changed afterwards, and cannot refer
@@ -100,6 +120,8 @@ Optional server secrets (never commit values):
 - `CAMPAIGNS_TOKEN_KEY`: at least 32 random characters, needed for OAuth storage.
 - `CAMPAIGNS_X_CLIENT_ID`, `CAMPAIGNS_X_CLIENT_SECRET`: OAuth X app.
 - `CAMPAIGNS_DISCORD_CLIENT_ID`, `CAMPAIGNS_DISCORD_CLIENT_SECRET`: Discord app.
+- `CAMPAIGNS_AUTH_URL`, `CAMPAIGNS_AUTH_PUBLISHABLE_KEY`: existing Supabase email
+  account service, using only its publishable key. Never use an admin/service key.
 
 Callbacks are exactly
 `https://bullenciaga.com/campaigns/api/oauth/x/callback` and
@@ -107,6 +129,12 @@ Callbacks are exactly
 own website origin. Scopes are read-only. Provider API usage/billing remains the
 owner's existing account responsibility. Missing integrations remain disabled;
 organizer review is explicitly selectable instead.
+
+Register the X callback in the X developer app and the Discord callback in the
+Discord developer application's OAuth2 settings. The Discord OAuth client secret
+is separate from the bot token; campaign sign-in does not need or rotate a bot
+token. Preserve the campaign encryption key across releases, or existing social
+connections will need to reconnect.
 
 The established website release pipeline deploys the isolated campaign service
 before the frontend binding. SQLite objects are created on first access. Initial
@@ -117,11 +145,17 @@ rollback. Never delete the namespace to roll back code.
 ## Validation
 
 `npm test` includes campaign domain, security, duplicate, review, referral,
-OAuth, X verification, wallet and draw replay tests. `qa/campaigns` contains a
+OAuth, email verification/linking, X verification, wallet and draw replay tests. `qa/campaigns` contains a
 local-only in-memory fixture server, a browser acceptance runner and a native
 workerd SQLite smoke test. Fixture credentials/data are never part of a deployed
 Worker or static site. `qa/smoke-campaigns.mjs` checks deployed pages and read-only
 API contracts without creating entrants or prizes.
+
+Start the local fixture with `CAMPAIGN_TEST_EMAIL=1` to run
+`qa/campaigns/auth-theme-browser.mjs`. That opt-in fixture intercepts all email
+provider calls locally; it cannot send real email. Browser checks cover invalid
+and valid codes, sessions, logout, narrow screens, stored theme choices and
+blocked-storage fallback.
 
 ## Research references
 
