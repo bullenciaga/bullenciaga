@@ -3,9 +3,13 @@ import { fail, encode, b64, unb64, sha, periodFor } from './model.mjs';
 export const PROVIDERS = {
   x: { authorize: 'https://x.com/i/oauth2/authorize', token: 'https://api.x.com/2/oauth2/token', me: 'https://api.x.com/2/users/me', scopes: 'tweet.read users.read follows.read like.read offline.access', id: 'CAMPAIGNS_X_CLIENT_ID', secret: 'CAMPAIGNS_X_CLIENT_SECRET' },
   discord: { authorize: 'https://discord.com/oauth2/authorize', token: 'https://discord.com/api/oauth2/token', me: 'https://discord.com/api/v10/users/@me', scopes: 'identify guilds.members.read', id: 'CAMPAIGNS_DISCORD_CLIENT_ID', secret: 'CAMPAIGNS_DISCORD_CLIENT_SECRET' },
+  telegram: { authorize: 'https://oauth.telegram.org/auth', token: 'https://oauth.telegram.org/token', scopes: 'openid profile', id: 'CAMPAIGNS_TELEGRAM_CLIENT_ID', secret: 'CAMPAIGNS_TELEGRAM_CLIENT_SECRET' },
 };
 export function capabilities(env) {
-  return Object.fromEntries(Object.entries(PROVIDERS).map(([name,p])=>{const oauth=!!(env[p.id] && env[p.secret] && env.CAMPAIGNS_TOKEN_KEY),publicProof=name==='x'&&!!env.CAMPAIGNS_X_BEARER;return [name,{configured:oauth||publicProof,oauth,publicProof,callback:`${env.CAMPAIGNS_ORIGIN}/campaigns/api/oauth/${name}/callback`}];}));
+  const result=Object.fromEntries(Object.entries(PROVIDERS).map(([name,p])=>{const oauth=!!(env[p.id] && env[p.secret] && env.CAMPAIGNS_TOKEN_KEY),publicProof=name==='x'&&!!env.CAMPAIGNS_X_BEARER;return [name,{configured:oauth||publicProof,oauth,publicProof,callback:`${env.CAMPAIGNS_ORIGIN}/campaigns/api/oauth/${name}/callback`}];}));
+  result.telegram.configured=result.telegram.oauth && /^\d+:[\w-]+$/.test(env.CAMPAIGNS_TELEGRAM_BOT_TOKEN||'');
+  result.instagram={configured:!!(env.CAMPAIGNS_INSTAGRAM_ACCESS_TOKEN && /^\d{1,25}$/.test(env.CAMPAIGNS_INSTAGRAM_ACCOUNT_ID||'')),method:'comment-code'};
+  return result;
 }
 async function encryptionKey(env) {
   if (!env.CAMPAIGNS_TOKEN_KEY || env.CAMPAIGNS_TOKEN_KEY.length < 32) fail('CONNECTION_UNAVAILABLE','Social connections have not been configured yet.',503);
@@ -34,18 +38,36 @@ export async function providerJSON(url, options={}, fetcher=fetch) {
   const bytes=new Uint8Array(size);let offset=0;for(const part of chunks){bytes.set(part,offset);offset+=part.length;}
   try{return JSON.parse(new TextDecoder().decode(bytes));}catch{fail('PROVIDER_UNAVAILABLE','The platform returned an unreadable response.',503);}
 }
-export async function exchange(provider, code, verifier, callback, env, fetcher=fetch) {
+export async function exchange(provider, code, verifier, callback, env, fetcher=fetch, nonce=null) {
   const p=PROVIDERS[provider];
   const body=new URLSearchParams({grant_type:'authorization_code',code,redirect_uri:callback,client_id:env[p.id]});
-  if(provider==='x')body.set('code_verifier',verifier);else body.set('client_secret',env[p.secret]);
+  if(provider==='x'||provider==='telegram')body.set('code_verifier',verifier);else body.set('client_secret',env[p.secret]);
   const headers={'Content-Type':'application/x-www-form-urlencoded'};
-  if(provider==='x')headers.Authorization='Basic '+btoa(`${env[p.id]}:${env[p.secret]}`);
+  if(provider==='x'||provider==='telegram')headers.Authorization='Basic '+btoa(`${env[p.id]}:${env[p.secret]}`);
   const data=await providerJSON(p.token,{method:'POST',headers,body},fetcher);
+  if(provider==='telegram')return verifyTelegramToken(data.id_token,env,nonce,fetcher);
   if(typeof data.access_token!=='string')fail('OAUTH_FAILED','The platform did not complete sign-in.',401);
   const profile=await providerJSON(p.me,{headers:{Authorization:`Bearer ${data.access_token}`}},fetcher);
   const user=provider==='x'?profile.data:profile;
   if(!user?.id || !/^\d{1,25}$/.test(user.id))fail('OAUTH_FAILED','Could not identify your social account.',401);
   return {subject:user.id, label:user.username || user.name || provider, tokens:{access:data.access_token, refresh:data.refresh_token || null, expiresAt:Date.now()+(Number(data.expires_in)||3600)*1000}};
+}
+// OIDC identity is accepted only after Telegram's signature, audience, issuer,
+// expiry and our one-use nonce all verify. No phone number or bot messaging scope.
+export async function verifyTelegramToken(token,env,nonce,fetcher=fetch,now=Date.now()){
+  const reject=()=>fail('OAUTH_FAILED','Telegram could not verify this sign-in. Reconnect from the campaign.',401);
+  if(typeof token!=='string'||token.length>20000||!nonce)return reject();
+  const parts=token.split('.');let head,claims;
+  try{if(parts.length!==3)return reject();head=JSON.parse(new TextDecoder().decode(unb64(parts[0])));claims=JSON.parse(new TextDecoder().decode(unb64(parts[1])));}catch{return reject();}
+  if(head.alg!=='RS256'||typeof head.kid!=='string'||head.kid.length>200)return reject();
+  const seconds=Math.floor(now/1000);
+  if(claims.iss!=='https://oauth.telegram.org'||String(claims.aud)!==String(env.CAMPAIGNS_TELEGRAM_CLIENT_ID)||Array.isArray(claims.aud)||claims.nonce!==nonce||!Number.isInteger(claims.exp)||claims.exp<=seconds||!Number.isInteger(claims.iat)||claims.iat>seconds+30||claims.iat<seconds-600||claims.exp-claims.iat>7200||!Number.isSafeInteger(claims.id)||claims.id<=0||!claims.sub)return reject();
+  const jwks=await providerJSON('https://oauth.telegram.org/.well-known/jwks.json',{},fetcher);
+  const jwk=jwks.keys?.find(k=>k.kid===head.kid&&k.kty==='RSA'&&(!k.alg||k.alg==='RS256')&&(!k.use||k.use==='sig'));
+  if(!jwk||typeof jwk.n!=='string'||jwk.n.length<340||jwk.n.length>1400)return reject();
+  let valid=false;try{const key=await crypto.subtle.importKey('jwk',jwk,{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['verify']);valid=await crypto.subtle.verify('RSASSA-PKCS1-v1_5',key,unb64(parts[2]),encode.encode(parts[0]+'.'+parts[1]));}catch{}
+  if(!valid)return reject();
+  return {subject:String(claims.id),label:String(claims.preferred_username||claims.name||'Telegram member').slice(0,100),tokens:null};
 }
 export async function accessToken(identity, env, save, fetcher=fetch) {
   if(!identity.tokens && identity.provider==='x' && env.CAMPAIGNS_X_BEARER)return env.CAMPAIGNS_X_BEARER;

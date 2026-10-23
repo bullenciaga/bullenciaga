@@ -5,7 +5,6 @@ import path from 'node:path';
 import {harness,campaign,publish} from './fixture.mjs';
 const port=Number(process.env.CAMPAIGN_TEST_PORT||8839),base=`http://127.0.0.1:${port}`,h=harness();
 await publish(h,campaign({slug:'a-little-house-favour',title:'A little House favour.',description:'A piece from the House. A few ways to make it yours.\n\nChoose your actions, collect your entries, and leave the rest to the draw.',prizes:[{name:'A piece of House Goods',description:'Choose a piece from the first collection. Local test campaign only.',quantity:1}]}));
-h.env.CAMPAIGNS_ORIGIN=base;
 if(process.env.CAMPAIGN_TEST_EMAIL==='1'){
   // Opt-in local fixture only: no requests or messages reach a real provider.
   const auth='https://abcdefghijklmnopqrst.supabase.co';
@@ -18,6 +17,23 @@ if(process.env.CAMPAIGN_TEST_EMAIL==='1'){
     throw new Error('Unexpected email fixture request.');
   };
 }
+if(process.env.CAMPAIGN_TEST_AUTOMATIC==='1'){
+  if(process.env.CAMPAIGN_TEST_EMAIL!=='1')throw new Error('Automatic fixture needs the mocked email provider.');
+  Object.assign(h.env,{CAMPAIGNS_INSTAGRAM_ACCESS_TOKEN:'fixture-only',CAMPAIGNS_INSTAGRAM_ACCOUNT_ID:'987654321'});
+  const emailFetch=globalThis.fetch;
+  globalThis.fetch=async(url,options)=>{
+    if(!String(url).startsWith('https://graph.facebook.com/'))return emailFetch(url,options);
+    if(!new URL(url).pathname.endsWith('/comments'))return Response.json({id:'123456789',owner:{id:'987654321'},permalink:'https://www.instagram.com/p/FixturePost/'});
+    const record=h.ledger.store.one("SELECT doc FROM challenges WHERE kind='instagram-comment' ORDER BY expires_at DESC LIMIT 1"),d=record?JSON.parse(record.doc):null;
+    return Response.json({data:d?[{id:'44445555',text:'A fixture comment '+d.code,from:{id:'22223333',username:d.username},timestamp:new Date(d.createdAt+100).toISOString(),hidden:false}]:[]});
+  };
+  await publish(h,campaign({slug:'automatic-fixture',title:'Automatic entries fixture',actions:[
+    {id:'answer',type:'question',mode:'answer',label:'The House password',points:4,frequency:'once',target:'',answers:['the house']},
+    {id:'mail',type:'newsletter',mode:'confirmation',label:'Letters from the House',points:5,frequency:'once',target:'',consentText:'Send me House news by email. I can unsubscribe at any time.'},
+    {id:'ig',type:'instagram_comment',mode:'api',label:'A comment with character',points:3,frequency:'once',target:'https://www.instagram.com/p/FixturePost/',targetId:'123456789'}
+  ]}));
+}
+h.env.CAMPAIGNS_ORIGIN=base;
 const root=path.resolve(import.meta.dirname,'../../site');
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.mjs':'text/javascript','.webp':'image/webp','.jpg':'image/jpeg','.png':'image/png','.svg':'image/svg+xml','.woff2':'font/woff2'};
 const server=http.createServer(async(req,res)=>{

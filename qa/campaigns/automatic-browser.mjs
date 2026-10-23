@@ -1,0 +1,33 @@
+import fs from 'node:fs/promises';
+import {createRequire} from 'node:module';
+import assert from 'node:assert/strict';
+import {ownerKey,testWallet} from './fixture.mjs';
+const require=createRequire(import.meta.url),{chromium}=require(process.env.CAMPAIGN_PLAYWRIGHT||'playwright');
+const base=process.env.CAMPAIGN_TEST_BASE||'http://127.0.0.1:8841',out=process.env.CAMPAIGN_SCREENSHOTS||'/tmp/campaign-automatic-screens';
+if(!/^http:\/\/127\.0\.0\.1:\d+$/.test(base))throw new Error('Local fixture only.');
+await fs.mkdir(out,{recursive:true});
+const browser=await chromium.launch({headless:true,executablePath:process.env.CAMPAIGN_CHROME||undefined});
+try{
+  const context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage(),errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  const capture=async name=>{assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await page.screenshot({path:`${out}/${name}.png`,fullPage:!name.includes('mobile')});};
+  const wallet=testWallet();await page.exposeFunction('fixtureSign',text=>wallet.sign(text));
+  await page.addInitScript(({address})=>{window.phantom={solana:{publicKey:{toString:()=>address},connect:async()=>{},signMessage:async bytes=>({signature:Uint8Array.from(atob((await window.fixtureSign(new TextDecoder().decode(bytes))).replaceAll('-','+').replaceAll('_','/')),c=>c.charCodeAt(0))})}};},{address:wallet.address});
+  await page.goto(base+'/campaigns/automatic-fixture');await page.getByRole('button',{name:'Sign in to take part'}).click();await page.getByRole('button',{name:'Sign in with phantom'}).click();
+  await page.locator('#consent').check();await page.getByRole('button',{name:'Join the campaign'}).click();await page.getByText('You’re in. Choose your actions below.').waitFor();
+  await page.locator('[data-expand=answer]').click();await page.getByLabel('Your answer or code').fill('wrong');await page.locator('[data-claim=answer]').click();await page.getByText('That answer does not match.',{exact:false}).waitFor();
+  await page.getByLabel('Your answer or code').fill(' THE HOUSE ');await page.locator('[data-claim=answer]').click();await page.waitForFunction(()=>document.querySelector('[data-claim=answer]')?.disabled);
+  await page.locator('[data-expand=mail]').click();await page.getByRole('button',{name:'Confirm subscription',exact:true}).click();await page.getByLabel('Email address').fill('automatic@example.test');
+  assert.equal(await page.locator('[name=consent]').isChecked(),false);await page.locator('[name=consent]').check();await capture('newsletter-consent-desktop');
+  await page.getByRole('button',{name:'Send confirmation code'}).click();await page.getByLabel('Confirmation code').fill('11112222');await page.getByRole('button',{name:'Confirm & claim entries'}).click();await page.locator('#account-dialog').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.querySelector('[data-claim=mail]')?.disabled);
+  await page.locator('[data-expand=ig]').click();await page.getByLabel('Your Instagram username').fill('testguest');await page.getByRole('button',{name:'Get my comment code'}).click();await page.locator('[data-igprompt=ig]').waitFor({state:'visible'});await capture('instagram-comment-code');
+  await page.getByRole('button',{name:'Check & claim'}).click();await page.waitForFunction(()=>document.querySelector('[data-claim=ig]')?.disabled);await capture('confirmed-entries');
+  await page.setViewportSize({width:390,height:844});await page.locator('#account-button').click();await page.getByRole('button',{name:'Newsletter preferences'}).click();await capture('newsletter-preferences-mobile');
+  await page.getByRole('button',{name:'Unsubscribe',exact:true}).click();await page.getByRole('button',{name:'Close',exact:true}).click();
+  await page.goto(base+'/campaigns/admin');await page.locator('input[name=key]').fill(ownerKey);await page.getByRole('button',{name:'Open the studio'}).click();await page.getByRole('heading',{name:'Participation, by design.'}).waitFor();await capture('connections-mobile');
+  await page.setViewportSize({width:1440,height:1000});await page.locator('.side-campaign').filter({hasText:'Automatic entries fixture'}).click();await page.getByRole('button',{name:'Campaign builder',exact:true}).waitFor();
+  assert.equal(await page.locator('[name=answers]').first().inputValue(),'the house');assert.equal(await page.locator('[name=answers]').first().isDisabled(),true);await capture('automatic-builder');
+  await page.getByRole('button',{name:'Connections',exact:true}).click();const download=page.waitForEvent('download');await page.getByRole('button',{name:'Export confirmed subscribers'}).click();const downloaded=await download;assert.equal(downloaded.suggestedFilename(),'house-confirmed-newsletter.csv');await capture('connections-desktop');
+  assert.deepEqual(errors,[]);console.log(JSON.stringify({ok:true,flows:['fixed-answer','wrong-answer','explicit-consent','email-confirmation','instagram-code','instagram-claim','unsubscribe','owner-private-answers','subscriber-export','mobile-layout'],screenshots:out}));
+}finally{await browser.close();}

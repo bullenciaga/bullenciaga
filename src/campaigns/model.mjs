@@ -1,5 +1,5 @@
 // Campaign rules and draw math are shared by the service and executable tests.
-export const VERSION = '1.1.0';
+export const VERSION = '1.2.0';
 export const ACTIONS = {
   free: { label: 'Free entry', provider: null, modes: ['automatic'] },
   visit: { label: 'Visit a page', provider: null, modes: ['visit'] },
@@ -11,14 +11,14 @@ export const ACTIONS = {
   discord_join: { label: 'Join a Discord server', provider: 'discord', modes: ['api', 'review'] },
   instagram_follow: { label: 'Follow on Instagram', provider: null, modes: ['review'] },
   instagram_like: { label: 'Like on Instagram', provider: null, modes: ['review'] },
-  instagram_comment: { label: 'Comment on Instagram', provider: null, modes: ['review'] },
+  instagram_comment: { label: 'Comment on Instagram', provider: 'instagram', modes: ['api', 'review'] },
   instagram_share: { label: 'Share to an Instagram story', provider: null, modes: ['review'] },
   tiktok: { label: 'TikTok action', provider: null, modes: ['review'] },
   youtube: { label: 'YouTube action', provider: null, modes: ['review'] },
-  telegram: { label: 'Telegram action', provider: null, modes: ['review'] },
+  telegram: { label: 'Join Telegram', provider: 'telegram', modes: ['api', 'review'] },
   facebook: { label: 'Facebook action', provider: null, modes: ['review'] },
-  newsletter: { label: 'Newsletter signup', provider: null, modes: ['review'] },
-  question: { label: 'Answer a question', provider: null, modes: ['review'] },
+  newsletter: { label: 'Newsletter signup', provider: null, modes: ['confirmation', 'review'] },
+  question: { label: 'Answer a question / secret code', provider: null, modes: ['answer', 'review'] },
   creative: { label: 'Submit something original', provider: null, modes: ['review'] },
   custom: { label: 'Custom action', provider: null, modes: ['review'] },
 };
@@ -63,19 +63,31 @@ export function validateCampaign(input) {
     ids.add(id);
     const frequency = a.frequency || 'once';
     if (!['once','daily'].includes(frequency) || (frequency === 'daily' && ['x_follow','x_repost','x_like','discord_join','instagram_follow'].includes(a.type))) fail('INVALID_FREQUENCY', 'Follows, memberships and reactions to the same post are one-time actions.');
-    const target = safeURL(a.target || '', { optional: ['free','question','custom','creative'].includes(a.type) });
+    if (frequency==='daily' && ((a.type==='telegram' && a.mode==='api') || a.mode==='confirmation' || a.mode==='answer')) fail('INVALID_FREQUENCY','Membership, confirmed subscriptions and fixed answers are one-time actions.');
+    const target = safeURL(a.target || '', { optional: ['free','question','custom','creative'].includes(a.type) || a.mode==='confirmation' });
     if (target && a.type.startsWith('x_') && !['x.com','www.x.com','twitter.com','www.twitter.com'].includes(new URL(target).hostname)) fail('INVALID_TARGET', 'An X action needs an x.com or twitter.com URL.');
     const targetId = string(a.targetId || '', 100, 'platform target ID', false);
-    if (a.mode === 'api' && !/^\d{1,25}$/.test(targetId)) fail('INVALID_TARGET', 'Automatic verification needs the numeric account, post or server ID.');
+    if (a.mode === 'api' && !(a.type==='telegram'?/^-?\d{1,20}$/:/^\d{1,25}$/).test(targetId)) fail('INVALID_TARGET', 'Automatic verification needs the numeric account, post, server or Telegram chat ID.');
+    if (a.type==='telegram' && a.mode==='api' && !['t.me','telegram.me'].includes(new URL(target).hostname)) fail('INVALID_TARGET','Use the Telegram group or channel invitation link.');
+    if (a.type==='instagram_comment' && a.mode==='api' && !instagramShortcode(target)) fail('INVALID_TARGET','Use the Instagram post or reel link.');
     if(a.mode==='api' && a.type.startsWith('x_') && a.type!=='x_follow'){
       const linkedID=new URL(target).pathname.match(/\/status\/(\d+)(?:\/|$)/)?.[1];
       if(linkedID!==targetId)fail('INVALID_TARGET','The X post ID must match the post in the target link.');
     }
-    return { id, type: a.type, mode: a.mode, label: string(a.label || ACTIONS[a.type].label, 140, 'action title'), instructions: string(a.instructions || '', 1200, 'instructions', false), points: integer(a.points, 1, 1000, 'Points'), frequency, target, targetId };
+    const extra={};
+    if(a.mode==='answer'){
+      if(!Array.isArray(a.answers)||!a.answers.length||a.answers.length>20)fail('INVALID_ANSWERS','Add 1–20 accepted answers, one per line.');
+      extra.answers=[...new Set(a.answers.map(v=>normalizeAnswer(string(v,200,'accepted answer'))))];
+      if(extra.answers.some(v=>!v))fail('INVALID_ANSWERS','Accepted answers cannot be blank.');
+    }
+    if(a.mode==='confirmation')extra.consentText=string(a.consentText,1000,'newsletter consent wording');
+    return { id, type: a.type, mode: a.mode, label: string(a.label || ACTIONS[a.type].label, 140, 'action title'), instructions: string(a.instructions || '', 1200, 'instructions', false), points: integer(a.points, 1, 1000, 'Points'), frequency, target, targetId, ...extra };
   });
   const referral = input.referral || {};
   return { slug, title: string(input.title, 120, 'title'), description: string(input.description || '', 3000, 'description', false), cover: safeURL(input.cover || '/assets/house-record/007-seated-1280.webp', { image: true }), startsAt: new Date(start).toISOString(), endsAt: new Date(end).toISOString(), timeZone, prizes: normalizedPrizes, actions, rules: string(input.rules || '', 12000, 'rules', false), eligibility: string(input.eligibility || '', 1500, 'eligibility', false), privacy: string(input.privacy || '', 4000, 'privacy notice', false), allowRepeatWinners: input.allowRepeatWinners === true, referral: { enabled: referral.enabled === true, points: integer(referral.points ?? 5, 1, 1000, 'Referral points'), cap: integer(referral.cap ?? 20, 1, 1000, 'Referral cap') } };
 }
+export function normalizeAnswer(value){return value.normalize('NFKC').trim().replace(/\s+/gu,' ').toLowerCase();}
+export function instagramShortcode(value){try{const u=new URL(value);return ['instagram.com','www.instagram.com'].includes(u.hostname)?u.pathname.match(/^\/(?:p|reel)\/([\w-]+)\/?$/)?.[1]||null:null;}catch{return null;}}
 export function canEnter(c, now = Date.now()) {
   if (c.status !== 'live') fail('CAMPAIGN_NOT_OPEN', c.status === 'paused' ? 'This campaign is paused.' : 'This campaign is not accepting entries.', 409);
   if (now < Date.parse(c.doc.startsAt) || now >= Date.parse(c.doc.endsAt)) fail('CAMPAIGN_NOT_OPEN', 'This campaign is outside its entry window.', 409);
