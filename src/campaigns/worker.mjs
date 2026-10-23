@@ -1,7 +1,9 @@
-import { ACTIONS, VERSION, fail, CampaignError, validateCampaign, canEnter, periodFor, randomToken, sha, b64, unb64, encode, decode58, string, selectWinners } from './model.mjs';
+import { ACTIONS, VERSION, fail, CampaignError, validateCampaign, canEnter, periodFor, randomToken, sha, b64, unb64, encode, decode58, string, selectWinners, normalizeAnswer } from './model.mjs';
 import { CampaignStore } from './store.mjs';
 import { PROVIDERS, capabilities, exchange, seal, accessToken, verifyAction, verifyPublicXIdentity } from './providers.mjs';
 import { emailConfigured, normalizeEmail, maskEmail, sendEmailCode, verifyEmailCode } from './email.mjs';
+import { verifyTelegramMembership, verifyInstagramComment } from './automatic.mjs';
+import { newsletterRoute, subscriptionProof, exportNewsletter } from './newsletter.mjs';
 
 const SESSION='__Host-bullen_campaign_session', OAUTH='__Host-bullen_campaign_oauth', XPROOF='__Host-bullen_campaign_x';
 const EMAIL='__Host-bullen_campaign_email';
@@ -24,8 +26,9 @@ function originGuard(request,env) {
   if(url.origin!==env.CAMPAIGNS_ORIGIN)fail('WRONG_ORIGIN','Use the campaign’s original site.',403);
   if(!['GET','HEAD'].includes(request.method) && request.headers.get('Origin')!==url.origin)fail('BAD_ORIGIN','Please reload the campaign and try again.',403);
 }
-function publicCampaign(c,stats) {
-  return {id:c.id,...c.doc,status:c.status,revision:c.revision,commitment:c.commitment,stats,draw:c.draw?JSON.parse(c.draw):null};
+function publicCampaign(c,stats,owner=false) {
+  const doc={...c.doc,actions:c.doc.actions.map(({answers,...a})=>owner&&answers?{...a,answers}:a)};
+  return {id:c.id,...doc,status:c.status,revision:c.revision,commitment:c.commitment,stats,draw:c.draw?JSON.parse(c.draw):null};
 }
 export class CampaignLedger {
   constructor(ctx,env){this.ctx=ctx;this.env=env;this.store=new CampaignStore(ctx.storage.sql,fn=>ctx.storage.transactionSync(fn));this.lastClean=0;}
@@ -60,7 +63,7 @@ export class CampaignLedger {
   async route(request,url,now){
     const path=url.pathname.replace(/^\/campaigns\/api/,'')||'/',method=request.method,s=this.store;
     if(path==='/health'&&method==='GET')return json({ok:true,version:VERSION,storage:'durable',mode:'unlinked'});
-    if(path==='/config'&&method==='GET')return json({version:VERSION,actions:ACTIONS,providers:capabilities(this.env),wallet:true,email:{configured:emailConfigured(this.env),codeLength:8,service:'on display.'}});
+    if(path==='/config'&&method==='GET')return json({version:VERSION,actions:ACTIONS,providers:capabilities(this.env),wallet:true,email:{configured:emailConfigured(this.env),codeLength:8,newsletter:emailConfigured(this.env)&&!!this.env.CAMPAIGNS_TOKEN_KEY,service:'on display.'}});
     if(path==='/me'&&method==='GET'){
       const user=await this.session(request,false);if(!user)return json({authenticated:false});
       return json({authenticated:true,user:s.one('SELECT id,name FROM users WHERE id=?',user),accounts:s.all('SELECT provider,subject,label FROM identities WHERE user_id=?',user)});
@@ -71,6 +74,10 @@ export class CampaignLedger {
       const response=json({ok:true},200,{'Set-Cookie':cookie(SESSION,'',0)});response.headers.append('Set-Cookie',cookie(EMAIL,'',0));return response;
     }
     if(path.startsWith('/email/'))return this.email(request,path.slice(7),now);
+    if(path.startsWith('/newsletter/')){
+      const phase=path.slice(12);if(method!==(phase==='status'?'GET':'POST'))fail('METHOD','Use the newsletter form.',405);
+      return json(await newsletterRoute(this,request,phase,method==='POST'?await body(request):{},await this.session(request,false),now));
+    }
     if(path==='/wallet/challenge'&&method==='POST'){
       const data=await body(request);decode58(data.wallet);s.rate('wallet:'+data.wallet,6,now);
       const id=randomToken(),expires=now+300000;
@@ -89,7 +96,7 @@ export class CampaignLedger {
       const user=s.transaction(()=>{if(!s.one('DELETE FROM challenges WHERE id=? AND expires_at>? RETURNING id',c.id,Date.now()))fail('CHALLENGE_USED','This sign-in was already used.',401);return s.identify('wallet',d.wallet,`${d.wallet.slice(0,5)}…${d.wallet.slice(-4)}`,d.user);});
       return json({ok:true},200,{'Set-Cookie':await this.login(user)});
     }
-    const oauth=path.match(/^\/oauth\/(x|discord)\/(start|callback)$/);
+    const oauth=path.match(/^\/oauth\/(x|discord|telegram)\/(start|callback)$/);
     if(oauth)return this.oauth(request,url,oauth[1],oauth[2],now);
     if(path==='/x/challenge'&&method==='POST'){
       const user=await this.session(request,false);if(!this.env.CAMPAIGNS_X_BEARER)fail('NOT_CONFIGURED','X public account verification is not configured.',503);
@@ -127,10 +134,22 @@ export class CampaignLedger {
       const contact=string(data.contact||'',200,'prize contact',false);
       const member=s.transaction(()=>s.join(c,user,typeof data.ref==='string'?data.ref.slice(0,30):null,now,contact));return json({joined:true,referralCode:member.code});
     }
-    const act=actionPath.match(/^actions\/([a-z0-9_-]+)\/(visit|claim)$/);
+    const act=actionPath.match(/^actions\/([a-z0-9_-]+)\/(visit|claim|challenge)$/);
     if(!act||method!=='POST')fail('NOT_FOUND','Not found.',404);
     const a=c.doc.actions.find(x=>x.id===act[1]);if(!a)fail('NOT_FOUND','Action not found.',404);
     canEnter(c,now);this.member(c,user);const period=periodFor(a,c.doc,now);
+    if(act[2]==='challenge'){
+      if(a.type!=='instagram_comment'||a.mode!=='api')fail('NOT_FOUND','Challenge not available for this action.',404);
+      if(!capabilities(this.env).instagram.configured)fail('NOT_CONFIGURED','Instagram comment verification is not connected yet.',503);
+      s.rate('instagram-code:'+user,3,now,600000);
+      const data=await body(request),username=string(data.username,30,'Instagram username').replace(/^@/,'').toLowerCase();
+      if(!/^[a-z0-9_.]{1,30}$/.test(username))fail('INVALID_USERNAME','Enter your Instagram username, without a link.');
+      const id=randomToken(),code='house-'+randomToken().slice(0,20),expiresAt=now+15*60000;
+      s.transaction(()=>{
+        s.run("DELETE FROM challenges WHERE kind='instagram-comment' AND json_extract(doc,'$.user')=? AND json_extract(doc,'$.campaign')=? AND json_extract(doc,'$.action')=?",user,c.id,a.id);
+        s.run('INSERT INTO challenges VALUES(?,?,?,?)',id,'instagram-comment',JSON.stringify({user,campaign:c.id,action:a.id,period,username,code,createdAt:now,revision:c.revision}),expiresAt);
+      });return json({id,code,expiresAt});
+    }
     if(act[2]==='visit'){
       if(!a.target)fail('NO_TARGET','This action does not have a link.');
       s.run('INSERT INTO visits VALUES(?,?,?,?,?) ON CONFLICT(campaign_id,user_id,action_id,period) DO NOTHING',c.id,user,a.id,period,now);
@@ -139,13 +158,34 @@ export class CampaignLedger {
     s.rate('claim:'+user,15,now);const data=await body(request);
     const existing=s.one('SELECT id,status FROM entries WHERE campaign_id=? AND user_id=? AND action_id=? AND period=?',c.id,user,a.id,period);
     if(existing && existing.status!=='rejected')return json({id:existing.id,status:existing.status,duplicate:true});
-    const evidence=string(data.evidence||'',3000,'evidence',false);
-    let status='approved',proof={method:a.mode},proofKey=null;
+    let evidence=string(data.evidence||'',3000,'evidence',false);
+    let status='approved',proof={method:a.mode},proofKey=null,instagram=null,challengeID=null;
     if(a.mode==='review'){if(evidence.length<5)fail('EVIDENCE_REQUIRED','Provide a post link, proof link or a useful description for review.');status='pending';}
     else if(a.mode==='visit'){
       const v=s.one('SELECT started_at FROM visits WHERE campaign_id=? AND user_id=? AND action_id=? AND period=?',c.id,user,a.id,period);
       if(!v || now-v.started_at<5000)fail('VISIT_FIRST','Open the page first, then return to record your visit.',409);
       proof={method:'visit',startedAt:v.started_at,meaning:'Outbound link opened; no follow, like, viewing duration or engagement verified'};
+    }else if(a.mode==='answer'){
+      s.rate('answer:'+c.id+':'+a.id+':'+user,5,now,600000);
+      const answer=normalizeAnswer(string(data.answer||'',200,'your answer'));
+      if(!a.answers?.includes(answer))fail('WRONG_ANSWER','That answer does not match. Check it and try again.',409);
+      evidence='';proof={method:'exact-answer',checkedAt:now};
+    }else if(a.mode==='confirmation'){
+      evidence='';proof=subscriptionProof(s,c.id,user,a.id);
+    }else if(a.mode==='api' && a.type==='telegram'){
+      s.rate('provider:'+user,6,now);
+      const result=await verifyTelegramMembership(a,s.one("SELECT * FROM identities WHERE user_id=? AND provider='telegram'",user),this.env);
+      if(!result.verified)fail('NOT_VERIFIED','Telegram has not confirmed your membership. Join the group or channel and check again.',409);
+      evidence='';proof=result.proof;
+    }else if(a.mode==='api' && a.type==='instagram_comment'){
+      s.rate('provider:'+user,6,now);
+      const challenge=s.one("SELECT * FROM challenges WHERE id=? AND kind='instagram-comment' AND expires_at>?",String(data.challenge||''),now);
+      if(!challenge)fail('CHALLENGE_EXPIRED','Get a fresh Instagram comment code first.',401);
+      const d=JSON.parse(challenge.doc);
+      if(d.user!==user||d.campaign!==c.id||d.action!==a.id||d.period!==period||d.revision!==c.revision)fail('WRONG_ACCOUNT','This code belongs to another entrant, action or campaign period.',403);
+      const result=await verifyInstagramComment(a,d,c.doc,this.env);
+      if(!result.verified)fail('NOT_VERIFIED','Your matching comment is not visible yet. Add the code as a separate word in a new comment, then check again.',409);
+      evidence='';instagram=result.identity;challengeID=challenge.id;proof=result.proof;proofKey=result.key;
     }else if(a.mode==='api'){
       s.rate('provider:'+user,6,now);
       const provider=ACTIONS[a.type].provider,identity=s.one('SELECT * FROM identities WHERE user_id=? AND provider=?',user,provider);
@@ -160,9 +200,15 @@ export class CampaignLedger {
       const fresh=s.requireCampaign(c.id);canEnter(fresh,Date.now());this.member(fresh,user);
       if(fresh.revision!==c.revision)fail('CAMPAIGN_CHANGED','Campaign changed; reload before entering.',409);
       if(fresh.snapshot)fail('CLOSED','The draw snapshot is frozen.',409);
+      if(periodFor(a,fresh.doc,Date.now())!==period)fail('PERIOD_CHANGED','The daily entry period changed. Start this action again.',409);
       const duplicate=s.one('SELECT id,status FROM entries WHERE campaign_id=? AND user_id=? AND action_id=? AND period=?',c.id,user,a.id,period);
       if(duplicate && duplicate.status!=='rejected')return {...duplicate,duplicate:true};
       if(proofKey && s.one('SELECT id FROM entries WHERE campaign_id=? AND action_id=? AND proof_key=? AND id!=?',c.id,a.id,proofKey,duplicate?.id||''))fail('PROOF_REUSED','That post has already been used for this action.',409);
+      if(a.mode==='confirmation')subscriptionProof(s,c.id,user,a.id);
+      if(instagram){
+        if(!s.one("DELETE FROM challenges WHERE id=? AND kind='instagram-comment' AND expires_at>? RETURNING id",challengeID,Date.now()))fail('CHALLENGE_EXPIRED','This comment code was already used or expired.',401);
+        s.identify('instagram',instagram.subject,instagram.label,user);
+      }
       const id=duplicate?.id||crypto.randomUUID();
       s.run('INSERT INTO entries(id,campaign_id,user_id,action_id,period,status,points,evidence,proof,proof_key,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(campaign_id,user_id,action_id,period) DO UPDATE SET status=excluded.status,evidence=excluded.evidence,proof=excluded.proof,proof_key=excluded.proof_key,updated_at=excluded.updated_at,note=\'\'',id,c.id,user,a.id,period,status,a.points,evidence,JSON.stringify(proof),proofKey,now,now);
       s.log(user,status==='pending'?'entry.submitted':'entry.verified',id,{campaign:c.id,action:a.id,method:a.mode},now);
@@ -230,11 +276,12 @@ export class CampaignLedger {
     const callback=`${this.env.CAMPAIGNS_ORIGIN}/campaigns/api/oauth/${provider}/callback`;
     if(phase==='start'){
       if(request.method!=='POST')fail('METHOD','Use the sign-in button.',405);
-      const data=await body(request),user=await this.session(request,false),state=randomToken(),browser=randomToken(),verifier=randomToken();
+      const data=await body(request),user=await this.session(request,false),state=randomToken(),browser=randomToken(),verifier=randomToken(),nonce=randomToken();
       const returnTo=typeof data.returnTo==='string'&&/^\/campaigns(?:\/[a-z0-9-]+)?$/.test(data.returnTo)?data.returnTo:'/campaigns';
-      s.run('INSERT INTO challenges VALUES(?,?,?,?)',state,'oauth',JSON.stringify({provider,user,browser:await sha(browser),verifier,returnTo}),now+600000);
+      s.run('INSERT INTO challenges VALUES(?,?,?,?)',state,'oauth',JSON.stringify({provider,user,browser:await sha(browser),verifier,nonce,returnTo}),now+600000);
       const u=new URL(p.authorize);for(const [k,v] of Object.entries({client_id:this.env[p.id],redirect_uri:callback,response_type:'code',scope:p.scopes,state}))u.searchParams.set(k,v);
-      if(provider==='x'){u.searchParams.set('code_challenge',b64(new Uint8Array(await crypto.subtle.digest('SHA-256',encode.encode(verifier)))));u.searchParams.set('code_challenge_method','S256');}
+      if(provider==='x'||provider==='telegram'){u.searchParams.set('code_challenge',b64(new Uint8Array(await crypto.subtle.digest('SHA-256',encode.encode(verifier)))));u.searchParams.set('code_challenge_method','S256');}
+      if(provider==='telegram')u.searchParams.set('nonce',nonce);
       return json({url:u.href},200,{'Set-Cookie':cookie(OAUTH,browser,600)});
     }
     if(request.method!=='GET')fail('METHOD','Unexpected callback method.',405);
@@ -245,23 +292,25 @@ export class CampaignLedger {
     if(!s.one('DELETE FROM challenges WHERE id=? RETURNING id',state))fail('OAUTH_USED','This sign-in was already used.',401);
     if(url.searchParams.has('error'))return new Response(null,{status:303,headers:{...headers,Location:d.returnTo+'?connection=cancelled','Set-Cookie':cookie(OAUTH,'',0)}});
     const code=url.searchParams.get('code');if(!code||code.length>4096)fail('OAUTH_FAILED','The platform did not return an authorization code.',401);
-    const identity=await exchange(provider,code,d.verifier,callback,this.env);
+    const identity=await exchange(provider,code,d.verifier,callback,this.env,fetch,d.nonce);
+    if(await this.session(request,false)!==d.user)fail('SESSION_CHANGED','Your account changed. Reconnect from the campaign.',401);
     const user=s.identify(provider,identity.subject,identity.label,d.user);
-    const encrypted=await seal(identity.tokens,this.env,`${provider}:${identity.subject}:${user}`);
+    const encrypted=identity.tokens?await seal(identity.tokens,this.env,`${provider}:${identity.subject}:${user}`):null;
     s.run('UPDATE identities SET tokens=?,label=? WHERE provider=? AND subject=? AND user_id=?',encrypted,identity.label,provider,identity.subject,user);
     const response=new Response(null,{status:303,headers:{...headers,Location:d.returnTo+'?connection=success'}});response.headers.append('Set-Cookie',await this.login(user));response.headers.append('Set-Cookie',cookie(OAUTH,'',0));return response;
   }
   async adminRoute(request,url,path,now){
     const s=this.store,method=request.method;
-    if(path==='/config'&&method==='GET')return json({version:VERSION,providers:capabilities(this.env),actions:ACTIONS,email:{configured:emailConfigured(this.env),codeLength:8,service:'on display.'}});
-    if(path==='/campaigns'&&method==='GET')return json({campaigns:s.all('SELECT id FROM campaigns ORDER BY created_at DESC LIMIT 200').map(r=>{const c=s.campaign(r.id);return publicCampaign(c,s.stats(c.id));})});
+    if(path==='/newsletter/export'&&method==='GET')return json(await exportNewsletter(this,(url.searchParams.get('after')||'').slice(0,100)));
+    if(path==='/config'&&method==='GET')return json({version:VERSION,providers:capabilities(this.env),actions:ACTIONS,email:{configured:emailConfigured(this.env),codeLength:8,newsletter:emailConfigured(this.env)&&!!this.env.CAMPAIGNS_TOKEN_KEY,service:'on display.'}});
+    if(path==='/campaigns'&&method==='GET')return json({campaigns:s.all('SELECT id FROM campaigns ORDER BY created_at DESC LIMIT 200').map(r=>{const c=s.campaign(r.id);return publicCampaign(c,s.stats(c.id),true);})});
     if(path==='/campaigns'&&method==='POST'){
       const doc=validateCampaign(await body(request));if(s.campaign(doc.slug))fail('SLUG_TAKEN','That campaign link is already in use.',409);
-      const id=crypto.randomUUID();s.transaction(()=>{s.run("INSERT INTO campaigns(id,slug,doc,status,revision,created_at,updated_at) VALUES(?,?,?,'draft',1,?,?)",id,doc.slug,JSON.stringify(doc),now,now);s.log('owner','campaign.created',id,{slug:doc.slug},now);});return json(publicCampaign(s.campaign(id),s.stats(id)),201);
+      const id=crypto.randomUUID();s.transaction(()=>{s.run("INSERT INTO campaigns(id,slug,doc,status,revision,created_at,updated_at) VALUES(?,?,?,'draft',1,?,?)",id,doc.slug,JSON.stringify(doc),now,now);s.log('owner','campaign.created',id,{slug:doc.slug},now);});return json(publicCampaign(s.campaign(id),s.stats(id),true),201);
     }
     const match=path.match(/^\/campaigns\/([a-z0-9-]+)(?:\/(.*))?$/);if(!match)fail('NOT_FOUND','Not found.',404);
     const c=s.requireCampaign(match[1]),part=match[2]||'';
-    if(part===''&&method==='GET')return json(publicCampaign(c,s.stats(c.id)));
+    if(part===''&&method==='GET')return json(publicCampaign(c,s.stats(c.id),true));
     if(part===''&&method==='PUT'){
       const data=await body(request),doc=validateCampaign(data);
       s.transaction(()=>{
@@ -269,12 +318,12 @@ export class CampaignLedger {
         if(fresh.commitment){const mutable=new Set(['title','description','cover']);for(const k of Object.keys(doc))if(!mutable.has(k)&&JSON.stringify(doc[k])!==JSON.stringify(fresh.doc[k]))fail('RULES_LOCKED','Published rules, dates, actions and prizes are locked. Duplicate the campaign to change them.',409);}
         const clash=s.campaign(doc.slug);if(clash&&clash.id!==c.id)fail('SLUG_TAKEN','That campaign link is already in use.',409);
         s.run('UPDATE campaigns SET slug=?,doc=?,revision=revision+1,updated_at=? WHERE id=?',doc.slug,JSON.stringify(doc),now,c.id);s.log('owner','campaign.edited',c.id,{revision:fresh.revision+1},now);
-      });return json(publicCampaign(s.campaign(c.id),s.stats(c.id)));
+      });return json(publicCampaign(s.campaign(c.id),s.stats(c.id),true));
     }
     if(part==='duplicate'&&method==='POST'){
       const data=await body(request),doc=validateCampaign({...c.doc,slug:data.slug,title:c.doc.title+' — copy'});
       if(s.campaign(doc.slug))fail('SLUG_TAKEN','That campaign link is already in use.',409);
-      const id=crypto.randomUUID();s.transaction(()=>{s.run("INSERT INTO campaigns(id,slug,doc,status,revision,created_at,updated_at) VALUES(?,?,?,'draft',1,?,?)",id,doc.slug,JSON.stringify(doc),now,now);s.log('owner','campaign.duplicated',id,{source:c.id},now);});return json(publicCampaign(s.campaign(id),s.stats(id)),201);
+      const id=crypto.randomUUID();s.transaction(()=>{s.run("INSERT INTO campaigns(id,slug,doc,status,revision,created_at,updated_at) VALUES(?,?,?,'draft',1,?,?)",id,doc.slug,JSON.stringify(doc),now,now);s.log('owner','campaign.duplicated',id,{source:c.id},now);});return json(publicCampaign(s.campaign(id),s.stats(id),true),201);
     }
     if(part==='status'&&method==='POST'){
       const data=await body(request);if(!['live','paused','closed'].includes(data.status))fail('INVALID_STATUS','Choose live, paused or closed.');
@@ -289,9 +338,10 @@ export class CampaignLedger {
           if(Date.parse(fresh.doc.endsAt)<=now)fail('PAST_END','The end date is already in the past.');
           for(const a of fresh.doc.actions)if(a.mode==='api'&&!capabilities(this.env)[ACTIONS[a.type].provider]?.configured)fail('CONNECTION_REQUIRED',`Configure ${ACTIONS[a.type].provider} or change its action to organizer review before publishing.`,409);
           if(fresh.doc.actions.some(a=>a.type==='x_like'&&a.mode==='api')&&!capabilities(this.env).x.oauth)fail('CONNECTION_REQUIRED','Automatic X likes require OAuth user access. Use organizer review until that connection is configured.',409);
+          if(fresh.doc.actions.some(a=>a.mode==='confirmation')&&(!emailConfigured(this.env)||!this.env.CAMPAIGNS_TOKEN_KEY))fail('CONNECTION_REQUIRED','Configure email verification and encrypted storage before using confirmed newsletter entries.',409);
         }
         s.run('UPDATE campaigns SET status=?,seed=?,commitment=?,revision=revision+1,updated_at=? WHERE id=?',data.status,seed,commitment,now,c.id);s.log('owner','campaign.'+data.status,c.id,{commitment},now);
-      });return json(publicCampaign(s.campaign(c.id),s.stats(c.id)));
+      });return json(publicCampaign(s.campaign(c.id),s.stats(c.id),true));
     }
     if(part==='entries'&&method==='GET'){
       const offset=Math.max(0,Math.min(1000000,parseInt(url.searchParams.get('offset'))||0)),filter=url.searchParams.get('status');

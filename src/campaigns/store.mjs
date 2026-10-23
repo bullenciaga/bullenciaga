@@ -14,6 +14,8 @@ CREATE INDEX IF NOT EXISTS entries_member ON entries(campaign_id,user_id);
 CREATE TABLE IF NOT EXISTS visits(campaign_id TEXT NOT NULL,user_id TEXT NOT NULL,action_id TEXT NOT NULL,period TEXT NOT NULL,started_at INTEGER NOT NULL,PRIMARY KEY(campaign_id,user_id,action_id,period));
 CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY AUTOINCREMENT,at INTEGER NOT NULL,actor TEXT NOT NULL,operation TEXT NOT NULL,subject TEXT NOT NULL,detail TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS rate_limits(key TEXT PRIMARY KEY,count INTEGER NOT NULL,expires_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS newsletter_subscribers(user_id TEXT PRIMARY KEY,email_hash TEXT NOT NULL UNIQUE,email_cipher TEXT NOT NULL,label TEXT NOT NULL,confirmed_at INTEGER NOT NULL,unsubscribed_at INTEGER,unsubscribe_hash TEXT NOT NULL UNIQUE);
+CREATE TABLE IF NOT EXISTS newsletter_consents(campaign_id TEXT NOT NULL,user_id TEXT NOT NULL,action_id TEXT NOT NULL,confirmed_at INTEGER NOT NULL,consent_text TEXT NOT NULL,PRIMARY KEY(campaign_id,user_id,action_id));
 `;
 export class CampaignStore {
   constructor(sql, transaction) { this.sql=sql;this.transaction=transaction;sql.exec(SCHEMA); }
@@ -53,14 +55,14 @@ export class CampaignStore {
     const referrer=this.one('SELECT * FROM members WHERE campaign_id=? AND user_id=? AND disqualified=0',c.id,member.referrer);if(!referrer)return;
     const count=this.one("SELECT count(*) AS n FROM entries WHERE campaign_id=? AND user_id=? AND action_id='referral' AND status='approved'",c.id,member.referrer).n;
     if(count>=c.doc.referral.cap)return;
-    const qualifyingIds=c.doc.actions.filter(a=>a.mode==='api'||a.mode==='review').map(a=>a.id);
+    const qualifyingIds=c.doc.actions.filter(a=>['api','review','confirmation'].includes(a.mode)).map(a=>a.id);
     const qualified=this.all("SELECT action_id FROM entries WHERE campaign_id=? AND user_id=? AND status='approved'",c.id,user).some(e=>qualifyingIds.includes(e.action_id));
     if(!qualified)return;
     this.run("INSERT INTO entries(id,campaign_id,user_id,action_id,period,status,points,evidence,proof,created_at,updated_at) VALUES(?,?,?,'referral',?,'approved',?,'',?,?,?) ON CONFLICT(campaign_id,user_id,action_id,period) DO UPDATE SET status='approved',updated_at=excluded.updated_at",crypto.randomUUID(),c.id,member.referrer,user,c.doc.referral.points,JSON.stringify({qualifiedEntrant:user}),now,now);
   }
   reconcileReferral(c,user,now){
     const member=this.one('SELECT * FROM members WHERE campaign_id=? AND user_id=?',c.id,user);if(!member?.referrer)return;
-    const ids=c.doc.actions.filter(a=>a.mode==='api'||a.mode==='review').map(a=>a.id);
+    const ids=c.doc.actions.filter(a=>['api','review','confirmation'].includes(a.mode)).map(a=>a.id);
     const stillQualified=!member.disqualified && this.all("SELECT action_id FROM entries WHERE campaign_id=? AND user_id=? AND status='approved'",c.id,user).some(e=>ids.includes(e.action_id));
     if(!stillQualified)this.run("UPDATE entries SET status='revoked',note='Referred entrant no longer qualifies',updated_at=? WHERE campaign_id=? AND user_id=? AND action_id='referral' AND period=?",now,c.id,member.referrer,user);
     else this.referral(c,user,now);

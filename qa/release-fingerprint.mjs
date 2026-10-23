@@ -20,7 +20,8 @@ const productionConfigSha256 = sha256(productionConfig);
 const workerSourceSha256 = sha256(Buffer.concat([workerSource, ...await Promise.all([
   'src/platform-signup.mjs', 'src/platform-signups-admin.mjs',
   'src/campaigns-gateway.mjs', 'src/campaigns/worker.mjs', 'src/campaigns/model.mjs',
-  'src/campaigns/providers.mjs', 'src/campaigns/store.mjs', 'wrangler.campaigns.production.jsonc',
+  'src/campaigns/providers.mjs', 'src/campaigns/store.mjs', 'src/campaigns/email.mjs',
+  'src/campaigns/automatic.mjs', 'src/campaigns/newsletter.mjs', 'wrangler.campaigns.production.jsonc',
   'src/merch-preview.mjs', 'src/goods-fourthwall.mjs', 'src/goods-mappings.mjs',
   'src/goods-x-feed.mjs', 'src/goods-x-products.mjs',
   'src/goods-benefits.mjs', 'src/goods-runtime.mjs', 'src/goods-print-canvas.mjs',
