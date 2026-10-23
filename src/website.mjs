@@ -3,6 +3,7 @@ import { platformSignup } from './platform-signup.mjs';
 import { merchPreview } from './merch-preview.mjs';
 import { createGoodsRuntime } from './goods-runtime.mjs';
 import { rareFourPreviewRead } from './rare-four-preview.mjs';
+import { campaignsGateway } from './campaigns-gateway.mjs';
 
 // Keep short-domain visits on the established origin for wallets and sessions.
 const aliases = new Set(['bullen.app', 'www.bullen.app']);
@@ -97,6 +98,8 @@ const iphoneNavigation = `<style data-bullen-navigation>
 const website = {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const campaignResponse = await campaignsGateway(request, env);
+    if (campaignResponse) return campaignResponse;
     const rareFourRead = rareFourPreviewRead(request, env);
     if (rareFourRead) return rareFourRead;
     if (['/goods', '/merch'].some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) return merchPreview(request, env, ctx);

@@ -50,6 +50,10 @@
     {
       "binding": "RARE_FOUR_API",
       "service": "bullenciaga-rare-four-staging"
+    },
+    {
+      "binding": "CAMPAIGNS_API",
+      "service": "bullenciaga-campaigns-staging"
     }
   ],
   "r2_buckets": [

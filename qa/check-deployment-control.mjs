@@ -117,5 +117,19 @@ for (const [config, suffix] of [[productionConfig, ''], [stagingConfig, '-stagin
   assert.equal(consumer.max_concurrency, 1, 'provider design rendering must run serially');
 }
 
-assert.deepEqual(stagingConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy-staging"},{binding:"RARE_FOUR_API",service:"bullenciaga-rare-four-staging"}], "staging authentication and giveaway stay isolated");
-assert.deepEqual(productionConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy"},{binding:"RARE_FOUR_API",service:"bullenciaga-rare-four"}], "only existing authentication and the approved isolated giveaway are bound");
+assert.deepEqual(stagingConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy-staging"},{binding:"RARE_FOUR_API",service:"bullenciaga-rare-four-staging"},{binding:"CAMPAIGNS_API",service:"bullenciaga-campaigns-staging"}], "staging authentication and giveaway stay isolated");
+assert.deepEqual(productionConfig.services, [{binding:"CONTROL_AUTH",service:"rpc-proxy"},{binding:"RARE_FOUR_API",service:"bullenciaga-rare-four"},{binding:"CAMPAIGNS_API",service:"bullenciaga-campaigns"}], "only authentication and the isolated giveaway/campaign services are bound");
+
+for (const target of ['staging','production']) {
+  const c = parseJsonc(await read(`wrangler.campaigns.${target}.jsonc`));
+  assert.equal(c.workers_dev,false,'campaign backend must have no public workers.dev entrypoint');
+  assert.equal(c.preview_urls,false);
+  assert(!c.routes && !c.route,'campaign backend is service-bound only');
+  assert.deepEqual(c.migrations,[{tag:'campaign-ledger-v1',new_sqlite_classes:['CampaignLedger']}]);
+  assert.deepEqual(c.durable_objects.bindings,[{name:'CAMPAIGN_STORE',class_name:'CampaignLedger'}]);
+  assert.equal(c.services[0].service,`rpc-proxy${target==='staging'?'-staging':''}`);
+  assert.equal(c.vars.CAMPAIGNS_ORIGIN,target==='staging'?'https://bullenciaga-staging.bullenciaga-e5c.workers.dev':'https://bullenciaga.com');
+}
+assert(staging.indexOf('Deploy isolated campaign service')<staging.indexOf('Deploy route-free staging Worker'));
+assert(production.indexOf('Deploy isolated campaign service')<production.indexOf('Upload production version'));
+assert(staging.includes('node qa/smoke-campaigns.mjs') && production.includes('node qa/smoke-campaigns.mjs'));

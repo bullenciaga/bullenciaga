@@ -1,0 +1,11 @@
+{
+  "name": "bullenciaga-campaigns",
+  "main": "src/campaigns/worker.mjs",
+  "compatibility_date": "2026-08-23",
+  "workers_dev": false,
+  "preview_urls": false,
+  "durable_objects": { "bindings": [{ "name": "CAMPAIGN_STORE", "class_name": "CampaignLedger" }] },
+  "migrations": [{ "tag": "campaign-ledger-v1", "new_sqlite_classes": ["CampaignLedger"] }],
+  "services": [{ "binding": "CONTROL_AUTH", "service": "rpc-proxy" }],
+  "vars": { "CAMPAIGNS_ORIGIN": "https://bullenciaga.com" }
+}

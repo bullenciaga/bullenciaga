@@ -70,6 +70,10 @@
     {
       "binding": "RARE_FOUR_API",
       "service": "bullenciaga-rare-four"
+    },
+    {
+      "binding": "CAMPAIGNS_API",
+      "service": "bullenciaga-campaigns"
     }
   ],
   "r2_buckets": [
