@@ -29,6 +29,6 @@ const rows=db.prepare('SELECT * FROM preview_signups').all();
 assert.deepEqual(Object.keys(rows[0]),['id','method','contact','created_at','consent_version']);
 for(const file of ['access.html','platform.css','platform.js']) {
  const text=readFileSync(new URL('../site/'+file,import.meta.url),'utf8');
- assert.doesNotMatch(text,/ondisplay|on display|supabase|xvhbsik|collect\/_expo/i,'anonymous page must not disclose product identity or backend');
+ assert.doesNotMatch(text,/supabase|xvhbsik|collect\/_expo/i,'named preview must not disclose private backend details');
 }
-console.log('platform signup: persisted, duplicate-safe, consent, bounds, rate limit, no public read, failure and identity isolation checks passed');
+console.log('platform signup: persisted, duplicate-safe, consent, bounds, rate limit, no public read, failure and backend isolation checks passed');

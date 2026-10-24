@@ -20,7 +20,7 @@ const pageChecks = [
   ['/world', /<title>BULLENCIAGA — World<\/title>/i],
   ['/what-if-i-held', /<title>What if I held\? — BULLENCIAGA/i],
   ['/dev', /<title>BULLENCIAGA — The Developer Record/i],
-  ['/access', /<title>early preview — bullenciaga/i],
+  ['/access', /<title>ON DISPLAY\. — BULLENCIAGA<\/title>/i],
   ['/buy', /<title>BULLENCIAGA — Buy \$BULLEN/i],
   ['/', smokePhase === 'preflight'
     ? /<title>BULLENCIAGA — (?:A token with horns\.|One House\. Everything connected\.)/i

@@ -1,10 +1,10 @@
-# Anonymous early-preview signup
+# ON DISPLAY. beta notification signup
 
 The page collects interest for a later beta notification. It does not grant immediate access or guarantee an invitation. New submissions record consent revision `beta-notification-2026-09-26`; existing consent records remain unchanged.
 
-Public surface: `/platform`, POST `/platform/signup`. Static assets and all requests remain on the BULLENCIAGA origin. No account creation, wallet connection, external authentication or email delivery occurs. A submitted X handle is a contact request, not verified account ownership.
+Public surface: `/access`, POST `/platform/signup`. Legacy `/platform` page URLs redirect to `/access`; asset and API paths retain their established names. Static assets and all requests remain on the BULLENCIAGA origin. No account creation, wallet connection, external authentication or email delivery occurs. A submitted X handle is a contact request, not verified account ownership.
 
-The copied sculpture loop/poster are immutable local media under `site/assets/platform`. Product identity and the original app domain must never enter public copy, URLs, metadata or client code. The original app repositories are untouched.
+The copied sculpture loop/poster are immutable local media under `site/assets/platform`. The public product name is ON DISPLAY. following the owner-authorized naming reveal on 24 October 2026. Private backend identifiers must not enter public copy, metadata or client code. This naming change does not alter app access gates or the signup consent scope. The original app repositories are untouched.
 
 ## Storage and operations
 
