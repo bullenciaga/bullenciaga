@@ -1,8 +1,10 @@
-# ON DISPLAY. beta notification signup
+# ON DISPLAY. app entry and legacy notification storage
 
-The page collects interest for a later beta notification. It does not grant immediate access or guarantee an invitation. New submissions record consent revision `beta-notification-2026-09-26`; existing consent records remain unchanged.
+Since 24 October 2026, public navigation opens `https://ondisplay.app/` directly. The old `/access` and `/platform` documents (including trailing-slash and `.html` forms) redirect there with HTTP 308 for GET/HEAD, without forwarding query strings. Other methods return 405. The beta signup is no longer a public landing page.
 
-Public surface: `/access`, POST `/platform/signup`. Legacy `/platform` page URLs redirect to `/access`; asset and API paths retain their established names. Static assets and all requests remain on the BULLENCIAGA origin. No account creation, wallet connection, external authentication or email delivery occurs. A submitted X handle is a contact request, not verified account ownership.
+The retained form API accepts interest from previously opened signup pages. It does not grant immediate access or guarantee an invitation. New submissions record consent revision `beta-notification-2026-09-26`; existing consent records remain unchanged.
+
+Legacy POST API: `/platform/signup`; asset and private API paths retain their established names. Existing contacts and consent records are preserved. Legacy signup assets and API requests remain on the BULLENCIAGA origin. No account creation, wallet connection, external authentication or email delivery occurs. A submitted X handle is a contact request, not verified account ownership.
 
 The copied sculpture loop/poster are immutable local media under `site/assets/platform`. The public product name is ON DISPLAY. following the owner-authorized naming reveal on 24 October 2026. Private backend identifiers must not enter public copy, metadata or client code. This naming change does not alter app access gates or the signup consent scope. The original app repositories are untouched.
 

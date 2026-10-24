@@ -20,7 +20,6 @@ const pageChecks = [
   ['/world', /<title>BULLENCIAGA — World<\/title>/i],
   ['/what-if-i-held', /<title>What if I held\? — BULLENCIAGA/i],
   ['/dev', /<title>BULLENCIAGA — The Developer Record/i],
-  ['/access', /<title>ON DISPLAY\. — BULLENCIAGA<\/title>/i],
   ['/buy', /<title>BULLENCIAGA — Buy \$BULLEN/i],
   ['/', smokePhase === 'preflight'
     ? /<title>BULLENCIAGA — (?:A token with horns\.|One House\. Everything connected\.)/i
@@ -104,7 +103,7 @@ async function fetchChecked(path, validateResponse) {
   throw lastError;
 }
 
-async function fetchRedirectChecked(path) {
+async function fetchRedirectChecked(path, expectedStatus = 301) {
   const url = new URL(path, baseUrl);
   let lastError;
 
@@ -116,8 +115,8 @@ async function fetchRedirectChecked(path) {
         headers: { 'user-agent': 'bullenciaga-release-smoke/1' },
         signal: AbortSignal.timeout(45_000),
       });
-      if (response.status === 301) return { response, url };
-      lastError = new Error(`${url} returned HTTP ${response.status} instead of 301`);
+      if (response.status === expectedStatus) return { response, url };
+      lastError = new Error(`${url} returned HTTP ${response.status} instead of ${expectedStatus}`);
     } catch (error) {
       lastError = error;
     }
@@ -175,6 +174,11 @@ if (smokePhase === 'post-release') {
       assert(markers.every(marker => css.includes(marker)), `${path} release styles have not reached this edge`);
     });
     console.log(`asset smoke: ok ${path}`);
+  }
+  for (const path of ['/access', '/access/', '/access.html', '/platform', '/platform/', '/platform.html']) {
+    const {response} = await fetchRedirectChecked(path, 308);
+    assert.equal(response.headers.get('location'),'https://ondisplay.app/','Legacy preview must open only the canonical app');
+    console.log(`redirect smoke: ok ${path} -> ON DISPLAY.`);
   }
   for (const path of ['/proof', '/proof.html']) {
     const { response, url } = await fetchRedirectChecked(path);

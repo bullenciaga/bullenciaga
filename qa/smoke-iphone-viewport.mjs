@@ -33,7 +33,8 @@ async function get(path, ua, extra = {}) {
   assert.equal(response.status, 200, path);
   return {response, html:await response.text()};
 }
-const pages = fs.readdirSync(new URL('../site/', import.meta.url)).filter(name => name.endsWith('.html') && fs.readFileSync(new URL('../site/' + name, import.meta.url), 'utf8').includes('data-bullen-shell-source'));
+// /access is now an app redirect, verified by smoke-live and the route contract.
+const pages = fs.readdirSync(new URL('../site/', import.meta.url)).filter(name => name !== 'access.html' && name.endsWith('.html') && fs.readFileSync(new URL('../site/' + name, import.meta.url), 'utf8').includes('data-bullen-shell-source'));
 for (const name of pages) {
   const path = name === 'index.html' ? '/' : '/' + name.replace(/\.html$/, '');
   const nativeScroll = fs.readFileSync(new URL('../site/' + name, import.meta.url), 'utf8').includes('<style data-bullen-boot>');
