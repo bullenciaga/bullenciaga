@@ -105,10 +105,11 @@ const website = {
     if (['/goods', '/merch'].some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) return merchPreview(request, env, ctx);
     if (url.pathname === '/platform/signups') return platformSignupsAdmin(request, env);
     if (url.pathname === '/platform/signup') return platformSignup(request, env);
-    // Only old public documents move; signup and private admin endpoints stay fixed.
-    if (['/platform', '/platform/', '/platform.html'].includes(url.pathname)) {
-      url.pathname = '/access';
-      return Response.redirect(url.toString(), 308);
+    // The named product now opens its app. Keep legacy form/admin APIs local.
+    if (['/access', '/access/', '/access.html', '/platform', '/platform/', '/platform.html'].includes(url.pathname)) {
+      if (!['GET', 'HEAD'].includes(request.method)) return new Response('Method not allowed', {status:405,headers:{Allow:'GET, HEAD'}});
+      // A fixed destination prevents open redirects and forwarding contact/query data.
+      return Response.redirect('https://ondisplay.app/', 308);
     }
     const userAgent = request.headers.get('User-Agent') || '';
     const iphoneChrome = /\biPhone\b/i.test(userAgent) && /\bCriOS\//i.test(userAgent);

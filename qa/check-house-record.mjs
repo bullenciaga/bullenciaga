@@ -78,11 +78,11 @@ assert.equal(createHash('sha256').update(body005).digest('hex'), 'ef1fa4f8310e0f
 assert.match(archive005, /record-archive-notice/);
 assert.match(archive005, /f='patchnotes'/);
 const body006 = archive006.slice(archive006.indexOf('  <section class="hero"'), archive006.indexOf('  <footer')).replace(/<details class="record-picker">[\s\S]*?<\/details>/g, '');
-assert.equal(createHash('sha256').update(body006.replaceAll('href="/access"','href="/platform"').replaceAll('Verification, ON DISPLAY. &amp; music','Verification, platform &amp; music').replaceAll('02 / ON DISPLAY.','02 / THE PLATFORM').replaceAll('ON DISPLAY. has made its first public appearance.','The platform has made its first public appearance.').replaceAll('>ON DISPLAY.</a>','>The platform</a>')).digest('hex'), '7cb3e749061854ed6a656900aab82b0c5ebb586ca0b97d6a36393a0b864e04a6', 'Edition 006 prose and dated reserve update remain intact apart from the approved product name and route');
+assert.equal(createHash('sha256').update(body006.replaceAll('href="https://ondisplay.app/"','href="/platform"').replaceAll('Verification, ON DISPLAY. &amp; music','Verification, platform &amp; music').replaceAll('02 / ON DISPLAY.','02 / THE PLATFORM').replaceAll('ON DISPLAY. has made its first public appearance.','The platform has made its first public appearance.').replaceAll('>ON DISPLAY.</a>','>The platform</a>')).digest('hex'), '7cb3e749061854ed6a656900aab82b0c5ebb586ca0b97d6a36393a0b864e04a6', 'Edition 006 prose and dated reserve update remain intact apart from the approved product name and route');
 assert.match(archive006, /record-archive-notice/);
 assert.match(archive006, /f='patchnotes'/);
 const article006 = archive006.slice(archive006.indexOf('  <section class="hero"'), archive006.indexOf('  <section class="record-archive"'));
-for (const href of ['/access', '/flywheel', '/deepdive', '/what-if-i-held', '/dev', '/lock', '/giveaways', 'https://youtube.com/@bullenciagafilms', 'https://jup.ag/tokens/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN']) assert(article006.includes(`href="${href}"`), `Edition 006 missing public destination ${href}`);
+for (const href of ['https://ondisplay.app/', '/flywheel', '/deepdive', '/what-if-i-held', '/dev', '/lock', '/giveaways', 'https://youtube.com/@bullenciagafilms', 'https://jup.ag/tokens/BULLENxRbvuwjo4DLBKBbh23cNQ4ZbpDeQKuoVXL7exN']) assert(article006.includes(`href="${href}"`), `Edition 006 missing public destination ${href}`);
 assert.match(article006, /full video and streaming release are coming soon/);
 assert.match(article006, /Future proposals are labelled separately/);
 assert.match(article006, /Returns are measured in SOL/);
