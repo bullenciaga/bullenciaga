@@ -796,10 +796,10 @@ export default [
       {
         "id": "OD-C01",
         "name": "Black",
-        "alt": "Black corduroy cap with the white on display. frame emblem centred on the front, photographed on pale stone.",
-        "image": "/assets/goods-x/on-display-frame-cap-od-c01-1538ac617d2c.jpg",
+        "alt": "Sakura wears the black corduroy cap with white on display. frame embroidery.",
+        "image": "/assets/goods-x/on-display-frame-cap-od-c01-d216dca46c5c.jpg",
         "additionalImages": [
-          "/goods/assets/ondisplay-v1/frame-cap-sakura-1200.webp"
+          "/goods/assets/ondisplay-v1/frame-cap-1200.webp"
         ]
       }
     ]

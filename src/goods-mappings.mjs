@@ -1830,6 +1830,237 @@ export default {
       "expectedColor": "Dark Olive",
       "expectedSize": "One size",
       "enabled": true
+    },
+    {
+      "product": "on-display-signature-hoodie",
+      "colour": "OD-H01",
+      "size": "S",
+      "productId": "7e64a803-161e-4283-959d-f8e1ab7ff9de",
+      "slug": "on-display-signature-heavy-hoodie",
+      "variantId": "97fe2427-bac8-4bf2-ab02-c67d0f4840c2",
+      "expectedColor": "Black",
+      "expectedSize": "S",
+      "enabled": true
+    },
+    {
+      "product": "on-display-signature-hoodie",
+      "colour": "OD-H01",
+      "size": "M",
+      "productId": "7e64a803-161e-4283-959d-f8e1ab7ff9de",
+      "slug": "on-display-signature-heavy-hoodie",
+      "variantId": "8811bbdd-94fa-4ee4-91e4-7c5c69129014",
+      "expectedColor": "Black",
+      "expectedSize": "M",
+      "enabled": true
+    },
+    {
+      "product": "on-display-signature-hoodie",
+      "colour": "OD-H01",
+      "size": "L",
+      "productId": "7e64a803-161e-4283-959d-f8e1ab7ff9de",
+      "slug": "on-display-signature-heavy-hoodie",
+      "variantId": "c2ffa17e-62ff-4878-9e49-cf2e158d7808",
+      "expectedColor": "Black",
+      "expectedSize": "L",
+      "enabled": true
+    },
+    {
+      "product": "on-display-signature-hoodie",
+      "colour": "OD-H01",
+      "size": "XL",
+      "productId": "7e64a803-161e-4283-959d-f8e1ab7ff9de",
+      "slug": "on-display-signature-heavy-hoodie",
+      "variantId": "09cb0378-ea36-42c7-926d-6936c82ecc99",
+      "expectedColor": "Black",
+      "expectedSize": "XL",
+      "enabled": true
+    },
+    {
+      "product": "on-display-signature-hoodie",
+      "colour": "OD-H01",
+      "size": "2XL",
+      "productId": "7e64a803-161e-4283-959d-f8e1ab7ff9de",
+      "slug": "on-display-signature-heavy-hoodie",
+      "variantId": "c2c7ac4a-e4de-438f-8b95-6a599cf0968c",
+      "expectedColor": "Black",
+      "expectedSize": "2XL",
+      "enabled": true
+    },
+    {
+      "product": "on-display-signature-hoodie",
+      "colour": "OD-H01",
+      "size": "3XL",
+      "productId": "7e64a803-161e-4283-959d-f8e1ab7ff9de",
+      "slug": "on-display-signature-heavy-hoodie",
+      "variantId": "4f63b604-bc96-4ca7-a2af-e99d7c868911",
+      "expectedColor": "Black",
+      "expectedSize": "3XL",
+      "enabled": true
+    },
+    {
+      "product": "on-display-embroidered-hoodie",
+      "colour": "OD-H02",
+      "size": "XS",
+      "productId": "1736e86c-1938-4c4b-bf25-a902e10aca3d",
+      "slug": "on-display-frame-embroidered-hoodie",
+      "variantId": "66618acb-aa1a-445b-adca-401dee6a8d12",
+      "expectedColor": "Black",
+      "expectedSize": "XS",
+      "enabled": true
+    },
+    {
+      "product": "on-display-embroidered-hoodie",
+      "colour": "OD-H02",
+      "size": "S",
+      "productId": "1736e86c-1938-4c4b-bf25-a902e10aca3d",
+      "slug": "on-display-frame-embroidered-hoodie",
+      "variantId": "bacc4053-bed5-45bf-a5f4-9ad34b64e14a",
+      "expectedColor": "Black",
+      "expectedSize": "S",
+      "enabled": true
+    },
+    {
+      "product": "on-display-embroidered-hoodie",
+      "colour": "OD-H02",
+      "size": "M",
+      "productId": "1736e86c-1938-4c4b-bf25-a902e10aca3d",
+      "slug": "on-display-frame-embroidered-hoodie",
+      "variantId": "a166eb9f-0a29-411e-9fc7-98db6cf14ae2",
+      "expectedColor": "Black",
+      "expectedSize": "M",
+      "enabled": true
+    },
+    {
+      "product": "on-display-embroidered-hoodie",
+      "colour": "OD-H02",
+      "size": "L",
+      "productId": "1736e86c-1938-4c4b-bf25-a902e10aca3d",
+      "slug": "on-display-frame-embroidered-hoodie",
+      "variantId": "208e05ba-9765-4651-8452-89f72e19d029",
+      "expectedColor": "Black",
+      "expectedSize": "L",
+      "enabled": true
+    },
+    {
+      "product": "on-display-embroidered-hoodie",
+      "colour": "OD-H02",
+      "size": "XL",
+      "productId": "1736e86c-1938-4c4b-bf25-a902e10aca3d",
+      "slug": "on-display-frame-embroidered-hoodie",
+      "variantId": "677587b9-0793-42d5-ab64-4a02d0f3b960",
+      "expectedColor": "Black",
+      "expectedSize": "XL",
+      "enabled": true
+    },
+    {
+      "product": "on-display-embroidered-hoodie",
+      "colour": "OD-H02",
+      "size": "2XL",
+      "productId": "1736e86c-1938-4c4b-bf25-a902e10aca3d",
+      "slug": "on-display-frame-embroidered-hoodie",
+      "variantId": "40736d06-bcc4-4a0c-8e7e-ec87f7eee726",
+      "expectedColor": "Black",
+      "expectedSize": "2XL",
+      "enabled": true
+    },
+    {
+      "product": "on-display-embroidered-hoodie",
+      "colour": "OD-H02",
+      "size": "3XL",
+      "productId": "1736e86c-1938-4c4b-bf25-a902e10aca3d",
+      "slug": "on-display-frame-embroidered-hoodie",
+      "variantId": "81e71138-d164-456b-8e11-d358185119be",
+      "expectedColor": "Black",
+      "expectedSize": "3XL",
+      "enabled": true
+    },
+    {
+      "product": "on-display-pebble-tee",
+      "colour": "OD-T02",
+      "size": "S",
+      "productId": "d05418f1-2f00-4b74-8d20-f1bda60ee37b",
+      "slug": "on-display-a-matter-of-taste-heavy-tee",
+      "variantId": "bd2ec0ce-5a2d-4048-957a-8043ed57bd01",
+      "expectedColor": "Black",
+      "expectedSize": "S",
+      "enabled": false
+    },
+    {
+      "product": "on-display-pebble-tee",
+      "colour": "OD-T02",
+      "size": "M",
+      "productId": "d05418f1-2f00-4b74-8d20-f1bda60ee37b",
+      "slug": "on-display-a-matter-of-taste-heavy-tee",
+      "variantId": "ac214269-0319-4adf-808a-f2352d1b4e00",
+      "expectedColor": "Black",
+      "expectedSize": "M",
+      "enabled": false
+    },
+    {
+      "product": "on-display-pebble-tee",
+      "colour": "OD-T02",
+      "size": "L",
+      "productId": "d05418f1-2f00-4b74-8d20-f1bda60ee37b",
+      "slug": "on-display-a-matter-of-taste-heavy-tee",
+      "variantId": "74ac1948-a8dc-4841-916e-8394338ffb89",
+      "expectedColor": "Black",
+      "expectedSize": "L",
+      "enabled": false
+    },
+    {
+      "product": "on-display-pebble-tee",
+      "colour": "OD-T02",
+      "size": "XL",
+      "productId": "d05418f1-2f00-4b74-8d20-f1bda60ee37b",
+      "slug": "on-display-a-matter-of-taste-heavy-tee",
+      "variantId": "45eb3621-e8cd-4912-aaac-3db58f5b57a5",
+      "expectedColor": "Black",
+      "expectedSize": "XL",
+      "enabled": false
+    },
+    {
+      "product": "on-display-pebble-tee",
+      "colour": "OD-T02",
+      "size": "2XL",
+      "productId": "d05418f1-2f00-4b74-8d20-f1bda60ee37b",
+      "slug": "on-display-a-matter-of-taste-heavy-tee",
+      "variantId": "3c872d4b-4466-424b-bd74-96c827a6f2b7",
+      "expectedColor": "Black",
+      "expectedSize": "2XL",
+      "enabled": false
+    },
+    {
+      "product": "on-display-pebble-tee",
+      "colour": "OD-T02",
+      "size": "3XL",
+      "productId": "d05418f1-2f00-4b74-8d20-f1bda60ee37b",
+      "slug": "on-display-a-matter-of-taste-heavy-tee",
+      "variantId": "31060a74-6941-4b9c-b130-b188673d98e1",
+      "expectedColor": "Black",
+      "expectedSize": "3XL",
+      "enabled": true
+    },
+    {
+      "product": "on-display-frame-cap",
+      "colour": "OD-C01",
+      "size": "One size",
+      "productId": "f8ea91de-4038-4dac-be19-c22bfea2ac88",
+      "slug": "on-display-frame-cord-cap",
+      "variantId": "ddd57e22-4e0f-42d3-b564-32e76e9c5dcd",
+      "expectedColor": "Black",
+      "expectedSize": "One size",
+      "enabled": true
+    },
+    {
+      "product": "on-display-worth-keeping-notebook",
+      "colour": "OD-N01",
+      "size": "A5",
+      "productId": "590f75c5-50be-43c5-9fc5-a5b018b5d2f3",
+      "slug": "on-display-worth-keeping-notebook",
+      "variantId": "8f511eae-095c-4361-aefc-0f717db138d4",
+      "expectedColor": "Black",
+      "expectedSize": "One Size",
+      "enabled": true
     }
   ]
 };

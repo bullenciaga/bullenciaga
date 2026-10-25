@@ -79,6 +79,7 @@ c7ac16321135549b93843d546523ea43d69dc3b2c0839f5d16556b6086ed4b88  assets/goods-x
 55fd995e361ec53c67f0c8f7ef97bb216f85551f892adee5cd8c62d525fc0e29  assets/goods-x/nocturne-atlas-cushion-hl03-55fd995e361e.jpg
 88a00bf9f4fcef464f233eff38be987e52f5ca2cf15d8ff21dd2eee451fe295d  assets/goods-x/on-display-embroidered-hoodie-od-h02-88a00bf9f4fc.jpg
 1538ac617d2c843938533c4838fd3b368ac4e28e811d94965bb8e32f8bc6c4e5  assets/goods-x/on-display-frame-cap-od-c01-1538ac617d2c.jpg
+d216dca46c5cd45e9daec4aa1131c57f9efb2fa3aa17587acddefdcfc2797a93  assets/goods-x/on-display-frame-cap-od-c01-d216dca46c5c.jpg
 b3bed4143d90dd50fd0402bff60168df5ebb9319b52c4588c15b9cf5f55bf088  assets/goods-x/on-display-pebble-tee-od-t02-b3bed4143d90.jpg
 697872587d7aeba0bc8045c2631e46867d385739bad829000e732331fd68b948  assets/goods-x/on-display-signature-hoodie-od-h01-697872587d7a.jpg
 b69917392275f6bb5b801567e46c763e82ccdd80612be54d2da68fd6a05009c8  assets/goods-x/on-display-worth-keeping-notebook-od-n01-b69917392275.jpg

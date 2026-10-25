@@ -68,11 +68,13 @@ const releaseMappings=(await import('../src/goods-mappings.mjs')).default;
 test('approved catalogue has one route per selection and no variant shared across selections',()=>{
  assert.doesNotThrow(()=>validateMappings(releaseMappings));
  const rows=releaseMappings.variants;
- assert.equal(rows.length,166);assert.equal(new Set(rows.map(x=>x.product)).size,33);
+ assert.equal(rows.length,187);assert.equal(new Set(rows.map(x=>x.product)).size,38);
  assert.equal(new Set(rows.map(x=>[x.product,x.colour,x.size].join('|'))).size,rows.length);
  assert.equal(new Set(rows.map(x=>x.variantId)).size,rows.length);
  const retired=new Set(['53ffe548-2e95-482d-909c-f3e592b17aed','6fc7156c-8666-46de-b939-48b228717f75']);
- assert.ok(rows.every(x=>x.enabled&&!retired.has(x.productId)));
+ assert.ok(rows.every(x=>!retired.has(x.productId)));
+ const unavailable=rows.filter(x=>!x.enabled);
+ assert.deepEqual(unavailable.map(x=>[x.product,x.size]),['S','M','L','XL','2XL'].map(size=>['on-display-pebble-tee',size]));
  assert.ok(rows.every(x=>!x.product.includes('all-over')),'Abandoned AOP tees must not regain checkout routes');
 });
 
@@ -126,4 +128,22 @@ test('Make It Look Easy maps the tee, framed print and verified cotton hoodie',(
  const print=rows.filter(x=>x.product==='make-it-look-easy-print');
  assert.deepEqual(print.map(x=>[x.size,x.variantId]),[['12 × 16 in','fe106107-a034-4302-b4bd-4e2213f81882'],['18 × 24 in','7ae1553a-9b8a-40f4-922e-e0402ac19c0b']]);
  assert.ok(print.every(x=>x.productId==='8d33ff20-3e05-4e4a-9f06-b884b7b814e9'&&x.expectedColor==='Black'));
+});
+
+// Current supplier size/colour identities are independently recorded at launch.
+test('ON DISPLAY routes approved blanks and keeps unavailable pebble sizes disabled',()=>{
+ const expected={
+  'on-display-signature-hoodie':['7e64a803-161e-4283-959d-f8e1ab7ff9de',6],
+  'on-display-embroidered-hoodie':['1736e86c-1938-4c4b-bf25-a902e10aca3d',7],
+  'on-display-pebble-tee':['d05418f1-2f00-4b74-8d20-f1bda60ee37b',6],
+  'on-display-frame-cap':['f8ea91de-4038-4dac-be19-c22bfea2ac88',1],
+  'on-display-worth-keeping-notebook':['590f75c5-50be-43c5-9fc5-a5b018b5d2f3',1]
+ };
+ for(const [product,[id,count]] of Object.entries(expected)){
+  const rows=releaseMappings.variants.filter(v=>v.product===product);assert.equal(rows.length,count);
+  assert.ok(rows.every(v=>v.productId===id&&v.expectedColor==='Black'&&!v.variantId.startsWith('local-preview-')));
+ }
+ const notebook=releaseMappings.variants.find(v=>v.product==='on-display-worth-keeping-notebook');
+ assert.equal(notebook.size,'A5');assert.equal(notebook.expectedSize,'One Size');
+ assert.equal(releaseMappings.variants.filter(v=>v.product.startsWith('on-display-')&&v.enabled).length,16);
 });
