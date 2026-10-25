@@ -77,6 +77,11 @@ c7ac16321135549b93843d546523ea43d69dc3b2c0839f5d16556b6086ed4b88  assets/goods-x
 2502b7b62f5e6e85e1473218f5f9ae1120f10885a04f7bb7f4bd8a5c957c826d  assets/goods-x/mind-never-closes-a02-12-16-2502b7b62f5e.jpg
 2dfa0a51425566dcec3b3a5d92fbc3c3a31d017c6c913015f537ade5dd30a069  assets/goods-x/mind-never-closes-a02-18-24-2dfa0a514255.jpg
 55fd995e361ec53c67f0c8f7ef97bb216f85551f892adee5cd8c62d525fc0e29  assets/goods-x/nocturne-atlas-cushion-hl03-55fd995e361e.jpg
+88a00bf9f4fcef464f233eff38be987e52f5ca2cf15d8ff21dd2eee451fe295d  assets/goods-x/on-display-embroidered-hoodie-od-h02-88a00bf9f4fc.jpg
+1538ac617d2c843938533c4838fd3b368ac4e28e811d94965bb8e32f8bc6c4e5  assets/goods-x/on-display-frame-cap-od-c01-1538ac617d2c.jpg
+b3bed4143d90dd50fd0402bff60168df5ebb9319b52c4588c15b9cf5f55bf088  assets/goods-x/on-display-pebble-tee-od-t02-b3bed4143d90.jpg
+697872587d7aeba0bc8045c2631e46867d385739bad829000e732331fd68b948  assets/goods-x/on-display-signature-hoodie-od-h01-697872587d7a.jpg
+b69917392275f6bb5b801567e46c763e82ccdd80612be54d2da68fd6a05009c8  assets/goods-x/on-display-worth-keeping-notebook-od-n01-b69917392275.jpg
 7a1361a0d430c85749c12b99517699f717a661706b5581b214621a4f78af9aa8  assets/goods-x/question-cap-k02-7a1361a0d430.jpg
 9445c081ec7cc5c61ee7aca3d6b0d100845798df72b2be59d5d956653c1f051c  assets/goods-x/question-hoodie-h02-question-9445c081ec7c.jpg
 f3f922ebfbdafd59b284694cb9310b3a33ff6de4325c4073267f5d13c55305b2  assets/goods-x/question-tee-t02-f3f922ebfbda.jpg

@@ -10,6 +10,7 @@ const PREVIEW_PATH = '/goods';
 // A fresh share identity for this collection. Visitors see the same Goods
 // document; its presentation module moves them to the music drop in place.
 const GOODS_CAMPAIGN_PATH = '/goods/make-it-look-easy';
+const ON_DISPLAY_CAMPAIGN_PATH = '/goods/on-display';
 const LEGACY_PATH = '/merch';
 const SESSION_SECONDS = 12 * 60 * 60;
 const MAX_LOGIN_BYTES = 2048;
@@ -304,7 +305,7 @@ async function readLogin(request) {
 }
 
 function assetName(pathname) {
-  if (pathname === PREVIEW_PATH || pathname === `${PREVIEW_PATH}/` || pathname === GOODS_CAMPAIGN_PATH) return 'index.html';
+  if (pathname === PREVIEW_PATH || pathname === `${PREVIEW_PATH}/` || (pathname === GOODS_CAMPAIGN_PATH || pathname === ON_DISPLAY_CAMPAIGN_PATH)) return 'index.html';
   const relative = pathname.slice(PREVIEW_PATH.length + 1);
   // No encoded separators, dot segments, hidden files or double decoding.
   if (relative.length > 512 || !relative.split('/').every(part => /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(part))) return null;
@@ -492,9 +493,9 @@ export async function merchPreview(request, env, ctx) {
     publicHeaders.delete('Vary'); publicHeaders.delete('X-Robots-Tag');
     let body = head ? null : name === 'index.html' ? publicIndex(await new Response(object.body).text()) : object.body;
     if (name === 'index.html' && !head) body = goodsProductMetadata(body, url);
-    if (name === 'index.html' && pathname === GOODS_CAMPAIGN_PATH && !head) {
+    if (name === 'index.html' && (pathname === GOODS_CAMPAIGN_PATH || pathname === ON_DISPLAY_CAMPAIGN_PATH) && !head) {
       body = body.replace('<meta property="og:url" content="https://bullenciaga.com/goods/">',
-        `<meta property="og:url" content="https://bullenciaga.com${GOODS_CAMPAIGN_PATH}">`);
+        `<meta property="og:url" content="https://bullenciaga.com${pathname}">`);
     }
     return new Response(body, { status: 200, headers: publicHeaders });
   } catch (_) {
