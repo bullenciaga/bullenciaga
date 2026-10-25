@@ -731,5 +731,96 @@ export default [
         ]
       }
     ]
+  },
+  {
+    "id": "on-display-signature-hoodie",
+    "name": "Signature Heavy Hoodie",
+    "description": "Quiet introduction. Lasting impression. A small on display. wordmark at the chest. The exact frame mark, enlarged across the back. Two signatures on substantial black cotton.",
+    "material": "AS Colour 5151. 500 gsm, 100% cotton French terry. Relaxed fit, dropped shoulders, double-layer hood without drawcords, kangaroo pocket and ribbed cuffs and hem. Printed front and back by Stakes. Chest wordmark approximately 80 mm wide; back mark approximately 300 mm wide.",
+    "category": "clothing",
+    "drop": "ON DISPLAY.",
+    "colours": [
+      {
+        "id": "OD-H01",
+        "name": "Black",
+        "alt": "Lily wears the black Signature Heavy Hoodie with a small white on display. wordmark at the left chest.",
+        "image": "/assets/goods-x/on-display-signature-hoodie-od-h01-697872587d7a.jpg",
+        "additionalImages": [
+          "/goods/assets/ondisplay-v1/signature-hoodie-sakura-back-1200.webp"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "on-display-embroidered-hoodie",
+    "name": "Frame Embroidered Hoodie",
+    "description": "Some things need very little introduction. The on display. frame mark, stitched in white on the left chest. A small, deliberate detail on a super-heavyweight black hoodie.",
+    "material": "Lane Seven LS17001. 16.5 oz fabric, 65% cotton and 35% recycled polyester. Relaxed fit, raglan sleeves, double-layer hood without drawcords, kangaroo pocket, ribbed cuffs and hem. White embroidery approximately 45 mm wide.",
+    "category": "clothing",
+    "drop": "ON DISPLAY.",
+    "colours": [
+      {
+        "id": "OD-H02",
+        "name": "Black",
+        "alt": "Sakura wears a black super-heavyweight hoodie with the small white on display. frame logo embroidered on her left chest.",
+        "image": "/assets/goods-x/on-display-embroidered-hoodie-od-h02-88a00bf9f4fc.jpg",
+        "additionalImages": []
+      }
+    ]
+  },
+  {
+    "id": "on-display-pebble-tee",
+    "name": "A Matter of Taste Heavy Tee",
+    "description": "A glass pebble, held in a soft grey frame. A small study in light, printed on generous black cotton. A matter of taste.",
+    "material": "AS Colour 5080. Heavy 280 gsm, 100% carded cotton. Boxy relaxed fit, dropped shoulders and a substantial ribbed neckline. Front print approximately 270 mm wide; clean back.",
+    "category": "clothing",
+    "drop": "ON DISPLAY.",
+    "colours": [
+      {
+        "id": "OD-T02",
+        "name": "Black",
+        "alt": "Sakura wears a black heavyweight tee with a reflective glass pebble inside a soft grey frame and the words a matter of taste.",
+        "image": "/assets/goods-x/on-display-pebble-tee-od-t02-b3bed4143d90.jpg",
+        "additionalImages": []
+      }
+    ]
+  },
+  {
+    "id": "on-display-frame-cap",
+    "name": "Frame Cord Cap",
+    "description": "A frame of mind. The on display. mark in white embroidery, centred on black cotton corduroy. A quiet signature with a little texture.",
+    "material": "Beechfield B682. 100% cotton corduroy. Low-profile, six-panel construction, curved peak, embroidered eyelets and an adjustable strap with a metal buckle. One size fits most. Front embroidery approximately 38 mm wide.",
+    "category": "clothing",
+    "drop": "ON DISPLAY.",
+    "colours": [
+      {
+        "id": "OD-C01",
+        "name": "Black",
+        "alt": "Sakura wears the black corduroy cap with white on display. frame embroidery.",
+        "image": "/assets/goods-x/on-display-frame-cap-od-c01-d216dca46c5c.jpg",
+        "additionalImages": [
+          "/goods/assets/ondisplay-v1/frame-cap-1200.webp"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "on-display-worth-keeping-notebook",
+    "name": "Worth Keeping Notebook",
+    "description": "For the things a camera cannot keep. Worth keeping. A personal record. A place for the thought, the sketch and the next good idea.",
+    "material": "Karst A5 bound notebook. Black hardback cover, stone-paper pages, elastic closure and ribbon bookmark. Centred printed cover artwork, approximately 55.4 mm wide.",
+    "category": "home",
+    "drop": "ON DISPLAY.",
+    "colours": [
+      {
+        "id": "OD-N01",
+        "name": "Black",
+        "alt": "Black Karst notebook on pale stone, with centred worth keeping. cover lettering inside grey brackets and on display. below.",
+        "image": "/assets/goods-x/on-display-worth-keeping-notebook-od-n01-b69917392275.jpg",
+        "additionalImages": [
+          "/goods/assets/ondisplay-v1/worth-keeping-sakura-1200.webp"
+        ]
+      }
+    ]
   }
 ];

@@ -19,3 +19,10 @@ const head=await merchPreview(new Request('https://bullenciaga.com/goods/make-it
 const privateEnv={...env,MERCH_PREVIEW_PROTECTED:'1',MERCH_PREVIEW_PASSWORD_SHA256:'a'.repeat(64),MERCH_PREVIEW_SESSION_SECRET:'b'.repeat(40)};
 const privatePage=await merchPreview(new Request('https://bullenciaga.com/goods/make-it-look-easy'),privateEnv);assert.equal(privatePage.status,200);const gate=await privatePage.text();assert.ok(gate.includes('Password'));assert.ok(!gate.includes('Goods content'));assert.match(privatePage.headers.get('X-Robots-Tag'),/noindex/);
 console.log('Goods campaign: unique share metadata, canonical destination, methods and private gate verified.');
+
+// ON DISPLAY. preserves the same methods and password gate.
+for(const method of ['GET','HEAD']){
+ const r=await merchPreview(new Request('https://bullenciaga.com/goods/on-display',{method}),env);assert.equal(r.status,200);if(method==='GET')assert.ok((await r.text()).includes('property="og:url" content="https://bullenciaga.com/goods/on-display"'));else assert.equal(await r.text(),'');
+}
+assert.equal((await merchPreview(new Request('https://bullenciaga.com/goods/on-display',{method:'POST'}),env)).status,405);
+assert.ok((await (await merchPreview(new Request('https://bullenciaga.com/goods/on-display'),privateEnv)).text()).includes('Password'));

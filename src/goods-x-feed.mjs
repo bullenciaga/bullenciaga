@@ -45,14 +45,14 @@ export function buildGoodsXFeed(catalogue){
   const fields={id:v.variantId,title:p.name,description:p.description+' '+p.material,link,image_link:ORIGIN+(c.imagesBySize?.[v.size]||c.image),availability:v.available&&v.maxQuantity>0?'in stock':'out of stock',condition:'new',price:v.unitPrice.toFixed(2)+' USD',brand:'BULLENCIAGA',item_group_id:p.id,color:c.name,size:v.size,product_type:'BULLENCIAGA > '+(p.category==='art'?'Framed art':p.category==='home'?'Home':p.category==='lore'?'Lore clothing':'Clothing'),custom_label_0:p.drop};
   return '<item>'+Object.entries(fields).map(([key,value])=>`<g:${key}>${xml(value)}</g:${key}>`).join('')+(c.additionalImages||[]).map(path=>`<g:additional_image_link>${xml(ORIGIN+path)}</g:additional_image_link>`).join('')+'</item>';
  });
- return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0"><channel><title>BULLENCIAGA Goods</title><link>'+ORIGIN+'/goods/</link><description>House signatures and the Make It Look Easy music drop.</description>'+items.join('\n')+'</channel></rss>\n';
+ return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0"><channel><title>BULLENCIAGA Goods</title><link>'+ORIGIN+'/goods/</link><description>ON DISPLAY., Make It Look Easy and the original House collection.</description>'+items.join('\n')+'</channel></rss>\n';
 }
 export async function goodsXFeed(request,env,ctx,{fetchImpl=fetch,cache=globalThis.caches?.default,now=Date.now}={}){
  const head=request.method==='HEAD';
  const headers={'Content-Type':'application/xml; charset=utf-8','X-Content-Type-Options':'nosniff','Cache-Control':'no-store','CDN-Cache-Control':'no-store','Cloudflare-CDN-Cache-Control':'no-store','X-Robots-Tag':'noindex'};
  if(!['GET','HEAD'].includes(request.method))return new Response(null,{status:405,headers:{...headers,Allow:'GET, HEAD'}});
  if(env.GOODS_CHECKOUT_ENABLED!=='1'||!mappings.salesEnabled||!env.GOODS_STOREFRONT_TOKEN)return new Response(null,{status:503,headers});
- const cacheKey=new Request(ORIGIN+GOODS_X_FEED_PATH+'?schema=20261017-v2');
+ const cacheKey=new Request(ORIGIN+GOODS_X_FEED_PATH+'?schema=20261025-v3');
  // A private staging shop must never consume or fill the public feed cache.
  const useCache=new URL(request.url).hostname==='bullenciaga.com'||new URL(request.url).hostname==='www.bullenciaga.com';
  try{
