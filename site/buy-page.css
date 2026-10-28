@@ -13,6 +13,14 @@ html[data-focus-navigation="keyboard"] .buy-desk a:focus-visible,html[data-focus
 .buy-intro{margin:18px 0 0;color:var(--buy-muted);font-size:13px;line-height:1.7}
 .text-action{display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:44px;color:var(--buy-pale);background:none;border:0;border-bottom:1px solid var(--buy-line);font-size:11px!important;padding:10px 0}
 .buy-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:26px;align-items:start}
+.otc-route{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-bottom:28px;padding:24px 26px;border:1px solid var(--buy-line);background:linear-gradient(115deg,rgba(199,168,105,.06),rgba(255,255,255,.025));border-radius:12px}
+.otc-route-copy{min-width:0}.otc-route .eyebrow{font-size:9px;letter-spacing:.15em;margin-bottom:8px}
+.otc-route h2{font:500 clamp(20px,2.3vw,26px)/1.25 Poppins,sans-serif;letter-spacing:-.035em;margin:0;scroll-margin-top:120px}
+.otc-route-copy>p:last-child{font-size:11px;line-height:1.7;color:var(--buy-muted);margin:9px 0 0}
+.buy-desk .otc-route-link{display:inline-flex;align-items:center;justify-content:space-between;gap:24px;flex-shrink:0;min-height:48px;padding:13px 18px;border:1px solid var(--buy-line);border-radius:6px;color:var(--buy-pale);font-size:11px;transition:background .15s,border-color .15s}
+.otc-route-link span{font-size:18px;line-height:1}.buy-desk .otc-route-link:hover{background:rgba(199,168,105,.09);border-color:var(--buy-gold)}
+@media(max-width:760px){.otc-route{align-items:stretch;flex-direction:column;gap:18px;padding:21px 18px;margin-bottom:24px}.buy-desk .otc-route-link{align-self:flex-start;gap:32px}.otc-route h2{scroll-margin-top:160px}}
+@media(prefers-reduced-motion:reduce){.buy-desk .otc-route-link{transition:none}}
 .swap-panel{border:1px solid var(--buy-line);background:#080807;min-width:0}
 .panel-head{padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--buy-line)}
 .provider-heading{display:flex;align-items:center;gap:13px}.provider-heading img{object-fit:contain}

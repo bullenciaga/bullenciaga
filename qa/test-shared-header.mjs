@@ -16,7 +16,7 @@ assert(headerCss.includes('body.explorer-expanded .bullen-site-shell[data-bullen
 assert.deepEqual(featured,['goods','world','platform','flywheel']);
 assert.equal(groups[0][1][0],'bullensaga');
 assert(!groups.flatMap(([,keys])=>keys).includes('world'));
-assert.equal(new Set([...featured,...groups.flatMap(([,keys])=>keys)]).size,21);
+assert.equal(new Set([...featured,...groups.flatMap(([,keys])=>keys)]).size,22);
 for(const [,keys] of groups)for(const key of keys){assert(descriptions[key]?.length>10);assert(destinations[key]);assert(labels[key]);}
 assert.equal(socials.length,4);assert.equal(resources.length,11);
 const oldDestinations=['/buy','/objects.html','/giveaways.html','/stats.html','/deepdive','/tape.html','/chart.html','/curve.html','/refer.html','/thedrop.html','/patchnotes.html','/lock.html','/ledger.html','/passport.html','/rooms.html','/world','https://ondisplay.app/','/flywheel','https://bullensaga.com/'];
