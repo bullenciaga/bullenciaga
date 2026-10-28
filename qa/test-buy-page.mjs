@@ -65,7 +65,16 @@ try {
   await page.goto(base+'/buy');await page.locator('[data-swap-stub]').waitFor();await page.waitForFunction(()=>document.querySelector('#market-cap').textContent!=='—');await page.locator('#price-chart').waitFor({state:'visible'});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${width}: no horizontal overflow`);
   assert.equal(await page.locator('.wallet-jump').textContent(),'WALLET OPTIONS ↓');
-  if(width>760){const edges=await page.evaluate(()=>['.swap-panel','.contract-panel'].map(s=>document.querySelector(s).getBoundingClientRect().bottom));assert(Math.abs(edges[0]-edges[1])<1,`${width}: panel bottoms align ${edges}`);}
+  const layout=await page.evaluate(()=>{
+   const box=s=>document.querySelector(s).getBoundingClientRect();
+   const swap=box('.swap-panel'),help=box('.buy-ledger-help'),copy=box('.otc-route-copy'),cta=box('.otc-route-link');
+   const contract=box('.contract-panel'),address=box('#bullen-contract'),button=box('#copy-contract'),explorer=box('.contract-explorer');
+   return {trailingSpace:swap.bottom-help.bottom,otcGap:cta.left-copy.right,contractGap:button.left-address.right,explorerGap:explorer.left-button.right,contractFits:explorer.right<=contract.right,contractHeight:contract.height};
+  });
+  assert(layout.trailingSpace<2,`${width}: swap ends with its content, without stretched blank space`);
+  assert(layout.otcGap>=13,`${width}: OTC action sits beside its copy without overlap`);
+  assert(layout.contractGap>=8&&layout.explorerGap>=8&&layout.contractFits,`${width}: contract address and controls remain one row`);
+  assert(layout.contractHeight<=62,`${width}: contract strip stays compact`);
   const config=await page.evaluate(()=>window.__config);
   assert.equal(config.displayMode,'integrated');assert.equal(config.autoConnect,false);assert.equal(config.formProps.initialOutputMint,MINT);assert.equal(config.formProps.initialInputMint,SOL);assert.equal(config.formProps.fixedMint,MINT);assert.equal(config.formProps.initialAmount,undefined);assert.equal(config.formProps.referralFee,undefined);
   assert.equal(await page.locator('#market-cap').textContent(),'$139,200');assert.equal(await page.locator('#market-fdv').textContent(),'$196,800');
