@@ -19,7 +19,7 @@ export const pageSections = {
 index:[['stats','Live Stats'],['nft','The Herd Collection'],['gallery','Browse The Herd'],['roadmap','Roadmap'],['faq','FAQ']],
 flywheel:[['mechanism','The system'],['supply','Supply'],['collecting','Collecting'],['revenue','Revenue'],['liquidity','Liquidity'],['evidence','Evidence']],
 world:[['release','Current release'],['artist-title','Explore the House']],
-buy:[['otc-heading','OTC exchange'],['swap-heading','Swap for $BULLEN'],['contract-heading','Token contract'],['routes-heading','Wallet options'],['markets-heading','Other markets']],
+buy:[['swap-heading','Swap for $BULLEN'],['otc-heading','OTC exchange'],['contract-heading','Token contract'],['routes-heading','Wallet options'],['markets-heading','Other markets']],
 objects:[['objects-title','House Objects'],['issue-title','Current issue'],['claim-title','Claim record'],['key-title','The House Key'],['benefits-title','Holder benefits']],
 deepdive:[['holder-age','Holder age'],['ownership','Concentration'],['flow','Token flow'],['wallet','Wallet lookup'],['methodology','Methodology']],
 dev:[['record','Developer record'],['mechanics','Burn mechanics'],['receipts','Receipts']],
