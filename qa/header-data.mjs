@@ -2,9 +2,12 @@
 // in place; changing a label never requires replacing the header after paint.
 export const labels = {index:'Home', buy:'Buy $BULLEN',stats:'Stats',deepdive:'Deep Dive',tape:'The Tape',chart:'Chart',curve:'Curve',transparency:'Moderation',refer:'Referrals',referrals:'Admin',thedrop:'The Drop',giveaways:'Giveaways',objects:'House Objects',patchnotes:'House Record',lock:'Burn Reserve',ledger:'Living Ledger',passport:'Wallet Passport',rooms:'Inner Rooms',world:'World',platform:'ON DISPLAY.',flywheel:'Flywheel',bullensaga:'BULLENSAGA',whitepaper:'Whitepaper',goods:'Goods',dev:'Developer Record',raiders:'The Raiders',shares:'Private record','what-if-i-held':'Holding study'};
 export const destinations = {goods:'/goods/',world:'/world',platform:'https://ondisplay.app/',flywheel:'/flywheel',bullensaga:'https://bullensaga.com/',objects:'/objects.html',patchnotes:'/patchnotes.html',lock:'/lock.html',ledger:'/ledger.html',whitepaper:'/whitepaper',buy:'/buy',stats:'/stats.html',deepdive:'/deepdive',chart:'/chart.html',tape:'/tape.html',curve:'/curve.html',giveaways:'/giveaways.html',thedrop:'/thedrop.html',refer:'/refer.html',passport:'/passport.html',rooms:'/rooms.html'};
+labels.otc = 'OTC Exchange';
+destinations.otc = 'https://exchange.bullen.app/';
 export const featured = ['goods','world','platform','flywheel'];
-export const groups = [['The House',['bullensaga','objects','patchnotes','lock','ledger','whitepaper']],['$BULLEN',['buy','stats','deepdive','chart','tape','curve']],['Community',['giveaways','thedrop','refer','passport','rooms']]];
+export const groups = [['The House',['bullensaga','objects','patchnotes','lock','ledger','whitepaper']],['$BULLEN',['buy','otc','stats','deepdive','chart','tape','curve']],['Community',['giveaways','thedrop','refer','passport','rooms']]];
 export const descriptions = {
+  otc:'Buy and sell BULLEN / USDC on your terms',
   bullensaga:'A dark fantasy game in development',objects:'Numbered digital collectibles',patchnotes:'Releases and updates from the House',lock:'Token reserves and lock schedules',ledger:'Public events and their receipts',whitepaper:'The House system, explained',buy:'Swap for $BULLEN through Jupiter',stats:'Market, supply and burn dashboard',deepdive:'Holder age, concentration and flow',chart:'Price history and supply events',tape:'Live trades from the main pool',curve:'Supply history and verified burns',giveaways:'Campaigns, entries and draw records',thedrop:'Prize rounds funded by buy fees',refer:'Referral records and fee earnings',passport:'Look up holdings and collectibles',rooms:'Private rooms for House Key holders'
 };
 export const socials = [['https://x.com/bullenciagax','X Profile'],['https://bullenciaga.com/chat','X Chat'],['/telegram','Telegram'],['/discord','Discord']];
@@ -16,7 +19,7 @@ export const pageSections = {
 index:[['stats','Live Stats'],['nft','The Herd Collection'],['gallery','Browse The Herd'],['roadmap','Roadmap'],['faq','FAQ']],
 flywheel:[['mechanism','The system'],['supply','Supply'],['collecting','Collecting'],['revenue','Revenue'],['liquidity','Liquidity'],['evidence','Evidence']],
 world:[['release','Current release'],['artist-title','Explore the House']],
-buy:[['swap-heading','Swap for $BULLEN'],['contract-heading','Token contract'],['routes-heading','Wallet options'],['markets-heading','Other markets']],
+buy:[['otc-heading','OTC exchange'],['swap-heading','Swap for $BULLEN'],['contract-heading','Token contract'],['routes-heading','Wallet options'],['markets-heading','Other markets']],
 objects:[['objects-title','House Objects'],['issue-title','Current issue'],['claim-title','Claim record'],['key-title','The House Key'],['benefits-title','Holder benefits']],
 deepdive:[['holder-age','Holder age'],['ownership','Concentration'],['flow','Token flow'],['wallet','Wallet lookup'],['methodology','Methodology']],
 dev:[['record','Developer record'],['mechanics','Burn mechanics'],['receipts','Receipts']],
