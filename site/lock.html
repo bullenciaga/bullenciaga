@@ -122,9 +122,9 @@
 <main class="reserve" id="main-content">
   <section class="hero">
     <div>
-      <div class="eyebrow">Public reserve record · 17 October 2026</div>
+      <div class="eyebrow">Public reserve record · 1 November 2026</div>
       <h1>Reserve for the next burn.</h1>
-      <p class="lede"><strong>237,500,000 $BULLEN allocated. Two hard cliffs. Zero drip.</strong>
+      <p class="lede"><strong>237,500,000 $BULLEN allocated. Two escrows. One hard cliff. Zero drip.</strong>
         The volume-burn reserve is separated by purpose and independently verifiable on Jupiter. Only tokens still locked before their cliff are excluded from circulating supply.</p>
     </div>
     <aside class="total" aria-label="Total locked reserve">
@@ -151,16 +151,16 @@
         <h3>The next-burn tranche</h3>
         <div class="amount"><span>25,000,000</span> <small>BULLEN <span class="amount-usd" data-locked-bullen="25000000">(USD —)</span></small></div>
         <dl class="facts">
-          <div class="fact"><dt>Hard cliff</dt><dd><time datetime="2026-11-01T18:00:00Z">01 Nov 2026 · 19:00 CET</time></dd></div>
+          <div class="fact"><dt>Hard cliff</dt><dd><time datetime="2026-12-01T18:00:00Z">01 Dec 2026 · 19:00 CET</time></dd></div>
           <div class="fact"><dt>Unlocked before cliff</dt><dd class="good">0</dd></div>
           <div class="fact"><dt>Vesting rate</dt><dd>0 before cliff</dd></div>
           <div class="fact"><dt>Can cancel</dt><dd>None</dd></div>
           <div class="fact"><dt>Can change recipient</dt><dd>None</dd></div>
         </dl>
-        <div class="countdown" data-cliff="2026-11-01T18:00:00Z">Calculating cliff…</div>
-        <a class="verify-link" href="https://lock.jup.ag/escrow/GDupLrHAWRDjRwRm1EbaZgUpokXTaet8V8Sx4YXLNbig" target="_blank" rel="noopener noreferrer">Verify 25M on Jupiter ↗</a>
-        <a class="verify-link" href="https://solscan.io/tx/31DBeom3j1rZfGoxM7Q76KDvdetEmpjVDvv5fHMmF4dHx6xfCcQB91WYHLP8DWjvbtishrGwfdJmVpGNmL2kkHEK" target="_blank" rel="noopener noreferrer">View the relock transaction ↗</a>
-        <p class="address">Escrow GDupLrHAWRDjRwRm1EbaZgUpokXTaet8V8Sx4YXLNbig<br>Token account 77ZDopFakotMNBkevreQWBQtFsuUPNsSQchG7vUgsA1G</p>
+        <div class="countdown" data-cliff="2026-12-01T18:00:00Z">Calculating cliff…</div>
+        <a class="verify-link" href="https://lock.jup.ag/escrow/G2J1d577cJiPjyE2jMzJzyVednFx9qDBBHZqZYsdyxLE" target="_blank" rel="noopener noreferrer">Verify 25M on Jupiter ↗</a>
+        <a class="verify-link" href="https://solscan.io/tx/5mYQAifnCfnwNippctKd8SouQA6gmpUk9ci6Vp6gJqxaBZZfZGUFqQZehMRV1SJedwQby3hNNUxbeoFZNgTcupCU" target="_blank" rel="noopener noreferrer">View the relock transaction ↗</a>
+        <p class="address">Escrow G2J1d577cJiPjyE2jMzJzyVednFx9qDBBHZqZYsdyxLE<br>Token account BLeZ1x27jRM6uZabmhkiG5yqLWeCv9J7K2K24wbW3qV5</p>
       </article>
 
       <article class="lock-card">
@@ -185,11 +185,11 @@
     <div>
       <div class="section-label">Why two locks</div>
       <h2><span class="bullen-phrase">Ready to burn.</span> <span class="bullen-phrase">Not free to move.</span></h2>
-      <p>The next scheduled tier destroys 25M $BULLEN. That tranche and the remaining 212.5M have independent lock schedules; each stays locked until its own cliff.</p>
+      <p>The next scheduled tier destroys 25M $BULLEN. That tranche and the remaining 212.5M are held in separate escrows. Both now share a hard cliff on 1 December 2026 at 18:00 UTC (19:00 Warsaw). An unlock is not an automatic burn.</p>
     </div>
     <ol>
       <li>If the $1M cumulative-volume tier arrives before the cliff, the 25M tranche can be claimed after its cliff and burned in one curated transaction.</li>
-      <li>The 25M tranche was relocked on 17 October, with its current hard cliff on 1 November at 18:00 UTC (19:00 Warsaw). The remaining 212.5M was relocked on 2 October for 60 days, with a new cliff on 1 December. Later burns wait for both their milestone and the relevant lock to open.</li>
+      <li>The 25M tranche was relocked on 1 November for a full calendar month, until 1 December at 18:00 UTC (19:00 Warsaw). The separate 212.5M reserve retains its existing 1 December cliff. Later burns wait for both their milestone and the relevant lock to open.</li>
       <li>Every relock creates a new escrow account. The House publishes it here and updates circulating-supply accounting against the exact Token-2022 account.</li>
     </ol>
   </section>
@@ -207,7 +207,7 @@
 
   <footer class="foot">
     <span>BULLENCIAGA · Public burn reserve</span>
-    <span>Schedules verified 17 October 2026 · Solana mainnet</span>
+    <span>Schedules verified 1 November 2026 · Solana mainnet</span>
   </footer>
 </main>
 <script>
