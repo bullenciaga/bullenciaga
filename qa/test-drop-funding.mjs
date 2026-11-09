@@ -46,6 +46,13 @@ payload = { ...payload, round: 2, prizeUsd: 250, feeTargetSol: 25, targetSol: 25
 refresh(); await flush();
 assert.equal(nodes.get('ledeprize').textContent, '$250 in SOL');
 assert.match(nodes.get('funding-rule').textContent, /25.00 SOL.*Kraken SOL\/USD/);
+payload = { ...payload, retainedUsd: 62.530709983715, pct: 25.01228399, targetSol: null,
+  share: .1, openingCredit: {usd: 62.530709983715, priceUsd: 86.47} };
+refresh(); await flush();
+assert.equal(nodes.get('pot').textContent, '$62.53');
+assert.equal(nodes.get('target').textContent, '$250');
+assert.equal(nodes.get('pct').textContent, '25.01%');
+assert.match(nodes.get('funding-rule').textContent, /10%.*Coinbase.*Kraken.*62.53/);
 unavailable = true; refresh(); await flush();
 assert.equal(nodes.get('pct').textContent, '—');
 assert.equal(nodes.get('funding-rule').hidden, true);
