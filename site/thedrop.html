@@ -30,7 +30,7 @@
 <link rel="preload" href="/bullen-ui.css" as="style">
 <script defer src="/bullen-ui.js"></script>
 <title>BULLENCIAGA — The Drop</title>
-<meta name="description" content="A fixed SOL prize to one buyer. The bar fills with fees from buys. No timer.">
+<meta name="description" content="One buyer wins a prize paid in SOL. The bar fills with fees from buys. No timer.">
 <link rel="icon" type="image/svg+xml" sizes="any" href="/favicons/thedrop.svg">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bullenciaga.com/thedrop">
@@ -229,8 +229,8 @@
 <div class="wrap">
   <h1>The Drop</h1>
   <p class="lede">
-    a fixed <b id="ledeprize">2.5 SOL</b> goes to one wallet that bought during this round.
-    the bar below fills with a share of the creator fees from buys, and only buys.
+    a prize of <b id="ledeprize">$250 in SOL</b> goes to one wallet that bought during this round.
+    qualifying buy creator fees fill the bar.
     <b>there is no timer.</b> at 100%, the counter resets and a new round begins.
   </p>
 
@@ -239,7 +239,7 @@
          aria-valuenow="0" aria-label="progress toward the drop"></div>
     <div class="figures">
       <div class="now"><span id="pot">—</span><span class="unit">SOL</span></div>
-      <div class="of">of <b id="target">—</b> SOL allocated<br><span id="pct">—</span></div>
+      <div class="of">of <b id="target">—</b> SOL <span id="progress-unit">in fees</span><br><span id="pct">—</span></div>
     </div>
   </div>
 
@@ -272,7 +272,7 @@
     <li id="funding-rule" hidden></li>
     <li id="next-funding-rule" hidden></li>
     <li><b>entries follow purchase batches, newest first.</b> each completed 0.25 SOL batch records the tokens it actually bought. selling any of those tokens removes that batch's entry. selling more from the same batch does not remove another entry; the next entry goes only when the sale reaches the next older batch.</li>
-    <li><b>later buys can earn fresh entries.</b> they do not restore a broken batch. an unfinished newest batch is used first on a sale, and its partial progress is discarded if touched. selling does not subtract fees already contributed to the pot.</li>
+    <li><b>later buys can earn fresh entries.</b> they do not restore a broken batch. an unfinished newest batch is used first on a sale, and its partial progress is discarded if touched. selling does not subtract fees already counted.</li>
     <li><b>finalized records, in chain order.</b> the tracker checks buys and sells through the House pool. transfers do not earn entries. figures may briefly show “syncing” while new chain records are checked.</li>
     <li><b>the dev wallet and the pool are excluded</b>, by address.</li>
     <li><b>a fresh round at 100%.</b> the closing buy stays in the completed round. the counter and entries reset to zero; later buys count toward the new round.</li>
@@ -285,7 +285,7 @@
   </ul>
 
   <div class="foot">
-    the pot is the sum of all qualifying fee contributions, not just the recent rows shown above.<br>
+    the bar includes every qualifying fee contribution this round.<br>
     open any of them. <a href="/">bullenciaga.com</a>
   </div>
 </div>
@@ -377,7 +377,9 @@
     $('wallets').textContent = verified ? d.wallets : '—';
     $('tickets').textContent = verified ? d.tickets : '—';
     $('unit').textContent = fmt(d.entrySol, 2);
-    $('ledeprize').textContent = fmt(d.targetSol, 2) + ' SOL';
+    var usdPrize = Number(d.prizeUsd) > 0;
+    $('ledeprize').textContent = usdPrize ? '$' + d.prizeUsd + ' in SOL' : fmt(d.targetSol, 2) + ' SOL';
+    $('progress-unit').textContent = usdPrize ? 'in fees' : 'allocated';
 
     var share = Number(d.share), feeTarget = Number(d.targetSol) / share;
     var funding = $('funding-rule'), next = d.nextRoundFunding;
@@ -385,6 +387,10 @@
     funding.textContent = funding.hidden ? '' : 'this round: ' + fmt(feeTarget, 2)
       + ' SOL in qualifying buy creator fees fills the bar. ' + parseFloat(fmt(share * 100, 4))
       + '% of those fees funds the ' + fmt(d.targetSol, 2) + ' SOL prize.';
+    if (usdPrize) {
+      funding.hidden = false;
+      funding.textContent = fmt(d.feeTargetSol, 2) + ' SOL in qualifying buy creator fees closes the round. The winner receives $' + d.prizeUsd + ' in SOL, converted using the first Kraken SOL/USD trade at or after the closing transaction’s block time.';
+    }
     var nextFunding = $('next-funding-rule');
     nextFunding.hidden = !(next && Number(next.round) === Number(d.round) + 1
       && Number(next.feeTargetSol) > 0 && isFinite(Number(next.feeTargetSol))
