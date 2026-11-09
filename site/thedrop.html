@@ -238,8 +238,8 @@
     <div class="bar" id="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
          aria-valuenow="0" aria-label="progress toward the drop"></div>
     <div class="figures">
-      <div class="now"><span id="pot">—</span><span class="unit">SOL</span></div>
-      <div class="of">of <b id="target">—</b> SOL <span id="progress-unit">in fees</span><br><span id="pct">—</span></div>
+      <div class="now"><span id="pot">—</span><span class="unit" id="pot-unit">SOL</span></div>
+      <div class="of">of <b id="target">—</b> <span id="progress-unit">in fees</span><br><span id="pct">—</span></div>
     </div>
   </div>
 
@@ -370,8 +370,10 @@
     }
     bar.setAttribute('aria-valuenow', Math.round(pct));
 
-    $('pot').textContent = verified ? amtFmt(d.potSol) : '—';
-    $('target').textContent = fmt(d.targetSol, 2);
+    var inDollars = Number.isFinite(d.retainedUsd) && d.prizeUsd > 0;
+    $('pot-unit').textContent = inDollars ? '' : 'SOL';
+    $('pot').textContent = verified ? (inDollars ? '$' + fmt(d.retainedUsd, 2) : amtFmt(d.potSol)) : '—';
+    $('target').textContent = inDollars ? '$' + d.prizeUsd : fmt(d.targetSol, 2);
     $('pct').textContent = verified ? pct.toFixed(2) + '%' : 'checking';
     $('round').textContent = d.round;
     $('wallets').textContent = verified ? d.wallets : '—';
@@ -379,7 +381,7 @@
     $('unit').textContent = fmt(d.entrySol, 2);
     var usdPrize = Number(d.prizeUsd) > 0;
     $('ledeprize').textContent = usdPrize ? '$' + d.prizeUsd + ' in SOL' : fmt(d.targetSol, 2) + ' SOL';
-    $('progress-unit').textContent = usdPrize ? 'in fees' : 'allocated';
+    $('progress-unit').textContent = inDollars ? 'allocated' : (usdPrize ? 'SOL in fees' : 'SOL allocated');
 
     var share = Number(d.share), feeTarget = Number(d.targetSol) / share;
     var funding = $('funding-rule'), next = d.nextRoundFunding;
@@ -390,6 +392,12 @@
     if (usdPrize) {
       funding.hidden = false;
       funding.textContent = fmt(d.feeTargetSol, 2) + ' SOL in qualifying buy creator fees closes the round. The winner receives $' + d.prizeUsd + ' in SOL, converted using the first Kraken SOL/USD trade at or after the closing transaction’s block time.';
+    }
+    if (inDollars) {
+      funding.textContent = '10% of each qualifying buy creator fee counts toward the $' + d.prizeUsd
+        + ' prize. Each new fee uses the Coinbase SOL/USD close for the minute it was earned. The winner receives SOL at the first Kraken SOL/USD trade at or after the closing transaction.';
+      if (d.openingCredit) funding.textContent += ' Round 2 opened under these terms with $'
+        + fmt(d.openingCredit.usd, 2) + ' already credited at $' + fmt(d.openingCredit.priceUsd, 2) + ' per SOL.';
     }
     var nextFunding = $('next-funding-rule');
     nextFunding.hidden = !(next && Number(next.round) === Number(d.round) + 1
@@ -436,7 +444,7 @@
       a.textContent = short(t.sig) + '  ·  ' + ago(t.at);
       var amt = document.createElement('span');
       amt.className = 'amt';
-      amt.innerHTML = '+' + amtFmt(t.added) + ' <span class="sol">from a '
+      amt.innerHTML = (inDollars ? '+$' + amtFmt(t.addedUsd) : '+' + amtFmt(t.added) + ' SOL') + ' <span class="sol">from a '
         + amtFmt(t.sol) + ' SOL buy</span>';
       li.appendChild(a);
       li.appendChild(amt);
@@ -501,7 +509,7 @@
   }
 
   load();
-  setInterval(load, 20000);
+  setInterval(function(){ if (!document.hidden) load(); }, 60000);
 })();
 </script>
 </body>
