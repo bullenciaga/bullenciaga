@@ -42,6 +42,10 @@ payload = { ...payload, share: 0, nextRoundFunding: { round: 9, feeTargetSol: 20
 refresh(); await flush();
 assert.equal(nodes.get('funding-rule').hidden, true, 'invalid fee target does not produce Infinity');
 assert.equal(nodes.get('next-funding-rule').hidden, true, 'mismatched next-round terms stay hidden');
+payload = { ...payload, round: 2, prizeUsd: 250, feeTargetSol: 25, targetSol: 25, share: 1, nextRoundFunding: null };
+refresh(); await flush();
+assert.equal(nodes.get('ledeprize').textContent, '$250 in SOL');
+assert.match(nodes.get('funding-rule').textContent, /25.00 SOL.*Kraken SOL\/USD/);
 unavailable = true; refresh(); await flush();
 assert.equal(nodes.get('pct').textContent, '—');
 assert.equal(nodes.get('funding-rule').hidden, true);
