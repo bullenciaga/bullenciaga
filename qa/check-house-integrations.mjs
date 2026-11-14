@@ -95,7 +95,7 @@ assert.match(objects, /objects\.css\?v=20260904a/);
 assert.match(objects, /house-object-03-key\.png/);
 assert.match(objects, /ONE EARNED KEY PER WALLET/);
 assert.match(objects, /automatically grants that wallet one numbered Key/);
-assert.match(objects, /objects\.js\?v=20260920/);
+assert.match(objects, /objects\.js\?v=20261114/);
 assert.match(objectsJs, /bullen-house-object-pending-v1/);
 assert.match(objectsJs, /resumePendingClaim/);
 assert.match(objectsJs, /TRANSACTION_NOT_CONFIRMED/);

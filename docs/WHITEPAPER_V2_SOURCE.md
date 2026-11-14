@@ -1,5 +1,5 @@
-<!-- version: 2.1 -->
-<!-- date: 9 September 2026 -->
+<!-- version: 2.2 -->
+<!-- date: 14 November 2026 -->
 <!-- This is the complete public copy. scripts/build-whitepaper.py renders it directly.
 Each horizontal rule starts a page; page headings supply PDF bookmarks.
 Images resolve from the canonical BULLENSAGA site collectible assets. -->
@@ -85,7 +85,7 @@ The reserve is held in Jupiter Lock between release cycles. Current tranche amou
 
 ### Maximums are conditional
 
-A complete 1,000-piece HERD public run can commit 250,000,000 $BULLEN. All 200 first-pair House Objects entering through public claims can commit a further 20,000,000. Together with the 250,000,000 volume allocation, these three defined mechanisms have a **520,000,000-token theoretical ceiling**.
+A complete 1,000-piece HERD public run can commit 250,000,000 $BULLEN. Across 25 Signets and 25 Cufflinks, the all-paid ceiling is a further 5,000,000. Together with the 250,000,000 volume allocation, these three defined mechanisms have a **505,000,000-token theoretical ceiling**.
 
 That ceiling is not a forecast or a guaranteed minimum. Preorder and manual object awards consume the same numbered stock without creating a 100,000-token deposit. A HERD claim funded through a preorder giveaway remains part of the HERD route, not an extra claim outside its cap. Other confirmed discretionary burns or payment-funded buybacks are tracked by their own actual records.
 
@@ -124,10 +124,10 @@ A Signet plus Cufflinks in the same wallet can qualify for the earned Key under 
 ## The first pair
 > Two numbered digital objects, drawing from one controlled inventory.
 
-![House Object 01: The Signet. 100 editions.](house-object-01-signet.png)
-![House Object 02: The Cufflinks. 100 editions.](house-object-02-cufflinks.png)
+![House Object 01: The Signet. 25 editions.](house-object-01-signet.png)
+![House Object 02: The Cufflinks. 25 editions.](house-object-02-cufflinks.png)
 
-Each series is capped at **100**. A public claim commits **100,000 $BULLEN** into burn escrow. Estate Founding I preorders and explicit manual awards draw from the same numbered stock. Those awards reduce available inventory but do not fabricate a token payment or burn.
+Each series is permanently capped at **25**. Future designs may join the same House Objects collection. A public claim commits **100,000 $BULLEN** into burn escrow. Estate Founding I preorders and explicit manual awards draw from the same numbered stock. Those awards reduce available inventory but do not fabricate a token payment or burn.
 
 ### What the pair does
 
@@ -150,7 +150,7 @@ These are NFTs. Future physical-product priority or curated participation applie
 - A House Pair is one finalized Signet plus one finalized Cufflinks in the same wallet. Matching serials are not required.
 - One wallet can earn at most one Key. Each source Signet and Cufflinks can support only one award, even after a transfer.
 - Wallets already holding a Key are excluded from automatic award reconciliation. Eligibility is checked again before minting.
-- The Key has a **100-edition cap**. A qualifying award is queued for automatic delivery with **no second token payment**.
+- The Key has a **25-edition cap**. A qualifying award is queued for automatic delivery with **no second token payment**.
 
 ### Inside the rooms
 
@@ -312,7 +312,7 @@ Phases 05 to 08 are not gated by cumulative trading volume and may develop in a 
 | BULLENCIAGA - HOUSE OBJECTS | The Signet, The Cufflinks and The Key |
 | BULLENSAGA - FOUNDING RECORDS | The Promise and The Triad |
 
-The first Signet and Cufflinks series are capped at 100 each. The Promise is capped at 200 and The Triad at 100. Keys have a separate 100-edition cap and use the published pair-award rules. These five series total 600 possible numbered records. A record is not sold merely because a payment form could accept money; all promised stock must be reservable.
+The first Signet and Cufflinks series are capped at 25 each. The Promise is capped at 200 and The Triad at 100. Keys have a separate 25-edition cap and use the published pair-award rules. These five series total 375 possible numbered records. A record is not sold merely because a payment form could accept money; all promised stock must be reservable.
 
 ### Collection identities
 
