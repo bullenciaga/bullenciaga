@@ -42,8 +42,9 @@ const tests = [];
 function test(name, fn) { tests.push([name,fn]); }
 test('public cohort reconciles with finalized mint and expected headroom',()=>{
  assert.equal(baseline.status,'live'); assert.equal(baseline.numbers.total,818148430.922662);
- assert.equal(baseline.numbers.headroom,352348430.922662);
- assert.equal(baseline.numbers['objects-ceiling'],18800000);
+ assert.equal(baseline.numbers.headroom,367348430.922662);
+ assert.equal(baseline.numbers['objects-ceiling'],3800000);
+ assert.equal(baseline.numbers['objects-progress'],54);
  assert.ok(Object.isFrozen(baseline.numbers));
 });
 test('small independent burn lowers variable headroom once',()=>{
@@ -67,14 +68,14 @@ test('finalized HERD sweep does not consume variable headroom twice',()=>{
 });
 test('paid Object pending deposit reconciles to issued claim',()=>{
  const c=clone();object(c,true);pending(c,100000);const x=check(c);
- assert.equal(x.numbers.headroom,baseline.numbers.headroom);assert.equal(x.numbers['objects-ceiling'],18800000);assert.equal(x.numbers['pending-escrow'],100000);
+ assert.equal(x.numbers.headroom,baseline.numbers.headroom);assert.equal(x.numbers['objects-ceiling'],3800000);assert.equal(x.numbers['pending-escrow'],100000);
 });
 test('non-payment Object award lowers paid ceiling and frees that capacity',()=>{
- const c=clone();object(c,false);const x=check(c);assert.equal(x.numbers['objects-awards'],13);assert.equal(x.numbers['objects-ceiling'],18700000);assert.equal(x.numbers.headroom,baseline.numbers.headroom+100000);
+ const c=clone();object(c,false);const x=check(c);assert.equal(x.numbers['objects-awards'],13);assert.equal(x.numbers['objects-ceiling'],3700000);assert.equal(x.numbers.headroom,baseline.numbers.headroom+100000);
 });
 test('temporary reservations remain fully budgeted',()=>{
  const c=clone();for(const row of [c.objects.totals,c.objects.series.signet]){row.available--;row.reserved++;}
- const x=check(c);assert.equal(x.numbers['objects-available'],172);assert.equal(x.numbers['objects-remaining'],173);assert.equal(x.numbers.headroom,baseline.numbers.headroom);
+ const x=check(c);assert.equal(x.numbers['objects-available'],22);assert.equal(x.numbers['objects-remaining'],23);assert.equal(x.numbers.headroom,baseline.numbers.headroom);
 });
 test('unknown escrow deposit cannot be added on top of unissued capacity',()=>{
  const c=clone();pending(c,250000);assert.throws(()=>check(c),/catching up/);
@@ -102,6 +103,7 @@ test('unknown schedule tranche is not inferred from locked balance',()=>{
 });
 test('supply versus finalized account race is rejected',()=>{const c=clone();c.supply.totalSupply-=1;assert.throws(()=>check(c),/sources differ/);});
 test('object inventory cap and series sums are checked',()=>{
+ const old=clone();old.objects.totals.editionCap=200;assert.throws(()=>check(old),/object series/);
  const c=clone();c.objects.totals.available--;assert.throws(()=>check(c),/stock/);
  const d=clone();d.objects.series.signet.burnClaims++;d.objects.series.signet.committedBullen+=100000;assert.throws(()=>check(d),/totals differ/);
 });

@@ -11,8 +11,8 @@
     "actualBurnLedger": "https://bullenciaga.com/supply/proof"
   },
   "totals": {
-    "editionCap": 200,
-    "available": 173,
+    "editionCap": 50,
+    "available": 23,
     "reserved": 0,
     "issuedAllSources": 27,
     "burnClaims": 15,
@@ -21,8 +21,8 @@
   "series": {
     "signet": {
       "name": "House Object 01 \u2014 The Signet",
-      "editionCap": 100,
-      "available": 87,
+      "editionCap": 25,
+      "available": 12,
       "reserved": 0,
       "issuedAllSources": 13,
       "burnClaims": 7,
@@ -30,8 +30,8 @@
     },
     "cufflinks": {
       "name": "House Object 02 \u2014 The Cufflinks",
-      "editionCap": 100,
-      "available": 86,
+      "editionCap": 25,
+      "available": 11,
       "reserved": 0,
       "issuedAllSources": 14,
       "burnClaims": 8,

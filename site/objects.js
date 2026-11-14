@@ -284,7 +284,7 @@
       var data = await response.json();
       for (var id of Object.keys(names)) {
         var record = data.collectibles && data.collectibles[id];
-        if (!record || !Number.isInteger(record.available) || record.available < 0 || record.available > record.editionCap) throw new Error('Invalid inventory');
+        if (!record || record.editionCap !== 25 || !Number.isInteger(record.available) || record.available < 0 || record.available > record.editionCap) throw new Error('Invalid inventory');
       }
       if (data.generatedAt && (!Number.isFinite(Date.parse(data.generatedAt)) || Date.now()-Date.parse(data.generatedAt)>120000)) throw new Error('Stale inventory');
       if (!data.access || !['public','holders','not_open'].includes(data.access.phase)) throw new Error('Invalid access state');
