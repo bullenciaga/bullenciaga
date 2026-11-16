@@ -65,21 +65,46 @@ export function createGoodsHandler({config,storefrontToken,fetchImpl=fetch,autho
     let res;
     try{res=await fetchImpl(url,{method:body?'POST':'GET',headers:{Accept:'application/json','User-Agent':'BULLENCIAGA Goods/1.0',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),redirect:'manual',signal:AbortSignal.timeout(15000)});}catch{throw unavailable();}
     // workerd supports manual/follow only. Never forward the query credential to redirects.
-    if(res.status>=300 && res.status<400)throw unavailable();
     if(!res.ok){
-      if(res.status===400 || res.status===404){const error=new ShopError('UNAVAILABLE','A selection is no longer available. Please review your bag.',409);error.upstreamStatus=res.status;throw error;}
-      throw unavailable();
+      await res.body?.cancel().catch(()=>{});
+      const error = [400,404].includes(res.status)
+        ? new ShopError('UNAVAILABLE','A selection is no longer available. Please review your bag.',409)
+        : unavailable();
+      error.upstreamStatus=res.status;
+      throw error;
     }
     let data;try{data=await res.json();}catch{throw unavailable();}
     return data;
   }
   async function catalogue(selected=config.variants.filter(v=>v.enabled),allowMissing=true) {
-    const entries=await Promise.all([...new Set(selected.map(v=>v.slug))].map(async slug=>{
-      try{return [slug,await fourthwall('/v1/products/'+encodeURIComponent(slug))];}
-      catch(error){if(allowMissing && error instanceof ShopError && error.upstreamStatus===404)return [slug,null];throw error;}
-    }));
-    const products=new Map(entries);
-    return selected.filter(v=>products.get(v.slug)!==null).map(v=>normalizeVariant(v,products.get(v.slug),config.currency));
+    const slugs=[...new Set(selected.map(row=>row.slug))], products=new Map(), issues=new Map();
+    let next=0;
+    function record(reason){issues.set(reason,(issues.get(reason)||0)+1);}
+    async function readProducts(){
+      while(next<slugs.length){
+        const slug=slugs[next++];
+        try{products.set(slug,await fourthwall('/v1/products/'+encodeURIComponent(slug)));}
+        catch(error){
+          if(!allowMissing || !(error instanceof ShopError))throw error;
+          record(error.upstreamStatus ? 'http_'+error.upstreamStatus : 'unavailable');
+        }
+      }
+    }
+    await Promise.all(Array.from({length:Math.min(4,slugs.length)},readProducts));
+    const variants=[];
+    for(const row of selected){
+      if(!products.has(row.slug))continue;
+      try{variants.push(normalizeVariant(row,products.get(row.slug),config.currency));}
+      catch(error){
+        if(!allowMissing || !(error instanceof ShopError))throw error;
+        record('variant_mismatch');
+      }
+    }
+    if(issues.size && (issues.size!==1 || !issues.has('http_404'))){
+      console.warn('Goods catalog availability',Object.fromEntries(issues));
+      if(!variants.length)throw unavailable();
+    }
+    return variants;
   }
   async function checkout(request) {
     if(!config.salesEnabled)throw new ShopError('NOT_OPEN','Ordering opens soon.',409);

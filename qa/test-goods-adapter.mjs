@@ -147,3 +147,16 @@ test('ON DISPLAY routes approved blanks and keeps unavailable pebble sizes disab
  assert.equal(notebook.size,'A5');assert.equal(notebook.expectedSize,'One Size');
  assert.equal(releaseMappings.variants.filter(v=>v.product.startsWith('on-display-')&&v.enabled).length,16);
 });
+
+test('a stale size mapping does not disable unrelated variants and fails closed at checkout',async()=>{
+ const bad={...mapping,size:'L',expectedSize:'L',variantId:'retired-id'};
+ const c=config();c.variants.push(bad);
+ const h=harness({c});
+ const result=await h.handler(new Request('https://bullenciaga.com/goods/api/catalog'));
+ const data=await result.json();
+ assert.equal(result.status,200);assert.equal(data.salesEnabled,true);
+ assert.deepEqual(data.variants.map(v=>v.variantId),[mapping.variantId]);
+ const request=body();Object.assign(request.items[0],{size:bad.size,variantId:bad.variantId});
+ const denied=await h.handler(h.makeRequest(request));assert(denied.status>=400);
+ assert.equal(h.calls.filter(call=>call.options.method==='POST').length,0);
+});
