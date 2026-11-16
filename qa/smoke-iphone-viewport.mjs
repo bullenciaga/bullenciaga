@@ -28,15 +28,27 @@ async function checkAfterPropagation(path, validate) {
 const iphone = 'Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) ';
 const safari = iphone + 'Version/26.0 Mobile/15E148 Safari/604.1';
 const chrome = iphone + 'CriOS/140.0.7339.39 Mobile/15E148 Safari/604.1';
-async function get(path, ua, extra = {}) {
+async function get(path, ua, extra = {}, expectedStatus = 200) {
   const response = await fetch(new URL(path, base), {redirect:'manual', headers:{'User-Agent':ua, ...extra}, signal:AbortSignal.timeout(20_000)});
-  assert.equal(response.status, 200, path);
+  assert.equal(response.status, expectedStatus, path);
   return {response, html:await response.text()};
 }
 // /access is now an app redirect, verified by smoke-live and the route contract.
 const pages = fs.readdirSync(new URL('../site/', import.meta.url)).filter(name => name !== 'access.html' && name.endsWith('.html') && fs.readFileSync(new URL('../site/' + name, import.meta.url), 'utf8').includes('data-bullen-shell-source'));
 for (const name of pages) {
   const path = name === 'index.html' ? '/' : '/' + name.replace(/\.html$/, '');
+  if (['/deepdive', '/what-if-i-held'].includes(path)) {
+    await checkAfterPropagation(path, async url => {
+      for (const ua of [safari, chrome]) {
+        const {response, html} = await get(url, ua, {}, 410);
+        assert.equal(response.headers.get('X-Robots-Tag'), 'noindex');
+        assert.match(html, /analytics page has retired/);
+        assert(!html.includes('<script'), path + ' must not run client-side code');
+      }
+    });
+    console.log('PASS', path, 'retired on Safari and Chrome');
+    continue;
+  }
   const nativeScroll = fs.readFileSync(new URL('../site/' + name, import.meta.url), 'utf8').includes('<style data-bullen-boot>');
   await checkAfterPropagation(path, async url => {
     const a = await get(url, safari);
