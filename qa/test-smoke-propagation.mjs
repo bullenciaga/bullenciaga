@@ -69,6 +69,9 @@ const iphoneFixture = `
   let safariCalls = 0, chromeCalls = 0, assetSafariCalls = 0, assetChromeCalls = 0;
   globalThis.fetch = async (input, options = {}) => {
     const url = new URL(input);
+    if (['/deepdive', '/what-if-i-held'].includes(url.pathname)) {
+      return new Response('This analytics page has retired.', {status:410, headers:{'X-Robots-Tag':'noindex'}});
+    }
     const ua = options.headers?.['User-Agent'] || '';
     const chrome = ua.includes('iPhone') && ua.includes('CriOS/');
     const safari = ua.includes('iPhone') && ua.includes('Version/');
