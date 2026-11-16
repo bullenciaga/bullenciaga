@@ -16,10 +16,11 @@ assert(headerCss.includes('body.explorer-expanded .bullen-site-shell[data-bullen
 assert.deepEqual(featured,['goods','world','platform','flywheel']);
 assert.equal(groups[0][1][0],'bullensaga');
 assert(!groups.flatMap(([,keys])=>keys).includes('world'));
-assert.equal(new Set([...featured,...groups.flatMap(([,keys])=>keys)]).size,22);
+assert.equal(new Set([...featured,...groups.flatMap(([,keys])=>keys)]).size,21);
 for(const [,keys] of groups)for(const key of keys){assert(descriptions[key]?.length>10);assert(destinations[key]);assert(labels[key]);}
+assert(!Object.values(destinations).includes('/deepdive'));
 assert.equal(socials.length,4);assert.equal(resources.length,11);
-const oldDestinations=['/buy','/objects.html','/giveaways.html','/stats.html','/deepdive','/tape.html','/chart.html','/curve.html','/refer.html','/thedrop.html','/patchnotes.html','/lock.html','/ledger.html','/passport.html','/rooms.html','/world','https://ondisplay.app/','/flywheel','https://bullensaga.com/'];
+const oldDestinations=['/buy','/objects.html','/giveaways.html','/stats.html','/tape.html','/chart.html','/curve.html','/refer.html','/thedrop.html','/patchnotes.html','/lock.html','/ledger.html','/passport.html','/rooms.html','/world','https://ondisplay.app/','/flywheel','https://bullensaga.com/'];
 for(const href of oldDestinations)assert(Object.values(destinations).includes(href),href);
 for(const name of fs.readdirSync(site).filter(name=>name.endsWith('.html'))){
  const html=fs.readFileSync(new URL(name,site),'utf8');

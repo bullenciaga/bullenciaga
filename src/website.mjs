@@ -98,6 +98,14 @@ const iphoneNavigation = `<style data-bullen-navigation>
 const website = {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    if (['/deepdive.js', '/deepdive.css', '/deepdive-snapshot.json', '/holding-study.json',
+         '/what-if-i-held.js', '/what-if-i-held.css', '/holding-math.js'].includes(url.pathname)) {
+      return new Response(null, {status:410, headers:{'X-Robots-Tag':'noindex', 'Cache-Control':'public, max-age=3600'}});
+    }
+    if (/^\/(?:deepdive|what-if-i-held)(?:\.html)?\/?$/.test(url.pathname)) {
+      if (!['GET','HEAD'].includes(request.method)) return new Response('Method not allowed',{status:405,headers:{Allow:'GET, HEAD'}});
+      return new Response(request.method==='HEAD'?null:'<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analytics retired — BULLENCIAGA</title><style>body{margin:0;min-height:100vh;display:grid;place-content:center;gap:1rem;padding:2rem;box-sizing:border-box;background:#050505;color:#f5f3ee;font:18px system-ui}h1{font-size:clamp(2rem,5vw,4rem);letter-spacing:-.05em;margin:0}p{max-width:36rem;line-height:1.6;color:#aaa}a{color:inherit;text-underline-offset:5px}</style><main><h1>This analytics page has retired.</h1><p>The one-time study is complete. Explore current market and supply information in Stats.</p><a href="/stats">View Stats ↗</a></main></html>',{status:410,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'public, max-age=3600','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'",'X-Robots-Tag':'noindex'}});
+    }
     const campaignResponse = await campaignsGateway(request, env);
     if (campaignResponse) return campaignResponse;
     const rareFourRead = rareFourPreviewRead(request, env);

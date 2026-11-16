@@ -10,6 +10,7 @@ const fixture = `
   const mode = process.env.PROPAGATION_FIXTURE;
   globalThis.fetch = async input => {
     const pathname = new URL(input).pathname;
+    if (['/deepdive','/what-if-i-held'].includes(pathname)) return new Response('<title>Analytics retired — BULLENCIAGA</title>',{status:410,headers:{'content-type':'text/html'}});
     if (['/access','/access/','/access.html','/platform','/platform/','/platform.html'].includes(pathname)) return new Response(null,{status:308,headers:{location:'https://ondisplay.app/'}});
     if (['/proof','/proof.html'].includes(pathname)) return new Response(null,{status:301,headers:{location:'/curve'}});
     if (pathname === '/buy') {
