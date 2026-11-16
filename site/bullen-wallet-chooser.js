@@ -8,6 +8,68 @@
   function encodedUrl() { return encodeURIComponent(canonicalUrl()); }
   function encodedRef() { return encodeURIComponent('https://bullenciaga.com'); }
 
+  // Goods uses a message signature for ownership. Discover Jupiter before or after extension startup.
+  function goodsJupiterWallet() {
+    var standardWallet = null;
+    function register() {
+      var added = Array.from(arguments).filter(function (wallet) {
+        return /^(Jupiter|Jupiter Wallet|Jupiter Mobile)( Wallet)?$/i.test(wallet.name) &&
+          wallet.chains?.includes('solana:mainnet') && wallet.features?.['standard:connect'] &&
+          wallet.features?.['solana:signMessage'];
+      });
+      if (added.length) standardWallet = added[0];
+      return function () { if (added.includes(standardWallet)) standardWallet = null; };
+    }
+    if (window.addEventListener && window.dispatchEvent) {
+      var api = { register:register };
+      window.addEventListener('wallet-standard:register-wallet', function (event) { event.detail(api); });
+      window.dispatchEvent(new CustomEvent('wallet-standard:app-ready', { detail:api }));
+    }
+    function standardProvider(wallet) {
+      var account;
+      var subscriptions = new Map();
+      function current() { return wallet.accounts.find(function (a) { return a.address === account?.address; }); }
+      return {
+        get publicKey() { return current()?.address || null; },
+        async connect() {
+          var result = await wallet.features['standard:connect'].connect();
+          account = result.accounts.find(function (a) { return a.chains.includes('solana:mainnet') && a.features.includes('solana:signMessage'); });
+          if (!account) throw new Error('Select a Solana account in Jupiter Wallet.');
+          return { publicKey:account.address };
+        },
+        async signMessage(message) {
+          var signer = current();
+          if (!signer) throw new Error('Reconnect your Jupiter account.');
+          var [proof] = await wallet.features['solana:signMessage'].signMessage({ account:signer, message:message });
+          if (!current() || proof.signedMessage?.length !== message.length ||
+              !message.every(function (byte, i) { return byte === proof.signedMessage[i]; }))
+            throw new Error('The account or ownership message changed. Reconnect and try again.');
+          return { signature:proof.signature };
+        },
+        on(event, listener) {
+          if (!wallet.features['standard:events'] || !['disconnect','accountChanged'].includes(event)) return;
+          var handlers = subscriptions.get(event) || new Map();
+          handlers.get(listener)?.();
+          handlers.set(listener, wallet.features['standard:events'].on('change', function (change) {
+            if (change.accounts && !current() && event === (change.accounts.length ? 'accountChanged' : 'disconnect')) listener();
+          }));
+          subscriptions.set(event, handlers);
+        },
+        removeListener(event, listener) {
+          var handlers = subscriptions.get(event);
+          handlers?.get(listener)?.();
+          handlers?.delete(listener);
+        }
+      };
+    }
+    return { id:'jupiter', name:'Jupiter Wallet', icon:'/assets/wallets/jupiter.png',
+      provider:function () {
+        if (standardWallet) return standardProvider(standardWallet);
+        var candidates = [window.jupiter?.solana, window.jupiter, window.solana?.isJupiter && window.solana];
+        return candidates.find(function (p) { return typeof p?.connect === 'function' && typeof p.signMessage === 'function'; }) || null;
+      }, link:function () { return 'https://jup.ag/wallet'; }, install:'https://jup.ag/wallet', mobileLabel:'get wallet' };
+  }
+
   var primaryWallets = [
     { id:'phantom', name:'Phantom', icon:'/assets/wallets/phantom.png', provider:function(){ return window.phantom && window.phantom.solana || (window.solana && window.solana.isPhantom ? window.solana : null); }, link:function(){ return 'https://phantom.app/ul/browse/' + encodedUrl() + '?ref=' + encodedRef(); }, install:'https://phantom.app/' },
     { id:'solflare', name:'Solflare', icon:'/assets/wallets/solflare.png', provider:function(){ return window.solflare && typeof window.solflare.connect === 'function' ? window.solflare : null; }, link:function(){ return 'https://solflare.com/ul/v1/browse/' + encodedUrl() + '?ref=' + encodedRef(); }, install:'https://solflare.com/' },
@@ -18,6 +80,7 @@
     { id:'trust', name:'Trust Wallet', icon:'/assets/wallets/trust.png', provider:function(){ return window.trustwallet && window.trustwallet.solana || (window.solana && window.solana.isTrust ? window.solana : null); }, link:function(){ return 'https://link.trustwallet.com/open_url?coin_id=501&url=' + encodedUrl(); }, install:'https://trustwallet.com/' },
     { id:'okx', name:'OKX Wallet', icon:'/assets/wallets/okx.png', provider:function(){ return window.okxwallet && window.okxwallet.solana || null; }, link:function(){ return 'https://web3.okx.com/download?deeplink=' + encodeURIComponent('okx://wallet/dapp/url?dappUrl=' + encodedUrl()); }, install:'https://www.okx.com/web3' },
   ];
+  if (/^\/goods(?:\/|$)/.test(location.pathname)) primaryWallets.push(goodsJupiterWallet());
   var wallets = primaryWallets.concat(otherWallets);
 
   function injectStyle() {
@@ -82,7 +145,7 @@
         row.className = 'bwc-row';
         if (row.tagName === 'BUTTON') row.type = 'button';
         if (row.tagName === 'A') { row.href = wallet.link(); row.rel = 'noopener'; }
-        row.innerHTML = '<span class="bwc-icon"><img src="' + wallet.icon + '" alt=""></span><span class="bwc-name">' + wallet.name + '</span><span class="bwc-state">' + (provider ? 'detected' : (mobile ? 'open app' : 'install')) + '</span>';
+        row.innerHTML = '<span class="bwc-icon"><img src="' + wallet.icon + '" alt=""></span><span class="bwc-name">' + wallet.name + '</span><span class="bwc-state">' + (provider ? 'detected' : (mobile ? (wallet.mobileLabel || 'open app') : 'install')) + '</span>';
         if (row.tagName === 'BUTTON') row.addEventListener('click', function () {
           if (!provider) { window.open(wallet.install, '_blank', 'noopener'); return; }
           row.disabled = true;

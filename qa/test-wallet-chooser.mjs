@@ -25,14 +25,18 @@ class Element {
   click() { this.handlers.get('click')?.(); }
 }
 
-function fixture(provider, mobile = false) {
+function fixture(provider, mobile = false, standardWallet) {
   const body = new Element(), head = new Element(), opened = [];
   const window = {
     ...(provider ? { phantom: { solana: provider } } : {}),
+    addEventListener() {},
+    dispatchEvent(event) {
+      if (standardWallet && event.type === 'wallet-standard:app-ready') event.detail.register(standardWallet);
+    },
     open: (...args) => opened.push(args),
   };
   vm.runInNewContext(source, {
-    window,
+    window, CustomEvent,
     document: { body, head, createElement: tag => new Element(tag), getElementById: id => head.children.find(child => child.id === id) },
     navigator: { userAgent: mobile ? 'iPhone' : '' },
     location: { hostname: 'bullenciaga.com', origin: 'https://bullenciaga.com', pathname: '/goods/', search: '' },
@@ -146,4 +150,29 @@ test('mobile app link, desktop install and closing remain passive', async () => 
     assert.equal(await promise, null);
     assert.equal(f.body.children.length, 0);
   }
+});
+
+
+test('Goods connects Jupiter through Wallet Standard and signs the exact NFT challenge', async () => {
+  const account = {address:'test-jupiter-owner', chains:['solana:mainnet'], features:['solana:signMessage']};
+  const wallet = {name:'Jupiter Wallet', chains:account.chains, accounts:[account], features:{
+    'standard:connect': {connect:async () => ({accounts:[account]})},
+    'solana:signMessage': {signMessage:async ({account:signer, message}) => {
+      assert.equal(signer, account);
+      return [{signature:new Uint8Array(64), signedMessage:message}];
+    }}
+  }};
+  const f = fixture(undefined, false, wallet);
+  const {promise, modal} = f.choose();
+  modal.querySelector('.bwc-list-primary').children.at(-1).click();
+  const connected = await promise;
+  assert.equal(connected.id, 'jupiter');
+  assert.equal(connected.address, account.address);
+  const message = new TextEncoder().encode('Goods ownership challenge');
+  assert.equal((await connected.provider.signMessage(message)).signature.length, 64);
+  wallet.features['solana:signMessage'].signMessage = async () => [{signedMessage:new Uint8Array(), signature:new Uint8Array(64)}];
+  await assert.rejects(connected.provider.signMessage(message), /message changed/);
+  wallet.accounts = [];
+  assert.equal(connected.provider.publicKey, null);
+  await assert.rejects(connected.provider.signMessage(message), /Reconnect/);
 });
