@@ -6,10 +6,14 @@ import { spawnSync } from 'node:child_process';
 const fixture = `
   import fs from 'node:fs';
   import assert from 'node:assert/strict';
-  let recordCalls = 0, cssCalls = 0, buyCalls = 0;
+  let recordCalls = 0, cssCalls = 0, buyCalls = 0, retiredCalls = 0;
   const mode = process.env.PROPAGATION_FIXTURE;
   globalThis.fetch = async input => {
     const pathname = new URL(input).pathname;
+    if (pathname === '/what-if-i-held') {
+      retiredCalls++;
+      if (retiredCalls === 1 || mode === 'retirement-permanent') return new Response('Previous dashboard');
+    }
     if (['/deepdive','/what-if-i-held'].includes(pathname)) return new Response('<title>Analytics retired — BULLENCIAGA</title>',{status:410,headers:{'content-type':'text/html'}});
     if (['/access','/access/','/access.html','/platform','/platform/','/platform.html'].includes(pathname)) return new Response(null,{status:308,headers:{location:'https://ondisplay.app/'}});
     if (['/proof','/proof.html'].includes(pathname)) return new Response(null,{status:301,headers:{location:'/curve'}});
@@ -30,7 +34,11 @@ const fixture = `
   };
   let failure;
   try { await import(${JSON.stringify(new URL('./smoke-live.mjs', import.meta.url).href)}); } catch(error) { failure = error; }
-  if(mode === 'redirect-permanent') {
+  if (mode === 'retirement-permanent') {
+    assert(failure, 'A retired dashboard returning 200 must fail the release');
+    assert.match(failure.message, /HTTP 200/);
+    assert.equal(retiredCalls, 3);
+  } else if(mode === 'redirect-permanent') {
     assert(failure, 'Persistent redirect must fail');
     assert.match(failure.message, /HTTP 302/);
     assert.equal(buyCalls, 3);
@@ -40,12 +48,13 @@ const fixture = `
     assert.equal(recordCalls, 3, 'Failure must be bounded by max attempts');
   } else {
     assert.equal(failure, undefined, failure?.message);
+    assert.equal(retiredCalls, 2);
     assert.equal(buyCalls, 2, 'Previous buy redirect must be retried');
     assert.equal(recordCalls, 2, 'Stale HTTP 200 HTML must be retried');
     assert.equal(cssCalls, 2, 'Stale HTTP 200 CSS must be retried');
   }
 `;
-for (const mode of ['recover', 'permanent', 'redirect-permanent']) {
+for (const mode of ['recover', 'permanent', 'redirect-permanent', 'retirement-permanent']) {
   const result = spawnSync(process.execPath, ['--input-type=module', '-e', fixture], {
     encoding: 'utf8', timeout: 15_000,
     env: { ...process.env, PROPAGATION_FIXTURE: mode, SMOKE_BASE_URL: 'https://fixture.invalid',
