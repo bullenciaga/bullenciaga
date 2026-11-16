@@ -12,7 +12,7 @@ export default {
       "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
       "slug": "make-it-look-easy-cotton-all-over-hoodie",
       "variantId": "4b34b04c-30b1-4c3c-8a23-a20da5351c5b",
-      "expectedColor": "White",
+      "expectedColor": "All-Over Print",
       "expectedSize": "2XS",
       "enabled": true
     },
@@ -23,7 +23,7 @@ export default {
       "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
       "slug": "make-it-look-easy-cotton-all-over-hoodie",
       "variantId": "7d2f128f-c85e-4800-8e46-bcbf6df46d68",
-      "expectedColor": "White",
+      "expectedColor": "All-Over Print",
       "expectedSize": "XS",
       "enabled": true
     },
@@ -34,7 +34,7 @@ export default {
       "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
       "slug": "make-it-look-easy-cotton-all-over-hoodie",
       "variantId": "9904f72d-8dad-4194-8fac-25d704999550",
-      "expectedColor": "White",
+      "expectedColor": "All-Over Print",
       "expectedSize": "S",
       "enabled": true
     },
@@ -45,7 +45,7 @@ export default {
       "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
       "slug": "make-it-look-easy-cotton-all-over-hoodie",
       "variantId": "6c17c553-5f51-4581-a862-6179c5fbb3a0",
-      "expectedColor": "White",
+      "expectedColor": "All-Over Print",
       "expectedSize": "M",
       "enabled": true
     },
@@ -56,7 +56,7 @@ export default {
       "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
       "slug": "make-it-look-easy-cotton-all-over-hoodie",
       "variantId": "b1875d89-08e3-4dc7-ae28-cfb6aebc0305",
-      "expectedColor": "White",
+      "expectedColor": "All-Over Print",
       "expectedSize": "L",
       "enabled": true
     },
@@ -67,7 +67,7 @@ export default {
       "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
       "slug": "make-it-look-easy-cotton-all-over-hoodie",
       "variantId": "86d93662-e633-4918-a022-857b6ca96dce",
-      "expectedColor": "White",
+      "expectedColor": "All-Over Print",
       "expectedSize": "XL",
       "enabled": true
     },
@@ -78,7 +78,7 @@ export default {
       "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
       "slug": "make-it-look-easy-cotton-all-over-hoodie",
       "variantId": "e7add605-c5a3-4e60-88e4-0e70d7bd77ce",
-      "expectedColor": "White",
+      "expectedColor": "All-Over Print",
       "expectedSize": "2XL",
       "enabled": true
     },
@@ -89,7 +89,7 @@ export default {
       "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
       "slug": "make-it-look-easy-cotton-all-over-hoodie",
       "variantId": "61533e91-cfe1-4e07-b8b2-c4da1dfcdfbf",
-      "expectedColor": "White",
+      "expectedColor": "All-Over Print",
       "expectedSize": "3XL",
       "enabled": true
     },
@@ -100,7 +100,7 @@ export default {
       "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
       "slug": "make-it-look-easy-cotton-all-over-hoodie",
       "variantId": "e5d91e59-5a3e-4c71-ab7a-32e4664f8b07",
-      "expectedColor": "White",
+      "expectedColor": "All-Over Print",
       "expectedSize": "4XL",
       "enabled": true
     },
@@ -111,7 +111,7 @@ export default {
       "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
       "slug": "make-it-look-easy-cotton-all-over-hoodie",
       "variantId": "95b019dd-3350-49e5-a387-a3e26df28f9f",
-      "expectedColor": "White",
+      "expectedColor": "All-Over Print",
       "expectedSize": "5XL",
       "enabled": true
     },
@@ -122,7 +122,7 @@ export default {
       "productId": "33f5fa63-0763-4712-9b18-eb193a628a88",
       "slug": "make-it-look-easy-cotton-all-over-hoodie",
       "variantId": "2486f95c-9be1-496a-8a1f-bbefabe012d0",
-      "expectedColor": "White",
+      "expectedColor": "All-Over Print",
       "expectedSize": "6XL",
       "enabled": true
     },

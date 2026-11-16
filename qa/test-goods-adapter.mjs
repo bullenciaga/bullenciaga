@@ -118,7 +118,7 @@ test('Make It Look Easy maps the tee, framed print and verified cotton hoodie',(
  assert.equal(rows.length,19);
  const hoodie=rows.filter(x=>x.product==='make-it-look-easy-hoodie');
  assert.deepEqual(hoodie.map(x=>x.size),['2XS','XS','S','M','L','XL','2XL','3XL','4XL','5XL','6XL']);
- assert.ok(hoodie.every(x=>x.productId==='33f5fa63-0763-4712-9b18-eb193a628a88'&&x.expectedColor==='White'&&x.size===x.expectedSize));
+ assert.ok(hoodie.every(x=>x.productId==='33f5fa63-0763-4712-9b18-eb193a628a88'&&x.expectedColor==='All-Over Print'&&x.size===x.expectedSize));
  assert.equal(hoodie[0].variantId,'4b34b04c-30b1-4c3c-8a23-a20da5351c5b');
  assert.equal(hoodie.at(-1).variantId,'2486f95c-9be1-496a-8a1f-bbefabe012d0');
  const tee=rows.filter(x=>x.product==='make-it-look-easy-tee');
