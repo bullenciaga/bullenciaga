@@ -18,13 +18,13 @@ const retryableStatuses = new Set([404, 408, 425, 429, 500, 502, 503, 504, 520, 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const pageChecks = [
   ['/world', /<title>BULLENCIAGA — World<\/title>/i],
-  ['/what-if-i-held', /<title>What if I held\? — BULLENCIAGA/i],
+  ['/what-if-i-held', /<title>Analytics retired — BULLENCIAGA/i, 410],
   ['/dev', /<title>BULLENCIAGA — The Developer Record/i],
   ['/buy', /<title>BULLENCIAGA — Buy \$BULLEN/i],
   ['/', smokePhase === 'preflight'
     ? /<title>BULLENCIAGA — (?:A token with horns\.|One House\. Everything connected\.)/i
     : /<title>BULLENCIAGA — One House\. Everything connected\.<\/title>/i],
-  ['/deepdive', /<title>Deep Dive — \$BULLEN, beyond the candle/i],
+  ['/deepdive', /<title>Analytics retired — BULLENCIAGA/i, 410],
   ['/stats', /<title>BULLENCIAGA — Live Dashboard/i],
   ['/chart', /<title>BULLENCIAGA — \$BULLEN chart/i],
   ['/curve', /<title>BULLENCIAGA — the curve/i],
@@ -63,7 +63,7 @@ const apiChecks = [
   ['/volume/ledger', (body) => body.ok === true && Array.isArray(body.events) && typeof body.updatedAt === 'string'],
 ];
 
-async function fetchChecked(path, validateResponse) {
+async function fetchChecked(path, validateResponse, expectedStatus = null) {
   const url = new URL(path, baseUrl);
   let lastError;
 
@@ -76,7 +76,7 @@ async function fetchChecked(path, validateResponse) {
         headers: { 'user-agent': 'bullenciaga-release-smoke/1' },
         signal: AbortSignal.timeout(45_000),
       });
-      if (response.status >= 200 && response.status < 300) {
+      if (expectedStatus === null ? response.status >= 200 && response.status < 300 : response.status === expectedStatus) {
         // A newly promoted asset version may briefly return the previous HTML
         // with HTTP 200. Require the expected content inside the same bounded
         // retry loop; persistent stale/wrong content must still fail the release.
@@ -131,7 +131,7 @@ async function fetchRedirectChecked(path, expectedStatus = 301) {
   throw lastError;
 }
 
-for (const [path, marker] of effectivePageChecks) {
+for (const [path, marker, expectedStatus] of effectivePageChecks) {
   if (smokePhase !== 'post-release' && path === '/patchnotes-006') continue;
   const { url } = await fetchChecked(path, async (response, url) => {
     assert.match(response.headers.get('content-type') ?? '', /text\/html/i, `${url} did not return HTML`);
@@ -160,7 +160,7 @@ for (const [path, marker] of effectivePageChecks) {
       assert(body.includes('Public edition 001') && body.includes('48 hours inside the House.')
         && body.includes('href="/patchnotes"'), 'House Record archive has not reached this edge');
     }
-  });
+  }, expectedStatus);
   console.log(`page smoke: ok ${url.pathname}`);
 }
 
