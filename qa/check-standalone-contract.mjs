@@ -44,7 +44,7 @@ for (const name of fs.readdirSync(site).filter(name => name.endsWith('.html'))) 
 }
 if (!headerData.includes("['goods','world','platform','flywheel']")) failures.push('featured destinations are out of approved order');
 if (!headerData.includes("['The House',['bullensaga','objects','patchnotes','lock','ledger','whitepaper']]")) failures.push('House directory is incomplete');
-if (!headerData.includes("['Community',['giveaways','thedrop','refer','passport','rooms']]")) failures.push('community directory is incomplete');
+if (!headerData.includes("['Community',['tfr','giveaways','thedrop','refer','passport','rooms']]")) failures.push('community directory is incomplete');
 for (const required of ['closePanels(true)', "event.key !== 'Escape'", "button.setAttribute('aria-expanded','true')", 'shell.contains(document.activeElement)']) {
   if (!headerJs.includes(required)) failures.push(`shared navigation interaction missing: ${required}`);
 }

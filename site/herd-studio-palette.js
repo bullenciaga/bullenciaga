@@ -212,16 +212,24 @@ window.HerdStudioPalette = {
           "background-black"
         ],
         "color": "#000000"
+      },
+      {
+        "id": "champagne-gold",
+        "name": "Champagne gold",
+        "layers": [
+          "background-champagne-gold"
+        ],
+        "color": "#c7a869"
       }
     ]
   },
   "defaults": {
     "fur": "grey",
-    "horns": "white",
-    "clothing": "grey-turtleneck",
+    "horns": "black",
+    "clothing": "two-tone-jacket",
     "eyewear": "black-glasses",
     "headwear": null,
     "jewelry": null,
-    "background": "tangerine"
+    "background": "champagne-gold"
   }
 };

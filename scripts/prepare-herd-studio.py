@@ -24,12 +24,12 @@ options = {
     "headwear": {"Black cap": "HATS/BLACK-CAP", "Black beanie": "HATS/BLACK-BEANIE", "Grey beanie": "HATS/GREY-BEANIE"},
     "jewelry": {"Silver nose ring": "JEWELRY/SMALL-SILVER-NOSERING"},
     "background": {name: "BACKGROUND/" + name.upper().replace(" ", "-") for name in (
-        "Tangerine", "Cobalt blue", "Hot pink", "Seafoam teal", "Butter yellow", "Plum", "White", "Black"
+        "Tangerine", "Cobalt blue", "Hot pink", "Seafoam teal", "Butter yellow", "Plum", "White", "Black", "Champagne gold"
     )},
 }
 defaults = {
-    "fur": "Grey", "horns": "White", "clothing": "Grey turtleneck",
-    "eyewear": "Black glasses", "headwear": None, "jewelry": None, "background": "Tangerine",
+    "fur": "Grey", "horns": "Black", "clothing": "Two-tone jacket",
+    "eyewear": "Black glasses", "headwear": None, "jewelry": None, "background": "Champagne gold",
 }
 
 
@@ -49,11 +49,8 @@ def files(group, name):
     return options[group][name].split("|") if name else []
 
 
-def compose(look, thumbnail=False):
-    if thumbnail:
-        canvas = Image.new("RGBA", (1024, 1024), "#635e58")
-    else:
-        canvas = original(files("background", look["background"])[0]).copy()
+def compose(look):
+    canvas = original(files("background", look["background"])[0]).copy()
     for group in ("fur", "horns", "clothing", "eyes", "eyewear", "headwear", "jewelry"):
         layers = ["EYES/BASIC"] if group == "eyes" else files(group, look.get(group))
         for layer in layers:
@@ -77,14 +74,11 @@ for group, choices in options.items():
                 raise ValueError("Background must cover the canvas")
             choice["color"] = "#%02x%02x%02x" % bg.getpixel((512, 512))[:3]
         else:
-            sample = {"fur": "Grey", "horns": "White", group: name}
-            thumb = compose(sample, thumbnail=True)
-            bounds = {"eyewear": (210, 185, 795, 770), "jewelry": (280, 285, 700, 705),
-                      "headwear": (90, 0, 930, 840), "horns": (50, 0, 930, 880)}
-            if group in bounds:
-                thumb = thumb.crop(bounds[group])
-            thumb.thumbnail((256, 256), Image.Resampling.LANCZOS)
-            thumb.convert("RGB").save(art / "choices" / (group + "-" + slug(name) + ".webp"), quality=88)
+            piece = original(layers[-1])
+            bounds = (413, 274, 543, 404) if group == "fur" else piece.getbbox()
+            thumb = piece.crop(bounds)
+            thumb.thumbnail((240, 190), Image.Resampling.LANCZOS)
+            thumb.save(art / "choices" / (group + "-" + slug(name) + ".webp"), quality=93)
         catalog[group].append(choice)
 
 for name in sorted(names):

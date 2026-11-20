@@ -8,17 +8,17 @@ from pathlib import Path
 
 site = Path(__file__).resolve().parents[1] / "site"
 art = site / "assets/herd-studio"
-html = (site / "herd-studio.html").read_text()
+html = (site / "tfr.html").read_text()
 
 
 def data_uri(path):
-    mime = {".woff2": "font/woff2", ".webp": "image/webp"}.get(path.suffix) or mimetypes.guess_type(path)[0]
+    mime = {".ttf": "font/ttf", ".woff2": "font/woff2", ".webp": "image/webp"}.get(path.suffix) or mimetypes.guess_type(path)[0]
     return "data:" + mime + ";base64," + base64.b64encode(path.read_bytes()).decode("ascii")
 
 
 def inline_style(match):
     css = (site / match[1]).read_text()
-    css = re.sub(r"url\(/(fonts/[^)]+)\)", lambda font: "url(" + data_uri(site / font[1]) + ")", css)
+    css = re.sub(r"""url\(['" ]*/(fonts/[^)'" ]+)['" ]*\)""", lambda font: "url(" + data_uri(site / font[1]) + ")", css)
     return "<style>\n" + css + "\n</style>"
 
 
@@ -29,6 +29,7 @@ script_tag = r'<script defer src="/([^"]+)"></script>'
 for path in re.findall(script_tag, html):
     scripts.append((site / path).read_text())
 html = re.sub(script_tag, "", html)
+html = re.sub(r'<link rel="preload" href="/fonts/[^"]+"[^>]*>', "", html)
 html = re.sub(r'<link rel="stylesheet" href="/([^"]+)">', inline_style, html)
 html = html.replace('src="/assets/herd-studio/starter.webp"', 'src="' + data_uri(art / "starter.webp") + '"')
 html = html.replace('href="/favicons/home.svg"', 'href="' + data_uri(site / "favicons/home.svg") + '"')
