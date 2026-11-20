@@ -9,7 +9,6 @@
   const print = get('print');
   const download = get('download');
   const status = get('status');
-  const peek = get('peek');
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = 1024;
   const slots = new Map();
@@ -185,7 +184,6 @@
     download.href = exportURL;
     download.download = 'bullenciaga-' + state.fur + '-' + state.background + '.png';
     download.removeAttribute('aria-disabled');
-    peek.firstElementChild.src = exportURL;
     if (priorURL) URL.revokeObjectURL(priorURL);
     const fur = selected('fur',state).name + ' bull';
     const outfit = selected('clothing',state).name;
@@ -248,11 +246,6 @@
     update();
   });
   get('retry').addEventListener('click',update);
-  peek.addEventListener('click',() => get('print').scrollIntoView({block:'center',behavior:reduced.matches?'instant':'smooth'}));
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(([entry]) => { peek.hidden = entry.isIntersecting || entry.boundingClientRect.top > 0; },
-      {rootMargin:'-104px 0px 0px 0px',threshold:.08}).observe(print);
-  }
   buildWardrobe();
   update();
 })();
