@@ -7,9 +7,9 @@ const base = process.env.VISUAL_BASE_URL || 'https://fitting-room.test';
 const site = path.resolve(import.meta.dirname,'../site');
 const browser = await chromium.launch({channel:process.env.CHROME_CHANNEL || 'chrome',headless:true});
 try {
-  for (const width of [1440,390,320]) {
+  for (const [width,height] of [[1440,950],[390,844],[320,568],[844,390],[568,320]]) {
     const reduced = width === 320;
-    const ctx = await browser.newContext({viewport:{width,height:width === 1440 ? 950 : 844},
+    const ctx = await browser.newContext({viewport:{width,height},
       reducedMotion:reduced ? 'reduce' : 'no-preference',acceptDownloads:true});
     if (!process.env.VISUAL_BASE_URL) {
       await ctx.route(base + '/**',async route => {
@@ -72,6 +72,31 @@ try {
     if (process.env.TFR_SCREENSHOTS) {
       await fs.mkdir(process.env.TFR_SCREENSHOTS,{recursive:true});
       await p.screenshot({path:path.join(process.env.TFR_SCREENSHOTS,'fitting-room-'+width+'.png'),fullPage:true});
+    }
+    const clothTiles = await p.locator('#fold-clothing .choice-art').evaluateAll(tiles => tiles.map(tile => tile.getBoundingClientRect().top));
+    for (let i=0;i<clothTiles.length;i++) {
+      assert(Math.abs(clothTiles[i] - clothTiles[i - i%4]) < 1,'Clothing thumbnails align across each row');
+    }
+    if (width < 1000) {
+      const wardrobe = p.locator('.wardrobe');
+      const portrait = p.locator('#print');
+      const start = await portrait.boundingBox();
+      await wardrobe.evaluate(el => el.scrollTo(0,el.scrollHeight));
+      const geometry = await wardrobe.evaluate(el => {
+        const box = el.getBoundingClientRect();
+        const portrait = document.querySelector('#print').getBoundingClientRect();
+        const dl = document.querySelector('#download').getBoundingClientRect();
+        const hit = document.elementFromPoint(portrait.x + portrait.width/2,portrait.y + portrait.height/2);
+        return {
+          pinned:document.querySelector('#print').contains(hit) && portrait.top >= document.querySelector('[data-bullen-header]').getBoundingClientRect().bottom - 1,
+          wardrobeBelow:box.top >= portrait.bottom,
+          scrolled:el.scrollTop>0 && window.scrollY===0,
+          downloadVisible:dl.bottom<=innerHeight && dl.top>=el.querySelector('.wardrobe-head').getBoundingClientRect().bottom - 1
+        };
+      });
+      assert.deepEqual(geometry,{pinned:true,wardrobeBelow:true,scrolled:true,downloadVisible:true});
+      assert.deepEqual(await portrait.boundingBox(),start);
+      await wardrobe.evaluate(el => el.scrollTo(0,0));
     }
     const open = async group => {
       const toggle = p.locator('[data-category="'+group+'"]');
