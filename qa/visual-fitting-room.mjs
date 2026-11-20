@@ -51,14 +51,22 @@ try {
     await ready();
     await p.evaluate(() => document.fonts.ready);
     assert(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-    assert(await p.evaluate(() => {
+    const type = await p.evaluate(() => {
+      const title = document.querySelector('.opening h1');
+      const style = getComputedStyle(title);
+      const wardrobe = getComputedStyle(document.querySelector('.wardrobe-head h2'));
       const brand = getComputedStyle(document.querySelector('.bullen-header-brand'));
-      return document.fonts.check('600 20px BullenNavDisplay') &&
-        [...document.querySelectorAll('.opening h1,.wardrobe-head h2')].every(heading => {
-          const style = getComputedStyle(heading);
-          return style.fontFamily === brand.fontFamily && style.fontWeight === brand.fontWeight;
-        });
-    }));
+      const range = document.createRange();
+      range.selectNodeContents(title);
+      return {
+        titleFont:style.fontFamily.split(',')[0].replace(/["']/g,''),
+        titleLoaded:[...document.fonts].some(face => face.family.replace(/["']/g,'') === 'Great Vibes' && face.status === 'loaded'),
+        titleCase:style.textTransform,
+        lines:range.getClientRects().length,
+        wardrobeMatchesBrand:wardrobe.fontFamily === brand.fontFamily && wardrobe.fontWeight === brand.fontWeight
+      };
+    });
+    assert.deepEqual(type,{titleFont:'Great Vibes',titleLoaded:true,titleCase:'none',lines:1,wardrobeMatchesBrand:true});
     const community = p.locator('.bullen-header-group').filter({has:p.locator('summary',{hasText:'Community'})});
     assert.equal(await community.getByRole('link',{name:/The Fitting Room/,includeHidden:true}).getAttribute('href'),'/tfr');
     if (process.env.TFR_SCREENSHOTS) {
