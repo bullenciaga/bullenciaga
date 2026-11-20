@@ -26,8 +26,24 @@ try {
       window.fittingMotion = [];
       const animate = Element.prototype.animate;
       Element.prototype.animate = function(frames,options) {
-        window.fittingMotion.push({part:this.closest('[data-layer]')?.dataset.layer,keys:Object.keys(frames[0])});
-        return animate.call(this,frames,options);
+        const part = this.closest('[data-layer]')?.dataset.layer;
+        const record = {part,keys:Object.keys(frames[0])};
+        const animation = animate.call(this,frames,options);
+        if (this.classList.contains('wardrobe-track')) {
+          const slot = this.parentElement.getBoundingClientRect();
+          record.travel = frames.map(frame => frame.transform);
+          record.positions = [0,.5,1].map(fraction => {
+            animation.currentTime = options.duration * fraction;
+            return [...this.children].map(piece => {
+              const style = getComputedStyle(piece);
+              return {x:(piece.getBoundingClientRect().left-slot.left)/slot.width,
+                opacity:style.opacity,clip:style.clipPath};
+            });
+          });
+          animation.currentTime = 0;
+        }
+        window.fittingMotion.push(record);
+        return animation;
       };
     });
     await p.goto(base + '/tfr');
@@ -35,7 +51,14 @@ try {
     await ready();
     await p.evaluate(() => document.fonts.ready);
     assert(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-    assert(await p.evaluate(() => document.fonts.check('italic 20px "Room Serif"')));
+    assert(await p.evaluate(() => {
+      const brand = getComputedStyle(document.querySelector('.bullen-header-brand'));
+      return document.fonts.check('600 20px BullenNavDisplay') &&
+        [...document.querySelectorAll('.opening h1,.wardrobe-head h2')].every(heading => {
+          const style = getComputedStyle(heading);
+          return style.fontFamily === brand.fontFamily && style.fontWeight === brand.fontWeight;
+        });
+    }));
     const community = p.locator('.bullen-header-group').filter({has:p.locator('summary',{hasText:'Community'})});
     assert.equal(await community.getByRole('link',{name:/The Fitting Room/,includeHidden:true}).getAttribute('href'),'/tfr');
     if (process.env.TFR_SCREENSHOTS) {
@@ -57,7 +80,22 @@ try {
     const history = await p.evaluate(() => window.fittingMotion);
     if (reduced) assert.deepEqual(history,[]);
     else {
-      for (const part of ['clothing','eyewear','headwear']) assert(history.some(a=>a.part===part&&a.keys.includes('transform')),part);
+      for (const part of ['clothing','eyewear','headwear']) {
+        const swaps = history.filter(a=>a.part===part);
+        assert.equal(swaps.length,1,part+' uses one shared animation');
+        const swap = swaps[0];
+        assert.deepEqual(swap.keys,['transform']);
+        assert.match(swap.travel[1],/^translateX\(-?100%\)$/);
+        for (const sample of swap.positions) for (const face of sample) {
+          assert.equal(face.opacity,'1');
+          assert.equal(face.clip,'none');
+        }
+      }
+      const [start,mid,end] = history.find(a=>a.part==='clothing').positions;
+      const near = (a,b) => Math.abs(a-b)<.003;
+      assert(near(start[0].x,0) && near(Math.abs(start[1].x),1));
+      assert(near(Math.abs(mid[0].x-mid[1].x),1) && Math.abs(mid[0].x)>.05 && Math.abs(mid[0].x)<.95);
+      assert(near(Math.abs(end[0].x),1) && near(end[1].x,0));
       for (const part of ['fur','horns']) {
         assert(history.some(a=>a.part===part&&a.keys.includes('opacity')),part);
         assert(!history.some(a=>a.part===part&&a.keys.includes('transform')),part);

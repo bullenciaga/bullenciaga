@@ -1,6 +1,4 @@
-@font-face{font-family:Room Serif;src:url('/fonts/tfr-roman.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:Room Serif;src:url('/fonts/tfr-italic.ttf') format('truetype');font-weight:400;font-style:italic;font-display:swap}
-:root{color-scheme:dark;--room-bg:#151515;--room-ink:#f2f0ed;--room-dim:#aaa8a7;--room-rule:#383838;--room-serif:'Room Serif',Baskerville,Georgia,serif;--room-sans:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif}
+:root{color-scheme:dark;--room-bg:#151515;--room-ink:#f2f0ed;--room-dim:#aaa8a7;--room-rule:#383838;--room-display:BullenNavDisplay,Arial,sans-serif;--room-sans:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif}
 body{margin:0;background:var(--room-bg);color:var(--room-ink)}
 .room,.room *,.room *::before,.room *::after{box-sizing:border-box}
 .room [hidden]{display:none!important}
@@ -10,15 +8,14 @@ body{margin:0;background:var(--room-bg);color:var(--room-ink)}
 .room button{padding:0;border:0;background:none;cursor:pointer;touch-action:manipulation}
 .opening{display:flex;align-items:end;justify-content:space-between;gap:24px;padding-bottom:clamp(17px,2vw,28px);border-bottom:1px solid var(--room-rule)}
 .overline{font:500 10px/1.5 var(--room-sans);text-transform:uppercase;letter-spacing:.2em;color:#ccb68f}
-.opening h1{margin-top:7px;font:400 clamp(56px,7vw,101px)/.98 var(--room-serif);letter-spacing:-.025em}
-.opening h1 em{font-weight:400}
+.opening h1{margin-top:10px;font:600 clamp(40px,5.15vw,76px)/1.04 var(--room-display);letter-spacing:.035em;text-transform:uppercase}
 .intro{max-width:30ch;font-size:clamp(14px,1.12vw,17px);line-height:1.5;color:#bcbab7;margin-bottom:4px}
 .bench{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(0,.78fr);align-items:start;gap:clamp(32px,5.6vw,84px);padding-top:clamp(18px,2.3vw,34px)}
 .fitting{min-width:0;position:sticky;top:calc(var(--bullen-header-height,72px) + 18px)}
 .mat{display:grid;place-items:center;background:#212121;border:1px solid #323232;padding:clamp(22px,2.3vw,36px);overflow:hidden}
 .print{position:relative;isolation:isolate;aspect-ratio:1;width:min(100%,54svh,560px);overflow:hidden;border-radius:0;background:#c7a869;box-shadow:0 6px 22px #0004;transition:border-radius 260ms ease}
 .print[data-crop=avatar]{border-radius:50%}
-.print #starter,.print #layers,.layer-slot,.layer-face,.moving-art,.layer-face img{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.print #starter,.print #layers,.layer-slot,.layer-face,.wardrobe-track,.layer-face img{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 #layers{overflow:hidden}
 .layer-slot.blending{isolation:isolate}
 .layer-slot.blending .layer-face{mix-blend-mode:plus-lighter}
@@ -35,7 +32,7 @@ body{margin:0;background:var(--room-bg);color:var(--room-ink)}
 .crop-switch [aria-pressed=true] .crop-symbol{background:currentColor}
 .wardrobe{min-width:0}
 .wardrobe-head{min-height:46px;margin-bottom:9px}
-.wardrobe-head h2{font:400 clamp(32px,3.1vw,45px)/1.04 var(--room-serif);letter-spacing:-.016em}
+.wardrobe-head h2{font:600 clamp(19px,1.65vw,25px)/1.2 var(--room-display);letter-spacing:.11em;text-transform:uppercase}
 .room #shuffle{display:flex;align-items:center;min-height:40px;gap:7px;font:500 13px var(--room-sans);color:#c8c5c2}
 .room svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round}
 .group{border-top:1px solid var(--room-rule)}
@@ -74,7 +71,7 @@ body{margin:0;background:var(--room-bg);color:var(--room-ink)}
 @media(max-width:760px){
 .room{width:min(calc(100% - 36px),540px);padding:24px 0 32px}
 .opening{display:block;padding-bottom:15px}
-.opening h1{font-size:clamp(48px,12vw,70px);margin-top:4px}
+.opening h1{font-size:clamp(28px,8vw,52px);margin-top:8px}
 .intro{margin:9px 0 0;max-width:43ch;font-size:13px}
 .bench{grid-template-columns:1fr;gap:14px;padding-top:16px}
 .fitting{position:static}
@@ -84,7 +81,7 @@ body{margin:0;background:var(--room-bg);color:var(--room-ink)}
 #look{font-size:12px}
 .room .crop-switch button{padding-inline:4px;min-height:40px}
 .wardrobe-head{position:sticky;top:calc(var(--bullen-header-height,104px) + env(safe-area-inset-top,0px));z-index:2;background:var(--room-bg);margin:0;min-height:51px}
-.wardrobe-head h2{font-size:33px}
+.wardrobe-head h2{font-size:19px}
 .room .peek:not([hidden]){display:inline-flex!important;align-items:center;justify-content:center;min-width:44px;height:44px;margin-left:auto}
 .peek img{width:34px;height:34px;border-radius:50%;object-fit:cover}
 .room .group-toggle{min-height:45px}
