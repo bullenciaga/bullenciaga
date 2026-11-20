@@ -231,7 +231,11 @@
       update();
     }
   });
-  for (const button of document.querySelectorAll('[data-crop]')) {
+  const fitting = print.closest('.fitting');
+  new ResizeObserver(() => {
+    document.documentElement.style.setProperty('--tfr-pinned-height', fitting.offsetHeight + 'px');
+  }).observe(fitting);
+  for (const button of document.querySelectorAll('.crop-switch [data-crop]')) {
     button.addEventListener('click',() => {
       print.dataset.crop = button.dataset.crop;
       document.querySelectorAll('.crop-switch button').forEach(b => b.setAttribute('aria-pressed',String(b === button)));
