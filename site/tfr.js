@@ -116,48 +116,50 @@
   async function faceFor(originals) {
     if (!originals.length) return null;
     const face = element('div','layer-face');
-    const art = element('div','moving-art');
     const copies = originals.map(original => original.cloneNode(false));
-    art.append(...copies);
-    face.append(art);
+    face.append(...copies);
     await Promise.all(copies.map(img => img.decode()));
     return face;
   }
   function animateSlot(group, entering, previous, state) {
     const slot = slots.get(group);
     const leaving = slot.firstElementChild;
-    if (entering) slot.append(entering);
     if (!previous || reduced.matches || !slot.animate) {
-      leaving?.remove();
+      slot.replaceChildren(...(entering ? [entering] : []));
       return Promise.resolve();
     }
-    const push = group === 'clothing' || accessories.includes(group);
-    const animations = [];
-    function tween(node, frames) {
-      if (node) animations.push(node.animate(frames,{duration:push ? 360 : 280,easing:'cubic-bezier(.32,.06,.18,1)',fill:'both'}));
-    }
-    if (push) {
+    if (group === 'clothing' || accessories.includes(group)) {
       const oldIndex = choices[group].findIndex(item => item.id === previous[group]);
       const newIndex = choices[group].findIndex(item => item.id === state[group]);
       const direction = newIndex >= oldIndex ? 1 : -1;
-      const hiddenLeft = 'inset(0 100% 0 0)';
-      const hiddenRight = 'inset(0 0 0 100%)';
-      const full = 'inset(0 0% 0 0%)';
-      if (entering && leaving) {
-        // Complementary clips share a stationary edge while the garments travel underneath.
-        tween(leaving,[{clipPath:full},{clipPath:direction > 0 ? hiddenLeft : hiddenRight}]);
-        tween(entering,[{clipPath:direction > 0 ? hiddenRight : hiddenLeft},{clipPath:full}]);
-      } else {
-        tween(entering,[{opacity:0},{opacity:1}]);
-        tween(leaving,[{opacity:1},{opacity:0}]);
+      // Both pieces sit one portrait-width apart on the same moving surface.
+      const track = element('div','wardrobe-track');
+      if (leaving) track.append(leaving);
+      if (entering) {
+        entering.style.transform = 'translateX(' + direction * 100 + '%)';
+        track.append(entering);
       }
-      tween(leaving?.firstElementChild,[{transform:'translateX(0%)'},{transform:'translateX(' + (-direction*14) + '%)'}]);
-      tween(entering?.firstElementChild,[{transform:'translateX(' + (direction*14) + '%)'},{transform:'translateX(0%)'}]);
-    } else {
-      slot.classList.add('blending');
-      tween(leaving,[{opacity:1},{opacity:0}]);
-      tween(entering,[{opacity:0},{opacity:1}]);
+      slot.append(track);
+      const slide = track.animate([
+        {transform:'translateX(0%)'},
+        {transform:'translateX(' + -direction * 100 + '%)'}
+      ],{duration:460,easing:'cubic-bezier(.42,0,.23,1)',fill:'both'});
+      return slide.finished.finally(() => {
+        if (entering) {
+          entering.style.removeProperty('transform');
+          slot.append(entering);
+        }
+        track.remove();
+        slide.cancel();
+      });
     }
+    if (entering) slot.append(entering);
+    slot.classList.add('blending');
+    const timing = {duration:280,easing:'cubic-bezier(.32,.06,.18,1)',fill:'both'};
+    const animations = [
+      leaving?.animate([{opacity:1},{opacity:0}],timing),
+      entering?.animate([{opacity:0},{opacity:1}],timing)
+    ].filter(Boolean);
     return Promise.all(animations.map(animation => animation.finished)).finally(() => {
       leaving?.remove();
       for (const animation of animations) animation.cancel();
