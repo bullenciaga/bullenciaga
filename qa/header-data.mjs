@@ -2,11 +2,14 @@
 // in place; changing a label never requires replacing the header after paint.
 export const labels = {index:'Home', buy:'Buy $BULLEN',stats:'Stats',tape:'The Tape',chart:'Chart',curve:'Curve',transparency:'Moderation',refer:'Referrals',referrals:'Admin',thedrop:'The Drop',giveaways:'Giveaways',objects:'House Objects',patchnotes:'House Record',lock:'Burn Reserve',ledger:'Living Ledger',passport:'Wallet Passport',rooms:'Inner Rooms',world:'World',platform:'ON DISPLAY.',flywheel:'Flywheel',bullensaga:'BULLENSAGA',whitepaper:'Whitepaper',goods:'Goods',dev:'Developer Record',raiders:'The Raiders',shares:'Private record','what-if-i-held':'Holding study'};
 export const destinations = {goods:'/goods/',world:'/world',platform:'https://ondisplay.app/',flywheel:'/flywheel',bullensaga:'https://bullensaga.com/',objects:'/objects.html',patchnotes:'/patchnotes.html',lock:'/lock.html',ledger:'/ledger.html',whitepaper:'/whitepaper',buy:'/buy',stats:'/stats.html',chart:'/chart.html',tape:'/tape.html',curve:'/curve.html',giveaways:'/giveaways.html',thedrop:'/thedrop.html',refer:'/refer.html',passport:'/passport.html',rooms:'/rooms.html'};
+labels.tfr = 'The Fitting Room';
+destinations.tfr = '/tfr';
 labels.otc = 'OTC Exchange';
 destinations.otc = 'https://exchange.bullen.app/';
 export const featured = ['goods','world','platform','flywheel'];
-export const groups = [['The House',['bullensaga','objects','patchnotes','lock','ledger','whitepaper']],['$BULLEN',['buy','otc','stats','chart','tape','curve']],['Community',['giveaways','thedrop','refer','passport','rooms']]];
+export const groups = [['The House',['bullensaga','objects','patchnotes','lock','ledger','whitepaper']],['$BULLEN',['buy','otc','stats','chart','tape','curve']],['Community',['tfr','giveaways','thedrop','refer','passport','rooms']]];
 export const descriptions = {
+  tfr:'Make a free bull profile portrait',
   otc:'Buy and sell BULLEN / USDC on your terms',
   bullensaga:'A dark fantasy game in development',objects:'Numbered digital collectibles',patchnotes:'Releases and updates from the House',lock:'Token reserves and lock schedules',ledger:'Public events and their receipts',whitepaper:'The House system, explained',buy:'Swap for $BULLEN through Jupiter',stats:'Market, supply and burn dashboard',chart:'Price history and supply events',tape:'Live trades from the main pool',curve:'Supply history and verified burns',giveaways:'Campaigns, entries and draw records',thedrop:'Prize rounds funded by buy fees',refer:'Referral records and fee earnings',passport:'Look up holdings and collectibles',rooms:'Private rooms for House Key holders'
 };

@@ -16,7 +16,9 @@ assert(headerCss.includes('body.explorer-expanded .bullen-site-shell[data-bullen
 assert.deepEqual(featured,['goods','world','platform','flywheel']);
 assert.equal(groups[0][1][0],'bullensaga');
 assert(!groups.flatMap(([,keys])=>keys).includes('world'));
-assert.equal(new Set([...featured,...groups.flatMap(([,keys])=>keys)]).size,21);
+assert.equal(new Set([...featured,...groups.flatMap(([,keys])=>keys)]).size,22);
+assert(groups.find(([name])=>name==='Community')[1].includes('tfr'));
+assert.equal(destinations.tfr,'/tfr');
 for(const [,keys] of groups)for(const key of keys){assert(descriptions[key]?.length>10);assert(destinations[key]);assert(labels[key]);}
 assert(!Object.values(destinations).includes('/deepdive'));
 assert.equal(socials.length,4);assert.equal(resources.length,11);
@@ -76,4 +78,4 @@ media.matches=true;media.emit('change');assert.deepEqual(groupEls.map(g=>g.open)
 for(const overlay of ['.vault-open','.lightbox-open','.wallet-modal-open','.bullen-mobile-buy-open','.explorer-expanded']){exploreButton.emit('click');bodyOverlay=overlay;observerCallback();assert(explorePanel.hidden,`${overlay}: overlay closes the directory`);bodyOverlay='';}
 exploreButton.emit('click');globalEvents.emit('pagehide');assert(explorePanel.hidden);globalEvents.emit('pageshow');assert(explorePanel.hidden);
 assert.equal(shell.dataset.bullenHydrated,'true');
-console.log('Shared header: 31 initial documents, ordered destinations, complete directory, real local anchors, descriptions, Escape/focus, one-panel, mobile disclosure, overlay and history lifecycle: ok');
+console.log('Shared header: all initial documents, ordered destinations, complete directory, real local anchors, descriptions, Escape/focus, one-panel, mobile disclosure, overlay and history lifecycle: ok');

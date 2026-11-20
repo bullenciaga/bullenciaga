@@ -44,6 +44,7 @@ const pageChecks = [
   ['/lock', /<title>BULLENCIAGA — Burn Reserve/i],
   ['/ledger', /<title>BULLENCIAGA — Living Ledger/i],
   ['/passport', /<title>BULLENCIAGA — Wallet Passport/i],
+  ...(smokePhase === 'post-release' ? [['/tfr', /<title>The Fitting Room · BULLENCIAGA<\/title>/]] : []),
   ...(smokePhase === 'post-release' ? [['/multiplier', /<title>The BULLEN multiplier · BULLENCIAGA<\/title>/i]] : []),
   ['/flywheel', /<title>The House in motion · BULLENCIAGA<\/title>/i],
 ];
