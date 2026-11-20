@@ -7,7 +7,7 @@ const base = process.env.VISUAL_BASE_URL || 'https://fitting-room.test';
 const site = path.resolve(import.meta.dirname,'../site');
 const browser = await chromium.launch({channel:process.env.CHROME_CHANNEL || 'chrome',headless:true});
 try {
-  for (const [width,height] of [[1440,950],[390,844],[320,568],[844,390],[568,320]]) {
+  for (const [width,height] of [[1440,950],[430,738],[390,670],[320,568],[844,390],[568,320]]) {
     const reduced = width === 320;
     const ctx = await browser.newContext({viewport:{width,height},
       reducedMotion:reduced ? 'reduce' : 'no-preference',acceptDownloads:true});
@@ -60,13 +60,13 @@ try {
       range.selectNodeContents(title);
       return {
         titleFont:style.fontFamily.split(',')[0].replace(/["']/g,''),
-        titleLoaded:[...document.fonts].some(face => face.family.replace(/["']/g,'') === 'Great Vibes' && face.status === 'loaded'),
+        titleLoaded:document.fonts.check('600 25px BullenNavDisplay'),
         titleCase:style.textTransform,
         lines:range.getClientRects().length,
         wardrobeMatchesBrand:wardrobe.fontFamily === brand.fontFamily && wardrobe.fontWeight === brand.fontWeight
       };
     });
-    assert.deepEqual(type,{titleFont:'Great Vibes',titleLoaded:true,titleCase:'none',lines:1,wardrobeMatchesBrand:true});
+    assert.deepEqual(type,{titleFont:'BullenNavDisplay',titleLoaded:true,titleCase:'none',lines:1,wardrobeMatchesBrand:true});
     const community = p.locator('.bullen-header-group').filter({has:p.locator('summary',{hasText:'Community'})});
     assert.equal(await community.getByRole('link',{name:/The Fitting Room/,includeHidden:true}).getAttribute('href'),'/tfr');
     if (process.env.TFR_SCREENSHOTS) {
@@ -78,25 +78,31 @@ try {
       assert(Math.abs(clothTiles[i] - clothTiles[i - i%4]) < 1,'Clothing thumbnails align across each row');
     }
     if (width < 1000) {
-      const wardrobe = p.locator('.wardrobe');
+      await p.locator('.wardrobe').hover({position:{x:20,y:12}});
+      await p.mouse.wheel(0,height);
+      await p.waitForFunction(() => {
+        const nav = document.querySelector('[data-bullen-header]').getBoundingClientRect();
+        return document.querySelector('.opening').getBoundingClientRect().bottom <= nav.bottom + 1;
+      });
       const portrait = p.locator('#print');
-      const start = await portrait.boundingBox();
-      await wardrobe.evaluate(el => el.scrollTo(0,el.scrollHeight));
-      const geometry = await wardrobe.evaluate(el => {
-        const box = el.getBoundingClientRect();
-        const portrait = document.querySelector('#print').getBoundingClientRect();
+      const pinned = await portrait.boundingBox();
+      await p.evaluate(() => window.scrollTo(0,document.documentElement.scrollHeight));
+      const visible = await p.evaluate(() => {
+        const print = document.querySelector('#print');
+        const fitting = print.closest('.fitting');
+        const box = fitting.getBoundingClientRect();
+        const nav = document.querySelector('[data-bullen-header]').getBoundingClientRect();
         const dl = document.querySelector('#download').getBoundingClientRect();
-        const hit = document.elementFromPoint(portrait.x + portrait.width/2,portrait.y + portrait.height/2);
         return {
-          pinned:document.querySelector('#print').contains(hit) && portrait.top >= document.querySelector('[data-bullen-header]').getBoundingClientRect().bottom - 1,
-          wardrobeBelow:box.top >= portrait.bottom,
-          scrolled:el.scrollTop>0 && window.scrollY===0,
-          downloadVisible:dl.bottom<=innerHeight && dl.top>=el.querySelector('.wardrobe-head').getBoundingClientRect().bottom - 1
+          pinned:Math.abs(box.top - nav.bottom)<1,
+          opaqueEdge:fitting.contains(document.elementFromPoint(box.left+3,box.bottom-1)),
+          canDownload:dl.top>=box.bottom && dl.bottom<=innerHeight+1,
+          square:Math.abs(print.offsetWidth-print.offsetHeight)<1
         };
       });
-      assert.deepEqual(geometry,{pinned:true,wardrobeBelow:true,scrolled:true,downloadVisible:true});
-      assert.deepEqual(await portrait.boundingBox(),start);
-      await wardrobe.evaluate(el => el.scrollTo(0,0));
+      assert.deepEqual(visible,{pinned:true,opaqueEdge:true,canDownload:true,square:true});
+      assert.deepEqual(await portrait.boundingBox(),pinned);
+      await p.evaluate(() => window.scrollTo(0,0));
     }
     const open = async group => {
       const toggle = p.locator('[data-category="'+group+'"]');
@@ -156,7 +162,25 @@ try {
       return img.width===1024 && img.height===1024 && displayed.every((v,i)=>v===exported[i]);
     });
     assert(correct,'Every exported pixel matches the displayed layers');
-    await p.locator('.crop-switch [data-crop=avatar]').click();
+    const cropFrames = await p.evaluate(async () => {
+      const print = document.querySelector('#print');
+      const samples = [];
+      for (const crop of ['avatar','square','avatar']) {
+        document.querySelector('.crop-switch [data-crop='+crop+']').click();
+        const endOrStart = getComputedStyle(print).clipPath;
+        const transition = print.getAnimations().find(a=>a.transitionProperty==='clip-path');
+        if (transition) {
+          transition.pause();
+          transition.currentTime = 200;
+          const middle = getComputedStyle(print).clipPath;
+          transition.finish();
+          const end = getComputedStyle(print).clipPath;
+          samples.push(middle!==endOrStart && middle!==end);
+        }
+      }
+      return samples;
+    });
+    assert.deepEqual(cropFrames,reduced ? [] : [true,true,true]);
     assert.equal(await p.locator('#print').getAttribute('data-crop'),'avatar');
     const received = p.waitForEvent('download');
     await p.locator('#download').click();

@@ -1,5 +1,5 @@
-@font-face{font-family:'Great Vibes';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/great-vibes-title.ttf') format('truetype')}
 :root{color-scheme:dark;--room-bg:#151515;--room-ink:#f2f0ed;--room-dim:#aaa8a7;--room-rule:#383838;--room-display:BullenNavDisplay,Arial,sans-serif;--room-sans:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif}
+html[data-bullen-standalone=tfr]{background:var(--room-bg)}
 body{margin:0;background:var(--room-bg);color:var(--room-ink)}
 .room,.room *,.room *::before,.room *::after{box-sizing:border-box}
 .room [hidden]{display:none!important}
@@ -9,13 +9,13 @@ body{margin:0;background:var(--room-bg);color:var(--room-ink)}
 .room button{padding:0;border:0;background:none;cursor:pointer;touch-action:manipulation}
 .opening{display:flex;align-items:end;justify-content:space-between;gap:24px;padding-bottom:clamp(17px,2vw,28px);border-bottom:1px solid var(--room-rule)}
 .overline{font:500 10px/1.5 var(--room-sans);text-transform:uppercase;letter-spacing:.2em;color:#ccb68f}
-.opening h1{margin-top:10px;font:400 clamp(58px,6.8vw,98px)/1.22 'Great Vibes',cursive;letter-spacing:0;font-synthesis:none}
+.opening h1{margin-top:6px;font:600 clamp(30px,3.25vw,48px)/1.12 var(--room-display);letter-spacing:-.035em}
 .intro{max-width:30ch;font-size:clamp(14px,1.12vw,17px);line-height:1.5;color:#bcbab7;margin-bottom:4px}
 .bench{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(0,.78fr);align-items:start;gap:clamp(32px,5.6vw,84px);padding-top:clamp(18px,2.3vw,34px)}
 .fitting{min-width:0;position:sticky;top:calc(var(--bullen-header-height,72px) + 18px)}
 .mat{display:grid;place-items:center;background:#212121;border:1px solid #323232;padding:clamp(22px,2.3vw,36px);overflow:hidden}
-.print{position:relative;isolation:isolate;aspect-ratio:1;width:min(100%,54svh,560px);overflow:hidden;border-radius:0;background:#c7a869;box-shadow:0 6px 22px #0004;transition:border-radius 260ms ease}
-.print[data-crop=avatar]{border-radius:50%}
+.print{position:relative;isolation:isolate;aspect-ratio:1;width:min(100%,54svh,560px);overflow:hidden;background:#c7a869;clip-path:inset(0 round 0%);transition:clip-path 400ms cubic-bezier(.4,0,.2,1)}
+.print[data-crop=avatar]{clip-path:inset(0 round 50%)}
 .print #starter,.print #layers,.layer-slot,.layer-face,.wardrobe-track,.layer-face img{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 #layers{overflow:hidden}
 .layer-slot.blending{isolation:isolate}
@@ -69,57 +69,37 @@ body{margin:0;background:var(--room-bg);color:var(--room-ink)}
 .feedback{text-align:center;font-size:13px;color:var(--room-dim)}
 .feedback button{text-decoration:underline;padding:6px}
 @media(max-width:760px),(orientation:landscape) and (max-height:540px) and (max-width:960px){
-.room{
-  display:flex;flex-direction:column;
-  width:min(calc(100% - 36px),540px);
-  height:calc(100dvh - var(--bullen-header-height,104px) - env(safe-area-inset-top,0px));
-  padding:clamp(9px,1.6svh,18px) 0 0;
-}
-.opening{display:block;padding-bottom:9px;flex:none}
-.opening h1{font-size:clamp(38px,11.8vw,62px);margin-top:4px}
-.intro{margin:4px 0 0;max-width:43ch;font-size:13px}
-.bench{flex:1;min-height:0;grid-template: auto minmax(0,1fr) / minmax(0,1fr);gap:0;padding-top:clamp(6px,1svh,12px)}
-.fitting{position:static}
-.mat{padding:clamp(5px,1svh,10px)}
-.print{width:min(100%,32svh,310px)}
-.fitting figcaption{padding:2px 0}
-#look{font-size:12px}
-.room .crop-switch button{padding-inline:4px;min-height:40px}
-.wardrobe{
-  align-self:stretch;min-height:0;overflow-y:auto;overscroll-behavior-y:contain;
-  border-top:1px solid var(--room-rule);scroll-padding-top:47px;
-  padding-bottom:max(16px,env(safe-area-inset-bottom,0px));
-}
-.wardrobe-head{position:sticky;top:0;z-index:2;background:var(--room-bg);margin:0;min-height:46px}
-.wardrobe-head h2{font-size:19px}
-.room .choice{scroll-margin-top:0}
-.room .group-toggle{min-height:45px}
-}
-@media(max-width:760px) and (max-height:700px){
-.opening .overline{display:none}
-.opening h1{margin:0}
-.print{width:min(100%,29svh)}
-}
-@media(max-width:760px) and (max-height:610px){
-.opening .intro{display:none}
+  html[data-bullen-standalone=tfr]:has([data-bullen-header]){
+    --room-nav-bottom:calc(var(--bullen-header-height) + env(safe-area-inset-top,0px));
+    scroll-padding-top:calc(var(--room-nav-bottom) + var(--tfr-pinned-height,36svh) + 8px);
+  }
+  .room{width:min(calc(100% - 36px),540px);padding:14px 0 max(16px,env(safe-area-inset-bottom,0px))}
+  .opening{display:block;padding-bottom:10px}
+  .opening h1{margin-top:3px;font-size:clamp(25px,6.7vw,34px)}
+  .intro{margin:5px 0 0;max-width:44ch;font-size:13px}
+  .bench{display:block;padding:0}
+  .fitting{
+    top:var(--room-nav-bottom);z-index:3;isolation:isolate;
+    padding:8px 0 0;background:var(--room-bg);border-bottom:1px solid var(--room-rule);
+  }
+  .mat{width:fit-content;max-width:100%;margin-inline:auto;padding:0;border:0;background:var(--room-bg)}
+  .print{width:min(74vw,36svh,310px)}
+  .fitting figcaption{padding:2px 0}
+  #look{font-size:12px}
+  .room .crop-switch button{padding-inline:4px;min-height:40px}
+  .wardrobe-head{margin:0;min-height:46px}
+  .wardrobe-head h2{font-size:19px}
+  .room .choice{scroll-margin-top:0}
+  .room .group-toggle{min-height:45px}
 }
 @media(orientation:landscape) and (max-height:540px) and (max-width:960px){
-.room{
-  display:grid;grid-template: auto minmax(0,1fr) / minmax(0,1fr) minmax(0,1fr);
-  width:min(calc(100% - max(36px,env(safe-area-inset-left,0px) * 2,env(safe-area-inset-right,0px) * 2)),760px);
-  column-gap:16px;
-}
-.opening{align-self:center;border:0}
-.opening h1{font-size:clamp(30px,5vw,44px)}
-.bench{display:contents}
-.fitting{align-self:center}
-.mat{padding:3px}
-.print{width:min(100%,24svh)}
-.wardrobe{grid-column:1/-1}
-}
-@media(orientation:landscape) and (max-height:360px) and (max-width:960px){
-.wardrobe-head{position:static}
-.wardrobe{scroll-padding-top:0}
+  .room{padding-top:8px}
+  .opening .overline{display:none}
+  .opening h1{font-size:24px}
+  .fitting{display:flex;align-items:center;justify-content:center;gap:20px;padding:4px 0}
+  .mat{margin:0}
+  .print{width:min(27svh,128px)}
+  .fitting figcaption{display:grid;gap:0}
 }
 @media(max-width:370px){.room{width:calc(100% - 26px)}.swatches{column-gap:6px}.room .choice{font-size:10px}.group-value{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.room *,.room *::after{transition:none!important;animation:none!important}}

@@ -35,8 +35,6 @@ html = html.replace('src="/assets/herd-studio/starter.webp"', 'src="' + data_uri
 html = html.replace('href="/favicons/home.svg"', 'href="' + data_uri(site / "favicons/home.svg") + '"')
 html = html.replace('href="/', 'href="https://bullenciaga.com/')
 html = html.replace("</body>", "\n".join("<script>\n" + code + "\n</script>" for code in scripts) + "\n</body>")
-license_text = (site / "fonts/GreatVibes-OFL.txt").read_text()
-html = html.replace("</head>", '<script type="text/plain" id="great-vibes-license">\n' + license_text + "\n</script>\n</head>")
 out = Path(sys.argv[1])
 out.parent.mkdir(parents=True, exist_ok=True)
 out.write_text(html)
